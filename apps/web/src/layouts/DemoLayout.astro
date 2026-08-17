@@ -1,0 +1,43 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4';
+import '@logic-reserva/ui/theme.css';
+import type { DemoSlug, Locale } from '@logic-reserva/config';
+
+interface Props {
+  slug: DemoSlug;
+  locale?: Locale;
+  title: string;
+}
+
+const { slug, locale = 'es', title } = Astro.props;
+const notice =
+  locale === 'en'
+    ? 'Fictional demonstration by Logic Reserva · No real bookings or charges'
+    : 'Demostración ficticia de Logic Reserva · Sin reservas ni cobros reales';
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title}</title>
+  </head>
+  <body class={`demo-body ${slug}`}>
+    <p class="demo-notice">{notice}</p>
+    <slot />
+  </body>
+</html>
+
+<style>
+  .demo-notice {
+    margin: 0;
+    padding: 8px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+</style>

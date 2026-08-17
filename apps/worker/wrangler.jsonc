@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "logic-reserva-demo",
+  "main": "./src/index.ts",
+  "compatibility_date": "2026-08-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "vars": {
+    // F12 activa el transporte real de leads vía Resend; hasta entonces, disabled.
+    "LEADS_TRANSPORT": "disabled"
+  },
+  "routes": [{ "pattern": "reserva.logic2b.com/*", "zone_name": "logic2b.com" }],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": "./dist/assets",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*", "/demos/*", "/en/demos/*"]
+  }
+}

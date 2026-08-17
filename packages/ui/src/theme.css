@@ -1,0 +1,51 @@
+/* Logic Reserva · tokens de producto (contrato visual en docs/DESIGN.md)
+   Base editorial de la familia logic2b con acento burdeos de restauración.
+   Los temas de marca ficticia (Brasca/Vedra/Solane) redefinen solo las
+   variables --brand-* en apps/web/src/styles/demos.css. */
+:root {
+  --ink: #1a1719;
+  --paper: #ffffff;
+  --mist: #f4f2f1;
+  --fog: #fbfafa;
+  --slate: #7b777a;
+  --ash: #999497;
+  --smoke: #aaa5a8;
+  --blush: #f7e2dd;
+  --bordeaux: #5d1a2a;
+  --line: #ebe8e9;
+  --serif: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
+  --sans: 'Inter Variable', Inter, system-ui, sans-serif;
+  --shadow-artifact: 0 0 0 1px rgb(43 4 23 / .05), 0 20px 25px -5px rgb(0 0 0 / .10), 0 8px 10px -6px rgb(0 0 0 / .10);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { scroll-behavior: smooth; background: var(--paper); }
+body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+button, input, select, textarea { font: inherit; }
+a { color: inherit; }
+img { max-width: 100%; }
+
+.shell { width: min(1200px, calc(100% - 40px)); margin-inline: auto; }
+.eyebrow { margin: 0 0 14px; color: var(--ash); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; }
+.display, .heading { margin: 0; font-family: var(--serif); font-weight: 400; letter-spacing: -.025em; }
+.display { font-size: clamp(3.3rem, 7.5vw, 5.65rem); line-height: .96; }
+.heading { font-size: clamp(2.5rem, 5.6vw, 4rem); line-height: 1.02; }
+.heading em, .display em { font-weight: 400; }
+.muted { color: var(--slate); }
+.pill { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--ink); border-radius: 999px; padding: 0 20px; color: var(--paper); background: var(--ink); text-decoration: none; cursor: pointer; }
+.pill.ghost { color: var(--ink); background: transparent; }
+.pill:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--bordeaux); outline-offset: 3px; }
+.card { border-radius: 24px; background: var(--mist); }
+.artifact { border-radius: 20px; background: var(--paper); box-shadow: var(--shadow-artifact); }
+.status { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; color: var(--slate); }
+.status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ''; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+
+@media (max-width: 640px) {
+  .shell { width: min(100% - 28px, 1200px); }
+  .display { font-size: clamp(3rem, 15vw, 4.3rem); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+}

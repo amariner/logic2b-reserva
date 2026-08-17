@@ -1,0 +1,26 @@
+{
+  "name": "@logic-reserva/site",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "astro build",
+    "dev": "astro dev",
+    "typecheck": "astro check",
+    "lint": "eslint \"src/**/*.ts\" --no-error-on-unmatched-pattern",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@fontsource-variable/inter": "^5.2.8",
+    "@fontsource-variable/source-serif-4": "^5.2.8",
+    "@logic-reserva/config": "workspace:*",
+    "@logic-reserva/domain": "workspace:*",
+    "@logic-reserva/ui": "workspace:*",
+    "astro": "^5.12.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.7"
+  }
+}

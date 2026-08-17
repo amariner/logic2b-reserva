@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import { PRODUCT } from '@logic-reserva/config';
+---
+
+<Base
+  locale="es"
+  title={`${PRODUCT.name} — Reservas y eventos para tu restaurante`}
+  description="Motor de reservas propio para restaurantes: mesas, menús y eventos con un solo inventario. Sin comisiones por comensal."
+>
+  <main class="shell" style="padding-block: 96px;">
+    <p class="eyebrow">{PRODUCT.lockup}</p>
+    <h1 class="display">Tus reservas, tu marca, <em>tus datos</em>.</h1>
+    <p class="muted" style="max-width: 60ch; font-size: 1.1rem;">
+      Mesas, menús y eventos en un solo inventario. Demo comercial en construcción — fase F0
+      completada, la landing llega en la fase F3 del roadmap.
+    </p>
+  </main>
+</Base>

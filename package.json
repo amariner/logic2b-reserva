@@ -1,0 +1,31 @@
+{
+  "name": "logic-reserva",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "packageManager": "pnpm@11.10.0",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "dev": "pnpm --filter @logic-reserva/worker dev",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "check": "turbo run typecheck lint test build",
+    "e2e": "pnpm build && playwright test",
+    "images": "node scripts/images.mjs",
+    "deploy": "pnpm --filter @logic-reserva/worker deploy"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@playwright/test": "^1.55.0",
+    "eslint": "^9.31.0",
+    "prettier": "^3.6.0",
+    "sharp": "^0.34.3",
+    "turbo": "^2.5.0",
+    "typescript": "^5.8.0",
+    "typescript-eslint": "^8.36.0",
+    "vitest": "^3.2.7",
+    "wrangler": "^4.111.0"
+  }
+}

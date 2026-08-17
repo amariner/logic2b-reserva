@@ -1,0 +1,4 @@
+/* Temas de marca ficticia: cada demo redefine solo estas variables. */
+.demo-body.brasca { --brand: #a34a2c; --brand-soft: #f6e3d9; --brand-ink: #2b1a12; --brand-paper: #fdf9f5; }
+.demo-body.vedra { --brand: #4a5d3a; --brand-soft: #e6ebd9; --brand-ink: #1c2114; --brand-paper: #fafbf6; }
+.demo-body.solane { --brand: #1e2a4a; --brand-soft: #e3e6f0; --brand-ink: #10131f; --brand-paper: #f8f9fc; --brand-accent: #b98a2f; }

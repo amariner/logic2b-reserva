@@ -1,0 +1,26 @@
+{
+  "name": "@logic-reserva/dashboard",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/DashboardDemo.tsx", "./styles.css": "./src/dashboard.css" },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src --no-error-on-unmatched-pattern",
+    "test": "vitest run --passWithNoTests"
+  },
+  "dependencies": {
+    "@logic-reserva/config": "workspace:*",
+    "@logic-reserva/domain": "workspace:*",
+    "lucide-react": "^0.550.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "typescript": "^5.8.0",
+    "vitest": "^3.2.7"
+  }
+}

@@ -1,0 +1,28 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4';
+import '@logic-reserva/ui/theme.css';
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+
+interface Props {
+  locale?: Locale;
+  title: string;
+  description: string;
+}
+
+const { locale = 'es', title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang={locale}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, PRODUCT.url).href} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
