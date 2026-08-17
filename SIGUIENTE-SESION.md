@@ -1,22 +1,22 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F12 en curso · preview pública verificada ✅ (2026-08-17)
-**Siguiente hito:** activar y validar el correo real primero en preview — ver `docs/ROADMAP.md` §F12
+**Fase actual:** F12 en curso · producción actualizada y verificada ✅ (2026-08-17)
+**Siguiente hito:** validar una entrega real autorizada y cerrar F12 — ver `docs/ROADMAP.md` §F12
 
 ## Siguiente paso concreto
 
 1. Iniciar sesión en Resend y verificar que `hola@logic2b.com` pertenece a un dominio autorizado.
-2. Desplegar primero a preview para aplicar el destinatario `marinerandreu+logic@gmail.com` y configurar allí `LEADS_RESEND_API_KEY` de forma interactiva siguiendo `docs/DEPLOY.md`. Producción ya declara el secret; no rotarlo salvo que la prueba indique que el valor no es válido.
-3. Con autorización explícita para un correo real, enviar una única solicitud controlada primero en preview; comprobar `delivered(202)`, referencia, llegada a `marinerandreu+logic@gmail.com` e idempotencia al repetir.
-4. Desplegar a producción para aplicar el nuevo destinatario, repetir una única verificación autorizada en `reserva.logic2b.com` y cerrar F12.
+2. Con autorización explícita para generar un correo real, enviar una única solicitud controlada en `reserva.logic2b.com`; comprobar `delivered(202)`, referencia y llegada a `marinerandreu+logic@gmail.com`.
+3. Repetir exactamente el mismo payload y verificar `replayed: true` sin un segundo correo.
+4. Configurar después `LEADS_RESEND_API_KEY` en preview si se quiere conservar un entorno completo de validación previa para futuros cambios.
 
 ## Bloqueos / avisos
 
 - La arquitectura comercial cerrada tiene exactamente tres planes: Básico → Gestión → Inteligente. Ver `docs/adr/ADR-010-tres-planes-y-backends-demostrativos.md`; no reintroducir Inicio ni Automatiza como planes.
 - Brasca escenifica Básico (web + solicitud que en una implantación real llegaría por email), Vedra es el backend demo de Gestión y Solane es Gestión ampliado con IA, automatizaciones y operación avanzada.
 - La IA y las automatizaciones de Solane son demostraciones deterministas en el navegador, sin modelo, agente, proveedor ni ejecución externa.
-- Para continuar F12 hace falta iniciar sesión en Resend, introducir `LEADS_RESEND_API_KEY` de preview en el prompt interactivo y, después, autorización explícita para realizar una entrega real.
-- `logic-reserva-preview` y `logic-reserva` ya existen y están verificados. `reserva.logic2b.com` está activo como dominio personalizado con DNS/TLS de Cloudflare. Preview no tiene secrets; producción declara `LEADS_RESEND_API_KEY`, aunque su valor todavía no se ha validado mediante una entrega.
+- Para cerrar F12 hace falta iniciar sesión en Resend y autorización explícita para realizar una entrega real. El despliegue no se considera autorización para generar ese correo de prueba.
+- `logic-reserva-preview` y `logic-reserva` existen. `reserva.logic2b.com` está actualizado y verificado como único dominio personalizado; producción declara `LEADS_RESEND_API_KEY`, aunque su valor todavía no se ha validado mediante una entrega. Preview sigue sin secret.
 - No volver a la antigua paleta burdeos: la referencia vigente es `docs/DESIGN.md` (papel cálido + azul único).
 - El servidor dev actual sigue disponible en `http://localhost:8788`; si la sesión se pierde, `pnpm dev` lo recompone.
 - Mantener un único punto de bifurcación demo/real y la etiqueta ficticia visible en web y gestor.

@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-17 · Sesión 20 · GitHub y producción actualizados ✅
+
+- Todo el desarrollo F1–F12 consolidado sobre `main` y publicado en GitHub en el commit `76f2a09` después de comprobar que `origin/main` no contenía cambios adicionales.
+- Gate previo a la publicación: `pnpm check` 28/28; se mantienen los 34/34 E2E de la sesión anterior sobre el mismo bundle.
+- Producción actualizada en Cloudflare Workers. Se sustituyó la configuración remota duplicada (ruta wildcard + dominio personalizado) por el único dominio personalizado declarado en el repositorio: `reserva.logic2b.com`.
+- El Worker publicado conserva `LEADS_RESEND_API_KEY` y aplica `LEADS_INTERNAL_RECIPIENT="marinerandreu+logic@gmail.com"`. No se envió ningún lead ni correo de prueba.
+- `pnpm verify:public:production` verde mediante peticiones GET; landing, demos, SEO, API y cabeceras responden correctamente. El dry-run estricto posterior vuelve a pasar sin divergencias de configuración.
+
 ## 2026-08-17 · Sesión 19 · Tres planes y dos backends demostrativos ✅
 
 - Arquitectura comercial consolidada en tres planes: Básico, Gestión e Inteligente. El antiguo Automatiza desaparece y sus capacidades pasan a Inteligente.
