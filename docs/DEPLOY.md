@@ -1,0 +1,67 @@
+# Runbook de preview y producción
+
+Este documento separa deliberadamente la verificación externa de la publicación en `reserva.logic2b.com`. Ningún comando de esta página debe ejecutarse sin autorización explícita para modificar Cloudflare.
+
+## Fronteras de seguridad
+
+- Producción usa el Worker `logic-reserva`, `workers_dev: false` y un único dominio personalizado: `reserva.logic2b.com`. Cloudflare gestiona su DNS y certificado.
+- Preview usa otro Worker, `logic-reserva-preview`, con `routes: []`. Solo publica en `workers.dev`; no puede heredar ni reasignar el dominio de producción.
+- Cada Worker tiene su propio Durable Object y su propio secret `LEADS_RESEND_API_KEY`. El único destinatario interno es `marinerandreu+logic@gmail.com`.
+- Solo el formulario comercial de la landing llama a `/api/leads`; los formularios de las demos y los dashboards no usan red ni integraciones reales.
+- Sin ese secret, el formulario responde `disabled(503)` y nunca finge una entrega.
+- Los workflows exigen confirmación textual y una variable de entorno habilitadora. Preview pide `PREVIEW` + `RESERVA_PREVIEW_ENABLED=true`; producción pide `DEPLOY` + `RESERVA_DEPLOY_ENABLED=true`.
+
+## Comprobaciones locales, sin mutación externa
+
+```bash
+pnpm check
+pnpm e2e
+pnpm deploy:preview:dry-run
+pnpm deploy:dry-run
+pnpm verify:public
+```
+
+Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que prueba que los nombres son distintos, preview declara `routes: []`/`workers.dev` y producción declara exclusivamente `reserva.logic2b.com` como dominio personalizado. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad en ambos entornos; no crea leads ni modifica estado.
+
+## Estado actual
+
+- Preview activa: `https://logic-reserva-preview.marinerandreu.workers.dev`.
+- Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados el 2026-08-17.
+- Producción activa: `https://reserva.logic2b.com`, enlazada a `logic-reserva` como dominio personalizado con DNS y TLS administrados por Cloudflare.
+- Producción ya declara el secret cifrado `LEADS_RESEND_API_KEY`; Wrangler solo permite verificar su nombre, no el valor. Su validez y la entrega real siguen pendientes de una prueba autorizada.
+- Preview todavía no declara `LEADS_RESEND_API_KEY`; `/api/leads` continúa fallando cerrado con `disabled(503)` allí.
+- El repositorio ya configura `marinerandreu+logic@gmail.com`, pero los Workers públicos aún requieren un deploy autorizado para recibir este cambio de variable.
+- La cuenta de Resend no estaba autenticada en el navegador disponible durante la auditoría del 2026-08-17, por lo que la autorización de `hola@logic2b.com` no se ha podido comprobar sin pedir credenciales.
+
+## Primera preview autorizada
+
+1. Confirmar en Resend que `hola@logic2b.com` pertenece a un dominio verificado.
+2. Crear el Worker aislado con `pnpm deploy:preview`. La primera ejecución seguirá fallando cerrada porque el secret aún no existe.
+3. Configurar el secreto de preview de forma interactiva, sin copiar su valor a archivos ni al historial:
+
+   ```bash
+   pnpm --filter @logic-reserva/worker exec wrangler secret put LEADS_RESEND_API_KEY --config wrangler.jsonc --env preview
+   ```
+
+4. Volver a ejecutar `pnpm deploy:preview` y conservar la URL `logic-reserva-preview.<subdomain>.workers.dev` devuelta por Wrangler.
+5. Ejecutar `pnpm verify:public:preview` para verificar landing, demos, `robots.txt`, `sitemap.xml`, API, cabeceras de seguridad y `x-robots-tag`.
+6. Solo con autorización explícita para enviar correo, realizar una solicitud controlada y comprobar `delivered(202)`, referencia y llegada a `marinerandreu+logic@gmail.com`. Repetir el mismo payload debe devolver la misma referencia con `replayed: true` y no crear otro correo.
+
+## Producción autorizada
+
+La producción no debe usarse para descubrir problemas de configuración. Antes de activar su workflow:
+
+1. Haber completado toda la checklist de preview.
+2. Confirmar que `LEADS_RESEND_API_KEY` sigue presente en producción. Si fuera necesario rotarlo, configurarlo de forma interactiva:
+
+   ```bash
+   pnpm --filter @logic-reserva/worker exec wrangler secret put LEADS_RESEND_API_KEY --config wrangler.jsonc --env=""
+   ```
+3. Configurar los secrets de GitHub `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` en el entorno `production`.
+4. Definir `RESERVA_DEPLOY_ENABLED=true` únicamente durante la ventana de publicación.
+5. Ejecutar `Deploy production`, escribir `DEPLOY` y revisar que check, E2E y dry-run hayan pasado antes del último paso. Este deploy activa también el destinatario `marinerandreu+logic@gmail.com` configurado en el repositorio.
+6. Comprobar `https://reserva.logic2b.com` con `pnpm verify:public:production`, enviar un único lead autorizado y volver a poner `RESERVA_DEPLOY_ENABLED=false`.
+
+## Reversión
+
+No borrar Worker, Durable Objects ni secrets. Ante una regresión, desactivar temporalmente el formulario mediante `LEADS_TRANSPORT=disabled` o volver a una versión anterior desde Cloudflare; después verificar de nuevo las cabeceras y el estado HTTP. Cualquier reversión es también una mutación externa y requiere autorización.

@@ -1,0 +1,44 @@
+---
+import type { DemoSlug, Locale } from '@logic-reserva/config';
+import { DEMO_COPY, getDemoFixture, localized } from '../data';
+
+interface Props {
+  slug: DemoSlug;
+  locale?: Locale;
+}
+
+const { slug, locale = 'es' } = Astro.props;
+const fixture = getDemoFixture(slug);
+const copy = DEMO_COPY[slug];
+const image = fixture.hero.imageBase;
+---
+
+<section class="shell brand-hero" aria-labelledby={`${slug}-hero-title`}>
+  <div class="brand-hero__copy">
+    <p class="brand-hero__eyebrow">{localized(copy.hero.eyebrow, locale)}</p>
+    <h1 id={`${slug}-hero-title`} class="brand-hero__title">{localized(copy.hero.title, locale)}</h1>
+    <p class="brand-hero__body">{localized(copy.hero.body, locale)}</p>
+    <div class="brand-hero__actions">
+      <a class="brand-button" href="#reserva">{localized(copy.hero.primaryAction, locale)}</a>
+      <a class="brand-button ghost" href={copy.nav[0].href}>{localized(copy.hero.secondaryAction, locale)}</a>
+    </div>
+  </div>
+  <div class="brand-hero__visual">
+    <picture class="brand-hero__frame">
+      <source
+        type="image/avif"
+        srcset={`${image}-640.avif 640w, ${image}-960.avif 960w, ${image}-1600.avif 1600w`}
+        sizes="(max-width: 820px) calc(100vw - 28px), 54vw"
+      />
+      <img
+        src={`${image}-960.avif`}
+        width="960"
+        height="720"
+        alt={localized(fixture.hero.alt, locale)}
+        loading="eager"
+        fetchpriority="high"
+      />
+    </picture>
+    <span class="brand-hero__mark" aria-hidden="true">{fixture.hero.mark}</span>
+  </div>
+</section>

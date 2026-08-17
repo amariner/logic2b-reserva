@@ -1,0 +1,23 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import EventTickets from '../islands/EventTickets';
+import { DEMO_FIXTURES, SOLANE_PAGE_COPY, localized } from '../data';
+import '../styles/event-tickets.css';
+
+interface Props { locale?: Locale }
+const { locale = 'es' } = Astro.props;
+const fixture = DEMO_FIXTURES.solane;
+const copy = SOLANE_PAGE_COPY.tickets;
+const prefix = locale === 'en' ? '/en' : '';
+const languageHref = locale === 'en' ? '/demos/solane/eventos/' : '/en/demos/solane/eventos/';
+const languageLabel = locale === 'en' ? 'Español' : 'English';
+---
+
+<header class="events-header"><div class="shell"><a class="events-lockup" href={`${prefix}/demos/solane/`}><span>S</span><b>Solane</b></a><nav><a href={`${prefix}/demos/solane/`}>{localized(copy.back, locale)}</a><a href={languageHref}>{languageLabel}</a><a class="brand-button" href={`${prefix}/demos/solane/gestion/?vista=eventos`}>{localized(copy.manager, locale)}</a></nav></div></header>
+<main class="events-main shell"><header><p class="brand-hero__eyebrow">{localized(copy.eyebrow, locale)}</p><h1>{localized(copy.title, locale)}</h1><p>{localized(copy.body, locale)}</p></header><EventTickets initialBookings={fixture.bookings} initialEvents={fixture.events} locale={locale} client:load /></main>
+
+<style>
+  .events-header { height: 66px; border-bottom: 1px solid var(--brand-line); background: var(--brand-card); }.events-header .shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }.events-lockup { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }.events-lockup span { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--brand-accent); border-radius: 50%; color: var(--brand-accent); font-weight: 750; }.events-header nav { display: flex; align-items: center; gap: 8px; }.events-header nav > a:not(.brand-button) { padding: 8px; color: var(--brand-muted); font-size: .78rem; text-decoration: none; }
+  .events-main { padding-block: clamp(70px, 9vw, 120px); }.events-main > header { max-width: 900px; margin-bottom: 55px; }.events-main h1 { margin: 0; font-family: var(--serif); font-size: clamp(3.6rem, 8vw, 7rem); font-weight: 480; letter-spacing: -.06em; line-height: .91; }.events-main > header > p:last-child { max-width: 62ch; margin: 25px 0 0; color: var(--brand-muted); font-family: var(--serif); font-size: 1.1rem; line-height: 1.6; }
+  @media (max-width: 560px) { .events-header nav > a:nth-child(2) { display: none; }.events-header .brand-button { min-height: 40px; padding-inline: 10px; }.events-main { padding-top: 55px; } }
+</style>

@@ -127,6 +127,9 @@ importers:
       astro:
         specifier: ^5.12.0
         version: 5.18.2(rollup@4.62.4)(typescript@5.9.3)(yaml@2.9.0)
+      lucide-react:
+        specifier: ^0.550.0
+        version: 0.550.0(react@19.2.8)
       react:
         specifier: ^19.1.0
         version: 19.2.8
@@ -137,6 +140,12 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.4
         version: 0.9.10(prettier@3.9.6)(typescript@5.9.3)
+      '@types/react':
+        specifier: ^19.1.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.1.0
+        version: 19.2.4(@types/react@19.2.18)
       typescript:
         specifier: ^5.8.0
         version: 5.9.3

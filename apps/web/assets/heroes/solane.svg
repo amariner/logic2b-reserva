@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Sala nocturna ilustrada de Solane</title>
+  <desc id="desc">Una sala azul noche con mesas, lámparas doradas y ambiente de degustación.</desc>
+  <rect width="1600" height="1200" fill="#10172f"/>
+  <rect y="770" width="1600" height="430" fill="#171f3d"/>
+  <circle cx="270" cy="235" r="150" fill="#202b50"/>
+  <circle cx="1330" cy="235" r="150" fill="#202b50"/>
+  <path d="M270 0v205M1330 0v205M800 0v325" stroke="#bd913b" stroke-width="12"/>
+  <path d="M165 235c35-130 175-130 210 0Z" fill="#bd913b"/>
+  <path d="M1225 235c35-130 175-130 210 0Z" fill="#bd913b"/>
+  <path d="M675 365c40-165 210-165 250 0Z" fill="#d2aa59"/>
+  <circle cx="270" cy="260" r="14" fill="#ffe5a3"/>
+  <circle cx="1330" cy="260" r="14" fill="#ffe5a3"/>
+  <circle cx="800" cy="395" r="18" fill="#fff0bd"/>
+  <rect x="135" y="385" width="390" height="300" rx="12" fill="#202b50"/>
+  <rect x="1075" y="385" width="390" height="300" rx="12" fill="#202b50"/>
+  <circle cx="330" cy="535" r="96" fill="#bd913b"/>
+  <circle cx="330" cy="535" r="62" fill="#10172f"/>
+  <path d="M1180 590c65-120 145-120 210 0" fill="none" stroke="#bd913b" stroke-width="24" stroke-linecap="round"/>
+  <path d="M1220 565c35-55 80-55 125 0" fill="none" stroke="#e0bd75" stroke-width="14" stroke-linecap="round"/>
+  <ellipse cx="800" cy="875" rx="395" ry="115" fill="#f5f3ed"/>
+  <rect x="765" y="870" width="70" height="275" rx="20" fill="#080d20"/>
+  <ellipse cx="625" cy="855" rx="68" ry="31" fill="#ffffff"/>
+  <ellipse cx="975" cy="855" rx="68" ry="31" fill="#ffffff"/>
+  <circle cx="625" cy="850" r="20" fill="#bd913b"/>
+  <circle cx="975" cy="850" r="20" fill="#bd913b"/>
+  <rect x="786" y="675" width="28" height="145" rx="14" fill="#bd913b"/>
+  <circle cx="800" cy="665" r="44" fill="#e0bd75"/>
+  <path d="M740 795c40-50 80-50 120 0" fill="none" stroke="#202b50" stroke-width="14" stroke-linecap="round"/>
+  <circle cx="325" cy="905" r="98" fill="#080d20"/>
+  <rect x="280" y="920" width="90" height="245" rx="28" fill="#080d20"/>
+  <circle cx="1275" cy="905" r="98" fill="#080d20"/>
+  <rect x="1230" y="920" width="90" height="245" rx="28" fill="#080d20"/>
+  <g fill="#bd913b">
+    <circle cx="655" cy="205" r="10"/><circle cx="945" cy="160" r="8"/><circle cx="1020" cy="315" r="7"/><circle cx="570" cy="355" r="7"/>
+  </g>
+  <path d="M675 205h-40M655 185v40M965 160h-40M945 140v40" stroke="#bd913b" stroke-width="7" stroke-linecap="round"/>
+</svg>

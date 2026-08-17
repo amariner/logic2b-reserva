@@ -16,12 +16,12 @@ Cuando llegue una orden tipo "sigue desarrollando este proyecto" (`/goal` o simi
 
 ## Qué es este producto (decisiones cerradas — no reabrir)
 
-- **Demo comercial**, no SaaS: cero DB, cero auth. Estado en localStorage versionado. El único endpoint real es `POST /api/leads` (Resend → marinerandreu@gmail.com), que se activa en F12.
+- **Demo comercial**, no SaaS: cero DB, cero auth. Estado en localStorage versionado. El único endpoint real es `POST /api/leads` desde la landing comercial (Resend → marinerandreu+logic@gmail.com), que se activa en F12. Los formularios de las marcas y los dashboards son muestras locales: nunca llaman a un backend.
 - **3 marcas ficticias**, una por modelo de negocio y nivel comercial:
-  - **Brasca** — bistró de barrio. Nivel *Inicio*. Web con formulario muerto, sin gestor.
-  - **Vedra** — restaurante con 2 salas, grupos y menús cerrados. Nivel *Gestión*. Widget nativo + gestor básico.
-  - **Solane** — gastronómico con eventos, ticketing, depósitos y privatizaciones. Nivel *Visión/Inteligente*. Gestor completo con roles (dirección/sala/cocina).
-- **Escalera comercial**: Inicio → Gestión → Automatiza → Inteligente (idéntica a la familia).
+  - **Brasca** — bistró de barrio. Plan *Básico*. Web propia con formulario que, en un proyecto real, enviaría la solicitud por email; la demo no envía.
+  - **Vedra** — restaurante con 2 salas, grupos y menús cerrados. Plan *Gestión*. Widget nativo + backend demostrativo de organización.
+  - **Solane** — gastronómico con eventos, ticketing, depósitos y privatizaciones. Plan *Inteligente*. Todo Gestión más IA demostrativa para decisiones, automatizaciones y gestión avanzada, con roles dirección/sala/cocina.
+- **Tres planes comerciales**: Básico → Gestión → Inteligente. No existe un cuarto plan Automatiza: sus capacidades pertenecen a Inteligente.
 - **Idiomas**: es/en, rutas espejo `/x/` y `/en/x/`, copy en `content.ts` tipado `as const`.
 - **Diferenciales que la demo escenifica** (por orden): (A) **inventario único mesa+menú+evento** — crear un evento consume mesas reales del plano y el widget deja de ofrecerlas; (C) anti no-show conforme a ley española — depósito escalonado por riesgo, proporcional al menú, condiciones aceptadas con timestamp, liberación automática al sentarse; (E) privatizaciones — solicitud→propuesta→señal→bloqueo del plano; (B) calculadora de ahorro vs marketplace — SIEMPRE etiquetada "estimación basada en tarifas publicadas por terceros"; (D) widget nativo con la marca del restaurante.
 - Contexto de mercado en `docs/COMPETENCIA.md`. Roadmap completo en `docs/ROADMAP.md`.

@@ -17,7 +17,7 @@ export default defineConfig({
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {
-    command: 'pnpm --filter @logic-reserva/worker exec wrangler dev --config wrangler.jsonc --ip 127.0.0.1 --port 8791 --inspector-port 9232',
+    command: 'pnpm --filter @logic-reserva/worker exec wrangler dev --config wrangler.jsonc --ip 127.0.0.1 --port 8791 --inspector-port 9233',
     url: 'http://127.0.0.1:8791',
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,

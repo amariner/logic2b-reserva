@@ -1,19 +1,45 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "logic-reserva-demo",
+  "name": "logic-reserva",
   "main": "./src/index.ts",
   "compatibility_date": "2026-08-01",
   "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": false,
   "vars": {
-    // F12 activa el transporte real de leads vía Resend; hasta entonces, disabled.
-    "LEADS_TRANSPORT": "disabled"
+    "LEADS_TRANSPORT": "resend",
+    "LEADS_FROM_EMAIL": "hola@logic2b.com",
+    "LEADS_INTERNAL_RECIPIENT": "marinerandreu+logic@gmail.com",
+    "LEADS_REPLY_TO": "hola@logic2b.com"
   },
-  "routes": [{ "pattern": "reserva.logic2b.com/*", "zone_name": "logic2b.com" }],
+  "durable_objects": {
+    "bindings": [{ "name": "LEAD_COORDINATOR", "class_name": "LeadCoordinator" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LeadCoordinator"] }],
+  "routes": [{ "pattern": "reserva.logic2b.com", "custom_domain": true }],
   "assets": {
     "binding": "ASSETS",
     "directory": "./dist/assets",
     "html_handling": "auto-trailing-slash",
     "not_found_handling": "404-page",
-    "run_worker_first": ["/api/*", "/demos/*", "/en/demos/*"]
+    "run_worker_first": true
+  },
+  "env": {
+    "preview": {
+      "name": "logic-reserva-preview",
+      "workers_dev": true,
+      "preview_urls": true,
+      "routes": [],
+      "vars": {
+        "LEADS_TRANSPORT": "resend",
+        "LEADS_FROM_EMAIL": "hola@logic2b.com",
+        "LEADS_INTERNAL_RECIPIENT": "marinerandreu+logic@gmail.com",
+        "LEADS_REPLY_TO": "hola@logic2b.com"
+      },
+      "durable_objects": {
+        "bindings": [{ "name": "LEAD_COORDINATOR", "class_name": "LeadCoordinator" }]
+      },
+      "migrations": [{ "tag": "v1", "new_sqlite_classes": ["LeadCoordinator"] }]
+    }
   }
 }

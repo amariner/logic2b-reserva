@@ -1,13 +1,28 @@
 import { describe, expect, it } from 'vitest';
 import {
+  CAPABILITIES,
+  assertNoDoubleBooking,
+  canOperate,
+  depositFor,
   estimateDurationMin,
   hasLevel,
   marketplaceSavings,
   noShowLoss,
+  noShowCharge,
   recommendLevel,
+  riskTier,
   seatingTimes,
   slotsOverlap,
+  tableAvailability,
+  validateBooking,
+  validateEvent,
+  validateRestaurant,
   validateSlot,
+  type DepositRecord,
+  type PrivateHire,
+  type Restaurant,
+  type RestaurantEvent,
+  type TableBooking,
   type TimeSlot,
 } from './index';
 
@@ -47,18 +62,18 @@ describe('núcleo temporal', () => {
 });
 
 describe('escalera comercial', () => {
-  it('hasLevel respeta el orden inicio→gestion→automatiza→inteligente', () => {
+  it('hasLevel respeta el orden basico→gestion→inteligente', () => {
     expect(hasLevel('inteligente', 'gestion')).toBe(true);
-    expect(hasLevel('inicio', 'gestion')).toBe(false);
+    expect(hasLevel('basico', 'gestion')).toBe(false);
   });
 
   it('eventos o privatizaciones recomiendan inteligente', () => {
     const base = { servicesPerDay: 2, seats: 60, wantsOnlineBooking: true, hasGroupsOrMenus: true, eventsPerMonth: 0, noShowPain: false, wantsPrivateHire: false } as const;
     expect(recommendLevel({ ...base, eventsPerMonth: 2 })).toBe('inteligente');
     expect(recommendLevel({ ...base, wantsPrivateHire: true })).toBe('inteligente');
-    expect(recommendLevel({ ...base, noShowPain: true })).toBe('automatiza');
+    expect(recommendLevel({ ...base, noShowPain: true })).toBe('inteligente');
     expect(recommendLevel(base)).toBe('gestion');
-    expect(recommendLevel({ ...base, wantsOnlineBooking: false, hasGroupsOrMenus: false })).toBe('inicio');
+    expect(recommendLevel({ ...base, wantsOnlineBooking: false, hasGroupsOrMenus: false })).toBe('basico');
   });
 });
 
@@ -74,5 +89,306 @@ describe('calculadoras', () => {
     const l = noShowLoss(500);
     expect(Number.isInteger(l.monthlyCents)).toBe(true);
     expect(l.assumptions).toMatch(/Estimación/);
+  });
+});
+
+const restaurant: Restaurant = {
+  id: 'solane',
+  organizationId: 'logic-demo',
+  name: 'Solane',
+  spaces: [
+    {
+      id: 'main',
+      name: 'Sala',
+      privatizable: true,
+      tables: [
+        { id: 't1', name: 'Mesa 1', minSeats: 1, maxSeats: 2, combinableWith: ['t2'] },
+        { id: 't2', name: 'Mesa 2', minSeats: 2, maxSeats: 4, combinableWith: ['t1', 't3'] },
+        { id: 't3', name: 'Mesa 3', minSeats: 2, maxSeats: 4, combinableWith: ['t2'] },
+      ],
+    },
+    {
+      id: 'private',
+      name: 'Privado',
+      privatizable: true,
+      tables: [{ id: 'p1', name: 'Privado 1', minSeats: 4, maxSeats: 8, combinableWith: [] }],
+    },
+  ],
+  menus: [
+    { id: 'degustacion', name: 'Degustación', pricePerPersonCents: 9500, courses: ['Aperitivo', 'Principal'], bookableOnline: true },
+  ],
+  shifts: [
+    { id: 'lunch', kind: 'lunch', firstSeatingMin: 780, lastSeatingMin: 900 },
+    { id: 'dinner', kind: 'dinner', firstSeatingMin: 1200, lastSeatingMin: 1320 },
+  ],
+};
+
+const booking = (overrides: Partial<TableBooking> = {}): TableBooking => ({
+  id: 'b1',
+  restaurantId: restaurant.id,
+  tableIds: ['t1'],
+  slot: slot(1200, 90),
+  partySize: 2,
+  status: 'confirmed',
+  guest: { name: 'Ada' },
+  source: 'fixture',
+  ...overrides,
+});
+
+const event = (overrides: Partial<RestaurantEvent> = {}): RestaurantEvent => ({
+  id: 'e1',
+  restaurantId: restaurant.id,
+  name: 'Cena maridaje',
+  slot: slot(1200, 120),
+  capacity: 6,
+  priceCents: 12500,
+  soldSeats: 0,
+  consumesTableIds: ['t1', 't2'],
+  status: 'draft',
+  ...overrides,
+});
+
+const hire = (overrides: Partial<PrivateHire> = {}): PrivateHire => ({
+  id: 'h1',
+  restaurantId: restaurant.id,
+  spaceId: 'private',
+  slot: slot(1200, 180),
+  status: 'requested',
+  ...overrides,
+});
+
+describe('restaurante y validaciones', () => {
+  it('acepta un restaurante consistente', () => {
+    expect(validateRestaurant(restaurant)).toEqual([]);
+  });
+
+  it('rechaza ids de mesa duplicados entre salas', () => {
+    const invalid: Restaurant = {
+      ...restaurant,
+      spaces: [restaurant.spaces[0], { ...restaurant.spaces[1], tables: [{ ...restaurant.spaces[1].tables[0], id: 't1' }] }],
+    };
+    expect(validateRestaurant(invalid)).toContain('duplicate table id: t1');
+  });
+
+  it('rechaza capacidad mínima no positiva', () => {
+    const invalid: Restaurant = {
+      ...restaurant,
+      spaces: [{ ...restaurant.spaces[0], tables: [{ ...restaurant.spaces[0].tables[0], minSeats: 0 }] }],
+    };
+    expect(validateRestaurant(invalid).some((error) => error.includes('minSeats'))).toBe(true);
+  });
+
+  it('rechaza capacidad máxima menor que la mínima', () => {
+    const invalid: Restaurant = {
+      ...restaurant,
+      spaces: [{ ...restaurant.spaces[0], tables: [{ ...restaurant.spaces[0].tables[0], minSeats: 4, maxSeats: 2 }] }],
+    };
+    expect(validateRestaurant(invalid).some((error) => error.includes('maxSeats'))).toBe(true);
+  });
+
+  it('rechaza combinaciones con mesas de otra sala o inexistentes', () => {
+    const invalid: Restaurant = {
+      ...restaurant,
+      spaces: [{ ...restaurant.spaces[0], tables: [{ ...restaurant.spaces[0].tables[0], combinableWith: ['p1'] }] }],
+    };
+    expect(validateRestaurant(invalid).some((error) => error.includes('unknown table in its space'))).toBe(true);
+  });
+
+  it('rechaza turnos que no respetan los 15 minutos', () => {
+    const invalid = { ...restaurant, shifts: [{ ...restaurant.shifts[0], firstSeatingMin: 787 }] };
+    expect(validateRestaurant(invalid).some((error) => error.includes('multiples of 15'))).toBe(true);
+  });
+
+  it('valida que un evento no venda más de su aforo', () => {
+    expect(validateEvent(event({ soldSeats: 7 }), restaurant).some((error) => error.includes('soldSeats'))).toBe(true);
+  });
+
+  it('valida que las mesas consumidas cubren el aforo del evento', () => {
+    expect(validateEvent(event({ capacity: 7, consumesTableIds: ['t1', 't2'] }), restaurant)).toContain(
+      'event e1 capacity exceeds the seats of its consumed tables',
+    );
+  });
+
+  it('rechaza mesas desconocidas en un evento', () => {
+    expect(validateEvent(event({ consumesTableIds: ['missing'] }), restaurant).some((error) => error.includes('unknown table'))).toBe(true);
+  });
+
+  it('acepta una reserva en mesas combinables de la misma sala', () => {
+    expect(validateBooking(booking({ tableIds: ['t1', 't2'], partySize: 6 }), restaurant)).toEqual([]);
+  });
+
+  it('rechaza una reserva con mesas de salas distintas', () => {
+    expect(validateBooking(booking({ tableIds: ['t1', 'p1'], partySize: 6 }), restaurant).some((error) => error.includes('same space'))).toBe(true);
+  });
+
+  it('rechaza una reserva que no cabe en sus mesas', () => {
+    expect(validateBooking(booking({ partySize: 3 }), restaurant)).toContain('booking b1 partySize must fit within [1, 2]');
+  });
+
+  it('rechaza una combinación de mesas desconectada', () => {
+    expect(validateBooking(booking({ tableIds: ['t1', 't3'], partySize: 4 }), restaurant).some((error) => error.includes('must be combinable'))).toBe(true);
+  });
+});
+
+describe('disponibilidad e inventario único', () => {
+  it('ofrece una mesa individual cuando tiene capacidad', () => {
+    const options = tableAvailability(restaurant, [], [], [], slot(1200, 90), 4);
+    expect(options.some((option) => option.tableIds.length === 1 && option.tableIds[0] === 't2')).toBe(true);
+  });
+
+  it('ofrece combinaciones conectadas para grupos grandes', () => {
+    const options = tableAvailability(restaurant, [], [], [], slot(1200, 90), 6);
+    expect(options.some((option) => option.tableIds.includes('t1') && option.tableIds.includes('t2'))).toBe(true);
+  });
+
+  it('una reserva confirmada retira su mesa mientras solapa', () => {
+    const options = tableAvailability(restaurant, [booking()], [], [], slot(1215, 60), 2);
+    expect(options.some((option) => option.tableIds.includes('t1'))).toBe(false);
+  });
+
+  it('una reserva cancelada no bloquea inventario', () => {
+    const options = tableAvailability(restaurant, [booking({ status: 'cancelled' })], [], [], slot(1215, 60), 2);
+    expect(options.some((option) => option.tableIds.includes('t1'))).toBe(true);
+  });
+
+  it('rangos adyacentes liberan la mesa por ser semiabiertos', () => {
+    const options = tableAvailability(restaurant, [booking()], [], [], slot(1290, 90), 2);
+    expect(options.some((option) => option.tableIds.includes('t1'))).toBe(true);
+  });
+
+  it('INVARIANTE ESTRELLA: publicar un evento retira sus mesas', () => {
+    const before = tableAvailability(restaurant, [], [event()], [], slot(1215, 90), 2);
+    const after = tableAvailability(restaurant, [], [event({ status: 'published' })], [], slot(1215, 90), 2);
+    expect(before.some((option) => option.tableIds.includes('t1'))).toBe(true);
+    expect(after.some((option) => option.tableIds.includes('t1') || option.tableIds.includes('t2'))).toBe(false);
+  });
+
+  it('un evento terminado no bloquea inventario', () => {
+    const options = tableAvailability(restaurant, [], [event({ status: 'done' })], [], slot(1215, 90), 2);
+    expect(options.some((option) => option.tableIds.includes('t1'))).toBe(true);
+  });
+
+  it('una privatización bloqueada retira todas las mesas de su sala', () => {
+    const options = tableAvailability(restaurant, [], [], [hire({ status: 'blocked' })], slot(1215, 90), 6);
+    expect(options.some((option) => option.spaceId === 'private')).toBe(false);
+  });
+
+  it('una solicitud de privatización todavía no bloquea la sala', () => {
+    const options = tableAvailability(restaurant, [], [], [hire()], slot(1215, 90), 6);
+    expect(options.some((option) => option.spaceId === 'private')).toBe(true);
+  });
+
+  it('rechaza tamaño de grupo o slot inválidos con una lista vacía', () => {
+    expect(tableAvailability(restaurant, [], [], [], slot(1200, 90), 0)).toEqual([]);
+    expect(tableAvailability(restaurant, [], [], [], slot(1207, 90), 2)).toEqual([]);
+  });
+
+  it('assertNoDoubleBooking detecta reserva contra evento', () => {
+    expect(() => assertNoDoubleBooking(restaurant, [booking()], [event({ status: 'published' })], [])).toThrow(/double booking/);
+  });
+
+  it('assertNoDoubleBooking permite ocupaciones adyacentes', () => {
+    expect(() =>
+      assertNoDoubleBooking(restaurant, [booking()], [event({ status: 'published', slot: slot(1290, 90) })], []),
+    ).not.toThrow();
+  });
+});
+
+describe('riesgo y depósitos', () => {
+  const heldDeposit = (amountCents = 19000): DepositRecord => ({
+    id: 'd1',
+    breakdown: {
+      policyKind: 'card_hold',
+      partySize: 4,
+      pricePerPersonCents: 9500,
+      menuSubtotalCents: 38000,
+      percentageBps: 5000,
+      amountCents,
+    },
+    termsAcceptedAt: '2026-08-17T18:30:00.000Z',
+    status: 'held',
+  });
+
+  it('clasifica un grupo grande como riesgo alto', () => {
+    expect(riskTier({ partySize: 8, isPeakSlot: false, hasHistory: true, leadDays: 20 })).toBe('high');
+  });
+
+  it('clasifica pico sin historial como riesgo alto', () => {
+    expect(riskTier({ partySize: 2, isPeakSlot: true, hasHistory: false, leadDays: 20 })).toBe('high');
+  });
+
+  it('clasifica una reserva habitual y anticipada como riesgo bajo', () => {
+    expect(riskTier({ partySize: 2, isPeakSlot: false, hasHistory: true, leadDays: 14 })).toBe('low');
+  });
+
+  it('calcula el depósito como porcentaje del menú y conserva el desglose', () => {
+    expect(depositFor({ kind: 'prepay', menuPercentageBps: 2500 }, 4, 9500)).toEqual({
+      policyKind: 'prepay',
+      partySize: 4,
+      pricePerPersonCents: 9500,
+      menuSubtotalCents: 38000,
+      percentageBps: 2500,
+      amountCents: 9500,
+    });
+  });
+
+  it('la política none siempre produce importe cero', () => {
+    expect(depositFor({ kind: 'none', menuPercentageBps: 9000 }, 4, 9500).amountCents).toBe(0);
+  });
+
+  it('limita el porcentaje a 100 % y mantiene céntimos enteros', () => {
+    const result = depositFor({ kind: 'card_hold', menuPercentageBps: 20000 }, 3, 3333);
+    expect(result.percentageBps).toBe(10000);
+    expect(result.amountCents).toBe(9999);
+    expect(Number.isInteger(result.amountCents)).toBe(true);
+  });
+
+  it('sentar al comensal libera el depósito completo', () => {
+    expect(noShowCharge(heldDeposit(), 'seated')).toMatchObject({ status: 'released', chargedCents: 0, releasedCents: 19000 });
+  });
+
+  it('un no-show nunca cobra más que el depósito', () => {
+    expect(noShowCharge(heldDeposit(), 'no_show', 99999)).toMatchObject({ status: 'charged', chargedCents: 19000, releasedCents: 0 });
+  });
+
+  it('un cobro proporcional devuelve el resto liberado', () => {
+    expect(noShowCharge(heldDeposit(), 'no_show', 5000)).toMatchObject({ chargedCents: 5000, releasedCents: 14000 });
+  });
+
+  it('mantiene la retención mientras no hay desenlace', () => {
+    expect(noShowCharge(heldDeposit(), 'confirmed')).toMatchObject({ status: 'held', reason: 'awaiting-outcome' });
+  });
+});
+
+describe('roles del gestor', () => {
+  it('Dirección puede ejecutar todas las operaciones demostradas', () => {
+    expect(['manage_events', 'manage_private_hires', 'seat_booking', 'charge_no_show'].every((action) => canOperate('direction', action as Parameters<typeof canOperate>[1]))).toBe(true);
+  });
+
+  it('Sala puede sentar pero no gestiona cobros, eventos ni privatizaciones', () => {
+    expect(canOperate('floor', 'seat_booking')).toBe(true);
+    expect(canOperate('floor', 'charge_no_show')).toBe(false);
+    expect(canOperate('floor', 'manage_events')).toBe(false);
+    expect(canOperate('floor', 'manage_private_hires')).toBe(false);
+  });
+
+  it('Cocina conserva acceso de lectura sin operaciones', () => {
+    expect(canOperate('kitchen', 'seat_booking')).toBe(false);
+    expect(canOperate('kitchen', 'charge_no_show')).toBe(false);
+    expect(canOperate('kitchen', 'manage_events')).toBe(false);
+  });
+});
+
+describe('catálogo comercial', () => {
+  it('cada capacidad declara evidencia y madurez visible', () => {
+    expect(CAPABILITIES.length).toBeGreaterThan(0);
+    expect(CAPABILITIES.every((capability) => capability.evidence && capability.maturity)).toBe(true);
+  });
+
+  it('el inventario único está demostrado por Solane', () => {
+    expect(CAPABILITIES.find((capability) => capability.id === 'unified-inventory')).toMatchObject({
+      evidence: 'solane',
+      maturity: 'functional-demo',
+    });
   });
 });

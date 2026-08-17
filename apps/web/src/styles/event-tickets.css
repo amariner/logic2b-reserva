@@ -1,0 +1,20 @@
+.et-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.et-card { display: grid; border: 1px solid var(--brand-line); border-radius: 12px; padding: clamp(20px, 3vw, 30px); color: var(--brand-ink); background: var(--brand-card); }
+.et-card > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; border-bottom: 1px solid var(--brand-line); padding-bottom: 22px; }
+.et-card > header p { margin: 0 0 8px; color: var(--brand-accent); font-size: .67rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+.et-card > header h2 { margin: 0; font-family: var(--brand-display); font-size: clamp(1.8rem, 3vw, 2.7rem); font-weight: 550; letter-spacing: -.045em; }
+.et-card > header svg { color: var(--brand-accent); }
+.et-card dl { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; margin: 24px 0; }
+.et-card dt { display: flex; align-items: center; gap: 6px; margin-bottom: 5px; color: var(--brand-muted); font-size: .66rem; }
+.et-card dd { margin: 0; font-size: .83rem; font-weight: 700; }
+.et-price { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; border-radius: 8px; padding: 15px; background: var(--brand-soft); }
+.et-price span { color: var(--brand-muted); font-size: .68rem; }.et-price strong { font-size: 1.65rem; }
+.et-actions { display: flex; align-items: flex-end; gap: 9px; margin-top: 14px; }
+.et-actions label { display: grid; flex: 0 0 90px; gap: 6px; color: var(--brand-muted); font-size: .66rem; font-weight: 650; }
+.et-actions select { min-height: 44px; border: 1px solid var(--brand-line); border-radius: 8px; padding: 8px; background: white; }
+.et-actions button { min-height: 44px; flex: 1; border: 1px solid var(--brand); border-radius: 8px; padding: 8px 14px; color: white; background: var(--brand); font-size: .76rem; font-weight: 700; cursor: pointer; }
+.et-actions button:disabled { border-color: var(--brand-line); color: var(--brand-muted); background: #e9ebf1; cursor: not-allowed; }
+.et-message { min-height: 22px; grid-column: 1 / -1; margin: 0; color: var(--state-success); font-size: .78rem; }
+.et-empty { grid-column: 1 / -1; border: 1px dashed var(--brand-line); border-radius: 10px; padding: 20px; color: var(--brand-muted); }
+@media (max-width: 760px) { .et-list { grid-template-columns: 1fr; }.et-message { grid-column: auto; } }
+@media (max-width: 420px) { .et-card dl { grid-template-columns: 1fr; }.et-actions { align-items: stretch; flex-direction: column; }.et-actions label { width: 100%; flex-basis: auto; }.et-actions button { width: 100%; } }

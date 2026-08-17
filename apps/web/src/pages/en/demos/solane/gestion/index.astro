@@ -1,0 +1,21 @@
+---
+import DashboardDemo from '@logic-reserva/dashboard';
+import '@logic-reserva/dashboard/styles.css';
+import DemoLayout from '../../../../../layouts/DemoLayout.astro';
+import { DEMO_FIXTURES } from '../../../../../data';
+
+const fixture = DEMO_FIXTURES.solane;
+---
+
+<DemoLayout slug="solane" locale="en" title="Solane workspace · Logic Reserva">
+  <DashboardDemo
+    slug="solane"
+    restaurant={fixture.restaurant}
+    initialBookings={fixture.bookings}
+    initialEvents={fixture.events}
+    initialPrivateHires={fixture.privateHires}
+    initialCustomers={fixture.customers}
+    locale="en"
+    client:load
+  />
+</DemoLayout>

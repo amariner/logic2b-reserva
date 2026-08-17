@@ -1,6 +1,7 @@
 ---
 import Base from '../../layouts/Base.astro';
 import { PRODUCT } from '@logic-reserva/config';
+import Landing from '../../components/Landing.astro';
 ---
 
 <Base
@@ -8,12 +9,5 @@ import { PRODUCT } from '@logic-reserva/config';
   title={`${PRODUCT.name} — Reservations and events for your restaurant`}
   description="Your restaurant's own booking engine: tables, menus and events on a single inventory. No per-cover commissions."
 >
-  <main class="shell" style="padding-block: 96px;">
-    <p class="eyebrow">{PRODUCT.lockup}</p>
-    <h1 class="display">Your bookings, your brand, <em>your data</em>.</h1>
-    <p class="muted" style="max-width: 60ch; font-size: 1.1rem;">
-      Tables, menus and events on a single inventory. Commercial demo under construction — phase F0
-      done, the landing arrives in phase F3 of the roadmap.
-    </p>
-  </main>
+  <Landing locale="en" />
 </Base>

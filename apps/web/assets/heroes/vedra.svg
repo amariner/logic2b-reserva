@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Galería ilustrada de Vedra</title>
+  <desc id="desc">Una sala verde, luminosa y vegetal con mesas preparadas.</desc>
+  <rect width="1600" height="1200" fill="#e4e8d3"/>
+  <rect y="800" width="1600" height="400" fill="#c6c9a7"/>
+  <rect x="115" y="95" width="1370" height="590" rx="12" fill="#fcfdf7"/>
+  <rect x="175" y="155" width="370" height="470" fill="#b7d0cd"/>
+  <rect x="615" y="155" width="370" height="470" fill="#b7d0cd"/>
+  <rect x="1055" y="155" width="370" height="470" fill="#b7d0cd"/>
+  <circle cx="310" cy="275" r="82" fill="#f2d485"/>
+  <path d="M175 560C310 420 420 520 545 365V625H175Z" fill="#6f8052"/>
+  <path d="M615 590C730 430 870 520 985 400V625H615Z" fill="#53613b"/>
+  <path d="M1055 530C1180 415 1295 500 1425 350V625H1055Z" fill="#859469"/>
+  <path d="M185 160V625M615 160V625M1055 160V625" stroke="#fcfdf7" stroke-width="18"/>
+  <path d="M460 120C360 210 400 365 305 460" fill="none" stroke="#53613b" stroke-width="26" stroke-linecap="round"/>
+  <ellipse cx="395" cy="245" rx="44" ry="90" transform="rotate(-40 395 245)" fill="#7f9460"/>
+  <ellipse cx="330" cy="380" rx="44" ry="90" transform="rotate(35 330 380)" fill="#9aa66b"/>
+  <path d="M1260 115C1360 230 1315 390 1400 500" fill="none" stroke="#53613b" stroke-width="26" stroke-linecap="round"/>
+  <ellipse cx="1324" cy="270" rx="44" ry="90" transform="rotate(40 1324 270)" fill="#7f9460"/>
+  <ellipse cx="1390" cy="415" rx="44" ry="90" transform="rotate(-35 1390 415)" fill="#9aa66b"/>
+  <ellipse cx="480" cy="885" rx="290" ry="90" fill="#f7f5e9"/>
+  <rect x="450" y="870" width="60" height="260" rx="18" fill="#53613b"/>
+  <ellipse cx="1130" cy="885" rx="290" ry="90" fill="#f7f5e9"/>
+  <rect x="1100" y="870" width="60" height="260" rx="18" fill="#53613b"/>
+  <ellipse cx="390" cy="870" rx="58" ry="28" fill="#ffffff"/>
+  <ellipse cx="570" cy="870" rx="58" ry="28" fill="#ffffff"/>
+  <ellipse cx="1040" cy="870" rx="58" ry="28" fill="#ffffff"/>
+  <ellipse cx="1220" cy="870" rx="58" ry="28" fill="#ffffff"/>
+  <path d="M475 780c-35-70-75-105-120-125M480 780c50-70 90-105 145-120" fill="none" stroke="#53613b" stroke-width="18" stroke-linecap="round"/>
+  <ellipse cx="350" cy="650" rx="32" ry="68" transform="rotate(-48 350 650)" fill="#9aa66b"/>
+  <ellipse cx="628" cy="655" rx="32" ry="68" transform="rotate(50 628 655)" fill="#7f9460"/>
+  <circle cx="480" cy="795" r="22" fill="#d8a65a"/>
+  <path d="M805 730v180M765 770h80" stroke="#303923" stroke-width="18" stroke-linecap="round"/>
+</svg>

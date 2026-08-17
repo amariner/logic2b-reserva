@@ -14,7 +14,13 @@
     "check": "turbo run typecheck lint test build",
     "e2e": "pnpm build && playwright test",
     "images": "node scripts/images.mjs",
-    "deploy": "pnpm --filter @logic-reserva/worker deploy"
+    "deploy": "pnpm --filter @logic-reserva/worker deploy:production",
+    "deploy:dry-run": "pnpm --filter @logic-reserva/worker deploy:production:dry-run",
+    "deploy:preview": "pnpm --filter @logic-reserva/worker deploy:preview",
+    "deploy:preview:dry-run": "pnpm --filter @logic-reserva/worker deploy:preview:dry-run",
+    "verify:public": "pnpm verify:public:preview && pnpm verify:public:production",
+    "verify:public:preview": "node apps/worker/scripts/verify-public.mjs https://logic-reserva-preview.marinerandreu.workers.dev",
+    "verify:public:production": "node apps/worker/scripts/verify-public.mjs https://reserva.logic2b.com"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",

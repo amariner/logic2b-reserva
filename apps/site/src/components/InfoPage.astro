@@ -1,0 +1,58 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
+import Base from '../layouts/Base.astro';
+import { INFO_PAGES, SITE_CONTENT, type InfoPageKey } from '../content';
+
+interface Props { locale?: Locale; page: InfoPageKey; path: string }
+
+const { locale = 'es', page, path } = Astro.props;
+const content = INFO_PAGES[locale][page];
+const shared = SITE_CONTENT[locale];
+const prefix = locale === 'en' ? '/en' : '';
+const languageHref = locale === 'en' ? path : `/en${path}`;
+const contact = logic2bContact(locale, 'commercial');
+const ui = locale === 'en'
+  ? { back: 'Back to the demo', context: 'See it in context', title: 'The useful answer starts with your service.', action: 'Configure your scope' }
+  : { back: 'Volver a la demo', context: 'Míralo en contexto', title: 'La respuesta útil empieza por tu servicio.', action: 'Configura tu alcance' };
+---
+
+<Base locale={locale} title={`${content.title} — Logic Reserva`} description={content.intro}>
+  <header class="info-nav">
+    <div class="shell">
+      <a class="info-brand" href={`${prefix}/`}><span>R</span>Logic Reserva</a>
+      <div><a href={languageHref}>{shared.nav.language}</a><a class="pill" href={contact.href} target="_blank" rel="noreferrer">{shared.nav.contact}</a></div>
+    </div>
+  </header>
+  <main class="shell info-main">
+    <a class="back-link" href={`${prefix}/`}><span aria-hidden="true">←</span> {ui.back}</a>
+    <div class="info-grid">
+      <section>
+        <p class="eyebrow">{content.eyebrow}</p>
+        <h1 class="display">{content.title}</h1>
+        <p class="info-intro">{content.intro}</p>
+      </section>
+      <ol class="info-points">
+        {content.points.map((point, index) => <li><span>0{index + 1}</span><p>{point}</p></li>)}
+      </ol>
+    </div>
+    <aside class="info-cta">
+      <div><p class="eyebrow">{ui.context}</p><h2>{ui.title}</h2></div>
+      <a class="pill" href={`${prefix}/#configurador`}>{ui.action}</a>
+    </aside>
+  </main>
+  <footer class="info-footer"><div class="shell"><span>© 2026 Logic2B</span><nav><a href={`${prefix}/legal/`}>{shared.footer.legal}</a><a href={`${prefix}/privacidad/`}>{shared.footer.privacy}</a><a href={`${prefix}/cookies/`}>{shared.footer.cookies}</a></nav></div></footer>
+</Base>
+
+<style>
+  .info-nav { height: 64px; border-bottom: 1px solid var(--line); background: rgb(246 245 244 / 94%); }
+  .info-nav .shell, .info-footer .shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
+  .info-brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; }.info-brand span { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--ink); border-radius: 8px; }
+  .info-nav div div { display: flex; align-items: center; gap: 12px; }.info-nav div div > a:first-child { padding: 8px; color: var(--slate); font-size: .84rem; text-decoration: none; }.info-nav .pill { min-height: 38px; }
+  .info-main { padding-block: clamp(64px, 9vw, 120px); }.back-link { display: inline-block; margin-bottom: clamp(60px, 9vw, 110px); color: var(--slate); font-size: .84rem; text-decoration: none; }.back-link:hover { color: var(--ink); }
+  .info-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(50px, 10vw, 150px); }.info-grid h1 { max-width: 850px; }.info-intro { max-width: 62ch; margin: 30px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.6; }
+  .info-points { margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }.info-points li { display: grid; grid-template-columns: 42px 1fr; gap: 14px; border-bottom: 1px solid var(--line); padding: 22px 0; }.info-points span { color: var(--color-notion-blue); font-size: .74rem; font-weight: 700; }.info-points p { margin: 0; font-size: 1.05rem; line-height: 1.45; }
+  .info-cta { display: flex; align-items: flex-end; justify-content: space-between; gap: 30px; margin-top: clamp(80px, 12vw, 160px); border-radius: 12px; padding: clamp(28px, 5vw, 56px); background: var(--color-marigold); }.info-cta h2 { max-width: 720px; margin: 0; font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -.045em; line-height: 1; }.info-cta .eyebrow { color: rgb(0 0 0 / 55%); }.info-cta .pill { flex: 0 0 auto; }
+  .info-footer { height: 88px; border-top: 1px solid var(--line); color: var(--slate); background: white; font-size: .78rem; }.info-footer nav { display: flex; gap: 18px; }.info-footer a { text-decoration: none; }
+  @media (max-width: 760px) { .info-nav .pill { display: none; }.info-grid { grid-template-columns: 1fr; }.info-main { padding-top: 44px; }.back-link { margin-bottom: 58px; }.info-cta { align-items: flex-start; flex-direction: column; }.info-footer .shell { align-items: flex-start; flex-direction: column; justify-content: center; }.info-footer nav { flex-wrap: wrap; } }
+</style>

@@ -1,0 +1,12 @@
+---
+import DashboardDemo from '@logic-reserva/dashboard';
+import '@logic-reserva/dashboard/styles.css';
+import DemoLayout from '../../../../layouts/DemoLayout.astro';
+import { DEMO_FIXTURES } from '../../../../data';
+
+const fixture = DEMO_FIXTURES.vedra;
+---
+
+<DemoLayout slug="vedra" locale="es" title="Gestor Vedra · Logic Reserva">
+  <DashboardDemo slug="vedra" restaurant={fixture.restaurant} initialBookings={fixture.bookings} locale="es" client:load />
+</DemoLayout>

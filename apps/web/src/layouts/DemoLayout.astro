@@ -2,6 +2,7 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/source-serif-4';
 import '@logic-reserva/ui/theme.css';
+import '../styles/demos.css';
 import type { DemoSlug, Locale } from '@logic-reserva/config';
 
 interface Props {
@@ -23,6 +24,7 @@ const notice =
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
   </head>
   <body class={`demo-body ${slug}`}>
@@ -35,8 +37,8 @@ const notice =
   .demo-notice {
     margin: 0;
     padding: 8px 16px;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--brand-notice, var(--ink));
+    color: var(--brand-notice-ink, #fff);
     font-size: 0.78rem;
     text-align: center;
   }

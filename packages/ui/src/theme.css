@@ -1,21 +1,63 @@
-/* Logic Reserva · tokens de producto (contrato visual en docs/DESIGN.md)
-   Base editorial de la familia logic2b con acento burdeos de restauración.
-   Los temas de marca ficticia (Brasca/Vedra/Solane) redefinen solo las
-   variables --brand-* en apps/web/src/styles/demos.css. */
+/* Logic Reserva · tokens de producto (contrato visual en docs/DESIGN.md).
+   Papel cálido, tinta y acentos planos. Las marcas ficticias redefinen solo
+   las variables --brand-* en apps/web/src/styles/demos.css. */
 :root {
-  --ink: #1a1719;
-  --paper: #ffffff;
-  --mist: #f4f2f1;
-  --fog: #fbfafa;
-  --slate: #7b777a;
-  --ash: #999497;
-  --smoke: #aaa5a8;
-  --blush: #f7e2dd;
-  --bordeaux: #5d1a2a;
-  --line: #ebe8e9;
+  --color-notion-blue: #0075de;
+  --color-paper-warmth: #f6f5f4;
+  --color-pure-white: #ffffff;
+  --color-ink-black: #000000;
+  --color-charcoal: #111111;
+  --color-stone: #757575;
+  --color-graphite: #615d59;
+  --color-slate: #696969;
+  --color-sky-tint: #e6f3fe;
+  --color-marigold: #ffb110;
+  --color-coral: #f64932;
+  --color-saffron: #e89d01;
+  --color-vermillion: #e32d14;
+  --color-mocha: #b18164;
+  --color-signal-blue: #097fe8;
+  --color-sky-wash: #62aef0;
+  --color-midnight-ink: #02093a;
+
+  --ink: var(--color-ink-black);
+  --paper: var(--color-paper-warmth);
+  --mist: var(--color-pure-white);
+  --fog: #fbfaf9;
+  --slate: var(--color-graphite);
+  --ash: var(--color-stone);
+  --smoke: rgb(0 0 0 / 40%);
+  --blush: #f6d5b8;
+  --bordeaux: var(--color-notion-blue);
+  --line: rgb(0 0 0 / 8%);
   --serif: 'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
   --sans: 'Inter Variable', Inter, system-ui, sans-serif;
-  --shadow-artifact: 0 0 0 1px rgb(43 4 23 / .05), 0 20px 25px -5px rgb(0 0 0 / .10), 0 8px 10px -6px rgb(0 0 0 / .10);
+  --page-max-width: 1440px;
+  --section-gap: 80px;
+  --card-padding: 24px;
+  --radius-small: 4px;
+  --radius-buttons: 8px;
+  --radius-cards: 12px;
+  --radius-pills: 9999px;
+  --duration-interaction: 200ms;
+  --ease-interaction: ease;
+  --shadow-nav: 0 .7px 1.462px rgb(0 0 0 / 1.5%), 0 3px 9px rgb(0 0 0 / 3%);
+  --shadow-artifact: 0 4px 12px rgb(0 0 0 / 10%);
+
+  /* Estados operativos: siempre se acompañan de texto o icono. */
+  --state-table-free: #2f7d4a;
+  --state-table-free-bg: #e7f4ea;
+  --state-table-occupied: #9b5b08;
+  --state-table-occupied-bg: #fff0cf;
+  --state-table-event: #9f271b;
+  --state-table-event-bg: #fee5e1;
+  --state-table-private: #323c91;
+  --state-table-private-bg: #e8eafa;
+  --state-table-unavailable: #696969;
+  --state-table-unavailable-bg: #ecebea;
+  --state-success: #237a43;
+  --state-warning: #936007;
+  --state-danger: #b52a1d;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -25,24 +67,43 @@ button, input, select, textarea { font: inherit; }
 a { color: inherit; }
 img { max-width: 100%; }
 
-.shell { width: min(1200px, calc(100% - 40px)); margin-inline: auto; }
+.shell { width: min(var(--page-max-width), calc(100% - 48px)); margin-inline: auto; }
 .eyebrow { margin: 0 0 14px; color: var(--ash); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; }
-.display, .heading { margin: 0; font-family: var(--serif); font-weight: 400; letter-spacing: -.025em; }
-.display { font-size: clamp(3.3rem, 7.5vw, 5.65rem); line-height: .96; }
-.heading { font-size: clamp(2.5rem, 5.6vw, 4rem); line-height: 1.02; }
+.display, .heading { margin: 0; font-family: var(--sans); font-weight: 600; }
+.display { font-size: clamp(3.3rem, 7.5vw, 6rem); line-height: 1.04; letter-spacing: -.048em; }
+.heading { font-size: clamp(2.5rem, 5.6vw, 3.375rem); line-height: 1.04; letter-spacing: -.035em; }
 .heading em, .display em { font-weight: 400; }
 .muted { color: var(--slate); }
-.pill { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--ink); border-radius: 999px; padding: 0 20px; color: var(--paper); background: var(--ink); text-decoration: none; cursor: pointer; }
-.pill.ghost { color: var(--ink); background: transparent; }
+.pill { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: var(--radius-buttons); padding: 6px 15px; color: var(--color-pure-white); background: var(--color-notion-blue); font-size: .875rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: background-color var(--duration-interaction) var(--ease-interaction), transform var(--duration-interaction) var(--ease-interaction); }
+.pill:hover { background: #0068c7; }
+.pill.ghost { color: var(--color-notion-blue); background: var(--color-sky-tint); }
+.pill.ghost:hover { background: #d7ebfc; }
 .pill:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--bordeaux); outline-offset: 3px; }
-.card { border-radius: 24px; background: var(--mist); }
-.artifact { border-radius: 20px; background: var(--paper); box-shadow: var(--shadow-artifact); }
+.card { border: 1px solid var(--line); border-radius: var(--radius-cards); background: var(--mist); }
+.artifact { border: 1px solid var(--line); border-radius: var(--radius-cards); background: var(--color-pure-white); box-shadow: var(--shadow-artifact); }
 .status { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; color: var(--slate); }
 .status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ''; }
+.badge { display: inline-flex; min-height: 28px; align-items: center; gap: 6px; border-radius: var(--radius-pills); padding: 4px 10px; color: var(--badge-color, var(--slate)); background: var(--badge-bg, var(--fog)); font-size: .75rem; font-weight: 600; line-height: 1; }
+.badge[data-tone='success'] { --badge-color: var(--state-success); --badge-bg: var(--state-table-free-bg); }
+.badge[data-tone='warning'] { --badge-color: var(--state-warning); --badge-bg: var(--state-table-occupied-bg); }
+.badge[data-tone='danger'] { --badge-color: var(--state-danger); --badge-bg: var(--state-table-event-bg); }
+.badge[data-tone='info'] { --badge-color: var(--state-table-private); --badge-bg: var(--state-table-private-bg); }
+.table-state { --table-state-color: var(--state-table-unavailable); --table-state-bg: var(--state-table-unavailable-bg); display: inline-flex; min-height: 44px; align-items: center; gap: 8px; border: 1px solid color-mix(in srgb, var(--table-state-color) 24%, transparent); border-radius: var(--radius-buttons); padding: 8px 12px; color: var(--table-state-color); background: var(--table-state-bg); font-size: .875rem; font-weight: 600; }
+.table-state::before { width: 9px; height: 9px; flex: 0 0 auto; border: 2px solid currentColor; border-radius: 50%; content: ''; }
+.table-state[data-state='free'] { --table-state-color: var(--state-table-free); --table-state-bg: var(--state-table-free-bg); }
+.table-state[data-state='occupied'] { --table-state-color: var(--state-table-occupied); --table-state-bg: var(--state-table-occupied-bg); }
+.table-state[data-state='event'] { --table-state-color: var(--state-table-event); --table-state-bg: var(--state-table-event-bg); }
+.table-state[data-state='private'] { --table-state-color: var(--state-table-private); --table-state-bg: var(--state-table-private-bg); }
+.data-table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-cards); background: var(--color-pure-white); }
+.data-table { width: 100%; border-collapse: collapse; font-size: .875rem; text-align: left; }
+.data-table th { padding: 12px 16px; color: rgb(0 0 0 / 56%); background: var(--fog); font-size: .75rem; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; }
+.data-table td { border-top: 1px solid var(--line); padding: 14px 16px; color: rgb(0 0 0 / 82%); }
+.data-table tbody tr { transition: background-color var(--duration-interaction) var(--ease-interaction); }
+.data-table tbody tr:hover { background: rgb(0 117 222 / 4%); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
 
 @media (max-width: 640px) {
-  .shell { width: min(100% - 28px, 1200px); }
+  .shell { width: min(100% - 28px, var(--page-max-width)); }
   .display { font-size: clamp(3rem, 15vw, 4.3rem); }
 }
 

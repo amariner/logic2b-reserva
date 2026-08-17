@@ -1,7 +1,8 @@
-interface Env {
-  ASSETS: Fetcher;
-  LEADS_TRANSPORT?: string;
-}
+import { handleLead, type LeadEnv } from './leads';
+
+export { LeadCoordinator } from './lead-coordinator';
+
+interface Env extends LeadEnv { ASSETS: Fetcher; }
 
 const securityHeaders = {
   'x-content-type-options': 'nosniff',
@@ -14,12 +15,11 @@ export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
     if (url.pathname === '/api/leads') {
-      // F12 implementa el endpoint real (Zod + honeypot + rate-limit + Resend).
-      // Hasta entonces falla en cerrado: nunca finge una entrega.
-      return new Response(JSON.stringify({ error: 'leads_disabled' }), {
-        status: 503,
-        headers: { 'content-type': 'application/json', ...securityHeaders },
-      });
+      if (request.method !== 'POST') return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { 'content-type': 'application/json', allow: 'POST', ...securityHeaders } });
+      const response = await handleLead(request, env);
+      const headers = new Headers(response.headers);
+      Object.entries(securityHeaders).forEach(([key, value]) => headers.set(key, value));
+      return new Response(response.body, { status: response.status, headers });
     }
     if (url.pathname.startsWith('/api/'))
       return new Response(JSON.stringify({ error: 'not_found' }), {

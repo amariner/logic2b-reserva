@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1200" viewBox="0 0 1600 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Interior ilustrado de Brasca</title>
+  <desc id="desc">Una mesa puesta frente a un horno de leña en tonos terracota.</desc>
+  <rect width="1600" height="1200" fill="#f4dfd2"/>
+  <rect y="760" width="1600" height="440" fill="#d9a37d"/>
+  <path d="M0 780L1600 700V1200H0Z" fill="#c87f56"/>
+  <rect x="1030" y="120" width="390" height="650" rx="12" fill="#6f2b1b"/>
+  <rect x="1090" y="250" width="270" height="390" rx="135" fill="#2d1a13"/>
+  <path d="M1140 615C1175 520 1200 480 1240 420C1270 500 1320 545 1305 615Z" fill="#d27a3c"/>
+  <path d="M1190 610C1210 560 1225 535 1245 505C1263 552 1280 575 1275 610Z" fill="#ffd08b"/>
+  <rect x="80" y="100" width="690" height="470" rx="12" fill="#fff7ed"/>
+  <rect x="130" y="150" width="590" height="370" fill="#96b0a2"/>
+  <circle cx="250" cy="255" r="82" fill="#f5c96d"/>
+  <path d="M130 470C260 335 370 415 480 350C570 300 640 350 720 280V520H130Z" fill="#53613b"/>
+  <path d="M130 470C270 400 380 480 500 420C590 375 655 400 720 365V520H130Z" fill="#82905f"/>
+  <ellipse cx="660" cy="850" rx="400" ry="125" fill="#8a422d"/>
+  <rect x="625" y="830" width="70" height="290" rx="20" fill="#6f2b1b"/>
+  <ellipse cx="660" cy="805" rx="345" ry="110" fill="#f7ead8"/>
+  <ellipse cx="520" cy="790" rx="70" ry="34" fill="#ffffff"/>
+  <ellipse cx="805" cy="790" rx="70" ry="34" fill="#ffffff"/>
+  <circle cx="520" cy="780" r="20" fill="#a3472c"/>
+  <circle cx="805" cy="780" r="20" fill="#53613b"/>
+  <rect x="642" y="650" width="36" height="115" rx="18" fill="#6f2b1b"/>
+  <path d="M594 674C635 615 688 615 730 674C684 695 638 695 594 674Z" fill="#d27a3c"/>
+  <circle cx="290" cy="890" r="90" fill="#2d1a13"/>
+  <rect x="250" y="900" width="80" height="230" rx="26" fill="#2d1a13"/>
+  <circle cx="1030" cy="900" r="90" fill="#2d1a13"/>
+  <rect x="990" y="900" width="80" height="230" rx="26" fill="#2d1a13"/>
+  <path d="M875 125c55 40 85 95 92 165" fill="none" stroke="#a3472c" stroke-width="20" stroke-linecap="round"/>
+  <path d="M905 110l-50 5 18 47" fill="none" stroke="#a3472c" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
