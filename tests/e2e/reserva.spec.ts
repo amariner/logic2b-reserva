@@ -544,10 +544,10 @@ test.describe('demo Vedra · nivel Gestión', () => {
     await page.getByRole('button', { name: 'Confirmar reserva demo' }).click();
 
     await expect(page.locator('[data-booking-success]')).toContainText('Mesa confirmada en esta demo.');
-    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('logic-reserva-demo-vedra-v1') ?? '{}') as { version?: number; bookings?: { guest?: { name?: string }; source?: string; menuId?: string }[] });
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('logic-reserva-demo-vedra-v1') ?? '{}') as { version?: number; bookings?: { guest?: { name?: string }; source?: string; menuId?: string; bookedAt?: string }[] });
     expect(stored.version).toBe(1);
     expect(stored.bookings).toEqual(expect.arrayContaining([
-      expect.objectContaining({ guest: expect.objectContaining({ name: 'Marina Widget' }), source: 'widget', menuId: 'vedra-mediodia' }),
+      expect.objectContaining({ guest: expect.objectContaining({ name: 'Marina Widget' }), source: 'widget', menuId: 'vedra-mediodia', bookedAt: expect.any(String) }),
     ]));
 
     await page.getByRole('link', { name: 'Abrir la reserva en el gestor' }).click();
@@ -777,9 +777,10 @@ test.describe('demo Solane · nivel Inteligente', () => {
       await gateway.locator('[data-confirm-deposit]').click();
       await expect(page.locator('[data-solane-booking-success]')).toContainText('Depósito retenido solo en esta demo');
 
-      const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}') as { bookings?: { guest?: { name?: string }; deposit?: { termsAcceptedAt?: string; status?: string; breakdown?: { percentageBps?: number; amountCents?: number } } }[] }, storageKey);
+      const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}') as { bookings?: { guest?: { name?: string }; bookedAt?: string; deposit?: { termsAcceptedAt?: string; status?: string; breakdown?: { percentageBps?: number; amountCents?: number } } }[] }, storageKey);
       expect(stored.bookings).toEqual(expect.arrayContaining([expect.objectContaining({
         guest: expect.objectContaining({ name: guestName }),
+        bookedAt: expect.any(String),
         deposit: expect.objectContaining({ status: 'held', termsAcceptedAt: expect.any(String), breakdown: expect.objectContaining({ percentageBps: 5000, amountCents: 12500 }) }),
       })]));
     };
@@ -992,6 +993,46 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await expect(page.locator('[data-report-mode="management"] [data-report-marketplace]')).toHaveCount(0);
     await expect(page.locator('[data-report-mode="management"] [data-ai-decision-support]')).toHaveCount(0);
     await expect(page.locator('[data-report-mode="management"] [data-automation-center]')).toHaveCount(0);
+  });
+
+  test('riesgo de no-show: orden explicable, bilingüe y consultivo sin tocar depósitos', async ({ page }) => {
+    const networkWrites: string[] = [];
+    page.on('request', (request) => {
+      if (request.method() !== 'GET') networkWrites.push(`${request.method()} ${request.url()}`);
+    });
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto('/demos/solane/gestion/?vista=informes', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('logic-reserva-demo-solane-v1'));
+    await page.reload({ waitUntil: 'networkidle' });
+
+    const board = page.locator('[data-no-show-risk-board]');
+    await expect(board).toHaveAttribute('data-risk-basis', 'deterministic-demo');
+    await expect(board).toContainText('no es una probabilidad');
+    const marc = board.locator('[data-risk-booking="sol-r2"]');
+    const lucia = board.locator('[data-risk-booking="sol-r1"]');
+    await expect(marc).toHaveAttribute('data-risk-tier', 'high');
+    await expect(marc.locator('[data-risk-score]')).toHaveText('80/100');
+    await expect(marc.locator('[data-risk-signal="channel_phone"]')).toContainText('+10');
+    await expect(marc.locator('[data-risk-signal="history_first_visit"]')).toContainText('+15');
+    await expect(marc.locator('[data-risk-signal="lead_short"]')).toContainText('+10');
+    await expect(marc.locator('[data-risk-action="manual_review"]')).toHaveText('Revisión manual prioritaria');
+    await expect(lucia).toHaveAttribute('data-risk-tier', 'low');
+    await expect(lucia.locator('[data-risk-score]')).toHaveText('30/100');
+    await expect(lucia.locator('[data-risk-signal="history_repeat_attendance"]')).toContainText('-25');
+    await expect(board.locator('button')).toHaveCount(0);
+
+    const depositsBefore = await page.evaluate(() => JSON.stringify((JSON.parse(localStorage.getItem('logic-reserva-demo-solane-v1') ?? '{}') as { bookings?: { deposit?: unknown }[] }).bookings?.map((booking) => booking.deposit) ?? []));
+    await page.locator('[data-role-selector]').selectOption('kitchen');
+    await expect(board).toBeVisible();
+    const depositsAfter = await page.evaluate(() => JSON.stringify((JSON.parse(localStorage.getItem('logic-reserva-demo-solane-v1') ?? '{}') as { bookings?: { deposit?: unknown }[] }).bookings?.map((booking) => booking.deposit) ?? []));
+    expect(depositsAfter).toBe(depositsBefore);
+
+    await page.goto('/en/demos/solane/gestion/?vista=informes', { waitUntil: 'networkidle' });
+    const englishBoard = page.locator('[data-no-show-risk-board]');
+    await expect(englishBoard).toContainText('is not a probability');
+    await expect(englishBoard.locator('[data-risk-booking="sol-r2"] [data-risk-action="manual_review"]')).toHaveText('Priority manual review');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+    expect(networkWrites).toEqual([]);
   });
 
   test('guion de demo comercial: cinco pasos Solane de una tirada', async ({ page }) => {

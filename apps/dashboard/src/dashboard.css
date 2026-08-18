@@ -352,6 +352,17 @@
 .rd-report-card--ai { border-color: color-mix(in srgb, var(--brand) 36%, var(--brand-line)); background: color-mix(in srgb, var(--brand-soft) 38%, white); }.rd-report-card > header div small { display: block; margin-top: 3px; color: var(--brand-muted); font-size: .52rem; line-height: 1.35; }
 .rd-decision-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }.rd-decision-list section { display: grid; grid-template-columns: 24px 1fr; gap: 8px; border: 1px solid var(--brand-line); border-radius: 8px; padding: 11px; background: white; }.rd-decision-list section > span { color: var(--brand); font-size: .52rem; font-weight: 800; }.rd-decision-list b { display: block; font-size: .63rem; line-height: 1.35; }.rd-decision-list p { margin: 5px 0 0; color: var(--brand-muted); font-size: .54rem; line-height: 1.45; }
 .rd-automation-list { display: grid; gap: 8px; }.rd-automation-list > div { display: grid; gap: 7px; border-bottom: 1px solid var(--brand-line); padding-bottom: 8px; }.rd-automation-list > div:last-child { border-bottom: 0; padding-bottom: 0; }.rd-automation-list p { margin: 0; font-size: .59rem; line-height: 1.4; }.rd-automation-list .badge { width: max-content; font-size: .48rem; }
+.rd-risk-board { border-color: color-mix(in srgb, var(--brand) 30%, var(--brand-line)); background: color-mix(in srgb, var(--brand-soft) 24%, white); }
+.rd-risk-intro { max-width: 82ch; margin: -4px 0 16px; color: var(--brand-muted); font-family: var(--serif); font-size: .72rem; line-height: 1.5; }
+.rd-risk-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.rd-risk-card { min-width: 0; border: 1px solid var(--brand-line); border-radius: 10px; padding: 15px; background: white; }
+.rd-risk-card > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.rd-risk-card h3 { margin: 0; font-size: .9rem; }.rd-risk-card header p { margin: 5px 0 0; color: var(--brand-muted); font-size: .6rem; }
+.rd-risk-card dl { display: grid; grid-template-columns: .7fr .7fr 1.25fr 1.15fr; gap: 7px; margin: 13px 0; border-top: 0; padding-top: 0; }
+.rd-risk-card dl > div { min-width: 0; border-radius: 7px; padding: 8px; background: #f7f8f2; }.rd-risk-card dt { color: var(--brand-muted); font-size: .51rem; font-weight: 700; text-transform: uppercase; }.rd-risk-card dd { overflow-wrap: anywhere; margin: 4px 0 0; font-size: .63rem; font-weight: 750; }
+.rd-risk-card h4 { margin: 0 0 7px; color: var(--brand-muted); font-size: .55rem; text-transform: uppercase; }
+.rd-risk-card ul { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; padding: 0; list-style: none; }.rd-risk-card li { display: flex; min-height: 28px; align-items: center; gap: 6px; border: 1px solid var(--brand-line); border-radius: 99px; padding: 4px 7px; color: var(--brand-muted); background: #fbfcf8; font-size: .54rem; }.rd-risk-card li b { color: var(--brand); }
+.rd-risk-card > footer { display: grid; gap: 4px; margin-top: 13px; border-top: 1px solid var(--brand-line); padding-top: 10px; }.rd-risk-card > footer span { color: var(--brand-muted); font-size: .53rem; }.rd-risk-card > footer b { font-size: .66rem; }
 
 @media (max-width: 1100px) {
   .rd-app { grid-template-columns: 204px minmax(0, 1fr); }
@@ -372,6 +383,7 @@
   .rd-report-grid { grid-template-columns: 1fr 1fr; }
   .rd-report-card--wide { grid-column: 1 / -1; }
   .rd-decision-list { grid-template-columns: 1fr; }
+  .rd-risk-list { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -459,6 +471,7 @@
   .rd-export-action { width: 100%; justify-content: center; }
   .rd-crm-stats, .rd-crm-context, .rd-report-grid { grid-template-columns: 1fr; }
   .rd-report-card--wide { grid-column: 1; }
+  .rd-risk-card dl { grid-template-columns: 1fr 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {

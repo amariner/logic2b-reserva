@@ -123,6 +123,7 @@ export default function SolaneBookingWidget({ restaurant, initialBookings, initi
       menuId,
       ...(depositBreakdown.amountCents === 0 ? {} : { deposit: { id: `solane-deposit-${Date.now()}`, breakdown: { ...depositBreakdown }, termsAcceptedAt, status: 'held' as const } }),
       source: 'widget',
+      bookedAt: new Date().toISOString(),
     };
     if (booking.deposit === undefined) {
       saveJourney(booking);

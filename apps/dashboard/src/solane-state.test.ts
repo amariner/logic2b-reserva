@@ -112,10 +112,11 @@ describe('estado Solane versionado', () => {
   });
 
   it('fusiona cambios almacenados con fixtures', () => {
-    const web = { ...booking('web-1'), source: 'widget' as const };
+    const web = { ...booking('web-1'), source: 'widget' as const, bookedAt: '2026-08-18T12:00:00.000Z' };
     const published = { ...event(), status: 'published' as const };
     const state = parseSolaneStored(JSON.stringify({ version: 1, bookings: [web], events: [published], sales: [] }), [booking()], [event()]);
     expect(state.bookings.map((item) => item.id)).toEqual(['booking-1', 'web-1']);
+    expect(state.bookings.at(-1)?.bookedAt).toBe('2026-08-18T12:00:00.000Z');
     expect(state.events[0].status).toBe('published');
   });
 
@@ -135,6 +136,11 @@ describe('estado Solane versionado', () => {
     const corrupt = depositedBooking('corrupt');
     corrupt.deposit!.breakdown.amountCents = 99999;
     expect(parseSolaneStored(JSON.stringify({ version: 1, bookings: [corrupt], events: [], sales: [] })).bookings).toEqual([]);
+  });
+
+  it('mantiene compatible v1 sin bookedAt y rechaza una fecha de creación corrupta', () => {
+    expect(parseSolaneStored(JSON.stringify({ version: 1, bookings: [booking('legacy')], events: [], sales: [] })).bookings[0]?.bookedAt).toBeUndefined();
+    expect(parseSolaneStored(JSON.stringify({ version: 1, bookings: [{ ...booking('bad-date'), bookedAt: 'not-a-date' }], events: [], sales: [] })).bookings).toEqual([]);
   });
 
   it('descarta eventos corruptos y ventas huérfanas', () => {

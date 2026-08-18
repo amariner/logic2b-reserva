@@ -101,6 +101,7 @@ export default function BookingWidget({ restaurant, initialBookings, locale = 'e
       guest: { name: name.trim(), email: email.trim(), ...(phone.trim() ? { phone: phone.trim() } : {}) },
       ...(menuId ? { menuId } : {}),
       source: 'widget',
+      bookedAt: new Date().toISOString(),
     });
   };
 

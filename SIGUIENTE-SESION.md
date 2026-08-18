@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F16 completas en local ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** promover la predicción explicable de no-show del plan Inteligente a F17
+**Fase actual:** F0–F17 completas en local ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** publicar F15–F17 y preparar F18 de capturas guiadas de venta
 
 ## Siguiente paso concreto
 
-1. Convertir «Predicción de no-show con IA» en una fase formal y acotarla como recomendación determinista, explicable y completamente local.
-2. Derivar señales auditables de canal, histórico, tamaño de grupo, antelación y franja; no cambiar el depósito ya aceptado ni inventar precisión estadística.
-3. Mostrar evidencia y límites en Solane, con copy es/en, permisos actuales y cobertura de dominio/E2E sin modelos, agentes, proveedores ni nuevas escrituras de red.
+1. Ejecutar el E2E integral, consolidar F15–F17 sobre `main`, publicar GitHub y desplegar el Worker de producción con verificación pública por GET.
+2. Promover a F18 el paquete de capturas guiadas de venta: definir escenas reproducibles para Brasca, Vedra y Solane sin duplicar el tour operativo ni introducir datos reales.
+3. Automatizar el recorrido sobre el bundle local, generar artefactos comerciales versionables y documentar su actualización sin alterar la frontera demo/real.
 
 ## Bloqueos / avisos
 
@@ -28,6 +28,7 @@
 - El contrato local de F12, la arquitectura de tres planes, F14 y F15 están completos: 57 tests de dominio, 41 de dashboard, 10 de fixtures, 10 de Worker, `pnpm check` 28/28 y `pnpm e2e` 46/46. Los dry-runs de preview y producción aceptan 121 assets. No reimplementar el transporte ni probar Resend en preview.
 - F15 añade rutas bilingües de bonos y `?vista=bonos`: emisión y canje exclusivamente locales, valor ficticio auditable, Dirección/Sala operan y Cocina consulta. ADR-012 contiene los límites.
 - F16 añade navegación inferior compartida y agenda vertical de Vedra en móvil; las vistas secundarias siguen disponibles en «Más» y el escritorio conserva su barra lateral y cronología. Gates: `pnpm check` 28/28 y `pnpm e2e` 48/48.
+- F17 añade `bookedAt?` compatible con localStorage v1 y un score operativo local, determinista y explicable en Informes de Solane. No es probabilidad, no recalcula depósitos y no ejecuta acciones; ADR-013 fija la frontera. Gates: 62 dominio, 45 dashboard, 10 fixtures, 10 Worker, `pnpm check` 28/28 y `pnpm e2e` 49/49.
 - `pnpm verify:public` revalida preview y producción sin enviar leads; los workflows lo ejecutan después del deploy.
 - Las últimas ejecuciones de `pnpm verify:public:production` y `pnpm verify:public:preview` fueron verdes el 2026-08-18; ambos entornos sirven el bundle nuevo. Heroes v2, F13, accesibilidad y F14 ya no están pendientes en el worktree.
 - F13 está publicado con el nuevo copy es/en, el rediseño de la landing, las páginas comerciales ampliadas, el SEO técnico y el endurecimiento de accesibilidad. El gate conjunto mantiene `pnpm check` 28/28 y 45 escenarios E2E.

@@ -68,9 +68,10 @@ describe('estado Vedra versionado', () => {
   });
 
   it('fusiona fixtures con reservas web almacenadas', () => {
-    const website = { ...fixture('web-1'), guest: { name: 'Web Guest' }, source: 'widget' as const };
+    const website = { ...fixture('web-1'), guest: { name: 'Web Guest' }, source: 'widget' as const, bookedAt: '2026-08-18T12:00:00.000Z' };
     const state = parseVedraStored(JSON.stringify({ version: DEMO_STATE_VERSION, bookings: [website] }), [fixture()]);
     expect(state.bookings.map((booking) => booking.id)).toEqual(['fixture-1', 'web-1']);
+    expect(state.bookings.at(-1)?.bookedAt).toBe('2026-08-18T12:00:00.000Z');
   });
 
   it('migra de forma compatible el payload F5 que solo tenía reservas', () => {
@@ -93,6 +94,12 @@ describe('estado Vedra versionado', () => {
     const invalid = { ...fixture('bad'), partySize: -3 };
     const state = parseVedraStored(JSON.stringify({ version: DEMO_STATE_VERSION, bookings: [invalid] }), [fixture()]);
     expect(state.bookings).toEqual(initialVedraState([fixture()]).bookings);
+  });
+
+  it('descarta bookedAt corrupto y sigue aceptando payloads antiguos sin el campo', () => {
+    const corrupt = { ...fixture('bad-date'), bookedAt: 'ayer' };
+    expect(parseVedraStored(JSON.stringify({ version: 1, bookings: [corrupt] })).bookings).toEqual([]);
+    expect(parseVedraStored(JSON.stringify({ version: 1, bookings: [fixture('legacy')] })).bookings[0]?.bookedAt).toBeUndefined();
   });
 
   it('descarta un recorrido de grupo corrupto sin perder las reservas', () => {

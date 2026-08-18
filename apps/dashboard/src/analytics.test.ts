@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CustomerProfile, Restaurant, TableBooking } from '@logic-reserva/domain';
-import { bookingReports, buildCustomerRecords, customerRecordsToCsv } from './analytics';
+import { bookingReports, buildCustomerRecords, customerRecordsToCsv, noShowRiskAssessments } from './analytics';
 
 const restaurant: Restaurant = {
   id: 'solane', organizationId: 'demo', name: 'Solane',
@@ -37,5 +37,23 @@ describe('CRM e informes', () => {
     expect(report.sources.find((source) => source.source === 'widget')).toMatchObject({ count: 1, percentage: 50 });
     expect(report.marketplace.monthlyCents).toBe(1200);
     expect(report.noShowSavings.assumptions).toContain('Estimación');
+  });
+
+  it('prioriza riesgo desde la muestra y usa solo histórico anterior del mismo comensal', () => {
+    const sample: TableBooking[] = [
+      { ...bookings[0]!, id: 'lucia-history', slot: { ...bookings[0]!.slot, date: '2026-08-01' }, status: 'finished' },
+      { ...bookings[1]!, id: 'lucia-current', slot: { ...bookings[1]!.slot, date: '2026-09-18', startMin: 1230 }, source: 'fixture', bookedAt: '2026-08-20T10:00:00.000Z' },
+      { ...bookings[1]!, id: 'marc-current', guest: { name: 'Marc', phone: '+34 600 000 002' }, slot: { ...bookings[1]!.slot, date: '2026-09-18', startMin: 1245 }, status: 'pending', source: 'phone', bookedAt: '2026-09-17T18:00:00.000Z' },
+    ];
+    const assessments = noShowRiskAssessments(sample, restaurant, '2026-09-18');
+    expect(assessments.map((assessment) => assessment.booking.id)).toEqual(['marc-current', 'lucia-current']);
+    expect(assessments[0]).toMatchObject({ leadDays: 1, previousAttended: 0, isPeakSlot: true, recommendation: { operationalScore: 80, tier: 'high' } });
+    expect(assessments[1]).toMatchObject({ leadDays: 29, previousAttended: 1, recommendation: { operationalScore: 30, tier: 'low' } });
+  });
+
+  it('mantiene visible la antelación desconocida en payloads v1', () => {
+    const [assessment] = noShowRiskAssessments([{ ...bookings[1]!, slot: { ...bookings[1]!.slot, date: '2026-09-18' } }], restaurant, '2026-09-18');
+    expect(assessment?.leadDays).toBeNull();
+    expect(assessment?.recommendation.signals.some((signal) => signal.code === 'lead_unknown')).toBe(true);
   });
 });

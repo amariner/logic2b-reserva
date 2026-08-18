@@ -1,10 +1,12 @@
 import {
   marketplaceSavings,
+  noShowRiskRecommendation,
   noShowLoss,
   type BookingSource,
   type CustomerProfile,
   type Guest,
   type Restaurant,
+  type NoShowRiskRecommendation,
   type ServiceKind,
   type TableBooking,
 } from '@logic-reserva/domain';
@@ -39,9 +41,50 @@ export interface BookingReports {
   marketplace: ReturnType<typeof marketplaceSavings>;
 }
 
+export interface BookingRiskAssessment {
+  booking: TableBooking;
+  leadDays: number | null;
+  previousAttended: number;
+  previousNoShows: number;
+  isPeakSlot: boolean;
+  recommendation: NoShowRiskRecommendation;
+}
+
 export const guestKey = (guest: Guest): string => guest.email?.trim().toLowerCase()
   ?? guest.phone?.replaceAll(' ', '')
   ?? guest.name.trim().toLowerCase();
+
+const leadDaysFor = (booking: TableBooking): number | null => {
+  if (booking.bookedAt === undefined) return null;
+  const bookedDate = booking.bookedAt.slice(0, 10);
+  const bookedMs = /^\d{4}-\d{2}-\d{2}$/.test(bookedDate) ? Date.parse(`${bookedDate}T00:00:00.000Z`) : Number.NaN;
+  const serviceMs = Date.parse(`${booking.slot.date}T00:00:00.000Z`);
+  if (Number.isNaN(bookedMs) || Number.isNaN(serviceMs)) return null;
+  return Math.max(0, Math.round((serviceMs - bookedMs) / 86_400_000));
+};
+
+export function noShowRiskAssessments(
+  bookings: readonly TableBooking[],
+  restaurant: Restaurant,
+  operationalDate: string,
+): BookingRiskAssessment[] {
+  return bookings
+    .filter((booking) => booking.slot.date === operationalDate && (booking.status === 'pending' || booking.status === 'confirmed'))
+    .map((booking): BookingRiskAssessment => {
+      const key = guestKey(booking.guest);
+      const history = bookings.filter((candidate) => candidate.id !== booking.id && candidate.slot.date < booking.slot.date && guestKey(candidate.guest) === key);
+      const previousAttended = history.filter((candidate) => candidate.status === 'finished').length;
+      const previousNoShows = history.filter((candidate) => candidate.status === 'no_show').length;
+      const shift = restaurant.shifts.find((candidate) => booking.slot.startMin >= candidate.firstSeatingMin && booking.slot.startMin <= candidate.lastSeatingMin);
+      const peakStart = shift === undefined ? Number.POSITIVE_INFINITY : Math.min(shift.lastSeatingMin, shift.firstSeatingMin + 30);
+      const peakEnd = shift === undefined ? Number.NEGATIVE_INFINITY : Math.max(shift.firstSeatingMin, shift.lastSeatingMin - 30);
+      const isPeakSlot = booking.slot.startMin >= peakStart && booking.slot.startMin <= peakEnd;
+      const leadDays = leadDaysFor(booking);
+      const recommendation = noShowRiskRecommendation({ source: booking.source, partySize: booking.partySize, isPeakSlot, leadDays, previousAttended, previousNoShows });
+      return { booking, leadDays, previousAttended, previousNoShows, isPeakSlot, recommendation };
+    })
+    .sort((left, right) => right.recommendation.operationalScore - left.recommendation.operationalScore || left.booking.slot.startMin - right.booking.slot.startMin || left.booking.id.localeCompare(right.booking.id));
+}
 
 const bookingSpend = (booking: TableBooking, restaurant: Restaurant): number => {
   if (!ATTENDED_STATUSES.has(booking.status) || booking.menuId === undefined) return 0;

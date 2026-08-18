@@ -288,6 +288,22 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## F17 · Riesgo de no-show explicable ✅
+
+**Objetivo:** demostrar cómo Solane prioriza revisiones operativas mediante señales auditables, sin presentar reglas como probabilidad estadística ni alterar automáticamente depósitos ya acordados.
+**Dependencias:** F8, F10, F11.
+
+- [x] `TableBooking.bookedAt?` conserva la antelación cuando existe, con persistencia aditiva compatible con el estado local v1 y ausencia explícita cuando el dato no está disponible
+- [x] Motor puro de puntuación operativa 0–100: canal, historial, tamaño de grupo, antelación y franja aportan contribuciones visibles y acotadas
+- [x] Resultado `low|medium|high` con acción sugerida `standard_confirmation|confirm_24h|manual_review`; no es una probabilidad ni una decisión automática
+- [x] Informes de Solane muestran reservas activas priorizadas, desglose de señales y límites bilingües; Dirección, Sala y Cocina solo consultan
+- [x] La recomendación no recalcula `riskTier`, no cambia el depósito aceptado y no ejecuta correo, WhatsApp, cobro, modelo, agente ni proveedor externo
+- [x] Cobertura de dominio, derivación desde fixtures/persistencia y E2E es/en sin escrituras de red, con responsive a 320/375/430/1366 px
+
+**Hecho cuando:** Marc y Lucía reciben recomendaciones distintas y reproducibles con evidencia visible, sin que ningún depósito o estado cambie; `pnpm check && pnpm e2e` verdes.
+
+---
+
 ## Después (backlog, no fases)
 
-Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, IA de predicción de no-show, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.
+Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

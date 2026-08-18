@@ -11,6 +11,7 @@ import {
   marketplaceSavings,
   noShowLoss,
   noShowCharge,
+  noShowRiskRecommendation,
   recommendLevel,
   redeemExperienceVoucher,
   riskTier,
@@ -382,6 +383,36 @@ describe('riesgo y depósitos', () => {
 
   it('clasifica una reserva habitual y anticipada como riesgo bajo', () => {
     expect(riskTier({ partySize: 2, isPeakSlot: false, hasHistory: true, leadDays: 14 })).toBe('low');
+  });
+
+  it('prioriza revisión manual para una primera reserva telefónica, pico y última hora', () => {
+    const result = noShowRiskRecommendation({ source: 'phone', partySize: 4, isPeakSlot: true, leadDays: 1, previousAttended: 0, previousNoShows: 0 });
+    expect(result).toMatchObject({ ruleset: 'no-show-demo-v1', basis: 'deterministic-demo', operationalScore: 80, tier: 'high', suggestedAction: 'manual_review' });
+    expect(result.signals.map((signal) => signal.code)).toEqual(['baseline', 'channel_phone', 'history_first_visit', 'party_standard', 'lead_short', 'slot_peak']);
+  });
+
+  it('reduce la prioridad cuando existe asistencia previa aunque la franja sea pico', () => {
+    expect(noShowRiskRecommendation({ source: 'fixture', partySize: 2, isPeakSlot: true, leadDays: 29, previousAttended: 2, previousNoShows: 0 })).toMatchObject({ operationalScore: 30, tier: 'low', suggestedAction: 'standard_confirmation' });
+  });
+
+  it('hace visible un no-show previo sin ocultar la asistencia histórica', () => {
+    const result = noShowRiskRecommendation({ source: 'widget', partySize: 2, isPeakSlot: true, leadDays: 10, previousAttended: 3, previousNoShows: 1 });
+    expect(result.signals).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: 'history_repeat_attendance', points: -25 }),
+      expect.objectContaining({ code: 'history_previous_no_show', points: 30 }),
+    ]));
+    expect(result).toMatchObject({ operationalScore: 45, tier: 'medium', suggestedAction: 'confirm_24h' });
+  });
+
+  it('trata la antelación desconocida como evidencia ausente, no como riesgo inventado', () => {
+    const result = noShowRiskRecommendation({ source: 'fixture', partySize: 2, isPeakSlot: false, leadDays: null, previousAttended: 0, previousNoShows: 0 });
+    expect(result.signals).toContainEqual({ category: 'lead_time', code: 'lead_unknown', points: 0 });
+  });
+
+  it('acota el score entre 0 y 100 y devuelve siempre céntimos intactos fuera de esta recomendación', () => {
+    expect(noShowRiskRecommendation({ source: 'walkin', partySize: 1, isPeakSlot: false, leadDays: 0, previousAttended: 20, previousNoShows: 0 }).operationalScore).toBe(0);
+    expect(noShowRiskRecommendation({ source: 'phone', partySize: 20, isPeakSlot: true, leadDays: 30, previousAttended: 0, previousNoShows: 4 }).operationalScore).toBe(100);
+    expect(depositFor({ kind: 'prepay', menuPercentageBps: 5000 }, 2, 12500).amountCents).toBe(12500);
   });
 
   it('calcula el depósito como porcentaje del menú y conserva el desglose', () => {

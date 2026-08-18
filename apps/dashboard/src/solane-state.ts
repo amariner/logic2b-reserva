@@ -128,6 +128,7 @@ function parseBooking(value: unknown): TableBooking | null {
   if (candidate.guest.email !== undefined && (typeof candidate.guest.email !== 'string' || !candidate.guest.email.includes('@') || candidate.guest.email.length > 200)) return null;
   if (candidate.guest.phone !== undefined && (typeof candidate.guest.phone !== 'string' || candidate.guest.phone.length > 40)) return null;
   if (candidate.menuId !== undefined && typeof candidate.menuId !== 'string') return null;
+  if (candidate.bookedAt !== undefined && (typeof candidate.bookedAt !== 'string' || candidate.bookedAt.length > 40 || Number.isNaN(Date.parse(candidate.bookedAt)))) return null;
   const deposit = candidate.deposit === undefined ? undefined : parseDeposit(candidate.deposit, candidate.partySize);
   if (candidate.deposit !== undefined && deposit === null) return null;
   return {
@@ -145,6 +146,7 @@ function parseBooking(value: unknown): TableBooking | null {
     ...(candidate.menuId === undefined ? {} : { menuId: candidate.menuId }),
     ...(deposit === undefined || deposit === null ? {} : { deposit }),
     source: candidate.source as BookingSource,
+    ...(candidate.bookedAt === undefined ? {} : { bookedAt: candidate.bookedAt }),
   };
 }
 

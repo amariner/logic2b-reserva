@@ -126,6 +126,7 @@ export interface TableBooking {
   menuId?: string;
   deposit?: DepositRecord;
   source: BookingSource;
+  bookedAt?: string;
 }
 
 export type WaitlistStatus = 'waiting' | 'notified' | 'seated' | 'cancelled';
@@ -499,6 +500,89 @@ export function riskTier(signals: RiskSignals): RiskTier {
   return 'low';
 }
 
+export type NoShowSignalCategory = 'baseline' | 'channel' | 'history' | 'party' | 'lead_time' | 'slot';
+export type NoShowSignalCode =
+  | 'baseline'
+  | 'channel_direct'
+  | 'channel_phone'
+  | 'channel_walkin'
+  | 'channel_fixture'
+  | 'history_first_visit'
+  | 'history_repeat_attendance'
+  | 'history_previous_no_show'
+  | 'party_large'
+  | 'party_standard'
+  | 'lead_short'
+  | 'lead_long'
+  | 'lead_standard'
+  | 'lead_unknown'
+  | 'slot_peak'
+  | 'slot_off_peak';
+export type NoShowSuggestedAction = 'standard_confirmation' | 'confirm_24h' | 'manual_review';
+
+export interface NoShowRiskInput {
+  source: BookingSource;
+  partySize: number;
+  isPeakSlot: boolean;
+  leadDays: number | null;
+  previousAttended: number;
+  previousNoShows: number;
+}
+
+export interface NoShowSignalContribution {
+  category: NoShowSignalCategory;
+  code: NoShowSignalCode;
+  points: number;
+}
+
+export interface NoShowRiskRecommendation {
+  ruleset: 'no-show-demo-v1';
+  basis: 'deterministic-demo';
+  operationalScore: number;
+  tier: RiskTier;
+  suggestedAction: NoShowSuggestedAction;
+  signals: NoShowSignalContribution[];
+}
+
+export function noShowRiskRecommendation(input: NoShowRiskInput): NoShowRiskRecommendation {
+  const partySize = Math.max(1, Math.trunc(input.partySize));
+  const previousAttended = Math.max(0, Math.trunc(input.previousAttended));
+  const previousNoShows = Math.max(0, Math.trunc(input.previousNoShows));
+  const leadDays = input.leadDays === null || !Number.isFinite(input.leadDays) ? null : Math.max(0, Math.trunc(input.leadDays));
+  const signals: NoShowSignalContribution[] = [{ category: 'baseline', code: 'baseline', points: 30 }];
+
+  const channel: Record<BookingSource, NoShowSignalContribution> = {
+    widget: { category: 'channel', code: 'channel_direct', points: -5 },
+    phone: { category: 'channel', code: 'channel_phone', points: 10 },
+    walkin: { category: 'channel', code: 'channel_walkin', points: -30 },
+    fixture: { category: 'channel', code: 'channel_fixture', points: 0 },
+  };
+  signals.push(channel[input.source]);
+
+  signals.push(previousAttended > 0
+    ? { category: 'history', code: 'history_repeat_attendance', points: -25 }
+    : { category: 'history', code: 'history_first_visit', points: 15 });
+  if (previousNoShows > 0) signals.push({ category: 'history', code: 'history_previous_no_show', points: 30 });
+
+  signals.push(partySize >= 6
+    ? { category: 'party', code: 'party_large', points: 25 }
+    : { category: 'party', code: 'party_standard', points: 0 });
+
+  if (leadDays === null) signals.push({ category: 'lead_time', code: 'lead_unknown', points: 0 });
+  else if (leadDays <= 1) signals.push({ category: 'lead_time', code: 'lead_short', points: 10 });
+  else if (leadDays >= 21) signals.push({ category: 'lead_time', code: 'lead_long', points: 10 });
+  else signals.push({ category: 'lead_time', code: 'lead_standard', points: 0 });
+
+  signals.push(input.isPeakSlot
+    ? { category: 'slot', code: 'slot_peak', points: 15 }
+    : { category: 'slot', code: 'slot_off_peak', points: 0 });
+
+  const operationalScore = Math.min(100, Math.max(0, signals.reduce((sum, signal) => sum + signal.points, 0)));
+  const tier: RiskTier = operationalScore >= 60 ? 'high' : operationalScore >= 35 ? 'medium' : 'low';
+  const suggestedAction: NoShowSuggestedAction = tier === 'high' ? 'manual_review' : tier === 'medium' ? 'confirm_24h' : 'standard_confirmation';
+  return { ruleset: 'no-show-demo-v1', basis: 'deterministic-demo', operationalScore, tier, suggestedAction, signals };
+}
+
 export type DepositPolicyKind = 'none' | 'card_hold' | 'prepay';
 
 export interface DepositPolicy {
@@ -644,6 +728,7 @@ export const CAPABILITIES: readonly Capability[] = [
   { id: 'online-booking', label: 'Reserva online con menú', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },
   { id: 'unified-inventory', label: 'Inventario único de mesas y eventos', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'no-show-deposits', label: 'Depósitos anti no-show', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
+  { id: 'explainable-no-show-risk', label: 'Riesgo de no-show explicable', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'private-hire', label: 'Privatizaciones', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'guest-crm', label: 'CRM de comensales y exportación', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'booking-reports', label: 'Informes de ocupación y origen', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },

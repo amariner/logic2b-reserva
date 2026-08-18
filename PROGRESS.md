@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-18 · Sesión 33 · Riesgo de no-show explicable completado ✅
+
+- F17 promovida desde backlog y cerrada: Solane prioriza reservas activas con un score operativo determinista 0–100 que declara de forma visible que no es una probabilidad ni una decisión automática.
+- El dominio puro `no-show-demo-v1` desglosa base, canal, historial, tamaño de grupo, antelación y franja. Marc obtiene 80/100 y revisión manual prioritaria; Lucía, 30/100 y confirmación estándar, con cada contribución auditable.
+- `TableBooking.bookedAt?` se incorpora de forma aditiva. Los widgets nuevos conservan la fecha de creación y los parsers defensivos siguen aceptando estados locales v1 anteriores o sin antelación disponible.
+- El panel bilingüe de Informes es consultivo para Dirección, Sala y Cocina: no modifica `riskTier`, depósito, estado ni almacenamiento, y no llama a modelos, agentes, correo, WhatsApp, cobros o proveedores.
+- La revisión renderizada confirmó dos columnas a 1366 px y una columna sin overflow a 375 y 320 px. Gates: 62 tests de dominio, 45 de dashboard, 10 de fixtures, 10 de Worker, `pnpm check` 28/28 y `pnpm e2e` 49/49.
+
 ## 2026-08-18 · Sesión 32 · Gestor móvil para Sala completado ✅
 
 - F16 promovida desde backlog y cerrada: Vedra y Solane comparten navegación inferior con Servicio, Reservas, Espera y Plano al alcance, más un menú nativo accesible que conserva todas las vistas secundarias.
