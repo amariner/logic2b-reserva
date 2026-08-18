@@ -34,8 +34,13 @@
 .sw-gateway > div > p:first-child { margin: 0 0 15px; color: var(--brand-strong); font-size: .62rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }
 .sw-gateway h3 { margin: 0; font-family: var(--serif); font-size: clamp(1.8rem, 5vw, 2.7rem); font-weight: 500; letter-spacing: -.04em; line-height: 1.04; }
 .sw-gateway h3 + p { color: var(--brand-muted); font-family: var(--serif); line-height: 1.55; }
-.sw-gateway dl { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin: 22px 0; border-block: 1px solid var(--brand-line); padding-block: 16px; }
+.sw-gateway dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; margin: 22px 0; border: 1px solid var(--brand-line); border-radius: 9px; background: var(--brand-line); overflow: hidden; }
+.sw-gateway dl > div { min-width: 0; padding: 14px; background: white; }
 .sw-gateway dt { color: var(--brand-muted); font-size: .7rem; }
-.sw-gateway dd { margin: 0; font-size: 1.35rem; font-weight: 750; }
+.sw-gateway dd { overflow-wrap: anywhere; margin: 6px 0 0; font-size: .86rem; font-weight: 750; }
+.sw-gateway dl > div:last-child dd { font-size: 1.2rem; }
+.sw-gateway__terms { display: grid; gap: 6px; margin: -7px 0 22px; border-radius: 9px; padding: 13px; color: var(--brand-muted); background: var(--brand-soft); font-size: .66rem; line-height: 1.45; }
+.sw-gateway__terms b { color: var(--brand-ink); font-size: .7rem; }
+.sw-gateway__terms time { color: var(--brand-strong); font-weight: 700; }
 .sw-gateway > div > div { display: flex; justify-content: flex-end; gap: 8px; }
-@media (max-width: 600px) { .vw-steps b { display: none; }.vw-fields, .vw-times { grid-template-columns: 1fr 1fr; }.vw-menu-list span { align-items: flex-start; flex-direction: column; gap: 4px; }.vw-success dl { grid-template-columns: 1fr; }.vw-success dl div + div { border-top: 1px solid var(--brand-line); border-left: 0; }.vw-success__actions .vw-button { width: 100%; } }
+@media (max-width: 600px) { .vw-steps b { display: none; }.vw-fields, .vw-times { grid-template-columns: 1fr 1fr; }.vw-menu-list span { align-items: flex-start; flex-direction: column; gap: 4px; }.vw-success dl, .sw-gateway dl { grid-template-columns: 1fr; }.vw-success dl div + div { border-top: 1px solid var(--brand-line); border-left: 0; }.vw-success__actions .vw-button { width: 100%; }.sw-gateway > div > div { display: grid; }.sw-gateway .vw-button { width: 100%; } }

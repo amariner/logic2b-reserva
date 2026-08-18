@@ -4,6 +4,15 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-19 · Sesión 34 · Capturas guiadas de venta completadas ✅
+
+- F18 queda cerrada con un contrato canónico de ocho escenas y dieciséis PNG —desktop 1366×900 y móvil 375×812— para Brasca, Vedra y Solane, generados siempre desde las superficies y recorridos reales del producto.
+- `pnpm fotos` construye el bundle, levanta un Worker temporal aislado en `127.0.0.1:8791`, fija reloj/locale/zona horaria/movimiento/escala, estrena un contexto limpio por escena y sustituye el paquete solo si todas las validaciones pasan.
+- La frontera comercial falla ante cualquier escritura, origen externo, dato fuera de la allowlist ficticia, error de consola, recurso incompleto u overflow. El manifiesto no contiene timestamps ni rutas de máquina y dos ejecuciones consecutivas coincidieron en 17/17 archivos byte a byte.
+- El diálogo de depósito de Solane ahora hace visible el menú elegido, el cálculo proporcional, el importe y las condiciones aceptadas con timestamp; el E2E fija explícitamente el grupo de dos y el resultado `50% · 2 = 125,00 €`.
+- Revisión visual completada sobre las dieciséis composiciones, incluidos los encuadres ajustados de privatización móvil y riesgo de escritorio. El cambio de `compose.mjs` usa `fileURLToPath`, por lo que la composición funciona también desde rutas locales con espacios.
+- Gates: `pnpm check` 28/28 con 127 tests, `pnpm e2e` 49/49, paquete reproducible 17/17 y dry-run estricto de producción con 139 assets y todos los bindings esperados. No se envió ningún lead ni se efectuó ninguna escritura externa.
+
 ## 2026-08-18 · Sesión 33 · Riesgo de no-show explicable completado y publicado ✅
 
 - F17 promovida desde backlog y cerrada: Solane prioriza reservas activas con un score operativo determinista 0–100 que declara de forma visible que no es una probabilidad ni una decisión automática.

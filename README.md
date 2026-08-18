@@ -12,8 +12,9 @@ pnpm install
 pnpm dev        # worker local con landing + demos
 pnpm check      # typecheck + lint + test + build
 pnpm e2e        # build + Playwright
+pnpm fotos      # build + 16 capturas comerciales deterministas
 ```
 
 ## Para continuar el desarrollo
 
-Lee `CLAUDE.md` (contrato de trabajo) → `SIGUIENTE-SESION.md` (dónde estamos) → `docs/ROADMAP.md` (fases F0–F12 con criterios de hecho). Contexto de mercado en `docs/COMPETENCIA.md`; preview y producción en `docs/DEPLOY.md`.
+Lee `CLAUDE.md` (contrato de trabajo) → `SIGUIENTE-SESION.md` (dónde estamos) → `docs/ROADMAP.md` (fases y criterios de hecho). Contexto de mercado en `docs/COMPETENCIA.md`; contrato de capturas en `docs/SALES-ASSETS.md`; preview y producción en `docs/DEPLOY.md`.

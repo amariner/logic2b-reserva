@@ -1,7 +1,8 @@
 import { cp, mkdir, rm } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const here = new URL('..', import.meta.url).pathname;
+const here = fileURLToPath(new URL('..', import.meta.url));
 const root = resolve(here, '../..');
 const out = resolve(root, 'apps/worker/dist/assets');
 

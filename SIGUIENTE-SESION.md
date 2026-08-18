@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F17 completas y publicadas en producción ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** promover y desarrollar F18 de capturas guiadas de venta
+**Fase actual:** F0–F18 completas ✅ · F18 validada y lista para publicación · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** desarrollar F19 de confirmación de asistencia con enlace local
 
 ## Siguiente paso concreto
 
-1. Promover a F18 el paquete de capturas guiadas de venta y definir escenas reproducibles para Brasca, Vedra y Solane sin duplicar el tour operativo ni introducir datos reales.
-2. Automatizar el recorrido sobre el bundle local con estados reseteados, encuadres desktop/móvil y nombres deterministas para los artefactos.
-3. Generar el primer paquete comercial versionable y documentar su actualización sin alterar la frontera demo/real.
+1. Añadir al dominio la confirmación de asistencia terminal e idempotente y ampliar defensivamente el estado local de Solane.
+2. Permitir que Dirección o Sala preparen un enlace ficticio desde una reserva activa; Cocina solo consulta y ningún rol envía mensajes.
+3. Construir la ruta bilingüe de respuesta del comensal y demostrar preparación → respuesta → gestor sin cambiar inventario, score o depósito.
 
 ## Bloqueos / avisos
 
@@ -29,6 +29,8 @@
 - F15 añade rutas bilingües de bonos y `?vista=bonos`: emisión y canje exclusivamente locales, valor ficticio auditable, Dirección/Sala operan y Cocina consulta. ADR-012 contiene los límites.
 - F16 añade navegación inferior compartida y agenda vertical de Vedra en móvil; las vistas secundarias siguen disponibles en «Más» y el escritorio conserva su barra lateral y cronología. Gates: `pnpm check` 28/28 y `pnpm e2e` 48/48.
 - F17 añade `bookedAt?` compatible con localStorage v1 y un score operativo local, determinista y explicable en Informes de Solane. No es probabilidad, no recalcula depósitos y no ejecuta acciones; ADR-013 fija la frontera. Gates: 62 dominio, 45 dashboard, 10 fixtures, 10 Worker, `pnpm check` 28/28 y `pnpm e2e` 49/49.
+- F18 añade `pnpm fotos`, `docs/SALES-ASSETS.md` y 16 capturas deterministas con frontera GET/HEAD local. Dos ejecuciones coincidieron 17/17 byte a byte; gates: `pnpm check` 28/28, 127 tests, `pnpm e2e` 49/49 y dry-run de producción con 139 assets.
+- F19 debe demostrar confirmación en un clic únicamente en localStorage. El enlace se prepara pero no se envía; solicitar cambio no cancela, no libera mesa y no altera el depósito o la recomendación de F17. El transporte WhatsApp permanece en backlog.
 - F15–F17 están en `origin/main` (`5514c83`, `83eb0bd`) y producción `39d8ec05-ad46-4d99-85b3-875fc16cb632`; el dry-run estricto aceptó 121 assets y el smoke público por GET quedó verde sin enviar leads.
 - `pnpm verify:public` revalida preview y producción sin enviar leads; los workflows lo ejecutan después del deploy.
 - Las últimas ejecuciones de `pnpm verify:public:production` y `pnpm verify:public:preview` fueron verdes el 2026-08-18; ambos entornos sirven el bundle nuevo. Heroes v2, F13, accesibilidad y F14 ya no están pendientes en el worktree.

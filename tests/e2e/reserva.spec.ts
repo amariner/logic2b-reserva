@@ -748,6 +748,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
 
     const bookWithDeposit = async (guestName: string) => {
       await page.goto('/demos/solane/', { waitUntil: 'networkidle' });
+      await page.locator('select[name="partySize"]').selectOption('2');
       await page.getByRole('button', { name: 'Continuar' }).click();
       await page.locator('[data-time="21:00"]').click();
       await page.getByRole('button', { name: 'Continuar' }).click();
@@ -771,7 +772,11 @@ test.describe('demo Solane · nivel Inteligente', () => {
       const gateway = page.locator('[data-deposit-gateway]');
       await expect(gateway).toBeVisible();
       await expect(gateway).toContainText('Pasarela neutra · demo — no se realizará ningún cobro');
+      await expect(gateway).toContainText('Menú Solane');
+      await expect(gateway).toContainText('Cálculo proporcional');
+      await expect(gateway).toContainText('50% · 2');
       await expect(gateway).toContainText('125,00');
+      await expect(gateway).toContainText('Condiciones aceptadas antes de continuar');
       await expect(gateway.locator('input')).toHaveCount(0);
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
       await gateway.locator('[data-confirm-deposit]').click();
