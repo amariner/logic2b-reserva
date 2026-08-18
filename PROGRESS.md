@@ -4,13 +4,15 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
-## 2026-08-18 · Sesión 33 · Riesgo de no-show explicable completado ✅
+## 2026-08-18 · Sesión 33 · Riesgo de no-show explicable completado y publicado ✅
 
 - F17 promovida desde backlog y cerrada: Solane prioriza reservas activas con un score operativo determinista 0–100 que declara de forma visible que no es una probabilidad ni una decisión automática.
 - El dominio puro `no-show-demo-v1` desglosa base, canal, historial, tamaño de grupo, antelación y franja. Marc obtiene 80/100 y revisión manual prioritaria; Lucía, 30/100 y confirmación estándar, con cada contribución auditable.
 - `TableBooking.bookedAt?` se incorpora de forma aditiva. Los widgets nuevos conservan la fecha de creación y los parsers defensivos siguen aceptando estados locales v1 anteriores o sin antelación disponible.
 - El panel bilingüe de Informes es consultivo para Dirección, Sala y Cocina: no modifica `riskTier`, depósito, estado ni almacenamiento, y no llama a modelos, agentes, correo, WhatsApp, cobros o proveedores.
 - La revisión renderizada confirmó dos columnas a 1366 px y una columna sin overflow a 375 y 320 px. Gates: 62 tests de dominio, 45 de dashboard, 10 de fixtures, 10 de Worker, `pnpm check` 28/28 y `pnpm e2e` 49/49.
+- F15–F17 se consolidaron sobre `main` en `5514c83` y `83eb0bd` y se publicaron en `origin/main` después de comprobar que el remoto no contenía cambios adicionales.
+- El dry-run estricto aceptó 121 assets y todos los bindings. Producción subió 27 assets nuevos o modificados a `reserva.logic2b.com`, versión Cloudflare `39d8ec05-ad46-4d99-85b3-875fc16cb632`; `pnpm verify:public:production` quedó verde exclusivamente con GET y no se envió ningún lead.
 
 ## 2026-08-18 · Sesión 32 · Gestor móvil para Sala completado ✅
 
