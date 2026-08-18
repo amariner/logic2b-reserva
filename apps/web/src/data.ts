@@ -420,7 +420,7 @@ const brasca: DemoFixture = {
   address: text('Carrer de la Brasa, 12 · Valencia', '12 Carrer de la Brasa · Valencia'),
   hours: [text('Martes–sábado · 13:00–16:00', 'Tuesday–Saturday · 13:00–16:00'), text('Jueves–sábado · 20:00–23:30', 'Thursday–Saturday · 20:00–23:30')],
   hero: {
-    imageBase: '/images/heroes/brasca',
+    imageBase: '/images/heroes/brasca-v2',
     alt: text('Mesa cálida de Brasca junto al horno de leña', 'Warm Brasca table beside the wood-fired oven'),
     mark: 'B',
   },
@@ -462,7 +462,7 @@ const vedra: DemoFixture = {
   address: text('Calle de la Hiedra, 8 · Madrid', '8 Calle de la Hiedra · Madrid'),
   hours: [text('Lunes–domingo · 13:00–16:30', 'Monday–Sunday · 13:00–16:30'), text('Lunes–sábado · 20:00–00:00', 'Monday–Saturday · 20:00–00:00')],
   hero: {
-    imageBase: '/images/heroes/vedra',
+    imageBase: '/images/heroes/vedra-v2',
     alt: text('Galería verde y luminosa del restaurante Vedra', 'Green, light-filled gallery at Vedra restaurant'),
     mark: 'V',
   },
@@ -546,7 +546,7 @@ const solane: DemoFixture = {
   address: text('Passatge de la Llum, 4 · Barcelona', '4 Passatge de la Llum · Barcelona'),
   hours: [text('Martes–sábado · 19:30–00:30', 'Tuesday–Saturday · 19:30–00:30')],
   hero: {
-    imageBase: '/images/heroes/solane',
+    imageBase: '/images/heroes/solane-v2',
     alt: text('Sala nocturna de Solane preparada para el menú degustación', 'Solane dining room at night, set for the tasting menu'),
     mark: 'S',
   },

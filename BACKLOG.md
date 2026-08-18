@@ -6,7 +6,6 @@ Lo que surge durante las sesiones y no pertenece a la fase en curso. Nada de aqu
 
 - Gift cards / bonos de experiencia vendidos desde el motor (validado por CoverManager, Zenchef, Superb; caja anticipada).
 - Confirmaciones y recordatorios por WhatsApp (ojo: desde enero 2026 Meta restringe chatbots genéricos; solo vía proveedores oficiales de la API — verificar antes de prometerlo).
-- Lista de espera y walk-ins en el gestor.
 - Predicción de no-show con IA (riesgo por canal/histórico) — hoy el `riskTier` es por reglas; venderlo como "Inteligente".
 - Google Reserve como canal (gratuito, el que más erosiona a los marketplaces).
 - Puente prepago → factura conforme (Verifactu, IVA de anticipos): gap legal que nadie resuelve; posible diferencial futuro muy fuerte.

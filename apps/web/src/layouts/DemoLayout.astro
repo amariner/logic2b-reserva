@@ -16,6 +16,7 @@ const notice =
   locale === 'en'
     ? 'Fictional demonstration by Logic Reserva · No real bookings or charges'
     : 'Demostración ficticia de Logic Reserva · Sin reservas ni cobros reales';
+const skipLabel = locale === 'en' ? 'Skip to main content' : 'Saltar al contenido principal';
 ---
 
 <!doctype html>
@@ -28,12 +29,29 @@ const notice =
     <title>{title}</title>
   </head>
   <body class={`demo-body ${slug}`}>
+    <a class="demo-skip-link" href="#contenido">{skipLabel}</a>
     <p class="demo-notice">{notice}</p>
     <slot />
   </body>
 </html>
 
 <style>
+  .demo-skip-link {
+    position: fixed;
+    z-index: 1000;
+    top: 12px;
+    left: 12px;
+    padding: 12px 16px;
+    border: 2px solid var(--brand-strong, var(--ink));
+    border-radius: 8px;
+    color: var(--brand-ink, var(--ink));
+    background: var(--brand-card, white);
+    font-weight: 700;
+    text-decoration: none;
+    transform: translateY(calc(-100% - 20px));
+    transition: transform 160ms ease;
+  }
+  .demo-skip-link:focus { transform: translateY(0); }
   .demo-notice {
     margin: 0;
     padding: 8px 16px;
@@ -42,4 +60,5 @@ const notice =
     font-size: 0.78rem;
     text-align: center;
   }
+  @media (prefers-reduced-motion: reduce) { .demo-skip-link { transition: none; } }
 </style>

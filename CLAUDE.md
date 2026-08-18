@@ -37,6 +37,7 @@ Cuando llegue una orden tipo "sigue desarrollando este proyecto" (`/goal` o simi
 - **localStorage versionado** con parser defensivo (clave `logic-reserva-demo-{marca}-v1`); ante corrupción o versión desconocida → estado inicial.
 - **Navegación/vistas definidas en UN solo sitio.** Vistas del gestor por `?vista=` con `history.replaceState`, sin router.
 - Copy siempre desde `content.ts`; nada de strings de marca hardcodeados en componentes.
+- Los nuevos recursos raster generados por IA usan la herramienta integrada de OpenAI, nunca Higgsfield; se solicitan de uno en uno y con una pausa entre generaciones.
 - La usuaria de referencia del gestor es el jefe de sala en plena hora punta: usable a 1366px, foco visible, `prefers-reduced-motion`, contraste AA.
 
 ## Arquitectura

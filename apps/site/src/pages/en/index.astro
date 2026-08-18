@@ -2,12 +2,24 @@
 import Base from '../../layouts/Base.astro';
 import { PRODUCT } from '@logic-reserva/config';
 import Landing from '../../components/Landing.astro';
+import { SITE_CONTENT } from '../../content';
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: SITE_CONTENT.en.faq.items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
 ---
 
 <Base
   locale="en"
-  title={`${PRODUCT.name} — Reservations and events for your restaurant`}
-  description="Your restaurant's own booking engine: tables, menus and events on a single inventory. No per-cover commissions."
+  title={`Restaurant and event bookings | ${PRODUCT.name}`}
+  description="Restaurant booking engine for tables, menus, groups and events on one inventory. Keep your brand and avoid per-cover commissions."
+  structuredData={[faqSchema]}
 >
   <Landing locale="en" />
 </Base>

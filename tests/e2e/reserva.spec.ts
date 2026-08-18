@@ -1,4 +1,4 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Locator, type Page } from '@playwright/test';
 import { readFile } from 'node:fs/promises';
 
 const pages = [
@@ -18,6 +18,62 @@ const pages = [
   '/en/cookies/',
 ] as const;
 
+const textContrastRatio = (locator: Locator) => locator.evaluate((element) => {
+  type Rgb = { r: number; g: number; b: number; a: number };
+  const parse = (value: string): Rgb => {
+    const channels = value.match(/[\d.]+/g)?.map(Number) ?? [];
+    return { r: channels[0] ?? 0, g: channels[1] ?? 0, b: channels[2] ?? 0, a: channels[3] ?? 1 };
+  };
+  const background = (() => {
+    for (let current: Element | null = element; current; current = current.parentElement) {
+      const color = parse(getComputedStyle(current).backgroundColor);
+      if (color.a === 1) return color;
+    }
+    return { r: 255, g: 255, b: 255, a: 1 };
+  })();
+  const foreground = parse(getComputedStyle(element).color);
+  const composited = {
+    r: foreground.r * foreground.a + background.r * (1 - foreground.a),
+    g: foreground.g * foreground.a + background.g * (1 - foreground.a),
+    b: foreground.b * foreground.a + background.b * (1 - foreground.a),
+    a: 1,
+  };
+  const luminance = (color: Rgb): number => {
+    const channel = (value: number): number => {
+      const normalized = value / 255;
+      return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * channel(color.r) + 0.7152 * channel(color.g) + 0.0722 * channel(color.b);
+  };
+  const light = Math.max(luminance(composited), luminance(background));
+  const dark = Math.min(luminance(composited), luminance(background));
+  return (light + 0.05) / (dark + 0.05);
+});
+
+const undersizedTargets = (page: Page) => page.evaluate(() => [...document.querySelectorAll<HTMLElement>('a, button, input, select, textarea, summary')].flatMap((element) => {
+  const styles = getComputedStyle(element);
+  const ownBox = element.getBoundingClientRect();
+  if (
+    styles.display === 'none'
+    || styles.visibility === 'hidden'
+    || ownBox.width === 0
+    || ownBox.height === 0
+    || element.matches(':disabled, option, [aria-hidden="true"], [tabindex="-1"], .honeypot, .skip-link')
+  ) return [];
+
+  const effectiveTarget = element.matches('input[type="checkbox"], input[type="radio"]')
+    ? element.closest<HTMLElement>('label') ?? element
+    : element;
+  const box = effectiveTarget.getBoundingClientRect();
+  if (box.width + 0.01 >= 44 && box.height + 0.01 >= 44) return [];
+  return [{
+    target: `${element.tagName.toLowerCase()}${element.className ? `.${String(element.className).trim().replaceAll(' ', '.')}` : ''}`,
+    text: (element.textContent || element.getAttribute('aria-label') || element.getAttribute('name') || '').trim().slice(0, 60),
+    width: Number(box.width.toFixed(1)),
+    height: Number(box.height.toFixed(1)),
+  }];
+}));
+
 test.describe('landing comercial Logic Reserva', () => {
   test('todas las rutas públicas y recursos SEO responden', async ({ request }) => {
     for (const path of [...pages, '/robots.txt', '/sitemap.xml']) {
@@ -27,11 +83,140 @@ test.describe('landing comercial Logic Reserva', () => {
 
     const sitemap = await (await request.get('/sitemap.xml')).text();
     expect(sitemap).toContain('https://reserva.logic2b.com/planes/');
+    expect(sitemap).toContain('xmlns:xhtml="http://www.w3.org/1999/xhtml"');
+    expect(sitemap).toContain('hreflang="x-default"');
+    expect(sitemap).toContain('<lastmod>2026-08-18</lastmod>');
     expect(sitemap).not.toContain('/demos/');
 
     const robots = await (await request.get('/robots.txt')).text();
     expect(robots).toContain('Disallow: /demos/');
     expect(robots).toContain('Disallow: /en/demos/');
+  });
+
+  test('SEO bilingüe, datos estructurados y contenido social describen el negocio', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page).toHaveTitle('Reservas para restaurantes y eventos | Logic Reserva');
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/');
+    await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/en/');
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /solane-v2-1600\.avif$/);
+    await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
+    await expect(page.locator('.demo-card__preview img')).toHaveCount(3);
+    await expect(page.locator('.demo-card__preview img').first()).toHaveAttribute('alt', /Brasca/);
+    await expect(page.getByRole('heading', { level: 2, name: 'No te damos acceso y desaparecemos. Lo dejamos funcionando contigo.' })).toBeVisible();
+    await expect(page.getByText('Logic2B lo configura para tu operativa')).toBeVisible();
+
+    const homeSchemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const homeTypes = homeSchemas.map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type']);
+    expect(homeTypes).toEqual(expect.arrayContaining(['Organization', 'WebSite', 'FAQPage']));
+
+    await page.goto('/soluciones/grupos-y-eventos/', { waitUntil: 'networkidle' });
+    await expect(page).toHaveTitle('Gestión de grupos y eventos | Logic Reserva');
+    await expect(page.getByRole('heading', { level: 1, name: 'El evento deja de competir con la sala.' })).toBeVisible();
+    const solutionSchemas = await page.locator('script[type="application/ld+json"]').allTextContents();
+    const solutionTypes = solutionSchemas.map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type']);
+    expect(solutionTypes).toEqual(expect.arrayContaining(['BreadcrumbList', 'Service', 'FAQPage']));
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await expect(page).toHaveTitle('Restaurant and event bookings | Logic Reserva');
+    await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/');
+    await expect(page.getByRole('heading', { level: 2, name: 'We do not hand over a login and disappear. We make it work with you.' })).toBeVisible();
+  });
+
+  test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {
+    for (const path of ['/', '/planes/', '/en/', '/en/planes/']) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      await page.keyboard.press('Tab');
+      const label = path.startsWith('/en/') ? 'Skip to main content' : 'Saltar al contenido principal';
+      const skipLink = page.getByRole('link', { name: label });
+      await expect(skipLink).toBeFocused();
+      await expect(skipLink).toHaveAttribute('href', '#contenido');
+      await skipLink.press('Enter');
+      await expect(page.locator('#contenido')).toBeFocused();
+    }
+  });
+
+  test('el texto pequeño conserva contraste AA sobre los acentos de la landing', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const selectors = [
+      '.eyebrow', '.mockup-board .event-card small', '.demo-note', '.hero-flow i', '.stat-card--2 span',
+      '.source-note', '.difference-card--coral p', '.pill.ghost', '.level-index',
+      '.level-card:nth-child(3) .level-index', '.calculator-band .eyebrow', '.calculator-band .editorial',
+      '.estimate-label', '.footer-bottom',
+    ];
+    const ratios = await page.evaluate((targets) => {
+      type Rgb = { r: number; g: number; b: number; a: number };
+      const parse = (value: string): Rgb => {
+        const channels = value.match(/[\d.]+/g)?.map(Number) ?? [];
+        return { r: channels[0] ?? 0, g: channels[1] ?? 0, b: channels[2] ?? 0, a: channels[3] ?? 1 };
+      };
+      const background = (element: Element): Rgb => {
+        for (let current: Element | null = element; current; current = current.parentElement) {
+          const color = parse(getComputedStyle(current).backgroundColor);
+          if (color.a === 1) return color;
+        }
+        return { r: 255, g: 255, b: 255, a: 1 };
+      };
+      const composite = (foreground: Rgb, backdrop: Rgb): Rgb => ({
+        r: foreground.r * foreground.a + backdrop.r * (1 - foreground.a),
+        g: foreground.g * foreground.a + backdrop.g * (1 - foreground.a),
+        b: foreground.b * foreground.a + backdrop.b * (1 - foreground.a),
+        a: 1,
+      });
+      const luminance = (color: Rgb): number => {
+        const channel = (value: number): number => {
+          const normalized = value / 255;
+          return normalized <= 0.04045 ? normalized / 12.92 : ((normalized + 0.055) / 1.055) ** 2.4;
+        };
+        return 0.2126 * channel(color.r) + 0.7152 * channel(color.g) + 0.0722 * channel(color.b);
+      };
+      return targets.map((selector) => {
+        const element = document.querySelector(selector);
+        if (!element) return { selector, ratio: 0 };
+        const backdrop = background(element);
+        const foreground = composite(parse(getComputedStyle(element).color), backdrop);
+        const light = Math.max(luminance(foreground), luminance(backdrop));
+        const dark = Math.min(luminance(foreground), luminance(backdrop));
+        return { selector, ratio: (light + 0.05) / (dark + 0.05) };
+      });
+    }, selectors);
+    for (const { selector, ratio } of ratios) expect(ratio, selector).toBeGreaterThanOrEqual(4.5);
+
+    await page.goto('/planes/', { waitUntil: 'networkidle' });
+    expect(await textContrastRatio(page.locator('.info-cta .eyebrow')), 'CTA de página comercial').toBeGreaterThanOrEqual(4.5);
+  });
+
+  test('los objetivos táctiles públicos conservan un área mínima de 44 px', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1366, height: 900 });
+    for (const path of pages) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      expect(await undersizedTargets(page), path).toEqual([]);
+    }
+  });
+
+  test('todas las páginas públicas tienen metadatos únicos y rastreables', async ({ page }) => {
+    const titles = new Set<string>();
+    const descriptions = new Set<string>();
+
+    for (const path of pages) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      const title = await page.title();
+      const description = await page.locator('meta[name="description"]').getAttribute('content');
+      expect(title.length, `${path} title length`).toBeLessThanOrEqual(60);
+      expect(description?.length, `${path} description minimum`).toBeGreaterThanOrEqual(100);
+      expect(description?.length, `${path} description maximum`).toBeLessThanOrEqual(160);
+      expect(titles.has(title), `${path} duplicated title`).toBe(false);
+      expect(descriptions.has(description ?? ''), `${path} duplicated description`).toBe(false);
+      titles.add(title);
+      descriptions.add(description ?? '');
+
+      await expect(page.locator('h1')).toHaveCount(1);
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', `https://reserva.logic2b.com${path}`);
+      await expect(page.locator('link[rel="alternate"]')).toHaveCount(3);
+      await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', title);
+      await expect(page.locator('meta[property="og:description"]')).toHaveAttribute('content', description ?? '');
+      await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', /index, (follow|max-image-preview|nofollow)/);
+    }
   });
 
   for (const width of [320, 375, 430, 1366]) {
@@ -70,7 +255,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.locator('[data-monthly-saving]')).toContainText(/3[.\s]?000/);
     await expect(page.getByText(/Estimación basada en tarifas publicadas por terceros/)).toBeVisible();
 
-    await page.getByRole('button', { name: 'Usar esta recomendación' }).click();
+    await page.getByRole('button', { name: 'Llevarlo a mi caso' }).click();
     await expect(page.locator('[data-lead-level]')).toHaveValue('inteligente');
   });
 
@@ -78,7 +263,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/', { waitUntil: 'networkidle' });
     const banner = await page.locator('[data-cookie-banner]').boundingBox();
-    const secondaryAction = await page.getByRole('link', { name: 'Explorar las demos' }).boundingBox();
+    const secondaryAction = await page.getByRole('link', { name: 'Probar una demo' }).boundingBox();
     expect(banner).not.toBeNull();
     expect(secondaryAction).not.toBeNull();
     expect(banner!.x).toBeGreaterThanOrEqual(secondaryAction!.x + secondaryAction!.width);
@@ -125,15 +310,80 @@ test.describe('landing comercial Logic Reserva', () => {
   });
 });
 
+test.describe('accesibilidad común de las demostraciones', () => {
+  const routes = [
+    '/demos/brasca/', '/demos/vedra/', '/demos/vedra/gestion/', '/demos/vedra/gestion/?vista=espera', '/demos/solane/', '/demos/solane/eventos/', '/demos/solane/gestion/', '/demos/solane/gestion/?vista=espera',
+    '/en/demos/brasca/', '/en/demos/vedra/', '/en/demos/vedra/gestion/', '/en/demos/vedra/gestion/?vista=espera', '/en/demos/solane/', '/en/demos/solane/eventos/', '/en/demos/solane/gestion/', '/en/demos/solane/gestion/?vista=espera',
+  ] as const;
+
+  test('el teclado puede saltar la cabecera en todas las rutas es/en', async ({ page }) => {
+    for (const path of routes) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      await page.keyboard.press('Tab');
+      const label = path.startsWith('/en/') ? 'Skip to main content' : 'Saltar al contenido principal';
+      const skipLink = page.getByRole('link', { name: label });
+      await expect(skipLink).toBeFocused();
+      await skipLink.press('Enter');
+      await expect(page.locator('#contenido')).toBeFocused();
+    }
+  });
+
+  test('las etiquetas de Vedra y los acentos de Solane conservan contraste AA', async ({ page }) => {
+    const targets = [
+      { path: '/demos/vedra/', selector: '.vw-demo-label' },
+      { path: '/demos/solane/', selector: '.solane-lockup span' },
+      { path: '/demos/solane/', selector: '.solane-menu-grid article:first-child > span' },
+      { path: '/demos/solane/', selector: '.sw-gateway > div > p:first-child' },
+      { path: '/demos/solane/eventos/', selector: '.events-lockup span' },
+      { path: '/demos/solane/eventos/', selector: '.et-card[data-event-status="draft"] > header p' },
+    ];
+    for (const { path, selector } of targets) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      expect(await textContrastRatio(page.locator(selector).first()), `${path} ${selector}`).toBeGreaterThanOrEqual(4.5);
+    }
+  });
+
+  test('los objetivos táctiles de todas las demos conservan un área mínima de 44 px', async ({ page }) => {
+    test.setTimeout(120_000);
+    await page.setViewportSize({ width: 1366, height: 900 });
+    for (const path of routes) {
+      await page.goto(path, { waitUntil: 'networkidle' });
+      expect(await undersizedTargets(page), path).toEqual([]);
+    }
+  });
+});
+
 test.describe('demo Brasca · plan Básico', () => {
-  test('los tres heroes sirven AVIF responsive y respetan movimiento reducido', async ({ page }) => {
+  test('los tres heroes v2 de OpenAI sirven AVIF responsive y respetan movimiento reducido', async ({ page, request }) => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     for (const slug of ['brasca', 'vedra', 'solane']) {
       await page.goto(`/demos/${slug}/`, { waitUntil: 'networkidle' });
       const source = page.locator('.brand-hero picture source[type="image/avif"]');
       await expect(source).toHaveCount(1);
-      await expect(source).toHaveAttribute('srcset', /-640\.avif 640w, .*?-960\.avif 960w, .*?-1600\.avif 1600w/);
-      await expect(page.locator('.brand-hero img')).toHaveAttribute('loading', 'eager');
+      await expect(source).toHaveAttribute(
+        'srcset',
+        `/images/heroes/${slug}-v2-640.avif 640w, /images/heroes/${slug}-v2-960.avif 960w, /images/heroes/${slug}-v2-1600.avif 1600w`,
+      );
+      const image = page.locator('.brand-hero img');
+      await expect(image).toHaveAttribute('src', `/images/heroes/${slug}-v2-960.avif`);
+      await expect(image).toHaveAttribute('loading', 'eager');
+
+      for (const width of [640, 960, 1600]) {
+        const response = await request.get(`/images/heroes/${slug}-v2-${width}.avif`);
+        expect(response.status()).toBe(200);
+        expect(response.headers()['content-type']).toContain('image/avif');
+        expect((await response.body()).byteLength).toBeGreaterThan(10_000);
+      }
+    }
+  });
+
+  test('los pasos inactivos del widget mantienen contraste AA en Vedra y Solane', async ({ page }) => {
+    for (const slug of ['vedra', 'solane']) {
+      await page.goto(`/demos/${slug}/`, { waitUntil: 'networkidle' });
+      const step = page.locator('.vw-steps li').last();
+      await expect(step).toBeVisible();
+      const ratio = await textContrastRatio(step);
+      expect(ratio, slug).toBeGreaterThanOrEqual(4.5);
     }
   });
 
@@ -225,6 +475,7 @@ test.describe('demo Vedra · nivel Gestión', () => {
         '/demos/vedra/',
         '/demos/vedra/gestion/?vista=servicio',
         '/demos/vedra/gestion/?vista=plano',
+        '/demos/vedra/gestion/?vista=espera',
         '/demos/vedra/gestion/?vista=clientes',
         '/demos/vedra/gestion/?vista=informes',
         '/demos/vedra/gestion/?vista=ajustes',
@@ -284,6 +535,41 @@ test.describe('demo Vedra · nivel Gestión', () => {
     await page.getByRole('button', { name: 'Restablecer demo' }).last().click();
     await expect(page.locator('.rd-booking').filter({ hasText: 'Marina Widget' })).toHaveCount(0);
     await expect(page.getByRole('status')).toContainText('Demo restablecida con los datos iniciales.');
+    expect(networkWrites).toEqual([]);
+  });
+
+  test('lista de espera: alta, aviso y asiento crean un walk-in sin red', async ({ page }) => {
+    const networkWrites: string[] = [];
+    page.on('request', (request) => {
+      if (request.method() !== 'GET') networkWrites.push(`${request.method()} ${request.url()}`);
+    });
+    await page.goto('/demos/vedra/gestion/?vista=espera', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('logic-reserva-demo-vedra-v1'));
+    await page.reload({ waitUntil: 'networkidle' });
+
+    await page.getByLabel('Nombre', { exact: true }).fill('Clara Sin Reserva');
+    await page.getByLabel('Teléfono (opcional)').fill('+34 600 222 333');
+    await page.getByRole('button', { name: 'Añadir a espera' }).click();
+    const entry = page.locator('[data-waitlist-entry]').filter({ hasText: 'Clara Sin Reserva' });
+    await expect(entry).toHaveAttribute('data-waitlist-status', 'waiting');
+    await expect(entry).toContainText('Mesa disponible');
+    await entry.locator('[data-waitlist-action="notified"]').click();
+    await expect(entry).toHaveAttribute('data-waitlist-status', 'notified');
+
+    await page.reload({ waitUntil: 'networkidle' });
+    const persisted = page.locator('[data-waitlist-entry]').filter({ hasText: 'Clara Sin Reserva' });
+    await expect(persisted).toHaveAttribute('data-waitlist-status', 'notified');
+    await persisted.locator('[data-waitlist-action="seated"]').click();
+    await expect(page.locator('[data-waitlist-history="seated"]')).toContainText('Clara Sin Reserva');
+
+    const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('logic-reserva-demo-vedra-v1') ?? '{}') as { waitlist?: { status?: string; seatedBookingId?: string }[]; bookings?: { guest?: { name?: string }; source?: string; status?: string }[] });
+    expect(stored.waitlist).toEqual(expect.arrayContaining([expect.objectContaining({ status: 'seated', seatedBookingId: expect.stringContaining('walkin-') })]));
+    expect(stored.bookings).toEqual(expect.arrayContaining([expect.objectContaining({ guest: expect.objectContaining({ name: 'Clara Sin Reserva' }), source: 'walkin', status: 'seated' })]));
+
+    await page.getByRole('button', { name: 'Reservas', exact: true }).click();
+    const booking = page.locator('.rd-booking').filter({ hasText: 'Clara Sin Reserva' });
+    await expect(booking).toContainText('Sin reserva');
+    await expect(booking.locator('[data-booking-status]')).toHaveText('Sentada');
     expect(networkWrites).toEqual([]);
   });
 
@@ -376,6 +662,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
         '/demos/solane/gestion/?vista=servicio',
         '/demos/solane/gestion/?vista=plano',
         '/demos/solane/gestion/?vista=reservas',
+        '/demos/solane/gestion/?vista=espera',
         '/demos/solane/gestion/?vista=eventos',
         '/demos/solane/gestion/?vista=privatizaciones',
         '/demos/solane/gestion/?vista=clientes',
@@ -527,6 +814,22 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await page.locator('[data-private-tour-mode="guided"]').click();
     await expect(page.locator('[data-prepare-private-hire]')).toBeDisabled();
     await expect(page.locator('[data-private-proposal] [data-role-warning]')).toBeVisible();
+    await page.getByRole('button', { name: 'Espera', exact: true }).click();
+    await expect(page.locator('[data-dashboard-view="espera"] .rd-role-warning')).toContainText('consultar la cola');
+    await expect(page.getByRole('button', { name: 'Añadir a espera' })).toBeDisabled();
+  });
+
+  test('la espera no ofrece asiento cuando el grupo no cabe', async ({ page }) => {
+    await page.goto('/demos/solane/gestion/?vista=espera', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('logic-reserva-demo-solane-v1'));
+    await page.reload({ waitUntil: 'networkidle' });
+    await page.getByLabel('Nombre').fill('Grupo imposible');
+    await page.getByLabel('Personas').fill('40');
+    await page.getByRole('button', { name: 'Añadir a espera' }).click();
+    const entry = page.locator('[data-waitlist-entry]').filter({ hasText: 'Grupo imposible' });
+    await expect(entry).toContainText('Sin mesa disponible');
+    await expect(entry.locator('[data-waitlist-action="seated"]')).toBeDisabled();
+    await expect(entry.locator('[data-waitlist-action="cancelled"]')).toBeEnabled();
   });
 
   test('CRM exporta la muestra real y los informes etiquetan sus estimaciones', async ({ page }) => {

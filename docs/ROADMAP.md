@@ -208,13 +208,49 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Contrato local: `LEADS_TRANSPORT: 'resend'`, binding Durable Object y nombre del secret `LEADS_RESEND_API_KEY`, sin guardar su valor en el repositorio
 - [x] Preview aislada: Worker `logic-reserva-preview`, `routes: []`, workers.dev, workflow con gate `PREVIEW` y verificador automático contra herencia de producción
 - [ ] Configurar el valor cifrado de `LEADS_RESEND_API_KEY` en preview
-- [x] Configurar el valor cifrado de `LEADS_RESEND_API_KEY` en producción (binding presente; valor y entrega aún sin validar)
+- [x] Configurar y validar el valor cifrado de `LEADS_RESEND_API_KEY` en producción mediante una entrega real autorizada
 - [x] Workflow de deploy con gate doble: `workflow_dispatch` que exige teclear `DEPLOY` + variable `RESERVA_DEPLOY_ENABLED == 'true'`
 - [x] Preview pública verificada: rutas/SEO 200, cabeceras de seguridad en todas las páginas, `x-robots-tag` en demos y API fail-closed(503) sin secret
 - [ ] Verificación en preview: lead de prueba llega por email y la repetición devuelve `replayed: true` sin duplicarlo
-- [x] Deploy manual de `logic-reserva` con dominio personalizado `reserva.logic2b.com`, DNS/TLS administrados por Cloudflare y verificación externa fail-closed
+- [x] Deploy manual de `logic-reserva` con dominio personalizado `reserva.logic2b.com`, DNS/TLS administrados por Cloudflare y verificación externa
+- [x] Verificación real en producción: `202 delivered`, llegada confirmada en `marinerandreu+logic@gmail.com` y repetición con la misma referencia + `replayed: true` sin segundo correo
 
 **Hecho cuando:** demo pública en reserva.logic2b.com y un lead de prueba en la bandeja de entrada.
+
+---
+
+## F13 · Web comercial, narrativa y SEO
+
+**Objetivo:** convertir la landing y las páginas de intención en un recorrido comercial coherente, específico para restauración y preparado para buscadores.
+**Dependencias:** F3, F11.
+
+- [x] Hero orientado al resultado operativo, con la sala como protagonista, CTA de diagnóstico y demostración visible sin promesas de producto genéricas
+- [x] Hilo comercial completo: coste del cruce entre canales → inventario compartido → casos navegables → nivel adecuado → ahorro estimado → conversación
+- [x] Demos Brasca, Vedra y Solane presentadas con sus imágenes editoriales AVIF, `srcset`, tamaños y textos alternativos
+- [x] Páginas de planes, restaurantes y grupos/eventos ampliadas con contenido específico por intención, preguntas frecuentes y enlaces internos contextuales
+- [x] SEO técnico bilingüe: títulos y descripciones únicos, canonical, hreflang + x-default, Open Graph, Twitter Card, robots por tipo de página y sitemap enriquecido
+- [x] Datos estructurados JSON-LD: Organization, WebSite, BreadcrumbList, Service y FAQPage según la ruta
+- [x] Accesibilidad común es/en: salto al contenido, contraste AA en texto pequeño y objetivos táctiles efectivos de al menos 44 px en site, demos y gestores
+- [x] Pruebas E2E de metadatos, schema, rastreabilidad, longitud de snippets, imágenes y responsive sin romper los recorridos F7–F12
+
+**Hecho cuando:** `pnpm check` verde, E2E integral verde y revisión visual local a 1366px y 375px sin overflow.
+
+---
+
+## F14 · Lista de espera y clientes sin reserva
+
+**Objetivo:** incorporar la demanda espontánea al mismo inventario de mesas, sin crear una agenda paralela ni fingir integraciones externas.
+**Dependencias:** F7, F8, F11.
+
+- [x] Modelo puro de lista de espera: espera → avisado → sentado/cancelado, con fecha de llegada, franja solicitada y tiempo de espera comunicado
+- [x] Conversión a `TableBooking` con origen `walkin`, estado `seated` y la opción mínima disponible calculada por `tableAvailability`
+- [x] Estado local versionado y parser defensivo compatible con payloads anteriores en Vedra y Solane
+- [x] Vista bilingüe `?vista=espera` compartida por Gestión e Inteligente: alta, aviso, disponibilidad, asignación de mesa y cancelación
+- [x] Solane aplica permisos en dos capas: Dirección y Sala operan la cola; Cocina solo consulta
+- [x] La cola y sus reservas sentadas permanecen totalmente locales, aparecen en Servicio/Reservas/Informes y respetan eventos y privatizaciones
+- [x] Cobertura unitaria y E2E de alta → aviso → asiento, ausencia de mesa, permisos, persistencia y responsive
+
+**Hecho cuando:** un cliente sin reserva puede entrar en la cola, recibir aviso y sentarse sin solapar inventario; `pnpm check && pnpm e2e` verdes.
 
 ---
 

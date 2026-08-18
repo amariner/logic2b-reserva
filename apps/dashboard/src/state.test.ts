@@ -1,17 +1,20 @@
 import { describe, expect, it } from 'vitest';
-import type { TableBooking } from '@logic-reserva/domain';
+import type { Restaurant, TableBooking, WaitlistEntry } from '@logic-reserva/domain';
 import {
   DEMO_STATE_VERSION,
+  addVedraWaitlistEntry,
   assignVedraGroupMenu,
   assignVedraGroupTables,
   confirmVedraGroup,
   initialVedraState,
   parseVedraStored,
   resetVedraGroupJourney,
+  seatVedraWaitlistEntry,
   serializeVedraState,
   setVedraTourStep,
   startVedraTour,
   transitionVedraBooking,
+  transitionVedraWaitlistEntry,
   upsertVedraBooking,
 } from './state';
 
@@ -24,6 +27,22 @@ const fixture = (id = 'fixture-1'): TableBooking => ({
   status: 'confirmed',
   guest: { name: 'Fixture Guest' },
   source: 'fixture',
+});
+
+const restaurant: Restaurant = {
+  id: 'vedra', organizationId: 'demo', name: 'Vedra',
+  spaces: [{ id: 'sala', name: 'Sala', privatizable: false, tables: [
+    { id: 'vs1', name: 'Mesa 1', minSeats: 1, maxSeats: 2, combinableWith: ['vs2'] },
+    { id: 'vs2', name: 'Mesa 2', minSeats: 2, maxSeats: 4, combinableWith: ['vs1'] },
+  ] }],
+  menus: [],
+  shifts: [{ id: 'dinner', kind: 'dinner', firstSeatingMin: 1200, lastSeatingMin: 1320 }],
+};
+
+const waitlistEntry = (overrides: Partial<WaitlistEntry> = {}): WaitlistEntry => ({
+  id: 'wait-1', restaurantId: 'vedra', guest: { name: 'Clara Demo' }, partySize: 2,
+  requestedSlot: { date: '2026-09-18', startMin: 1200, durationMin: 90 },
+  arrivedAt: '2026-08-18T19:30:00.000Z', quotedWaitMin: 20, status: 'waiting', ...overrides,
 });
 
 describe('estado Vedra versionado', () => {
@@ -60,6 +79,7 @@ describe('estado Vedra versionado', () => {
     expect(state.bookings.map((booking) => booking.id)).toEqual(['fixture-1', 'web-old']);
     expect(state.group.status).toBe('requested');
     expect(state.tourMode).toBe('unset');
+    expect(state.waitlist).toEqual([]);
   });
 
   it('la versión almacenada sustituye un fixture con el mismo id', () => {
@@ -136,5 +156,27 @@ describe('estado Vedra versionado', () => {
     expect(reset.bookings.map((booking) => booking.id)).toEqual(['fixture-1', 'web-keep']);
     expect(reset.group.status).toBe('requested');
     expect(reset.tourMode).toBe('unset');
+  });
+
+  it('añade, avisa y sienta un walk-in sobre una mesa realmente disponible', () => {
+    let state = addVedraWaitlistEntry(initialVedraState([fixture()]), waitlistEntry());
+    state = transitionVedraWaitlistEntry(state, 'wait-1', 'notified');
+    expect(state.waitlist[0].status).toBe('notified');
+    state = seatVedraWaitlistEntry(state, 'wait-1', restaurant, 'walkin-1');
+    expect(state.waitlist[0]).toMatchObject({ status: 'seated', seatedBookingId: 'walkin-1' });
+    expect(state.bookings.find((booking) => booking.id === 'walkin-1')).toMatchObject({ source: 'walkin', status: 'seated', tableIds: ['vs1'] });
+  });
+
+  it('mantiene la entrada en espera si no hay inventario', () => {
+    const occupied = [fixture('occupied-1'), { ...fixture('occupied-2'), tableIds: ['vs2'] }];
+    const state = addVedraWaitlistEntry(initialVedraState(occupied), waitlistEntry({ requestedSlot: fixture().slot }));
+    const unchanged = seatVedraWaitlistEntry(state, 'wait-1', restaurant, 'walkin-no-room');
+    expect(unchanged).toBe(state);
+    expect(unchanged.waitlist[0].status).toBe('waiting');
+  });
+
+  it('descarta entradas de espera corruptas sin perder reservas', () => {
+    const raw = JSON.stringify({ version: 1, bookings: [], waitlist: [waitlistEntry(), { ...waitlistEntry({ id: 'bad' }), partySize: -1 }] });
+    expect(parseVedraStored(raw).waitlist).toEqual([waitlistEntry()]);
   });
 });

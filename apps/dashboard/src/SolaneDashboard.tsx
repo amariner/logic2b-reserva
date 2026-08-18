@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  BellRing,
   Building2,
   CalendarDays,
   CheckCircle2,
@@ -19,6 +20,7 @@ import { canOperate, type CustomerProfile, type PrivateHire, type PrivateHirePro
 import type { DashboardLocale } from './content';
 import {
   SOLANE_STORAGE_KEY,
+  addSolaneWaitlistEntry,
   blockSolanePrivateHire,
   createSolaneEvent,
   initialSolaneState,
@@ -28,13 +30,16 @@ import {
   registerSolanePrivateHireDeposit,
   resetSolanePrivateHireTour,
   resolveSolaneBookingDeposit,
+  seatSolaneWaitlistEntry,
   serializeSolaneState,
   setSolaneRole,
   startSolanePrivateHireTour,
+  transitionSolaneWaitlistEntry,
   type SolaneDemoState,
 } from './solane-state';
 import ReportsView from './views/ReportsView';
 import SolaneCustomersView from './views/SolaneCustomersView';
+import WaitlistView from './views/WaitlistView';
 
 interface SolaneDashboardProps {
   slug: 'solane';
@@ -46,7 +51,7 @@ interface SolaneDashboardProps {
   initialCustomers: CustomerProfile[];
 }
 
-type SolaneView = 'servicio' | 'plano' | 'reservas' | 'eventos' | 'privatizaciones' | 'clientes' | 'informes';
+type SolaneView = 'servicio' | 'plano' | 'reservas' | 'espera' | 'eventos' | 'privatizaciones' | 'clientes' | 'informes';
 type CopyText = { readonly es: string; readonly en: string };
 
 const text = (es: string, en: string): CopyText => ({ es, en });
@@ -54,6 +59,7 @@ const NAV = [
   { id: 'servicio', label: text('Servicio', 'Service'), icon: TableProperties },
   { id: 'plano', label: text('Plano', 'Floor plan'), icon: MapPinned },
   { id: 'reservas', label: text('Reservas', 'Bookings'), icon: ListChecks },
+  { id: 'espera', label: text('Espera', 'Waitlist'), icon: BellRing },
   { id: 'eventos', label: text('Eventos', 'Events'), icon: TicketCheck },
   { id: 'privatizaciones', label: text('Privatizaciones', 'Private hire'), icon: Building2 },
   { id: 'clientes', label: text('Clientes', 'Guests'), icon: UserRound },
@@ -370,6 +376,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
   const privateHire = state.privateHires[0];
   const canManageEvents = canOperate(state.role, 'manage_events');
   const canManagePrivateHires = canOperate(state.role, 'manage_private_hires');
+  const canManageWaitlist = canOperate(state.role, 'manage_waitlist');
   const dayBookings = activeBookings.filter((booking) => booking.slot.date === date);
   const dayEvents = activeEvents.filter((event) => event.slot.date === date);
   const floorSlot = { date, startMin: floorTime, durationMin: 15 };
@@ -394,7 +401,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
         </div>
       </aside>
 
-      <main className="rd-main">
+      <main id="contenido" className="rd-main" tabIndex={-1}>
         <div className="rd-demo-notice"><span>{local(COPY.fictional, locale)}</span><div className="rd-demo-actions"><label>{local(COPY.role.label, locale)}<select data-role-selector disabled={!hydrated} value={state.role} onChange={(changeEvent) => changeRole(changeEvent.target.value as RestaurantRole)}><option value="direction">{local(COPY.role.direction, locale)}</option><option value="floor">{local(COPY.role.floor, locale)}</option><option value="kitchen">{local(COPY.role.kitchen, locale)}</option></select></label><button type="button" onClick={reset}><RotateCcw size={15} aria-hidden="true" />{local(COPY.reset, locale)}</button></div></div>
         <p className="rd-live" role="status" aria-live="polite">{notice}</p>
 
@@ -509,6 +516,20 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
             </div>}
           </section>
         )}
+        {view === 'espera' && <WaitlistView
+          locale={locale}
+          restaurant={restaurant}
+          entries={state.waitlist}
+          bookings={state.bookings}
+          events={state.events}
+          privateHires={state.privateHires}
+          initialDate={date}
+          initialTime={floorTime}
+          canManage={canManageWaitlist}
+          onAdd={(entry) => commit(addSolaneWaitlistEntry(state, entry))}
+          onTransition={(entryId, status) => commit(transitionSolaneWaitlistEntry(state, entryId, status))}
+          onSeat={(entryId, bookingId) => commit(seatSolaneWaitlistEntry(state, entryId, restaurant, bookingId))}
+        />}
         {view === 'clientes' && <SolaneCustomersView locale={locale} restaurant={restaurant} bookings={state.bookings} profiles={initialCustomers} />}
         {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="intelligent" />}
       </main>

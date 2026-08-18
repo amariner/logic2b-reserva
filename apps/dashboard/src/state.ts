@@ -1,4 +1,16 @@
-import { validateSlot, type BookingSource, type BookingStatus, type Guest, type TableBooking, type TimeSlot } from '@logic-reserva/domain';
+import {
+  createWalkInBooking,
+  validateSlot,
+  type BookingSource,
+  type BookingStatus,
+  type Guest,
+  type Restaurant,
+  type TableBooking,
+  type TimeSlot,
+  type WaitlistEntry,
+  type WaitlistStatus,
+} from '@logic-reserva/domain';
+import { addWaitlistEntry, cloneWaitlistEntry, parseWaitlistEntries, transitionWaitlistEntry } from './waitlist';
 
 export const VEDRA_STORAGE_KEY = 'logic-reserva-demo-vedra-v1';
 export const DEMO_STATE_VERSION = 1 as const;
@@ -21,6 +33,7 @@ export interface VedraGroupRequest {
 export interface VedraDemoState {
   version: typeof DEMO_STATE_VERSION;
   bookings: TableBooking[];
+  waitlist: WaitlistEntry[];
   group: VedraGroupRequest;
   tourMode: VedraTourMode;
   tourStep: 1 | 2 | 3 | null;
@@ -63,6 +76,7 @@ export const initialVedraState = (fixtureBookings: readonly TableBooking[] = [])
   return {
     version: DEMO_STATE_VERSION,
     bookings: fixtureBookings.map(cloneBooking),
+    waitlist: [],
     group: groupFixture(date),
     tourMode: 'unset',
     tourStep: null,
@@ -154,6 +168,7 @@ export function parseVedraStored(raw: string | null, fixtureBookings: readonly T
     return {
       version: DEMO_STATE_VERSION,
       bookings: [...merged.values()].map(cloneBooking),
+      waitlist: parseWaitlistEntries(value.waitlist, 'vedra'),
       group,
       tourMode,
       tourStep: tourMode === 'guided' ? tourStep : null,
@@ -167,6 +182,7 @@ export function parseVedraStored(raw: string | null, fixtureBookings: readonly T
 export const serializeVedraState = (state: VedraDemoState): string => JSON.stringify({
   version: DEMO_STATE_VERSION,
   bookings: state.bookings.map(cloneBooking),
+  waitlist: state.waitlist.map(cloneWaitlistEntry),
   group: cloneGroup(state.group),
   tourMode: state.tourMode,
   tourStep: state.tourStep,
@@ -197,6 +213,27 @@ export function transitionVedraBooking(state: VedraDemoState, bookingId: string,
       booking.id === bookingId && ALLOWED_TRANSITIONS[booking.status].includes(status) ? { ...cloneBooking(booking), status } : cloneBooking(booking),
     ),
   };
+}
+
+export function addVedraWaitlistEntry(state: VedraDemoState, entry: WaitlistEntry): VedraDemoState {
+  const waitlist = addWaitlistEntry(state.waitlist, entry, 'vedra');
+  return waitlist === null ? state : { ...state, waitlist };
+}
+
+export function transitionVedraWaitlistEntry(state: VedraDemoState, entryId: string, status: Exclude<WaitlistStatus, 'seated'>): VedraDemoState {
+  const waitlist = transitionWaitlistEntry(state.waitlist, entryId, status);
+  return waitlist === null ? state : { ...state, waitlist };
+}
+
+export function seatVedraWaitlistEntry(state: VedraDemoState, entryId: string, restaurant: Restaurant, bookingId: string): VedraDemoState {
+  if (state.bookings.some((booking) => booking.id === bookingId)) return state;
+  const entry = state.waitlist.find((candidate) => candidate.id === entryId);
+  if (entry === undefined) return state;
+  const booking = createWalkInBooking(entry, restaurant, state.bookings, [], [], bookingId);
+  if (booking === null) return state;
+  const waitlist = transitionWaitlistEntry(state.waitlist, entryId, 'seated', booking.id);
+  if (waitlist === null) return state;
+  return { ...state, bookings: [...state.bookings.map(cloneBooking), booking], waitlist };
 }
 
 export function startVedraTour(state: VedraDemoState, mode: Exclude<VedraTourMode, 'unset'>): VedraDemoState {

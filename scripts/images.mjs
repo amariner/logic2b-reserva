@@ -6,15 +6,19 @@ import sharp from 'sharp';
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const sourceDirectory = path.join(projectRoot, 'apps/web/assets/heroes');
 const outputDirectory = path.join(projectRoot, 'apps/web/public/images/heroes');
-const brands = ['brasca', 'vedra', 'solane'];
+const heroes = [
+  { source: 'generated/brasca-v2.png', output: 'brasca-v2' },
+  { source: 'generated/vedra-v2.png', output: 'vedra-v2' },
+  { source: 'generated/solane-v2.png', output: 'solane-v2' },
+];
 const widths = [640, 960, 1600];
 
 await mkdir(outputDirectory, { recursive: true });
 
-for (const brand of brands) {
-  const source = path.join(sourceDirectory, `${brand}.svg`);
+for (const hero of heroes) {
+  const source = path.join(sourceDirectory, hero.source);
   for (const width of widths) {
-    const output = path.join(outputDirectory, `${brand}-${width}.avif`);
+    const output = path.join(outputDirectory, `${hero.output}-${width}.avif`);
     await sharp(source)
       .resize(width, Math.round(width * 0.75), { fit: 'cover' })
       .avif({ quality: 72, effort: 6 })

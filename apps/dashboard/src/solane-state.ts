@@ -1,6 +1,7 @@
 import {
   assertNoDoubleBooking,
   canOperate,
+  createWalkInBooking,
   depositFor,
   noShowCharge,
   validateEvent,
@@ -17,7 +18,10 @@ import {
   type RestaurantEvent,
   type RestaurantRole,
   type TableBooking,
+  type WaitlistEntry,
+  type WaitlistStatus,
 } from '@logic-reserva/domain';
+import { addWaitlistEntry, cloneWaitlistEntry, parseWaitlistEntries, transitionWaitlistEntry } from './waitlist';
 
 export const SOLANE_STORAGE_KEY = 'logic-reserva-demo-solane-v1';
 export const SOLANE_STATE_VERSION = 1 as const;
@@ -32,6 +36,7 @@ export interface SolaneEventSale {
 export interface SolaneDemoState {
   version: typeof SOLANE_STATE_VERSION;
   bookings: TableBooking[];
+  waitlist: WaitlistEntry[];
   events: RestaurantEvent[];
   sales: SolaneEventSale[];
   privateHires: PrivateHire[];
@@ -94,6 +99,7 @@ export const initialSolaneState = (
 ): SolaneDemoState => ({
   version: SOLANE_STATE_VERSION,
   bookings: fixtureBookings.map(cloneBooking),
+  waitlist: [],
   events: fixtureEvents.map(cloneEvent),
   sales: [],
   privateHires: fixturePrivateHires.map(clonePrivateHire),
@@ -237,6 +243,7 @@ export function parseSolaneStored(
     return {
       version: SOLANE_STATE_VERSION,
       bookings: [...bookings.values()].map(cloneBooking),
+      waitlist: parseWaitlistEntries(value.waitlist, 'solane'),
       events: [...events.values()].map(cloneEvent),
       sales: sales.map(cloneSale),
       privateHires: [...privateHires.values()].map(clonePrivateHire),
@@ -251,6 +258,7 @@ export function parseSolaneStored(
 export const serializeSolaneState = (state: SolaneDemoState): string => JSON.stringify({
   version: SOLANE_STATE_VERSION,
   bookings: state.bookings.map(cloneBooking),
+  waitlist: state.waitlist.map(cloneWaitlistEntry),
   events: state.events.map(cloneEvent),
   sales: state.sales.map(cloneSale),
   privateHires: state.privateHires.map(clonePrivateHire),
@@ -261,6 +269,29 @@ export const serializeSolaneState = (state: SolaneDemoState): string => JSON.str
 export function upsertSolaneBooking(state: SolaneDemoState, booking: TableBooking): SolaneDemoState {
   if (booking.restaurantId !== 'solane') return state;
   return { ...state, bookings: [...state.bookings.filter((candidate) => candidate.id !== booking.id), cloneBooking(booking)] };
+}
+
+export function addSolaneWaitlistEntry(state: SolaneDemoState, entry: WaitlistEntry): SolaneDemoState {
+  if (!canOperate(state.role, 'manage_waitlist')) return state;
+  const waitlist = addWaitlistEntry(state.waitlist, entry, 'solane');
+  return waitlist === null ? state : { ...state, waitlist };
+}
+
+export function transitionSolaneWaitlistEntry(state: SolaneDemoState, entryId: string, status: Exclude<WaitlistStatus, 'seated'>): SolaneDemoState {
+  if (!canOperate(state.role, 'manage_waitlist')) return state;
+  const waitlist = transitionWaitlistEntry(state.waitlist, entryId, status);
+  return waitlist === null ? state : { ...state, waitlist };
+}
+
+export function seatSolaneWaitlistEntry(state: SolaneDemoState, entryId: string, restaurant: Restaurant, bookingId: string): SolaneDemoState {
+  if (!canOperate(state.role, 'manage_waitlist') || !canOperate(state.role, 'seat_booking') || state.bookings.some((booking) => booking.id === bookingId)) return state;
+  const entry = state.waitlist.find((candidate) => candidate.id === entryId);
+  if (entry === undefined) return state;
+  const booking = createWalkInBooking(entry, restaurant, state.bookings, state.events, state.privateHires, bookingId);
+  if (booking === null) return state;
+  const waitlist = transitionWaitlistEntry(state.waitlist, entryId, 'seated', booking.id);
+  if (waitlist === null) return state;
+  return { ...state, bookings: [...state.bookings.map(cloneBooking), booking], waitlist };
 }
 
 export function resolveSolaneBookingDeposit(

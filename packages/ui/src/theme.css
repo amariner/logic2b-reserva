@@ -3,6 +3,7 @@
    las variables --brand-* en apps/web/src/styles/demos.css. */
 :root {
   --color-notion-blue: #0075de;
+  --color-notion-blue-strong: #0068c7;
   --color-paper-warmth: #f6f5f4;
   --color-pure-white: #ffffff;
   --color-ink-black: #000000;
@@ -68,7 +69,7 @@ a { color: inherit; }
 img { max-width: 100%; }
 
 .shell { width: min(var(--page-max-width), calc(100% - 48px)); margin-inline: auto; }
-.eyebrow { margin: 0 0 14px; color: var(--ash); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; }
+.eyebrow { margin: 0 0 14px; color: var(--slate); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; }
 .display, .heading { margin: 0; font-family: var(--sans); font-weight: 600; }
 .display { font-size: clamp(3.3rem, 7.5vw, 6rem); line-height: 1.04; letter-spacing: -.048em; }
 .heading { font-size: clamp(2.5rem, 5.6vw, 3.375rem); line-height: 1.04; letter-spacing: -.035em; }
@@ -76,7 +77,7 @@ img { max-width: 100%; }
 .muted { color: var(--slate); }
 .pill { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: var(--radius-buttons); padding: 6px 15px; color: var(--color-pure-white); background: var(--color-notion-blue); font-size: .875rem; font-weight: 500; text-decoration: none; cursor: pointer; transition: background-color var(--duration-interaction) var(--ease-interaction), transform var(--duration-interaction) var(--ease-interaction); }
 .pill:hover { background: #0068c7; }
-.pill.ghost { color: var(--color-notion-blue); background: var(--color-sky-tint); }
+.pill.ghost { color: var(--color-notion-blue-strong); background: var(--color-sky-tint); }
 .pill.ghost:hover { background: #d7ebfc; }
 .pill:focus-visible, a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 3px solid var(--bordeaux); outline-offset: 3px; }
 .card { border: 1px solid var(--line); border-radius: var(--radius-cards); background: var(--mist); }

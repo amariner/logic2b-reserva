@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { tableAvailability, type PrivateHire, type Restaurant, type RestaurantEvent, type TableBooking } from '@logic-reserva/domain';
+import { tableAvailability, type PrivateHire, type Restaurant, type RestaurantEvent, type TableBooking, type WaitlistEntry } from '@logic-reserva/domain';
 import {
   SOLANE_STATE_VERSION,
+  addSolaneWaitlistEntry,
   blockSolanePrivateHire,
   createSolaneEvent,
   initialSolaneState,
@@ -10,10 +11,12 @@ import {
   prepareSolanePrivateHire,
   registerSolanePrivateHireDeposit,
   resolveSolaneBookingDeposit,
+  seatSolaneWaitlistEntry,
   sellSolaneTickets,
   serializeSolaneState,
   setSolaneRole,
   startSolanePrivateHireTour,
+  transitionSolaneWaitlistEntry,
   upsertSolaneBooking,
 } from './solane-state';
 
@@ -78,6 +81,12 @@ const privateHire = (): PrivateHire => ({
   status: 'requested',
 });
 
+const waitlistEntry = (overrides: Partial<WaitlistEntry> = {}): WaitlistEntry => ({
+  id: 'wait-1', restaurantId: 'solane', guest: { name: 'Clara Demo' }, partySize: 2,
+  requestedSlot: { date: '2026-09-18', startMin: 1260, durationMin: 90 },
+  arrivedAt: '2026-08-18T19:30:00.000Z', quotedWaitMin: 20, status: 'waiting', ...overrides,
+});
+
 describe('estado Solane versionado', () => {
   it('clona profundamente fixtures', () => {
     const sourceBooking = booking();
@@ -109,6 +118,7 @@ describe('estado Solane versionado', () => {
     expect(state.privateHires).toEqual([privateHire()]);
     expect(state.role).toBe('direction');
     expect(state.privateHireTour).toEqual({ mode: 'choice', step: 1, completed: false });
+    expect(state.waitlist).toEqual([]);
   });
 
   it('conserva un depósito válido y descarta una reserva con desglose corrupto', () => {
@@ -209,5 +219,35 @@ describe('estado Solane versionado', () => {
   it('serializa y restaura el depósito y su aceptación temporal', () => {
     const state = initialSolaneState([depositedBooking()]);
     expect(parseSolaneStored(serializeSolaneState(state))).toEqual(state);
+  });
+
+  it('gestiona la cola y la convierte en reserva sentada sin saltarse el inventario', () => {
+    let state = addSolaneWaitlistEntry(initialSolaneState(), waitlistEntry());
+    state = transitionSolaneWaitlistEntry(state, 'wait-1', 'notified');
+    state = seatSolaneWaitlistEntry(state, 'wait-1', restaurant, 'walkin-1');
+    expect(state.waitlist[0]).toMatchObject({ status: 'seated', seatedBookingId: 'walkin-1' });
+    expect(state.bookings[0]).toMatchObject({ id: 'walkin-1', source: 'walkin', status: 'seated', tableIds: ['ss1'] });
+  });
+
+  it('un evento publicado impide sentar la cola en sus mesas', () => {
+    const fullEvent = { ...event(), status: 'published' as const };
+    const state = addSolaneWaitlistEntry(initialSolaneState([], [fullEvent]), waitlistEntry());
+    const unchanged = seatSolaneWaitlistEntry(state, 'wait-1', restaurant, 'walkin-blocked');
+    expect(unchanged).toBe(state);
+    expect(unchanged.waitlist[0].status).toBe('waiting');
+  });
+
+  it('Cocina no puede mutar la lista de espera', () => {
+    const kitchen = setSolaneRole(initialSolaneState(), 'kitchen');
+    expect(addSolaneWaitlistEntry(kitchen, waitlistEntry())).toBe(kitchen);
+    const withEntry = addSolaneWaitlistEntry(initialSolaneState(), waitlistEntry());
+    const kitchenWithEntry = setSolaneRole(withEntry, 'kitchen');
+    expect(transitionSolaneWaitlistEntry(kitchenWithEntry, 'wait-1', 'cancelled')).toBe(kitchenWithEntry);
+    expect(seatSolaneWaitlistEntry(kitchenWithEntry, 'wait-1', restaurant, 'walkin-1')).toBe(kitchenWithEntry);
+  });
+
+  it('descarta cola corrupta sin perder fixtures', () => {
+    const raw = JSON.stringify({ version: 1, bookings: [], events: [], sales: [], waitlist: [waitlistEntry(), { ...waitlistEntry({ id: 'bad' }), quotedWaitMin: 999 }] });
+    expect(parseSolaneStored(raw).waitlist).toEqual([waitlistEntry()]);
   });
 });

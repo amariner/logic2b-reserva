@@ -128,6 +128,20 @@ export interface TableBooking {
   source: BookingSource;
 }
 
+export type WaitlistStatus = 'waiting' | 'notified' | 'seated' | 'cancelled';
+
+export interface WaitlistEntry {
+  id: string;
+  restaurantId: string;
+  guest: Guest;
+  partySize: number;
+  requestedSlot: TimeSlot;
+  arrivedAt: string;
+  quotedWaitMin: number;
+  status: WaitlistStatus;
+  seatedBookingId?: string;
+}
+
 export type EventStatus = 'draft' | 'published' | 'soldout' | 'done';
 
 export interface RestaurantEvent {
@@ -266,6 +280,58 @@ export function tableAvailability(
   }
 
   return options.sort((a, b) => a.maxSeats - b.maxSeats || a.tableIds.length - b.tableIds.length);
+}
+
+const WAITLIST_TRANSITIONS: Readonly<Record<WaitlistStatus, readonly WaitlistStatus[]>> = {
+  waiting: ['notified', 'seated', 'cancelled'],
+  notified: ['seated', 'cancelled'],
+  seated: [],
+  cancelled: [],
+};
+
+export const nextWaitlistStatuses = (status: WaitlistStatus): readonly WaitlistStatus[] => WAITLIST_TRANSITIONS[status];
+
+export function validateWaitlistEntry(entry: WaitlistEntry): string[] {
+  const errors = validateSlot(entry.requestedSlot).map((error) => `waitlist ${entry.id}: ${error}`);
+  if (!entry.id.trim()) errors.push('waitlist id is required');
+  if (!entry.restaurantId.trim()) errors.push(`waitlist ${entry.id}: restaurantId is required`);
+  if (!entry.guest.name.trim() || entry.guest.name.length > 120) errors.push(`waitlist ${entry.id}: guest name is invalid`);
+  if (entry.guest.email !== undefined && (!entry.guest.email.includes('@') || entry.guest.email.length > 200)) errors.push(`waitlist ${entry.id}: guest email is invalid`);
+  if (entry.guest.phone !== undefined && entry.guest.phone.length > 40) errors.push(`waitlist ${entry.id}: guest phone is invalid`);
+  if (!Number.isInteger(entry.partySize) || entry.partySize < 1 || entry.partySize > 40) errors.push(`waitlist ${entry.id}: partySize must be between 1 and 40`);
+  if (Number.isNaN(Date.parse(entry.arrivedAt))) errors.push(`waitlist ${entry.id}: arrivedAt must be an ISO timestamp`);
+  if (!Number.isInteger(entry.quotedWaitMin) || entry.quotedWaitMin < 0 || entry.quotedWaitMin > 360) errors.push(`waitlist ${entry.id}: quotedWaitMin must be between 0 and 360`);
+  if (!Object.hasOwn(WAITLIST_TRANSITIONS, entry.status)) errors.push(`waitlist ${entry.id}: status is invalid`);
+  if (entry.status === 'seated' && !entry.seatedBookingId?.trim()) errors.push(`waitlist ${entry.id}: seatedBookingId is required when seated`);
+  if (entry.status !== 'seated' && entry.seatedBookingId !== undefined) errors.push(`waitlist ${entry.id}: seatedBookingId is only valid when seated`);
+  return errors;
+}
+
+/**
+ * Convierte una entrada activa en una reserva sentada usando la opción mínima
+ * disponible del mismo inventario que reservas, eventos y privatizaciones.
+ */
+export function createWalkInBooking(
+  entry: WaitlistEntry,
+  restaurant: Restaurant,
+  bookings: readonly TableBooking[],
+  events: readonly RestaurantEvent[],
+  hires: readonly PrivateHire[],
+  bookingId: string,
+): TableBooking | null {
+  if (entry.restaurantId !== restaurant.id || !['waiting', 'notified'].includes(entry.status) || validateWaitlistEntry(entry).length > 0 || !bookingId.trim()) return null;
+  const option = tableAvailability(restaurant, bookings, events, hires, entry.requestedSlot, entry.partySize)[0];
+  if (option === undefined) return null;
+  return {
+    id: bookingId.trim(),
+    restaurantId: restaurant.id,
+    tableIds: [...option.tableIds],
+    slot: { ...entry.requestedSlot },
+    partySize: entry.partySize,
+    status: 'seated',
+    guest: { ...entry.guest },
+    source: 'walkin',
+  };
 }
 
 export function validateRestaurant(restaurant: Restaurant): string[] {
@@ -477,11 +543,11 @@ export function noShowCharge(
 // ── Permisos demostrativos del gestor ─────────────────────────────
 
 export type RestaurantRole = 'direction' | 'floor' | 'kitchen';
-export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'seat_booking' | 'charge_no_show';
+export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'manage_waitlist' | 'seat_booking' | 'charge_no_show';
 
 export function canOperate(role: RestaurantRole, action: RestaurantAction): boolean {
   if (role === 'direction') return true;
-  if (role === 'floor') return action === 'seat_booking';
+  if (role === 'floor') return action === 'seat_booking' || action === 'manage_waitlist';
   return false;
 }
 
@@ -506,6 +572,7 @@ export const CAPABILITIES: readonly Capability[] = [
   { id: 'private-hire', label: 'Privatizaciones', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'guest-crm', label: 'CRM de comensales y exportación', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'booking-reports', label: 'Informes de ocupación y origen', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },
+  { id: 'waitlist-walkins', label: 'Lista de espera y clientes sin reserva', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },
   { id: 'decision-assistant', label: 'IA demostrativa para apoyo a decisiones', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'operational-automations', label: 'Automatizaciones de inventario y seguimiento', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
 ] as const;

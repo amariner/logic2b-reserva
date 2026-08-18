@@ -1,7 +1,7 @@
 import type { BookingSource, BookingStatus } from '@logic-reserva/domain';
 
 export type DashboardLocale = 'es' | 'en';
-export type DashboardView = 'servicio' | 'plano' | 'reservas' | 'clientes' | 'informes' | 'ajustes';
+export type DashboardView = 'servicio' | 'plano' | 'reservas' | 'espera' | 'clientes' | 'informes' | 'ajustes';
 
 export interface DashboardText {
   readonly es: string;
@@ -14,6 +14,7 @@ export const DASHBOARD_VIEWS = [
   { id: 'servicio', label: text('Servicio', 'Service') },
   { id: 'plano', label: text('Plano', 'Floor plan') },
   { id: 'reservas', label: text('Reservas', 'Bookings') },
+  { id: 'espera', label: text('Espera', 'Waitlist') },
   { id: 'clientes', label: text('Clientes', 'Guests') },
   { id: 'informes', label: text('Informes', 'Reports') },
   { id: 'ajustes', label: text('Ajustes', 'Settings') },

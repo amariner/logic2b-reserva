@@ -3,6 +3,7 @@ import {
   CAPABILITIES,
   assertNoDoubleBooking,
   canOperate,
+  createWalkInBooking,
   depositFor,
   estimateDurationMin,
   hasLevel,
@@ -18,12 +19,14 @@ import {
   validateEvent,
   validateRestaurant,
   validateSlot,
+  validateWaitlistEntry,
   type DepositRecord,
   type PrivateHire,
   type Restaurant,
   type RestaurantEvent,
   type TableBooking,
   type TimeSlot,
+  type WaitlistEntry,
 } from './index';
 
 const slot = (startMin: number, durationMin: number, date = '2026-09-04'): TimeSlot => ({ date, startMin, durationMin });
@@ -294,6 +297,61 @@ describe('disponibilidad e inventario único', () => {
   });
 });
 
+describe('lista de espera e inventario único', () => {
+  const waitlistEntry = (overrides: Partial<WaitlistEntry> = {}): WaitlistEntry => ({
+    id: 'wait-1',
+    restaurantId: restaurant.id,
+    guest: { name: 'Clara Sin Reserva', phone: '+34 600 111 222' },
+    partySize: 2,
+    requestedSlot: slot(1200, 90),
+    arrivedAt: '2026-08-18T19:45:00.000Z',
+    quotedWaitMin: 20,
+    status: 'waiting',
+    ...overrides,
+  });
+
+  it('valida la cola con los mismos contratos temporales y límites de grupo', () => {
+    expect(validateWaitlistEntry(waitlistEntry())).toEqual([]);
+    expect(validateWaitlistEntry(waitlistEntry({ partySize: 0 }))).toContain('waitlist wait-1: partySize must be between 1 and 40');
+    expect(validateWaitlistEntry(waitlistEntry({ requestedSlot: slot(1207, 90) }))).toContain('waitlist wait-1: startMin must be a multiple of 15');
+    expect(validateWaitlistEntry(waitlistEntry({ status: 'seated' }))).toContain('waitlist wait-1: seatedBookingId is required when seated');
+  });
+
+  it('convierte la demanda espontánea en una reserva sentada sobre la opción mínima', () => {
+    expect(createWalkInBooking(waitlistEntry(), restaurant, [], [], [], 'walkin-booking-1')).toMatchObject({
+      id: 'walkin-booking-1',
+      tableIds: ['t1'],
+      partySize: 2,
+      status: 'seated',
+      source: 'walkin',
+      guest: { name: 'Clara Sin Reserva' },
+    });
+  });
+
+  it('no sienta si reservas, eventos o privatizaciones agotan las opciones', () => {
+    const allMainTables = [
+      booking({ id: 'b1', tableIds: ['t1'] }),
+      booking({ id: 'b2', tableIds: ['t2'] }),
+      booking({ id: 'b3', tableIds: ['t3'] }),
+      booking({ id: 'b4', tableIds: ['p1'] }),
+    ];
+    expect(createWalkInBooking(waitlistEntry(), restaurant, allMainTables, [], [], 'walkin-booking-1')).toBeNull();
+    expect(createWalkInBooking(
+      waitlistEntry(),
+      restaurant,
+      [booking({ id: 'b3', tableIds: ['t3'] })],
+      [event({ status: 'published' })],
+      [hire({ status: 'blocked' })],
+      'walkin-booking-2',
+    )).toBeNull();
+  });
+
+  it('rechaza entradas terminales o pertenecientes a otro restaurante', () => {
+    expect(createWalkInBooking(waitlistEntry({ status: 'cancelled' }), restaurant, [], [], [], 'walkin-booking-1')).toBeNull();
+    expect(createWalkInBooking(waitlistEntry({ restaurantId: 'otra-marca' }), restaurant, [], [], [], 'walkin-booking-1')).toBeNull();
+  });
+});
+
 describe('riesgo y depósitos', () => {
   const heldDeposit = (amountCents = 19000): DepositRecord => ({
     id: 'd1',
@@ -362,11 +420,12 @@ describe('riesgo y depósitos', () => {
 
 describe('roles del gestor', () => {
   it('Dirección puede ejecutar todas las operaciones demostradas', () => {
-    expect(['manage_events', 'manage_private_hires', 'seat_booking', 'charge_no_show'].every((action) => canOperate('direction', action as Parameters<typeof canOperate>[1]))).toBe(true);
+    expect(['manage_events', 'manage_private_hires', 'manage_waitlist', 'seat_booking', 'charge_no_show'].every((action) => canOperate('direction', action as Parameters<typeof canOperate>[1]))).toBe(true);
   });
 
-  it('Sala puede sentar pero no gestiona cobros, eventos ni privatizaciones', () => {
+  it('Sala puede gestionar la espera y sentar, pero no cobros, eventos ni privatizaciones', () => {
     expect(canOperate('floor', 'seat_booking')).toBe(true);
+    expect(canOperate('floor', 'manage_waitlist')).toBe(true);
     expect(canOperate('floor', 'charge_no_show')).toBe(false);
     expect(canOperate('floor', 'manage_events')).toBe(false);
     expect(canOperate('floor', 'manage_private_hires')).toBe(false);
@@ -374,6 +433,7 @@ describe('roles del gestor', () => {
 
   it('Cocina conserva acceso de lectura sin operaciones', () => {
     expect(canOperate('kitchen', 'seat_booking')).toBe(false);
+    expect(canOperate('kitchen', 'manage_waitlist')).toBe(false);
     expect(canOperate('kitchen', 'charge_no_show')).toBe(false);
     expect(canOperate('kitchen', 'manage_events')).toBe(false);
   });

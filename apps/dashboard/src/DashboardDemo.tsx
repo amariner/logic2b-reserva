@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  BellRing,
   CalendarDays,
   Clock3,
   ExternalLink,
@@ -35,10 +36,13 @@ import {
 import {
   VEDRA_STORAGE_KEY,
   initialVedraState,
+  addVedraWaitlistEntry,
   nextBookingStatuses,
   parseVedraStored,
   serializeVedraState,
+  seatVedraWaitlistEntry,
   transitionVedraBooking,
+  transitionVedraWaitlistEntry,
   type VedraDemoState,
 } from './state';
 import CustomersView from './views/CustomersView';
@@ -46,6 +50,7 @@ import FloorPlanView from './views/FloorPlanView';
 import SettingsView from './views/SettingsView';
 import SolaneDashboard from './SolaneDashboard';
 import ReportsView from './views/ReportsView';
+import WaitlistView from './views/WaitlistView';
 
 interface VedraDashboardProps {
   slug: 'vedra';
@@ -82,6 +87,7 @@ const NAV_ICONS: Record<DashboardView, typeof TableProperties> = {
   servicio: TableProperties,
   plano: MapPinned,
   reservas: ListChecks,
+  espera: BellRing,
   clientes: UserRound,
   informes: BarChart3,
   ajustes: Settings2,
@@ -188,7 +194,7 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
         </div>
       </aside>
 
-      <main className="rd-main">
+      <main id="contenido" className="rd-main" tabIndex={-1}>
         <div className="rd-demo-notice"><span>{dashboardText(copy.fictional, locale)}</span><button type="button" onClick={reset}><RotateCcw size={15} aria-hidden="true" />{dashboardText(copy.reset, locale)}</button></div>
         <p className="rd-live" role="status" aria-live="polite">{notice}</p>
 
@@ -269,6 +275,17 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
         )}
 
         {view === 'plano' && <FloorPlanView locale={locale} restaurant={restaurant} state={state} onChange={setState} onView={setView} />}
+        {view === 'espera' && <WaitlistView
+          locale={locale}
+          restaurant={restaurant}
+          entries={state.waitlist}
+          bookings={state.bookings}
+          initialDate={date}
+          initialTime={shift?.firstSeatingMin ?? 780}
+          onAdd={(entry) => setState((current) => addVedraWaitlistEntry(current, entry))}
+          onTransition={(entryId, status) => setState((current) => transitionVedraWaitlistEntry(current, entryId, status))}
+          onSeat={(entryId, bookingId) => setState((current) => seatVedraWaitlistEntry(current, entryId, restaurant, bookingId))}
+        />}
         {view === 'clientes' && <CustomersView locale={locale} state={state} />}
         {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="management" />}
         {view === 'ajustes' && <SettingsView locale={locale} restaurant={restaurant} />}

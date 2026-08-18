@@ -14,6 +14,14 @@ describe('fixtures de las marcas', () => {
     expect(new Set(Object.values(DEMO_FIXTURES).map((fixture) => fixture.level))).toEqual(new Set(['basico', 'gestion', 'inteligente']));
   });
 
+  it('las tres marcas usan los heroes v2 generados con OpenAI', () => {
+    expect(Object.fromEntries(Object.entries(DEMO_FIXTURES).map(([slug, fixture]) => [slug, fixture.hero.imageBase]))).toEqual({
+      brasca: '/images/heroes/brasca-v2',
+      vedra: '/images/heroes/vedra-v2',
+      solane: '/images/heroes/solane-v2',
+    });
+  });
+
   it('Brasca tiene una sala y ocho mesas', () => {
     expect(DEMO_FIXTURES.brasca.restaurant.spaces).toHaveLength(1);
     expect(DEMO_FIXTURES.brasca.restaurant.spaces[0].tables).toHaveLength(8);

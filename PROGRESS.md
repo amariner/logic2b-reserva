@@ -4,6 +4,64 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-18 · Sesión 27 · Lista de espera y walk-ins completados ✅
+
+- F14 promueve la lista de espera desde backlog: Vedra y Solane incorporan una vista bilingüe compartida para alta, espera comunicada, aviso local, cancelación y asiento; no existen SMS, mensajes ni escrituras de red.
+- El dominio convierte una entrada activa en `TableBooking` con origen `walkin`, estado `seated` y la opción mínima devuelta por `tableAvailability`; reservas, eventos publicados y privatizaciones bloqueadas participan en el mismo cálculo.
+- Los payloads locales v1 aceptan el campo aditivo `waitlist` con parser defensivo. Los estados terminales no se reabren y una entrada sin mesa permanece en cola.
+- Solane aplica permisos en interfaz y mutación: Dirección y Sala operan; Cocina solo consulta. La decisión está registrada en `docs/adr/ADR-011-lista-espera-inventario-unico.md`.
+- Gates: 54 tests de dominio, 39 tests de dashboard, `pnpm check` 28/28 y `pnpm e2e` 45/45. Revisión renderizada a 1366×900 y 375×812 sin overflow; a 375 px las tres acciones ocupan 277 px y se apilan correctamente. Dry-runs estrictos de preview y producción aceptan 113 assets y todos los bindings esperados.
+- El usuario autorizó consolidar, subir y desplegar el worktree. La publicación sigue sin iniciarse porque la skill `github:yeet` exige GitHub CLI y `gh` no está instalado; el secret y el correo real de preview permanecen fuera de esta autorización.
+
+## 2026-08-18 · Sesión 26 · Bundle pendiente revalidado ✅
+
+- Revisión del worktree acumulado F13 + heroes v2 + accesibilidad sin introducir cambios funcionales adicionales: `git diff --check` limpio y `pnpm check` 28/28.
+- Regresión integral de navegador repetida sobre el bundle compuesto: `pnpm e2e` 43/43, incluidos SEO bilingüe, responsive, accesibilidad y los recorridos completos de Brasca, Vedra y Solane.
+- Dry-runs estrictos ejecutados secuencialmente para preview y producción: ambos aceptan 113 assets, 563,03 KiB y los bindings esperados. No se desplegó, no se configuraron secrets y no se generó ningún lead.
+- El siguiente paso continúa requiriendo autorización para modificar servicios externos: consolidar/publicar el worktree, desplegar el bundle y completar el secret + protocolo de entrega real en preview. GitHub CLI sigue ausente.
+
+## 2026-08-18 · Sesión 25 · Estado público y secrets auditados ✅
+
+- `pnpm verify:public` vuelve a validar por GET todas las rutas, SEO, API y cabeceras de preview y producción; no se enviaron leads ni se modificó ningún recurso remoto.
+- Wrangler continúa autenticado en la cuenta esperada. La lectura de nombres de secrets confirma el estado exacto de F12: preview no declara ninguno y producción declara únicamente `LEADS_RESEND_API_KEY`; no se expuso ningún valor.
+- El bundle local F13 + heroes v2 + accesibilidad sigue pendiente de publicación. GitHub CLI continúa ausente y el secret de preview requiere una sesión autenticada en Resend; ambos pasos necesitan intervención del usuario.
+
+## 2026-08-18 · Sesión 24 · Accesibilidad comercial y gates revalidados ✅
+
+- Auditoría renderizada en el navegador sobre landing, páginas de intención, las tres demos y ambos gestores: se incorporó navegación de salto al contenido en es/en, se corrigió el contraste AA de texto pequeño y se normalizaron a 44 px los objetivos táctiles efectivos.
+- La regresión E2E cubre ahora teclado, contraste y tamaño de controles en todas las rutas públicas y demostrativas. Gates finales: `pnpm check` 28/28 y `pnpm e2e` 43/43.
+- Dry-runs estrictos de preview y producción correctos con 113 assets, 563,03 KiB y todos los bindings esperados; no se desplegó ni se envió ningún lead.
+- `pnpm verify:public` confirmó por GET que la preview y producción actualmente publicadas siguen sanas antes de recibir el nuevo bundle.
+- La publicación en GitHub sigue pendiente porque `gh` no está instalado; el worktree permanece sobre `main` sin commit nuevo y `origin/main` está sincronizado.
+
+## 2026-08-18 · Sesión 23 · Web comercial y SEO orientados a conversión ✅
+
+- Landing reconstruida alrededor de un hilo cliente: el coste de conciliar canales, la respuesta del inventario único, la prueba en tres restaurantes, el alcance adecuado, el coste de intermediación y una conversación centrada en el servicio.
+- Hero asimétrico y responsive con copy vendedor específico para restauración, demostración operativa visible y acciones diferenciadas; se eliminó la entrada decorativa genérica.
+- Brasca, Vedra y Solane usan en la landing los heroes editoriales AVIF existentes con `picture`, `srcset`, `sizes`, dimensiones y alt bilingüe. No se generaron activos nuevos ni se alteraron las fuentes ya presentes.
+- Planes, restaurantes y grupos/eventos pasan de páginas resumen a páginas de intención completas: tres capítulos operativos, resultados para el equipo, FAQ e interlinking contextual en es/en.
+- SEO reforzado en todas las rutas públicas con títulos/descripciones únicos, canonical, hreflang/x-default, Open Graph, Twitter Card, directivas robots, sitemap con alternates/lastmod/prioridad y JSON-LD por entidad, servicio, breadcrumb y FAQ.
+- Nueva cobertura E2E para schema, social cards, snippets de 100–160 caracteres, títulos ≤60, canonicals, alternates, H1 único e imágenes de las demos.
+- QA final: `pnpm check` 28/28 y `pnpm e2e` 36/36; revisión visual local a 1366×900 y 375×812 sin overflow. No se desplegó ni se envió ningún lead.
+
+## 2026-08-18 · Sesión 22 · Transporte real e idempotencia validados ✅
+
+- Con autorización explícita se envió a producción un único lead controlado, rotulado `Logic Reserva · PRUEBA INTERNA - NO CONTACTAR`, sin datos personales reales.
+- Primera respuesta de `https://reserva.logic2b.com/api/leads`: `202 delivered`, referencia `da2a827b-39f0-4e65-96cf-c4a894d4fcec`.
+- La repetición byte a byte del mismo JSON devolvió `202`, la misma referencia y `replayed: true`; el Durable Object evitó una segunda llamada de entrega.
+- Llegada confirmada por el usuario mediante captura de Gmail: asunto correcto, remitente `Logic Reserva <hola@logic2b.com>`, destinatario esperado y referencia exacta `da2a827b-39f0-4e65-96cf-c4a894d4fcec`. Junto con `replayed: true`, la evidencia confirma una única entrega real.
+- GitHub CLI (`gh`) continúa sin estar instalado, por lo que los heroes v2 permanecen en el worktree y no se ha ejecutado el flujo de publicación `github:yeet`.
+
+## 2026-08-18 · Sesión 21 · Heroes editoriales generados con OpenAI ✅
+
+- Nuevos heroes 4:3 para Brasca, Vedra y Solane creados con la herramienta integrada de OpenAI, mediante tres solicitudes independientes y pausas entre ellas; no se utilizó Higgsfield.
+- Fuentes PNG conservadas como `apps/web/assets/heroes/generated/*-v2.png`; los SVG y AVIF anteriores permanecen intactos para una reversión sencilla.
+- Procedencia, ejecución secuencial y prompts normalizados documentados junto a las fuentes; tests unitarios y E2E fijan explícitamente las rutas `v2` y comprueban que los nueve AVIF existen y se sirven como `image/avif`.
+- `scripts/images.mjs` actualizado para generar de forma reproducible nueve AVIF `*-v2-{640,960,1600}.avif`, y los fixtures de las tres marcas apuntan a las nuevas bases de imagen.
+- QA visual local en navegador a 1366 y 375 px: identidad diferenciada de las tres marcas, `srcset` correcto (1600/640), carga completa y cero overflow horizontal.
+- Gates finales: `pnpm check` 28/28 (incluidos 10 tests de fixtures) y `pnpm e2e` 34/34. Los dry-runs de preview y producción aceptan 112 assets y todos los bindings esperados sin publicar nada. F12 sigue pendiente exclusivamente de una entrega real de correo autorizada y de configurar el secret de preview.
+- `pnpm verify:public` vuelve a validar preview y producción mediante peticiones GET; no se publicaron los heroes v2 ni se generaron leads durante esta comprobación.
+
 ## 2026-08-17 · Sesión 20 · GitHub y producción actualizados ✅
 
 - Todo el desarrollo F1–F12 consolidado sobre `main` y publicado en GitHub en el commit `76f2a09` después de comprobar que `origin/main` no contenía cambios adicionales.

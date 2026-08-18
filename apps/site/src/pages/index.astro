@@ -2,12 +2,24 @@
 import Base from '../layouts/Base.astro';
 import { PRODUCT } from '@logic-reserva/config';
 import Landing from '../components/Landing.astro';
+import { SITE_CONTENT } from '../content';
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: SITE_CONTENT.es.faq.items.map((item) => ({
+    '@type': 'Question',
+    name: item.question,
+    acceptedAnswer: { '@type': 'Answer', text: item.answer },
+  })),
+};
 ---
 
 <Base
   locale="es"
-  title={`${PRODUCT.name} — Reservas y eventos para tu restaurante`}
-  description="Motor de reservas propio para restaurantes: mesas, menús y eventos con un solo inventario. Sin comisiones por comensal."
+  title={`Reservas para restaurantes y eventos | ${PRODUCT.name}`}
+  description="Motor de reservas para restaurantes que une mesas, menús, grupos y eventos en un solo inventario. Sin comisiones por cubierto y con tu marca."
+  structuredData={[faqSchema]}
 >
   <Landing locale="es" />
 </Base>

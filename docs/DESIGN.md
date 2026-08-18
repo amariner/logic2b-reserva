@@ -12,7 +12,7 @@ Referencia aprobada por producto: `DESIGN (1).md`, recibida el 2026-08-17. Su fr
 
 - Canvas `#f6f5f4`; las tarjetas son blanco puro sobre ese papel cálido.
 - Texto negro con jerarquía por alpha; cuerpo cálido `#615d59`.
-- Azul `#0075de` reservado para una única acción primaria por pantalla. Secundarias en `#e6f3fe` o transparentes.
+- Azul `#0075de` reservado para una única acción primaria por pantalla. Secundarias en `#e6f3fe` o transparentes; el texto azul pequeño usa la variante AA `#0068c7` sobre superficies claras.
 - Acentos planos rotatorios: amarillo `#ffb110`, coral `#f64932`, cielo `#62aef0` y medianoche `#02093a`.
 - Tarjetas a 12 px, botones a 8 px y píldoras solo para etiquetas o palabras destacadas. Sin gradientes.
 - Las tarjetas de contenido no tienen sombra: borde de 1 px `rgb(0 0 0 / 8%)`. Solo navegación fija y mockups de producto pueden elevarse.
