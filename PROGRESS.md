@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-18 · Sesión 29 · Secrets rotados y preview publicada ✅
+
+- El usuario revocó la credencial expuesta y rotó Resend en preview y producción. La auditoría por nombre confirma que ambos Workers declaran `LEADS_RESEND_API_KEY` como `secret_text`; ningún valor fue leído ni copiado.
+- Preview conservaba el destinatario anterior configurado desde el Dashboard. Se hizo una reconciliación única con `--keep-vars`: preservó el nuevo secret, aplicó `marinerandreu+logic@gmail.com` y publicó el mismo bundle de 113 assets que producción.
+- `logic-reserva-preview` sirve la versión `6ac2fad2-0f49-4e7c-8e89-062fe586b081`. El dry-run estricto posterior pasó sin deriva y `pnpm verify:public:preview` validó rutas, SEO, API y cabeceras por GET.
+- Producción mantiene configuración estricta sin deriva y `pnpm verify:public:production` continúa verde después de la rotación. El worktree permanece limpio y sincronizado con `origin/main`.
+- No se envió ningún lead. Como las credenciales cambiaron, falta una prueba real autorizada en cada entorno para demostrar que las claves nuevas entregan correo y que el replay sigue sin duplicados.
+
 ## 2026-08-18 · Sesión 28 · GitHub y producción actualizados; preview requiere rotación ⚠️
 
 - El bundle conjunto de heroes v2, F13, accesibilidad y F14 se revalidó desde el worktree: `git diff --check`, `pnpm check` 28/28, `pnpm e2e` 45/45 y dry-runs estrictos de preview y producción con 113 assets.

@@ -207,13 +207,14 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Frontera técnica verificada: solo el formulario comercial de la landing usa `/api/leads`; marcas y dashboards son simulaciones locales sin llamadas de escritura a red
 - [x] Contrato local: `LEADS_TRANSPORT: 'resend'`, binding Durable Object y nombre del secret `LEADS_RESEND_API_KEY`, sin guardar su valor en el repositorio
 - [x] Preview aislada: Worker `logic-reserva-preview`, `routes: []`, workers.dev, workflow con gate `PREVIEW` y verificador automático contra herencia de producción
-- [ ] Configurar el valor cifrado de `LEADS_RESEND_API_KEY` en preview
+- [x] Configurar el valor cifrado de `LEADS_RESEND_API_KEY` en preview
 - [x] Configurar y validar el valor cifrado de `LEADS_RESEND_API_KEY` en producción mediante una entrega real autorizada
 - [x] Workflow de deploy con gate doble: `workflow_dispatch` que exige teclear `DEPLOY` + variable `RESERVA_DEPLOY_ENABLED == 'true'`
 - [x] Preview pública verificada: rutas/SEO 200, cabeceras de seguridad en todas las páginas, `x-robots-tag` en demos y API fail-closed(503) sin secret
 - [ ] Verificación en preview: lead de prueba llega por email y la repetición devuelve `replayed: true` sin duplicarlo
 - [x] Deploy manual de `logic-reserva` con dominio personalizado `reserva.logic2b.com`, DNS/TLS administrados por Cloudflare y verificación externa
 - [x] Verificación real en producción: `202 delivered`, llegada confirmada en `marinerandreu+logic@gmail.com` y repetición con la misma referencia + `replayed: true` sin segundo correo
+- [ ] Revalidar preview y producción después de la rotación de credenciales: nueva entrega `202 delivered`, replay con la misma referencia y una única llegada por entorno
 
 **Hecho cuando:** demo pública en reserva.logic2b.com y un lead de prueba en la bandeja de entrada.
 
