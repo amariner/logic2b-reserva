@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-18 · Sesión 28 · GitHub y producción actualizados; preview requiere rotación ⚠️
+
+- El bundle conjunto de heroes v2, F13, accesibilidad y F14 se revalidó desde el worktree: `git diff --check`, `pnpm check` 28/28, `pnpm e2e` 45/45 y dry-runs estrictos de preview y producción con 113 assets.
+- Los 52 archivos del paquete se consolidaron directamente sobre `main` en `e86435f` (`Completa web comercial y lista de espera`) y se publicaron en `origin/main` mediante Git nativo; GitHub CLI no era necesario para este flujo autorizado.
+- Producción se desplegó correctamente en Cloudflare con 54 assets nuevos o modificados, versión `238d0d16-f456-4831-a092-66c8f6f34f56`; `pnpm verify:public:production` validó por GET las rutas, SEO, API y cabeceras públicas.
+- Preview abortó antes de subir ningún archivo porque `--strict` detectó deriva remota: `LEADS_RESEND_API_KEY` estaba configurada como variable de texto ordinaria y el destinatario no coincidía con el contrato versionado. Wrangler expuso el valor durante el diagnóstico, por lo que esa credencial debe revocarse y sustituirse por un secret cifrado antes de desplegar preview.
+- No se forzó la configuración, no se reutilizó la credencial expuesta y no se envió ningún lead. Producción conserva su secret cifrado independiente y el destinatario `marinerandreu+logic@gmail.com`.
+
 ## 2026-08-18 · Sesión 27 · Lista de espera y walk-ins completados ✅
 
 - F14 promueve la lista de espera desde backlog: Vedra y Solane incorporan una vista bilingüe compartida para alta, espera comunicada, aviso local, cancelación y asiento; no existen SMS, mensajes ni escrituras de red.
