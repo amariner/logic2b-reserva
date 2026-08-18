@@ -3,7 +3,10 @@ import {
   canOperate,
   createWalkInBooking,
   depositFor,
+  issueExperienceVoucher,
   noShowCharge,
+  redeemExperienceVoucher,
+  validateExperienceVoucher,
   validateEvent,
   validateSlot,
   type BookingSource,
@@ -11,6 +14,7 @@ import {
   type DepositPolicyKind,
   type DepositRecord,
   type EventStatus,
+  type ExperienceVoucher,
   type PrivateHire,
   type PrivateHireProposal,
   type PrivateHireStatus,
@@ -40,6 +44,7 @@ export interface SolaneDemoState {
   events: RestaurantEvent[];
   sales: SolaneEventSale[];
   privateHires: PrivateHire[];
+  vouchers: ExperienceVoucher[];
   role: RestaurantRole;
   privateHireTour: SolanePrivateHireTour;
 }
@@ -69,6 +74,7 @@ const cloneBooking = (booking: TableBooking): TableBooking => ({
 const cloneEvent = (event: RestaurantEvent): RestaurantEvent => ({ ...event, slot: { ...event.slot }, consumesTableIds: [...event.consumesTableIds] });
 const cloneSale = (sale: SolaneEventSale): SolaneEventSale => ({ ...sale });
 const clonePrivateHire = (hire: PrivateHire): PrivateHire => ({ ...hire, slot: { ...hire.slot }, proposal: hire.proposal === undefined ? undefined : { ...hire.proposal } });
+const cloneVoucher = (voucher: ExperienceVoucher): ExperienceVoucher => ({ ...voucher, value: { ...voucher.value } });
 const initialPrivateHireTour = (): SolanePrivateHireTour => ({ mode: 'choice', step: 1, completed: false });
 
 function parseDeposit(value: unknown, partySize: number): DepositRecord | null {
@@ -103,6 +109,7 @@ export const initialSolaneState = (
   events: fixtureEvents.map(cloneEvent),
   sales: [],
   privateHires: fixturePrivateHires.map(clonePrivateHire),
+  vouchers: [],
   role: 'direction',
   privateHireTour: initialPrivateHireTour(),
 });
@@ -221,6 +228,30 @@ function parseSale(value: unknown): SolaneEventSale | null {
   return { id: candidate.id.trim(), eventId: candidate.eventId.trim(), seats: candidate.seats, purchasedAt: candidate.purchasedAt };
 }
 
+function parseVoucher(value: unknown): ExperienceVoucher | null {
+  if (value === null || typeof value !== 'object') return null;
+  const candidate = value as Partial<ExperienceVoucher>;
+  if (candidate.value === undefined || typeof candidate.value !== 'object') return null;
+  const voucher: ExperienceVoucher = {
+    id: typeof candidate.id === 'string' ? candidate.id.trim() : '',
+    restaurantId: candidate.restaurantId === 'solane' ? 'solane' : '',
+    code: typeof candidate.code === 'string' ? candidate.code.trim().toUpperCase() : '',
+    experienceId: typeof candidate.experienceId === 'string' ? candidate.experienceId.trim() : '',
+    experienceName: typeof candidate.experienceName === 'string' ? candidate.experienceName.trim() : '',
+    recipientName: typeof candidate.recipientName === 'string' ? candidate.recipientName.trim() : '',
+    value: {
+      quantity: candidate.value.quantity ?? Number.NaN,
+      unitValueCents: candidate.value.unitValueCents ?? Number.NaN,
+      totalValueCents: candidate.value.totalValueCents ?? Number.NaN,
+    },
+    issuedAt: typeof candidate.issuedAt === 'string' ? candidate.issuedAt : '',
+    expiresOn: typeof candidate.expiresOn === 'string' ? candidate.expiresOn : '',
+    status: candidate.status ?? 'issued',
+    ...(typeof candidate.redeemedAt === 'string' ? { redeemedAt: candidate.redeemedAt } : {}),
+  };
+  return validateExperienceVoucher(voucher).length === 0 ? voucher : null;
+}
+
 export function parseSolaneStored(
   raw: string | null,
   fixtureBookings: readonly TableBooking[] = [],
@@ -247,6 +278,7 @@ export function parseSolaneStored(
       events: [...events.values()].map(cloneEvent),
       sales: sales.map(cloneSale),
       privateHires: [...privateHires.values()].map(clonePrivateHire),
+      vouchers: (Array.isArray(value.vouchers) ? value.vouchers : []).map(parseVoucher).filter((voucher): voucher is ExperienceVoucher => voucher !== null).slice(0, 500).map(cloneVoucher),
       role: RESTAURANT_ROLES.includes(value.role as RestaurantRole) ? value.role as RestaurantRole : 'direction',
       privateHireTour: parsePrivateHireTour(value.privateHireTour),
     };
@@ -262,6 +294,7 @@ export const serializeSolaneState = (state: SolaneDemoState): string => JSON.str
   events: state.events.map(cloneEvent),
   sales: state.sales.map(cloneSale),
   privateHires: state.privateHires.map(clonePrivateHire),
+  vouchers: state.vouchers.map(cloneVoucher),
   role: state.role,
   privateHireTour: { ...state.privateHireTour },
 });
@@ -396,4 +429,19 @@ export function sellSolaneTickets(
   const events = state.events.map((event) => event.id === eventId ? { ...cloneEvent(event), soldSeats, status: soldSeats === event.capacity ? 'soldout' as const : 'published' as const } : cloneEvent(event));
   const sale: SolaneEventSale = { id: saleId.trim(), eventId, seats, purchasedAt };
   return { ...state, events, sales: [...state.sales.filter((candidate) => candidate.id !== sale.id), sale] };
+}
+
+export function issueSolaneVoucher(state: SolaneDemoState, voucher: ExperienceVoucher): SolaneDemoState {
+  if (voucher.restaurantId !== 'solane' || state.vouchers.some((candidate) => candidate.id === voucher.id || candidate.code === voucher.code.toUpperCase())) return state;
+  const issued = issueExperienceVoucher(voucher);
+  return issued === null ? state : { ...state, vouchers: [...state.vouchers.map(cloneVoucher), issued] };
+}
+
+export function redeemSolaneVoucher(state: SolaneDemoState, voucherId: string, redeemedAt: string): SolaneDemoState {
+  if (!canOperate(state.role, 'manage_vouchers')) return state;
+  const target = state.vouchers.find((voucher) => voucher.id === voucherId);
+  if (target === undefined) return state;
+  const redeemed = redeemExperienceVoucher(target, redeemedAt);
+  if (redeemed === null) return state;
+  return { ...state, vouchers: state.vouchers.map((voucher) => voucher.id === voucherId ? redeemed : cloneVoucher(voucher)) };
 }

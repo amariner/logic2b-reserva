@@ -7,20 +7,25 @@ import {
   depositFor,
   estimateDurationMin,
   hasLevel,
+  issueExperienceVoucher,
   marketplaceSavings,
   noShowLoss,
   noShowCharge,
   recommendLevel,
+  redeemExperienceVoucher,
   riskTier,
   seatingTimes,
   slotsOverlap,
   tableAvailability,
   validateBooking,
   validateEvent,
+  validateExperienceVoucher,
   validateRestaurant,
   validateSlot,
   validateWaitlistEntry,
+  voucherValue,
   type DepositRecord,
+  type ExperienceVoucher,
   type PrivateHire,
   type Restaurant,
   type RestaurantEvent,
@@ -418,14 +423,48 @@ describe('riesgo y depósitos', () => {
   });
 });
 
+describe('bonos de experiencia', () => {
+  const voucher = (overrides: Partial<ExperienceVoucher> = {}): ExperienceVoucher => ({
+    id: 'voucher-1',
+    restaurantId: 'solane',
+    code: 'SOLANE-AB12CD',
+    experienceId: 'menu-origen',
+    experienceName: 'Menú Origen',
+    recipientName: 'Ada Demo',
+    value: voucherValue(2, 12500),
+    issuedAt: '2026-08-18T16:00:00.000Z',
+    expiresOn: '2027-08-18',
+    status: 'issued',
+    ...overrides,
+  });
+
+  it('conserva un desglose auditable en céntimos enteros', () => {
+    expect(voucherValue(2, 12500)).toEqual({ quantity: 2, unitValueCents: 12500, totalValueCents: 25000 });
+    expect(issueExperienceVoucher(voucher())).toEqual(voucher());
+  });
+
+  it('rechaza totales manipulados y caducidad anterior a la emisión', () => {
+    expect(validateExperienceVoucher(voucher({ value: { quantity: 2, unitValueCents: 12500, totalValueCents: 1 } }))).toContain('voucher voucher-1: totalValueCents is invalid');
+    expect(issueExperienceVoucher(voucher({ expiresOn: '2026-08-18' }))).toBeNull();
+  });
+
+  it('canjea una sola vez dentro del rango semiabierto de vigencia', () => {
+    const redeemed = redeemExperienceVoucher(voucher(), '2027-08-17T23:59:59.000Z');
+    expect(redeemed).toMatchObject({ status: 'redeemed', redeemedAt: '2027-08-17T23:59:59.000Z' });
+    expect(redeemExperienceVoucher(redeemed!, '2027-08-17T23:59:59.500Z')).toBeNull();
+    expect(redeemExperienceVoucher(voucher(), '2027-08-18T00:00:00.000Z')).toBeNull();
+  });
+});
+
 describe('roles del gestor', () => {
   it('Dirección puede ejecutar todas las operaciones demostradas', () => {
-    expect(['manage_events', 'manage_private_hires', 'manage_waitlist', 'seat_booking', 'charge_no_show'].every((action) => canOperate('direction', action as Parameters<typeof canOperate>[1]))).toBe(true);
+    expect(['manage_events', 'manage_private_hires', 'manage_waitlist', 'manage_vouchers', 'seat_booking', 'charge_no_show'].every((action) => canOperate('direction', action as Parameters<typeof canOperate>[1]))).toBe(true);
   });
 
   it('Sala puede gestionar la espera y sentar, pero no cobros, eventos ni privatizaciones', () => {
     expect(canOperate('floor', 'seat_booking')).toBe(true);
     expect(canOperate('floor', 'manage_waitlist')).toBe(true);
+    expect(canOperate('floor', 'manage_vouchers')).toBe(true);
     expect(canOperate('floor', 'charge_no_show')).toBe(false);
     expect(canOperate('floor', 'manage_events')).toBe(false);
     expect(canOperate('floor', 'manage_private_hires')).toBe(false);
@@ -436,6 +475,7 @@ describe('roles del gestor', () => {
     expect(canOperate('kitchen', 'manage_waitlist')).toBe(false);
     expect(canOperate('kitchen', 'charge_no_show')).toBe(false);
     expect(canOperate('kitchen', 'manage_events')).toBe(false);
+    expect(canOperate('kitchen', 'manage_vouchers')).toBe(false);
   });
 });
 

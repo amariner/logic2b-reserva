@@ -30,7 +30,7 @@ export const DASHBOARD_COPY = {
   service: {
     eyebrow: text('Vista de servicio', 'Service view'),
     title: text('La sala, de un vistazo.', 'The dining room at a glance.'),
-    body: text('Cada fila es una mesa y cada columna una franja de 15 minutos. Las reservas activas ocupan el inventario durante toda su estancia.', 'Each row is a table and each column is a 15-minute slot. Active bookings occupy inventory for their full duration.'),
+    body: text('Consulta la ocupación por mesa y franja de 15 minutos. Las reservas activas ocupan el inventario durante toda su estancia.', 'Review occupancy by table and 15-minute slot. Active bookings occupy inventory for their full duration.'),
     date: text('Fecha del servicio', 'Service date'),
     shift: text('Turno', 'Shift'),
     lunch: text('Comida', 'Lunch'),

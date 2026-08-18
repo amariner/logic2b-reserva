@@ -26,12 +26,12 @@ Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindin
 ## Estado actual
 
 - Preview activa: `https://logic-reserva-preview.marinerandreu.workers.dev`.
-- Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados el 2026-08-17.
+- Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados el 2026-08-18.
 - Producción activa: `https://reserva.logic2b.com`, enlazada a `logic-reserva` como dominio personalizado con DNS y TLS administrados por Cloudflare.
-- Producción ya declara el secret cifrado `LEADS_RESEND_API_KEY`; Wrangler solo permite verificar su nombre, no el valor. Su validez y la entrega real siguen pendientes de una prueba autorizada.
-- Preview todavía no declara `LEADS_RESEND_API_KEY`; `/api/leads` continúa fallando cerrado con `disabled(503)` allí.
-- El repositorio ya configura `marinerandreu+logic@gmail.com`, pero los Workers públicos aún requieren un deploy autorizado para recibir este cambio de variable.
-- La cuenta de Resend no estaba autenticada en el navegador disponible durante la auditoría del 2026-08-17, por lo que la autorización de `hola@logic2b.com` no se ha podido comprobar sin pedir credenciales.
+- Producción declara el secret cifrado `LEADS_RESEND_API_KEY` y quedó revalidada después de la rotación: `202 delivered` y replay idempotente para la referencia `4e13fdc8-d6fa-4125-b336-e7720b64e3d8`. Falta confirmar visualmente la llegada única en la bandeja.
+- Preview también declara `LEADS_RESEND_API_KEY` como secret cifrado, pero su entrega de correo no se valida ni forma parte del gate por decisión de producto del 2026-08-18. No probar ni rotar este transporte salvo nueva orden explícita.
+- Preview sirve la instrumentación sanitizada de diagnóstico: ante rechazo del proveedor registra solo estado HTTP y tipo de error, nunca el valor del secret ni datos del lead.
+- La cuenta de Resend no está autenticada en el navegador disponible, por lo que crear una nueva clave requiere iniciar sesión.
 
 ## Primera preview autorizada
 

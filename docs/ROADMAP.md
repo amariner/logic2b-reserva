@@ -198,7 +198,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F12 · Worker real + deploy
+## F12 · Worker real + deploy ✅
 
 **Objetivo:** reserva.logic2b.com en producción con leads reales.
 **Dependencias:** F11.
@@ -211,10 +211,10 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Configurar y validar el valor cifrado de `LEADS_RESEND_API_KEY` en producción mediante una entrega real autorizada
 - [x] Workflow de deploy con gate doble: `workflow_dispatch` que exige teclear `DEPLOY` + variable `RESERVA_DEPLOY_ENABLED == 'true'`
 - [x] Preview pública verificada: rutas/SEO 200, cabeceras de seguridad en todas las páginas, `x-robots-tag` en demos y API fail-closed(503) sin secret
-- [ ] Verificación en preview: lead de prueba llega por email y la repetición devuelve `replayed: true` sin duplicarlo
+- [x] La entrega de correo en preview deja de ser requisito por decisión de producto del 2026-08-18; preview conserva verificación GET, aislamiento y fail-closed honesto ante una clave no válida
 - [x] Deploy manual de `logic-reserva` con dominio personalizado `reserva.logic2b.com`, DNS/TLS administrados por Cloudflare y verificación externa
 - [x] Verificación real en producción: `202 delivered`, llegada confirmada en `marinerandreu+logic@gmail.com` y repetición con la misma referencia + `replayed: true` sin segundo correo
-- [ ] Revalidar preview y producción después de la rotación de credenciales: nueva entrega `202 delivered`, replay con la misma referencia y una única llegada por entorno
+- [x] Producción revalidada después de la rotación: `202 delivered` y replay con la misma referencia; el usuario mantiene producción como único entorno requerido para Resend
 
 **Hecho cuando:** demo pública en reserva.logic2b.com y un lead de prueba en la bandeja de entrada.
 
@@ -255,6 +255,39 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## F15 · Bonos de experiencia y caja anticipada ✅
+
+**Objetivo:** demostrar la venta directa de experiencias antes de elegir fecha y su canje operativo, sin convertir la demo en una pasarela ni fingir facturación.
+**Dependencias:** F8, F10, F11.
+
+- [x] Modelo puro de bono: experiencia, cantidad, valor auditable en céntimos, código, emisión, caducidad y estado `issued|redeemed|voided`
+- [x] Invariantes de emisión y canje: total recalculado, caducidad posterior a emisión, transiciones terminales y canje único
+- [x] Persistencia aditiva y parser defensivo compatible con el estado local v1 de Solane
+- [x] Página bilingüe `/demos/solane/bonos/`: selección de experiencia, destinatario, resumen y emisión simulada sin tarjeta, cobro, correo ni red
+- [x] Vista `?vista=bonos` en el gestor Inteligente: caja anticipada visible, código y canje local; Dirección y Sala pueden canjear, Cocina solo consulta
+- [x] Frontera honesta: valor comercial rotulado como ficticio, sin factura ni validez económica, y todas las mutaciones confinadas a `localStorage`
+- [x] Cobertura unitaria y E2E de emisión → aparición en gestor → canje → persistencia, permisos y responsive es/en
+
+**Hecho cuando:** un bono emitido en la web aparece en el gestor y solo puede canjearse una vez; `pnpm check && pnpm e2e` verdes.
+
+---
+
+## F16 · Gestor móvil para Sala ✅
+
+**Objetivo:** permitir que el equipo de sala consulte el servicio y ejecute las acciones urgentes con una mano, sin crear otra aplicación ni duplicar estado o dominio.
+**Dependencias:** F7, F10, F14.
+
+- [x] Navegación móvil fija con acceso directo a Servicio, Reservas, Espera y Plano, más un menú accesible para todas las vistas secundarias
+- [x] Servicio de Vedra representado como agenda vertical accionable en móvil, sin depender de la cronología horizontal de escritorio
+- [x] Reservas y lista de espera convertidas en tarjetas legibles a 320–430 px, con estado textual y acciones críticas de al menos 44 px
+- [x] Cabecera, selector de rol y aviso ficticio compactos sin ocultar la frontera demostrativa ni los permisos de Solane
+- [x] El mismo `?vista=`, estado local v1, dominio y permisos funcionan en escritorio y móvil; sin nuevas llamadas de red
+- [x] Cobertura E2E bilingüe de navegación primaria/secundaria, acción de servicio, espera y ausencia de overflow en Vedra y Solane
+
+**Hecho cuando:** Sala puede abrir Reservas o Espera, actuar sobre una comanda y volver a Servicio desde 320–430 px sin desplazamiento horizontal de página; `pnpm check && pnpm e2e` verdes.
+
+---
+
 ## Después (backlog, no fases)
 
-Ver `../BACKLOG.md`: gift cards/bonos, WhatsApp de confirmaciones, ca/fr, IA de predicción de no-show, Google Reserve, propuesta nominal para prospecto real, vídeos de venta.
+Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, IA de predicción de no-show, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

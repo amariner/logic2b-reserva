@@ -71,10 +71,24 @@ describe('leads de Logic Reserva', () => {
   });
 
   it('responde failed(502) si Resend no acepta el correo', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('no', { status: 500 }));
+    const logger = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(JSON.stringify({ name: 'validation_error', message: 'detalle sensible' }), { status: 422, headers: { 'content-type': 'application/json' } }));
     const response = await submit(emailEnv);
     expect(response.status).toBe(502);
     expect(await response.json()).toMatchObject({ outcome: 'failed', ref: 'test-ref' });
+    expect(logger.mock.calls.flat().join(' ')).toContain('lead_provider_rejected');
+    expect(logger.mock.calls.flat().join(' ')).toContain('validation_error');
+    expect(logger.mock.calls.flat().join(' ')).not.toContain('detalle sensible');
+    expect(logger.mock.calls.flat().join(' ')).not.toContain(lead.email);
+  });
+
+  it('registra un fallo de red sin exponer la excepción', async () => {
+    const logger = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+    vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('secret-network-detail'));
+    const response = await submit(emailEnv);
+    expect(response.status).toBe(502);
+    expect(logger.mock.calls.flat().join(' ')).toContain('lead_provider_unreachable');
+    expect(logger.mock.calls.flat().join(' ')).not.toContain('secret-network-detail');
   });
 
   it('responde delivered(202), usa idempotency-key y dirige el lead al destinatario acordado', async () => {

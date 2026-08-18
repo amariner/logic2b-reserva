@@ -1,15 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { tableAvailability, type PrivateHire, type Restaurant, type RestaurantEvent, type TableBooking, type WaitlistEntry } from '@logic-reserva/domain';
+import { tableAvailability, voucherValue, type ExperienceVoucher, type PrivateHire, type Restaurant, type RestaurantEvent, type TableBooking, type WaitlistEntry } from '@logic-reserva/domain';
 import {
   SOLANE_STATE_VERSION,
   addSolaneWaitlistEntry,
   blockSolanePrivateHire,
   createSolaneEvent,
   initialSolaneState,
+  issueSolaneVoucher,
   parseSolaneStored,
   publishSolaneEvent,
   prepareSolanePrivateHire,
   registerSolanePrivateHireDeposit,
+  redeemSolaneVoucher,
   resolveSolaneBookingDeposit,
   seatSolaneWaitlistEntry,
   sellSolaneTickets,
@@ -87,6 +89,11 @@ const waitlistEntry = (overrides: Partial<WaitlistEntry> = {}): WaitlistEntry =>
   arrivedAt: '2026-08-18T19:30:00.000Z', quotedWaitMin: 20, status: 'waiting', ...overrides,
 });
 
+const voucher = (overrides: Partial<ExperienceVoucher> = {}): ExperienceVoucher => ({
+  id: 'voucher-1', restaurantId: 'solane', code: 'SOLANE-AB12CD', experienceId: 'menu', experienceName: 'Menú', recipientName: 'Ada Demo',
+  value: voucherValue(2, 10000), issuedAt: '2026-08-18T16:00:00.000Z', expiresOn: '2027-08-18', status: 'issued', ...overrides,
+});
+
 describe('estado Solane versionado', () => {
   it('clona profundamente fixtures', () => {
     const sourceBooking = booking();
@@ -119,6 +126,7 @@ describe('estado Solane versionado', () => {
     expect(state.role).toBe('direction');
     expect(state.privateHireTour).toEqual({ mode: 'choice', step: 1, completed: false });
     expect(state.waitlist).toEqual([]);
+    expect(state.vouchers).toEqual([]);
   });
 
   it('conserva un depósito válido y descarta una reserva con desglose corrupto', () => {
@@ -214,6 +222,25 @@ describe('estado Solane versionado', () => {
     state = sellSolaneTickets(state, 'event-1', 2, 'sale', '2026-08-17T10:00:00.000Z');
     expect(parseSolaneStored(serializeSolaneState(state))).toEqual(state);
     expect(JSON.parse(serializeSolaneState(state)).version).toBe(SOLANE_STATE_VERSION);
+  });
+
+  it('emite, persiste y canjea un bono una sola vez', () => {
+    let state = issueSolaneVoucher(initialSolaneState(), voucher());
+    expect(state.vouchers).toEqual([voucher()]);
+    expect(parseSolaneStored(serializeSolaneState(state)).vouchers).toEqual([voucher()]);
+    state = redeemSolaneVoucher(state, 'voucher-1', '2027-08-17T18:00:00.000Z');
+    expect(state.vouchers[0]).toMatchObject({ status: 'redeemed', redeemedAt: '2027-08-17T18:00:00.000Z' });
+    expect(redeemSolaneVoucher(state, 'voucher-1', '2027-08-17T19:00:00.000Z')).toBe(state);
+  });
+
+  it('descarta bonos manipulados y aplica permisos al canje', () => {
+    const corrupt = { ...voucher(), value: { ...voucher().value, totalValueCents: 1 } };
+    expect(parseSolaneStored(JSON.stringify({ version: 1, bookings: [], events: [], vouchers: [corrupt] })).vouchers).toEqual([]);
+    const issued = issueSolaneVoucher(initialSolaneState(), voucher());
+    const kitchen = setSolaneRole(issued, 'kitchen');
+    expect(redeemSolaneVoucher(kitchen, 'voucher-1', '2027-08-17T18:00:00.000Z')).toBe(kitchen);
+    const floor = setSolaneRole(kitchen, 'floor');
+    expect(redeemSolaneVoucher(floor, 'voucher-1', '2027-08-17T18:00:00.000Z').vouchers[0].status).toBe('redeemed');
   });
 
   it('serializa y restaura el depósito y su aceptación temporal', () => {

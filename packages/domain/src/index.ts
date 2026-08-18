@@ -174,6 +174,28 @@ export interface PrivateHire {
   proposal?: PrivateHireProposal;
 }
 
+export type VoucherStatus = 'issued' | 'redeemed' | 'voided';
+
+export interface VoucherValueBreakdown {
+  quantity: number;
+  unitValueCents: number;
+  totalValueCents: number;
+}
+
+export interface ExperienceVoucher {
+  id: string;
+  restaurantId: string;
+  code: string;
+  experienceId: string;
+  experienceName: string;
+  recipientName: string;
+  value: VoucherValueBreakdown;
+  issuedAt: string;
+  expiresOn: string;
+  status: VoucherStatus;
+  redeemedAt?: string;
+}
+
 export interface TableOption {
   spaceId: string;
   tableIds: string[];
@@ -540,14 +562,67 @@ export function noShowCharge(
   return { status: 'held', chargedCents: 0, releasedCents: 0, reason: 'awaiting-outcome' };
 }
 
+// ── Bonos de experiencia ──────────────────────────────────────────
+
+export function voucherValue(quantity: number, unitValueCents: number): VoucherValueBreakdown {
+  const safeQuantity = Math.max(0, Math.trunc(quantity));
+  const safeUnitValue = Math.max(0, Math.trunc(unitValueCents));
+  return { quantity: safeQuantity, unitValueCents: safeUnitValue, totalValueCents: safeQuantity * safeUnitValue };
+}
+
+export function validateExperienceVoucher(voucher: ExperienceVoucher): string[] {
+  const errors: string[] = [];
+  if (!voucher.id.trim() || voucher.id.length > 120) errors.push('voucher id is invalid');
+  if (!voucher.restaurantId.trim() || voucher.restaurantId.length > 120) errors.push(`voucher ${voucher.id}: restaurantId is invalid`);
+  if (!/^[A-Z0-9-]{6,32}$/.test(voucher.code)) errors.push(`voucher ${voucher.id}: code is invalid`);
+  if (!voucher.experienceId.trim() || voucher.experienceId.length > 120) errors.push(`voucher ${voucher.id}: experienceId is invalid`);
+  if (!voucher.experienceName.trim() || voucher.experienceName.length > 160) errors.push(`voucher ${voucher.id}: experienceName is invalid`);
+  if (!voucher.recipientName.trim() || voucher.recipientName.length > 120) errors.push(`voucher ${voucher.id}: recipientName is invalid`);
+  const expectedValue = voucherValue(voucher.value.quantity, voucher.value.unitValueCents);
+  if (!Number.isInteger(voucher.value.quantity) || voucher.value.quantity < 1 || voucher.value.quantity > 20) errors.push(`voucher ${voucher.id}: quantity must be between 1 and 20`);
+  if (!Number.isInteger(voucher.value.unitValueCents) || voucher.value.unitValueCents < 0 || voucher.value.unitValueCents > 10_000_000) errors.push(`voucher ${voucher.id}: unitValueCents is invalid`);
+  if (voucher.value.totalValueCents !== expectedValue.totalValueCents) errors.push(`voucher ${voucher.id}: totalValueCents is invalid`);
+  const issuedMs = Date.parse(voucher.issuedAt);
+  const expiresMs = /^\d{4}-\d{2}-\d{2}$/.test(voucher.expiresOn) ? Date.parse(`${voucher.expiresOn}T00:00:00.000Z`) : Number.NaN;
+  if (Number.isNaN(issuedMs)) errors.push(`voucher ${voucher.id}: issuedAt is invalid`);
+  if (Number.isNaN(expiresMs) || (!Number.isNaN(issuedMs) && expiresMs <= issuedMs)) errors.push(`voucher ${voucher.id}: expiresOn must be after issuedAt`);
+  if (!['issued', 'redeemed', 'voided'].includes(voucher.status)) errors.push(`voucher ${voucher.id}: status is invalid`);
+  const redeemedMs = voucher.redeemedAt === undefined ? Number.NaN : Date.parse(voucher.redeemedAt);
+  if (voucher.status === 'redeemed' && (Number.isNaN(redeemedMs) || redeemedMs < issuedMs || redeemedMs >= expiresMs)) errors.push(`voucher ${voucher.id}: redeemedAt is invalid`);
+  if (voucher.status !== 'redeemed' && voucher.redeemedAt !== undefined) errors.push(`voucher ${voucher.id}: redeemedAt is only valid when redeemed`);
+  return errors;
+}
+
+export function issueExperienceVoucher(voucher: ExperienceVoucher): ExperienceVoucher | null {
+  const normalized: ExperienceVoucher = {
+    ...voucher,
+    id: voucher.id.trim(),
+    restaurantId: voucher.restaurantId.trim(),
+    code: voucher.code.trim().toUpperCase(),
+    experienceId: voucher.experienceId.trim(),
+    experienceName: voucher.experienceName.trim(),
+    recipientName: voucher.recipientName.trim(),
+    value: voucherValue(voucher.value.quantity, voucher.value.unitValueCents),
+    status: 'issued',
+  };
+  delete normalized.redeemedAt;
+  return validateExperienceVoucher(normalized).length === 0 ? normalized : null;
+}
+
+export function redeemExperienceVoucher(voucher: ExperienceVoucher, redeemedAt: string): ExperienceVoucher | null {
+  if (voucher.status !== 'issued') return null;
+  const redeemed = { ...voucher, value: { ...voucher.value }, status: 'redeemed' as const, redeemedAt };
+  return validateExperienceVoucher(redeemed).length === 0 ? redeemed : null;
+}
+
 // ── Permisos demostrativos del gestor ─────────────────────────────
 
 export type RestaurantRole = 'direction' | 'floor' | 'kitchen';
-export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'manage_waitlist' | 'seat_booking' | 'charge_no_show';
+export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'manage_waitlist' | 'manage_vouchers' | 'seat_booking' | 'charge_no_show';
 
 export function canOperate(role: RestaurantRole, action: RestaurantAction): boolean {
   if (role === 'direction') return true;
-  if (role === 'floor') return action === 'seat_booking' || action === 'manage_waitlist';
+  if (role === 'floor') return action === 'seat_booking' || action === 'manage_waitlist' || action === 'manage_vouchers';
   return false;
 }
 
@@ -573,6 +648,7 @@ export const CAPABILITIES: readonly Capability[] = [
   { id: 'guest-crm', label: 'CRM de comensales y exportación', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'booking-reports', label: 'Informes de ocupación y origen', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },
   { id: 'waitlist-walkins', label: 'Lista de espera y clientes sin reserva', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },
+  { id: 'experience-vouchers', label: 'Bonos de experiencia y canje', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'decision-assistant', label: 'IA demostrativa para apoyo a decisiones', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'operational-automations', label: 'Automatizaciones de inventario y seguimiento', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
 ] as const;

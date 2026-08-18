@@ -312,8 +312,8 @@ test.describe('landing comercial Logic Reserva', () => {
 
 test.describe('accesibilidad común de las demostraciones', () => {
   const routes = [
-    '/demos/brasca/', '/demos/vedra/', '/demos/vedra/gestion/', '/demos/vedra/gestion/?vista=espera', '/demos/solane/', '/demos/solane/eventos/', '/demos/solane/gestion/', '/demos/solane/gestion/?vista=espera',
-    '/en/demos/brasca/', '/en/demos/vedra/', '/en/demos/vedra/gestion/', '/en/demos/vedra/gestion/?vista=espera', '/en/demos/solane/', '/en/demos/solane/eventos/', '/en/demos/solane/gestion/', '/en/demos/solane/gestion/?vista=espera',
+    '/demos/brasca/', '/demos/vedra/', '/demos/vedra/gestion/', '/demos/vedra/gestion/?vista=espera', '/demos/solane/', '/demos/solane/eventos/', '/demos/solane/bonos/', '/demos/solane/gestion/', '/demos/solane/gestion/?vista=espera', '/demos/solane/gestion/?vista=bonos',
+    '/en/demos/brasca/', '/en/demos/vedra/', '/en/demos/vedra/gestion/', '/en/demos/vedra/gestion/?vista=espera', '/en/demos/solane/', '/en/demos/solane/eventos/', '/en/demos/solane/bonos/', '/en/demos/solane/gestion/', '/en/demos/solane/gestion/?vista=espera', '/en/demos/solane/gestion/?vista=bonos',
   ] as const;
 
   test('el teclado puede saltar la cabecera en todas las rutas es/en', async ({ page }) => {
@@ -488,6 +488,41 @@ test.describe('demo Vedra · nivel Gestión', () => {
     });
   }
 
+  test('el gestor móvil prioriza Sala y permite actuar sin la cronología horizontal', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/demos/vedra/gestion/?vista=servicio', { waitUntil: 'networkidle' });
+    await page.evaluate(() => localStorage.removeItem('logic-reserva-demo-vedra-v1'));
+    await page.reload({ waitUntil: 'networkidle' });
+
+    const mobileNav = page.locator('[data-mobile-dashboard-nav]');
+    await expect(mobileNav).toBeVisible();
+    await expect(page.locator('[data-service-timeline]')).toBeHidden();
+    const serviceBooking = page.locator('[data-mobile-service-booking="vedra-fixture-1"]');
+    await expect(serviceBooking).toContainText('Clara Montes');
+    await serviceBooking.locator('[data-mobile-service-action="seated"]').click();
+    await expect(serviceBooking).toContainText('Sentada');
+
+    await mobileNav.getByRole('button', { name: 'Espera', exact: true }).click();
+    await expect(page).toHaveURL(/vista=espera/);
+    await expect(page.locator('[data-dashboard-view="espera"]')).toBeVisible();
+    await mobileNav.locator('summary').click();
+    const settings = mobileNav.getByRole('button', { name: 'Ajustes', exact: true });
+    await expect(settings).toBeVisible();
+    await settings.click();
+    await expect(page).toHaveURL(/vista=ajustes/);
+
+    await mobileNav.locator('summary').click();
+    const targetSizes = await mobileNav.locator('button:visible, summary:visible').evaluateAll((targets) => targets.map((target) => {
+      const box = target.getBoundingClientRect();
+      return { width: box.width, height: box.height };
+    }));
+    for (const target of targetSizes) {
+      expect(target.width).toBeGreaterThanOrEqual(44);
+      expect(target.height).toBeGreaterThanOrEqual(44);
+    }
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+  });
+
   test('reserva en la web, aparece en el gestor, transiciona y se restablece', async ({ page }) => {
     const networkWrites: string[] = [];
     page.on('request', (request) => {
@@ -628,9 +663,11 @@ test.describe('demo Solane · nivel Inteligente', () => {
   const solanePages = [
     '/demos/solane/',
     '/demos/solane/eventos/',
+    '/demos/solane/bonos/',
     '/demos/solane/gestion/',
     '/en/demos/solane/',
     '/en/demos/solane/eventos/',
+    '/en/demos/solane/bonos/',
     '/en/demos/solane/gestion/',
   ] as const;
 
@@ -659,11 +696,13 @@ test.describe('demo Solane · nivel Inteligente', () => {
       for (const path of [
         '/demos/solane/',
         '/demos/solane/eventos/',
+        '/demos/solane/bonos/',
         '/demos/solane/gestion/?vista=servicio',
         '/demos/solane/gestion/?vista=plano',
         '/demos/solane/gestion/?vista=reservas',
         '/demos/solane/gestion/?vista=espera',
         '/demos/solane/gestion/?vista=eventos',
+        '/demos/solane/gestion/?vista=bonos',
         '/demos/solane/gestion/?vista=privatizaciones',
         '/demos/solane/gestion/?vista=clientes',
         '/demos/solane/gestion/?vista=informes',
@@ -675,6 +714,33 @@ test.describe('demo Solane · nivel Inteligente', () => {
       expect(errors).toEqual([]);
     });
   }
+
+  test('la navegación móvil de Solane conserva rol, vistas avanzadas e inglés', async ({ page }) => {
+    const networkWrites: string[] = [];
+    page.on('request', (request) => {
+      if (request.method() !== 'GET') networkWrites.push(`${request.method()} ${request.url()}`);
+    });
+    await page.setViewportSize({ width: 320, height: 812 });
+    await page.goto('/en/demos/solane/gestion/?vista=servicio', { waitUntil: 'networkidle' });
+
+    const mobileNav = page.locator('[data-mobile-dashboard-nav]');
+    await expect(mobileNav).toBeVisible();
+    await expect(page.locator('[data-role-selector]')).toBeVisible();
+    await page.locator('[data-role-selector]').selectOption('floor');
+    await mobileNav.getByRole('button', { name: 'Bookings', exact: true }).click();
+    await expect(page).toHaveURL(/vista=reservas/);
+    await mobileNav.getByRole('button', { name: 'Waitlist', exact: true }).click();
+    await expect(page.locator('[data-dashboard-view="espera"]')).toBeVisible();
+
+    await mobileNav.getByText('More', { exact: true }).click();
+    const events = mobileNav.getByRole('button', { name: 'Events', exact: true });
+    await expect(events).toBeVisible();
+    await events.click();
+    await expect(page).toHaveURL(/vista=eventos/);
+    await expect(page.locator('[data-role-selector]')).toHaveValue('floor');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+    expect(networkWrites).toEqual([]);
+  });
 
   test('depósito informado: no-show aplica el máximo proporcional y sentar lo libera', async ({ page }) => {
     const storageKey = 'logic-reserva-demo-solane-v1';
@@ -742,6 +808,58 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await expect(seatedBooking.locator('[data-deposit-record]')).toHaveAttribute('data-deposit-status', 'released');
     await expect(seatedBooking).toContainText('Depósito liberado automáticamente');
     await expect(page.getByRole('status')).toContainText('Depósito liberado automáticamente');
+  });
+
+  test('bono demo: emisión local, permisos y canje único persisten sin red', async ({ page }) => {
+    const storageKey = 'logic-reserva-demo-solane-v1';
+    const networkWrites: string[] = [];
+    page.on('request', (request) => {
+      if (request.method() !== 'GET') networkWrites.push(`${request.method()} ${request.url()}`);
+    });
+    await page.setViewportSize({ width: 375, height: 900 });
+    await page.goto('/demos/solane/bonos/', { waitUntil: 'networkidle' });
+    await page.evaluate((key) => localStorage.removeItem(key), storageKey);
+    await page.reload({ waitUntil: 'networkidle' });
+
+    await expect(page.getByRole('heading', { level: 1 })).toContainText('Regala la experiencia');
+    await expect(page.locator('[data-voucher-form] input[type="email"], [data-voucher-form] input[type="password"]')).toHaveCount(0);
+    await page.locator('[data-voucher-form] select').selectOption('2');
+    await page.getByPlaceholder('Nombre de demostración').fill('Ada Regalo');
+    await expect(page.locator('[data-voucher-total]')).not.toHaveText('0,00 €');
+    await page.getByRole('button', { name: 'Preparar bono demo' }).click();
+
+    const dialog = page.locator('.gv-dialog');
+    await expect(dialog).toBeVisible();
+    await expect(dialog).toContainText('no se realizará ningún cobro');
+    await expect(dialog.locator('input')).toHaveCount(0);
+    await dialog.locator('[data-issue-voucher]').click();
+    const success = page.locator('[data-voucher-success]');
+    await expect(success).toContainText('Bono emitido en esta demo');
+    const code = await success.locator('[data-voucher-code]').innerText();
+    expect(code).toMatch(/^SOLANE-[A-Z0-9]+$/);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+
+    const storedIssued = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}') as { vouchers?: { code?: string; status?: string; value?: { totalValueCents?: number } }[] }, storageKey);
+    expect(storedIssued.vouchers).toEqual(expect.arrayContaining([expect.objectContaining({ code, status: 'issued', value: expect.objectContaining({ totalValueCents: expect.any(Number) }) })]));
+
+    await success.getByRole('link', { name: 'Abrir bonos en el gestor' }).click();
+    await expect(page).toHaveURL(/vista=bonos/);
+    const managerVoucher = page.locator('[data-manager-voucher-id]').filter({ hasText: code });
+    await expect(managerVoucher).toHaveAttribute('data-voucher-status', 'issued');
+    await expect(managerVoucher.locator('[data-manager-voucher-code]')).toHaveText(code);
+
+    await page.locator('[data-role-selector]').selectOption('kitchen');
+    await expect(managerVoucher.locator('[data-redeem-voucher]')).toBeDisabled();
+    await expect(page.locator('[data-dashboard-view="bonos"] [data-role-warning]')).toContainText('Cocina puede consultar');
+    await page.locator('[data-role-selector]').selectOption('floor');
+    await expect(managerVoucher.locator('[data-redeem-voucher]')).toBeEnabled();
+    await managerVoucher.locator('[data-redeem-voucher]').click();
+    await expect(managerVoucher).toHaveAttribute('data-voucher-status', 'redeemed');
+    await expect(managerVoucher.locator('[data-redeem-voucher]')).toHaveCount(0);
+    await expect(page.getByRole('status')).toContainText('no puede utilizarse de nuevo');
+    await page.reload({ waitUntil: 'networkidle' });
+    await expect(page.locator('[data-manager-voucher-id]').filter({ hasText: code })).toHaveAttribute('data-voucher-status', 'redeemed');
+    expect(networkWrites).toEqual([]);
   });
 
   test('privatización guiada: propuesta, señal y bloqueo retiran el Privado del widget', async ({ page }) => {
@@ -857,7 +975,8 @@ test.describe('demo Solane · nivel Inteligente', () => {
     expect(csv).toContain('"Avellana"');
     expect(csv).toContain('"595.00"');
 
-    await page.getByRole('button', { name: 'Informes', exact: true }).click();
+    await page.locator('[data-mobile-dashboard-nav] summary').click();
+    await page.locator('[data-mobile-dashboard-nav]').getByRole('button', { name: 'Informes', exact: true }).click();
     await expect(page).toHaveURL(/vista=informes/);
     await expect(page.locator('[data-report-occupancy]')).toContainText('Ocupación por servicio');
     await expect(page.locator('[data-report-sources]')).toContainText('Web directa');

@@ -4,6 +4,31 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-18 · Sesión 32 · Gestor móvil para Sala completado ✅
+
+- F16 promovida desde backlog y cerrada: Vedra y Solane comparten navegación inferior con Servicio, Reservas, Espera y Plano al alcance, más un menú nativo accesible que conserva todas las vistas secundarias.
+- La cronología de escritorio de Vedra se sustituye en móvil por una agenda vertical con hora, estado, comensal, mesa y transiciones directas; Reservas y Espera mantienen tarjetas y acciones críticas de al menos 44 px.
+- Cabecera, aviso ficticio y selector de rol se compactan sin ocultar la frontera demostrativa. `?vista=`, localStorage v1, permisos y dominio permanecen idénticos y no se añade ninguna llamada de red.
+- La revisión visual con navegador a 375×812 confirmó barra anclada sin solapes, menú avanzado legible y cero overflow en ambas marcas; el copy de Servicio se hizo válido para cronología y agenda.
+- Gates: `pnpm check` 28/28, 57 tests de dominio, 41 de dashboard, 10 de fixtures y 10 de Worker; `pnpm e2e` 48/48 con barridos a 320/375/430/1366 px.
+
+## 2026-08-18 · Sesión 31 · Bonos de experiencia y canje local completados ✅
+
+- F15 promovida desde backlog y cerrada: Solane incorpora `/demos/solane/bonos/` y espejo inglés para elegir menú, cantidad y destinatario, revisar el valor y emitir un código ficticio sin tarjeta, cobro, correo, factura ni red.
+- El dominio puro añade valor auditable en céntimos, emisión, caducidad semiabierta, estados terminales y canje único. `CAPABILITIES` registra bonos como demostración funcional del plan Inteligente.
+- El estado local v1 se amplía de forma aditiva con parser defensivo: descarta totales manipulados y conserva payloads anteriores. La vista `?vista=bonos` muestra caja anticipada ficticia; Dirección y Sala canjean, Cocina solo consulta.
+- El recorrido E2E emite en web, comprueba el código en el gestor, aplica permisos, canjea, recarga y verifica cero escrituras de red. Las rutas nuevas participan en noindex triple, teclado, táctil y responsive a 320/375/430/1366 px.
+- Gates: 57 tests de dominio, 41 de dashboard, 10 de fixtures, 10 de Worker, `pnpm check` 28/28 y `pnpm e2e` 46/46. Dry-runs de preview y producción aceptan 121 assets; `pnpm verify:public` continúa verde por GET.
+- Por decisión del usuario, Resend no se vuelve a probar en preview. Producción conserva la validación `202 delivered` + `replayed: true` y es el único entorno requerido para correo real.
+
+## 2026-08-18 · Sesión 30 · Producción revalidada y clave de preview diagnosticada ⚠️
+
+- Con la autorización explícita del usuario se enviaron payloads sintéticos rotulados `PRUEBA INTERNA - NO CONTACTAR`, sin datos personales reales, a preview y producción después de la rotación.
+- Producción devolvió `202 delivered` con referencia `4e13fdc8-d6fa-4125-b336-e7720b64e3d8`; la repetición byte a byte devolvió la misma referencia con `replayed: true`. Falta únicamente confirmar la llegada única en la bandeja.
+- Preview devolvió `502 lead_delivery_failed`. Se añadió observabilidad sanitizada del proveedor: solo registra evento, proveedor, estado HTTP y tipo de error; omite clave, payload, destinatario, mensaje y excepción. El Worker suma 10 tests de transporte, incluidos rechazo y fallo de red sin filtración.
+- La versión aislada de preview `acf1e46f-60b6-437e-91c2-262545650ff0` confirmó en vivo `401 validation_error` de Resend. El secret existe como `secret_text`, pero su valor está revocado o no es válido; debe sustituirse desde una sesión autenticada en Resend y volver a ejecutar el protocolo.
+- `pnpm check`: ✅ 28/28. Producción no se modificó; preview recibió únicamente la instrumentación de diagnóstico sobre el mismo conjunto de 113 assets.
+
 ## 2026-08-18 · Sesión 29 · Secrets rotados y preview publicada ✅
 
 - El usuario revocó la credencial expuesta y rotó Resend en preview y producción. La auditoría por nombre confirma que ambos Workers declaran `LEADS_RESEND_API_KEY` como `secret_text`; ningún valor fue leído ni copiado.

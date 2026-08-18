@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clock3,
   ExternalLink,
+  Gift,
   ListChecks,
   MapPinned,
   RotateCcw,
@@ -28,6 +29,7 @@ import {
   publishSolaneEvent,
   prepareSolanePrivateHire,
   registerSolanePrivateHireDeposit,
+  redeemSolaneVoucher,
   resetSolanePrivateHireTour,
   resolveSolaneBookingDeposit,
   seatSolaneWaitlistEntry,
@@ -40,6 +42,7 @@ import {
 import ReportsView from './views/ReportsView';
 import SolaneCustomersView from './views/SolaneCustomersView';
 import WaitlistView from './views/WaitlistView';
+import MobileDashboardNav from './MobileDashboardNav';
 
 interface SolaneDashboardProps {
   slug: 'solane';
@@ -51,7 +54,7 @@ interface SolaneDashboardProps {
   initialCustomers: CustomerProfile[];
 }
 
-type SolaneView = 'servicio' | 'plano' | 'reservas' | 'espera' | 'eventos' | 'privatizaciones' | 'clientes' | 'informes';
+type SolaneView = 'servicio' | 'plano' | 'reservas' | 'espera' | 'eventos' | 'bonos' | 'privatizaciones' | 'clientes' | 'informes';
 type CopyText = { readonly es: string; readonly en: string };
 
 const text = (es: string, en: string): CopyText => ({ es, en });
@@ -61,10 +64,12 @@ const NAV = [
   { id: 'reservas', label: text('Reservas', 'Bookings'), icon: ListChecks },
   { id: 'espera', label: text('Espera', 'Waitlist'), icon: BellRing },
   { id: 'eventos', label: text('Eventos', 'Events'), icon: TicketCheck },
+  { id: 'bonos', label: text('Bonos', 'Vouchers'), icon: Gift },
   { id: 'privatizaciones', label: text('Privatizaciones', 'Private hire'), icon: Building2 },
   { id: 'clientes', label: text('Clientes', 'Guests'), icon: UserRound },
   { id: 'informes', label: text('Informes', 'Reports'), icon: BarChart3 },
 ] as const satisfies readonly { id: SolaneView; label: CopyText; icon: typeof TableProperties }[];
+const MOBILE_PRIMARY_VIEWS = ['servicio', 'reservas', 'espera', 'plano'] as const satisfies readonly SolaneView[];
 
 const COPY = {
   product: text('Logic Reserva · Inteligente', 'Logic Reserva · Intelligent'),
@@ -160,6 +165,28 @@ const COPY = {
     remaining: text('plazas restantes', 'seats remaining'),
     sales: text('ventas simuladas', 'simulated sales'),
     publicAgenda: text('Ver agenda pública', 'View public calendar'),
+  },
+  vouchers: {
+    eyebrow: text('Bonos de experiencia', 'Experience vouchers'),
+    title: text('Caja anticipada, canje bajo control.', 'Advance revenue, controlled redemption.'),
+    body: text('Los bonos emitidos en la web llegan con valor auditable y código único. Todo es local y ficticio: no existe cobro, factura ni validez económica.', 'Vouchers issued on the website arrive with an auditable value and unique code. Everything is local and fictional: there is no charge, invoice or economic value.'),
+    publicPage: text('Emitir bono demo', 'Issue demo voucher'),
+    activeValue: text('Valor ficticio activo', 'Active fictional value'),
+    issuedCount: text('Pendientes de canje', 'Awaiting redemption'),
+    redeemedCount: text('Canjeados', 'Redeemed'),
+    empty: text('Todavía no hay bonos emitidos desde la web demo.', 'No vouchers have been issued from the demo website yet.'),
+    code: text('Código', 'Code'),
+    recipient: text('Destinatario', 'Recipient'),
+    experience: text('Experiencia', 'Experience'),
+    value: text('Valor', 'Value'),
+    issuedAt: text('Emitido', 'Issued'),
+    expiresOn: text('Caduca', 'Expires'),
+    issued: text('Emitido · pendiente', 'Issued · pending'),
+    redeemed: text('Canjeado', 'Redeemed'),
+    voided: text('Anulado', 'Voided'),
+    redeem: text('Canjear bono en esta demo', 'Redeem voucher in this demo'),
+    redeemDone: text('Bono canjeado. El código queda cerrado y no puede utilizarse de nuevo.', 'Voucher redeemed. The code is now closed and cannot be used again.'),
+    roleWarning: text('Cocina puede consultar los bonos, pero el canje corresponde a Dirección o Sala.', 'Kitchen can view vouchers, but redemption belongs to Management or Floor.'),
   },
   privateHires: {
     eyebrow: text('Privatizaciones', 'Private hire'),
@@ -371,18 +398,27 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
     setNotice('');
   };
 
+  const redeemVoucher = (voucherId: string) => {
+    const next = redeemSolaneVoucher(state, voucherId, new Date().toISOString());
+    if (next === state) return;
+    commit(next);
+    setNotice(local(COPY.vouchers.redeemDone, locale));
+  };
+
   const activeBookings = state.bookings.filter((booking) => ACTIVE_BOOKING_STATUSES.has(booking.status));
   const activeEvents = state.events.filter((event) => ACTIVE_EVENT_STATUSES.has(event.status));
   const privateHire = state.privateHires[0];
   const canManageEvents = canOperate(state.role, 'manage_events');
   const canManagePrivateHires = canOperate(state.role, 'manage_private_hires');
   const canManageWaitlist = canOperate(state.role, 'manage_waitlist');
+  const canManageVouchers = canOperate(state.role, 'manage_vouchers');
   const dayBookings = activeBookings.filter((booking) => booking.slot.date === date);
   const dayEvents = activeEvents.filter((event) => event.slot.date === date);
   const floorSlot = { date, startMin: floorTime, durationMin: 15 };
   const selectedCapacity = eventTableIds.reduce((sum, tableId) => sum + (tableById.get(tableId)?.maxSeats ?? 0), 0);
   const websiteHref = `${locale === 'en' ? '/en' : ''}/demos/solane/`;
   const ticketsHref = `${websiteHref}eventos/`;
+  const vouchersHref = `${websiteHref}bonos/`;
 
   return (
     <div className="rd-app rd-app--solane" data-dashboard-demo data-dashboard-brand="solane">
@@ -499,6 +535,26 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
           </section>
         )}
 
+        {view === 'bonos' && (
+          <section className="rd-view" data-dashboard-view="bonos">
+            <header className="rd-view-header"><div><p className="rd-eyebrow">{local(COPY.vouchers.eyebrow, locale)}</p><h1>{local(COPY.vouchers.title, locale)}</h1><p>{local(COPY.vouchers.body, locale)}</p></div><a className="rd-secondary-action" href={vouchersHref}><ExternalLink size={15} aria-hidden="true" />{local(COPY.vouchers.publicPage, locale)}</a></header>
+            <div className="rd-voucher-summary">
+              <div><Gift size={20} aria-hidden="true" /><strong>{new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(state.vouchers.filter((voucher) => voucher.status === 'issued').reduce((sum, voucher) => sum + voucher.value.totalValueCents, 0) / 100)}</strong><span>{local(COPY.vouchers.activeValue, locale)}</span></div>
+              <div><TicketCheck size={20} aria-hidden="true" /><strong>{state.vouchers.filter((voucher) => voucher.status === 'issued').length}</strong><span>{local(COPY.vouchers.issuedCount, locale)}</span></div>
+              <div><CheckCircle2 size={20} aria-hidden="true" /><strong>{state.vouchers.filter((voucher) => voucher.status === 'redeemed').length}</strong><span>{local(COPY.vouchers.redeemedCount, locale)}</span></div>
+            </div>
+            {!canManageVouchers && <p className="rd-role-warning" data-role-warning>{local(COPY.vouchers.roleWarning, locale)}</p>}
+            <div className="rd-voucher-list" data-manager-voucher-list>
+              {state.vouchers.length === 0 && <p className="rd-empty">{local(COPY.vouchers.empty, locale)}</p>}
+              {[...state.vouchers].sort((left, right) => right.issuedAt.localeCompare(left.issuedAt)).map((voucher) => <article className="rd-voucher-card" key={voucher.id} data-manager-voucher-id={voucher.id} data-voucher-status={voucher.status}>
+                <header><div><span className="badge" data-tone={voucher.status === 'issued' ? 'warning' : voucher.status === 'redeemed' ? 'success' : 'danger'}>{local(COPY.vouchers[voucher.status], locale)}</span><h2>{voucher.experienceName}</h2></div><Gift size={28} aria-hidden="true" /></header>
+                <dl><div><dt>{local(COPY.vouchers.code, locale)}</dt><dd data-manager-voucher-code>{voucher.code}</dd></div><div><dt>{local(COPY.vouchers.recipient, locale)}</dt><dd>{voucher.recipientName}</dd></div><div><dt>{local(COPY.vouchers.value, locale)}</dt><dd>{voucher.value.quantity} × {new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(voucher.value.unitValueCents / 100)} = {new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(voucher.value.totalValueCents / 100)}</dd></div><div><dt>{local(COPY.vouchers.issuedAt, locale)}</dt><dd>{voucher.issuedAt.slice(0, 10)}</dd></div><div><dt>{local(COPY.vouchers.expiresOn, locale)}</dt><dd>{voucher.expiresOn}</dd></div></dl>
+                {voucher.status === 'issued' && <button className="rd-primary-action" type="button" data-redeem-voucher disabled={!canManageVouchers} onClick={() => redeemVoucher(voucher.id)}>{local(COPY.vouchers.redeem, locale)}</button>}
+              </article>)}
+            </div>
+          </section>
+        )}
+
         {view === 'privatizaciones' && (
           <section className="rd-view" data-dashboard-view="privatizaciones">
             <header className="rd-view-header"><div><p className="rd-eyebrow">{local(COPY.privateHires.eyebrow, locale)}</p><h1>{local(COPY.privateHires.title, locale)}</h1><p>{local(COPY.privateHires.body, locale)}</p></div></header>
@@ -533,6 +589,14 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
         {view === 'clientes' && <SolaneCustomersView locale={locale} restaurant={restaurant} bookings={state.bookings} profiles={initialCustomers} />}
         {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="intelligent" />}
       </main>
+      <MobileDashboardNav
+        ariaLabel={local(COPY.product, locale)}
+        currentView={view}
+        items={NAV.map((item) => ({ id: item.id, label: local(item.label, locale), icon: item.icon }))}
+        primaryViews={MOBILE_PRIMARY_VIEWS}
+        moreLabel={locale === 'en' ? 'More' : 'Más'}
+        onSelect={setView}
+      />
     </div>
   );
 }

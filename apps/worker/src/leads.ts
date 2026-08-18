@@ -159,8 +159,21 @@ async function resend(apiKey: string, idempotencyKey: string, payload: Record<st
       headers: { authorization: `Bearer ${apiKey}`, 'content-type': 'application/json', 'idempotency-key': idempotencyKey },
       body: JSON.stringify(payload),
     });
+    if (!response.ok) {
+      const providerError: unknown = await response.json().catch(() => null);
+      const errorType = z.object({ name: z.string().max(120).optional() }).passthrough().safeParse(providerError);
+      console.error(JSON.stringify({
+        event: 'lead_provider_rejected',
+        provider: 'resend',
+        status: response.status,
+        errorType: errorType.success ? errorType.data.name ?? 'unknown' : 'unknown',
+      }));
+    }
     return response.ok;
-  } catch { return false; }
+  } catch {
+    console.error(JSON.stringify({ event: 'lead_provider_unreachable', provider: 'resend' }));
+    return false;
+  }
 }
 
 function escapeHtml(value: string): string {

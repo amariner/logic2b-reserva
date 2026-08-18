@@ -51,6 +51,7 @@ import SettingsView from './views/SettingsView';
 import SolaneDashboard from './SolaneDashboard';
 import ReportsView from './views/ReportsView';
 import WaitlistView from './views/WaitlistView';
+import MobileDashboardNav from './MobileDashboardNav';
 
 interface VedraDashboardProps {
   slug: 'vedra';
@@ -92,6 +93,7 @@ const NAV_ICONS: Record<DashboardView, typeof TableProperties> = {
   informes: BarChart3,
   ajustes: Settings2,
 };
+const MOBILE_PRIMARY_VIEWS = ['servicio', 'reservas', 'espera', 'plano'] as const satisfies readonly DashboardView[];
 
 const timeLabel = (minutes: number) => `${String(Math.floor(minutes / 60)).padStart(2, '0')}:${String(minutes % 60).padStart(2, '0')}`;
 
@@ -237,6 +239,17 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
                 );
               })}
             </div>
+            <div className="rd-mobile-service-list" data-mobile-service-list>
+              {[...serviceBookings].sort((left, right) => left.slot.startMin - right.slot.startMin).map((booking) => {
+                const assignedTables = booking.tableIds.map((tableId) => tableById.get(tableId)?.name ?? tableId).join(' + ');
+                const transitions = nextBookingStatuses(booking.status);
+                return <article key={booking.id} data-mobile-service-booking={booking.id}>
+                  <header><time>{timeLabel(booking.slot.startMin)}</time><span className="badge" data-tone={STATUS_TONES[booking.status]}>{dashboardText(copy.status[booking.status], locale)}</span></header>
+                  <div><span className="rd-avatar" aria-hidden="true">{booking.guest.name.slice(0, 1).toUpperCase()}</span><div><h2>{booking.guest.name}</h2><p>{booking.partySize} {dashboardText(copy.reservations.people, locale)} · {assignedTables}</p></div></div>
+                  {transitions.length > 0 && <footer>{transitions.map((status) => <button key={status} className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} type="button" data-mobile-service-action={status} onClick={() => transition(booking.id, status)}>{dashboardText(copy.action[status], locale)}</button>)}</footer>}
+                </article>;
+              })}
+            </div>
           </section>
         )}
 
@@ -290,6 +303,14 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
         {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="management" />}
         {view === 'ajustes' && <SettingsView locale={locale} restaurant={restaurant} />}
       </main>
+      <MobileDashboardNav
+        ariaLabel={dashboardText(copy.product, locale)}
+        currentView={view}
+        items={DASHBOARD_VIEWS.map((item) => ({ id: item.id, label: dashboardText(item.label, locale), icon: NAV_ICONS[item.id] }))}
+        primaryViews={MOBILE_PRIMARY_VIEWS}
+        moreLabel={locale === 'en' ? 'More' : 'Más'}
+        onSelect={setView}
+      />
     </div>
   );
 }
