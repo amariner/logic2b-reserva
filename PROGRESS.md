@@ -4,6 +4,15 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-20 · Sesión 35 · Contrato `DEMO_MODE` y excepción comercial de leads ✅
+
+- Los despliegues públicos declaran ahora `DEMO_MODE=true`; el manifest ejecutable separa el producto simulado (`sideEffects=false`, `jobs=false`, proveedores externos deshabilitados o mock) de la landing comercial.
+- La captación real de Logic2B se conserva como única excepción explícita mediante `COMMERCIAL_LEADS_ENABLED=true`. Funciona con `DEMO_MODE=true` y mantiene consentimiento, honeypot, rate limit, idempotencia, configuración validada y Resend; no habilita ninguna capacidad del restaurante.
+- Defensa en profundidad añadida en router, handler, Durable Object y adaptador. Sin la allowlist comercial exacta, `POST /api/leads` responde `403` antes de leer el body, persistir o llamar al proveedor; el resto de `/api/*` continúa en `404`.
+- `verify-demo-boundaries.mjs` fija la ausencia de red en demos, el manifest y el orden temprano de la guarda. `verify-deploy-config.mjs` fija ambos flags, la excepción única, el destinatario y la ausencia de triggers/colas.
+- Contrato, matriz de efectos, inventario visual, activación real, recuperación, rollback y limitaciones documentados en `docs/DEMO-MODE.md`; decisión registrada en ADR-014 y enlazada desde README/contrato de trabajo/runbook.
+- Gates: `git diff --check`, `pnpm check` 28/28 con 15 tests del Worker, `pnpm e2e` 49/49 y dry-runs estrictos de preview/producción con 139 assets y los bindings esperados. No se desplegó ni se envió ningún lead.
+
 ## 2026-08-19 · Sesión 34 · Capturas guiadas de venta completadas y publicadas ✅
 
 - F18 queda cerrada con un contrato canónico de ocho escenas y dieciséis PNG —desktop 1366×900 y móvil 375×812— para Brasca, Vedra y Solane, generados siempre desde las superficies y recorridos reales del producto.

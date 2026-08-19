@@ -305,7 +305,7 @@ const ui = locale === 'en' ? {
       if (leadStatus) {
         if (response.status === 202) leadStatus.textContent = `${leadStatus.dataset.success ?? ''}${body.ref ? ` · ${body.ref}` : ''}`;
         else if (response.status === 429) leadStatus.textContent = leadStatus.dataset.limited ?? '';
-        else if (response.status === 503) leadStatus.textContent = leadStatus.dataset.disabled ?? '';
+        else if (response.status === 403 || response.status === 503) leadStatus.textContent = leadStatus.dataset.disabled ?? '';
         else leadStatus.textContent = leadStatus.dataset.failure ?? '';
       }
       if (response.status === 202) leadForm.reset();

@@ -1,4 +1,5 @@
 import { deliverLead, leadSchema, type Lead, type LeadEnv } from './leads';
+import { commercialLeadsEnabled, demoBlockedResponse } from './demo-mode';
 
 const RATE_LIMIT = 5;
 const RATE_WINDOW_MS = 60_000;
@@ -12,13 +13,17 @@ export class LeadCoordinator {
   constructor(private readonly state: DurableObjectState, private readonly env: LeadEnv) {}
 
   async fetch(request: Request): Promise<Response> {
+    if (!commercialLeadsEnabled(this.env)) return demoBlockedResponse('commercial_lead_coordination');
     const path = new URL(request.url).pathname;
     if (path === '/rate-limit' && request.method === 'POST') return this.rateLimit();
     if (path === '/deliver' && request.method === 'POST') return this.deliver(request);
     return json({ error: 'not_found' }, 404);
   }
 
-  async alarm(): Promise<void> { await this.state.storage.deleteAll(); }
+  async alarm(): Promise<void> {
+    if (!commercialLeadsEnabled(this.env)) return;
+    await this.state.storage.deleteAll();
+  }
 
   private async rateLimit(now = Date.now()): Promise<Response> {
     const timestamps = (await this.state.storage.get<number[]>('timestamps') ?? []).filter((stamp) => now - stamp < RATE_WINDOW_MS);

@@ -1,8 +1,9 @@
 import { handleLead, type LeadEnv } from './leads';
+import { commercialLeadsEnabled, demoBlockedResponse } from './demo-mode';
 
 export { LeadCoordinator } from './lead-coordinator';
 
-interface Env extends LeadEnv { ASSETS: Fetcher; }
+export interface Env extends LeadEnv { ASSETS: Fetcher; }
 
 const securityHeaders = {
   'x-content-type-options': 'nosniff',
@@ -16,6 +17,14 @@ export default {
     const url = new URL(request.url);
     if (url.pathname === '/api/leads') {
       if (request.method !== 'POST') return new Response(JSON.stringify({ error: 'method_not_allowed' }), { status: 405, headers: { 'content-type': 'application/json', allow: 'POST', ...securityHeaders } });
+      // Commercial lead capture is the sole explicit side-effect exception.
+      // This guard runs before request.json(), Durable Objects or providers.
+      if (!commercialLeadsEnabled(env)) {
+        const response = demoBlockedResponse('lead_delivery');
+        const headers = new Headers(response.headers);
+        Object.entries(securityHeaders).forEach(([key, value]) => headers.set(key, value));
+        return new Response(response.body, { status: response.status, headers });
+      }
       const response = await handleLead(request, env);
       const headers = new Headers(response.headers);
       Object.entries(securityHeaders).forEach(([key, value]) => headers.set(key, value));

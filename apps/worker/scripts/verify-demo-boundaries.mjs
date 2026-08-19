@@ -19,6 +19,8 @@ const landingDirectory = resolve(repositoryRoot, 'apps/site/src');
 const demoDirectories = [resolve(repositoryRoot, 'apps/web/src'), resolve(repositoryRoot, 'apps/dashboard/src')];
 const landingSources = filesWithin(landingDirectory).map((path) => ({ path, source: readFileSync(path, 'utf8') }));
 const demoSources = demoDirectories.flatMap(filesWithin).map((path) => ({ path, source: readFileSync(path, 'utf8') }));
+const workerSource = readFileSync(resolve(repositoryRoot, 'apps/worker/src/index.ts'), 'utf8');
+const demoModeSource = readFileSync(resolve(repositoryRoot, 'apps/worker/src/demo-mode.ts'), 'utf8');
 
 const leadEndpointUsages = landingSources.filter(({ source }) => source.includes("fetch('/api/leads'"));
 invariant(leadEndpointUsages.length === 1, 'debe existir una única llamada real a /api/leads en la landing');
@@ -39,4 +41,14 @@ for (const { path, source } of demoSources) {
   }
 }
 
-console.log('[demo-boundaries] solo la landing comercial usa /api/leads; demos y dashboards permanecen locales');
+invariant(workerSource.indexOf('commercialLeadsEnabled(env)') < workerSource.indexOf('handleLead(request, env)'), 'la allowlist comercial debe comprobarse antes del handler transaccional');
+invariant(demoModeSource.includes("return env.DEMO_MODE !== 'false'"), 'DEMO_MODE debe fallar cerrado salvo false explícito');
+invariant(demoModeSource.includes('sideEffects: false'), 'el manifest debe desactivar efectos');
+invariant(demoModeSource.includes('jobs: false'), 'el manifest debe desactivar jobs');
+for (const provider of ['email', 'payments', 'webhooks', 'externalStorage']) {
+  invariant(new RegExp(`${provider}: 'disabled'`).test(demoModeSource), `el manifest debe desactivar ${provider}`);
+}
+invariant(demoModeSource.includes("leadCapture: 'explicitly_configured'"), 'el manifest debe aislar la excepción comercial de leads');
+invariant(demoModeSource.includes("return env.COMMERCIAL_LEADS_ENABLED === 'true'"), 'los leads deben requerir habilitación exacta');
+
+console.log('[demo-boundaries] guardas fail-closed y superficies locales verificadas');

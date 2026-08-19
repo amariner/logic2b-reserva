@@ -16,7 +16,7 @@ Cuando llegue una orden tipo "sigue desarrollando este proyecto" (`/goal` o simi
 
 ## Qué es este producto (decisiones cerradas — no reabrir)
 
-- **Demo comercial**, no SaaS: cero DB, cero auth. Estado en localStorage versionado. El único endpoint real es `POST /api/leads` desde la landing comercial (Resend → marinerandreu+logic@gmail.com), que se activa en F12. Los formularios de las marcas y los dashboards son muestras locales: nunca llaman a un backend.
+- **Demo comercial**, no SaaS: `DEMO_MODE=true`, cero DB y cero auth para el producto. Estado en localStorage versionado. El único endpoint real es la excepción separada `POST /api/leads` de la landing comercial (`COMMERCIAL_LEADS_ENABLED=true`, Resend → marinerandreu+logic@gmail.com). Los formularios de las marcas y los dashboards son muestras locales: nunca llaman a un backend. Contrato completo en `docs/DEMO-MODE.md`.
 - **3 marcas ficticias**, una por modelo de negocio y nivel comercial:
   - **Brasca** — bistró de barrio. Plan *Básico*. Web propia con formulario que, en un proyecto real, enviaría la solicitud por email; la demo no envía.
   - **Vedra** — restaurante con 2 salas, grupos y menús cerrados. Plan *Gestión*. Widget nativo + backend demostrativo de organización.

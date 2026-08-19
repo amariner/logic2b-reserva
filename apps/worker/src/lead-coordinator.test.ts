@@ -3,7 +3,7 @@ import { LeadCoordinator } from './lead-coordinator';
 import type { LeadEnv } from './leads';
 
 const lead = { name: 'Ada Sala', restaurant: 'Bistró Ada', email: 'ada@example.test', phone: '', level: 'gestion', message: 'Reservas y grupos.', accept: true, website: '', lang: 'es' };
-const emailEnv = { LEADS_TRANSPORT: 'resend', LEADS_RESEND_API_KEY: 'secret', LEADS_FROM_EMAIL: 'hola@logic2b.com', LEADS_INTERNAL_RECIPIENT: 'marinerandreu+logic@gmail.com', LEADS_REPLY_TO: 'hola@logic2b.com' } as const satisfies LeadEnv;
+const emailEnv = { DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'true', LEADS_TRANSPORT: 'resend', LEADS_RESEND_API_KEY: 'secret', LEADS_FROM_EMAIL: 'hola@logic2b.com', LEADS_INTERNAL_RECIPIENT: 'marinerandreu+logic@gmail.com', LEADS_REPLY_TO: 'hola@logic2b.com' } as const satisfies LeadEnv;
 
 class MemoryStorage {
   readonly values = new Map<string, unknown>();
@@ -25,9 +25,9 @@ describe('LeadCoordinator', () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date('2026-08-17T10:00:00Z'));
     const storage = new MemoryStorage();
-    let coordinator = new LeadCoordinator(state(storage), {});
+    let coordinator = new LeadCoordinator(state(storage), { DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'true' });
     for (let count = 0; count < 5; count += 1) expect(await (await coordinator.fetch(new Request('https://coordinator/rate-limit', { method: 'POST' }))).json()).toEqual({ retryAfter: null });
-    coordinator = new LeadCoordinator(state(storage), {});
+    coordinator = new LeadCoordinator(state(storage), { DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'true' });
     expect(await (await coordinator.fetch(new Request('https://coordinator/rate-limit', { method: 'POST' }))).json()).toEqual({ retryAfter: 60 });
   });
 
@@ -39,5 +39,17 @@ describe('LeadCoordinator', () => {
     const second = await deliver(new LeadCoordinator(state(storage), emailEnv));
     expect(await second.json()).toMatchObject({ ref: firstBody.ref, replayed: true });
     expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it('permanece inerte sin la excepción comercial aunque se invoque directamente', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch');
+    const storage = new MemoryStorage();
+    const coordinator = new LeadCoordinator(state(storage), { ...emailEnv, COMMERCIAL_LEADS_ENABLED: 'false' });
+    expect((await deliver(coordinator)).status).toBe(403);
+    expect((await coordinator.fetch(new Request('https://coordinator/rate-limit', { method: 'POST' }))).status).toBe(403);
+    await coordinator.alarm();
+    expect(storage.values.size).toBe(0);
+    expect(storage.alarm).toBeNull();
+    expect(fetcher).not.toHaveBeenCalled();
   });
 });

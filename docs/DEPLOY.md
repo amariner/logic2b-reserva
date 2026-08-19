@@ -4,11 +4,13 @@ Este documento separa deliberadamente la verificación externa de la publicació
 
 ## Fronteras de seguridad
 
+- Tanto preview como producción pública declaran `DEMO_MODE=true`. Este flag mantiene Brasca, Vedra y Solane como producto simulado sin efectos externos.
+- `COMMERCIAL_LEADS_ENABLED=true` es una allowlist distinta y exclusiva para la captación de la landing. No habilita reservas, pagos, notificaciones de restaurante, webhooks, jobs ni otras APIs.
 - Producción usa el Worker `logic-reserva`, `workers_dev: false` y un único dominio personalizado: `reserva.logic2b.com`. Cloudflare gestiona su DNS y certificado.
 - Preview usa otro Worker, `logic-reserva-preview`, con `routes: []`. Solo publica en `workers.dev`; no puede heredar ni reasignar el dominio de producción.
 - Cada Worker tiene su propio Durable Object y su propio secret `LEADS_RESEND_API_KEY`. El único destinatario interno es `marinerandreu+logic@gmail.com`.
 - Solo el formulario comercial de la landing llama a `/api/leads`; los formularios de las demos y los dashboards no usan red ni integraciones reales.
-- Sin ese secret, el formulario responde `disabled(503)` y nunca finge una entrega.
+- Sin el flag comercial exacto, la petición se bloquea con `403` antes de leer el body. Sin el secret o una configuración válida, responde `disabled(503)` y nunca finge una entrega.
 - Los workflows exigen confirmación textual y una variable de entorno habilitadora. Preview pide `PREVIEW` + `RESERVA_PREVIEW_ENABLED=true`; producción pide `DEPLOY` + `RESERVA_DEPLOY_ENABLED=true`.
 
 ## Comprobaciones locales, sin mutación externa
@@ -21,7 +23,7 @@ pnpm deploy:dry-run
 pnpm verify:public
 ```
 
-Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que prueba que los nombres son distintos, preview declara `routes: []`/`workers.dev` y producción declara exclusivamente `reserva.logic2b.com` como dominio personalizado. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad en ambos entornos; no crea leads ni modifica estado.
+Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que fija `DEMO_MODE=true`, la única excepción comercial, la ausencia de triggers/colas, los nombres aislados, `routes: []`/`workers.dev` en preview y exclusivamente `reserva.logic2b.com` en producción. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad; no crea leads ni modifica estado.
 
 ## Estado actual
 
@@ -64,4 +66,4 @@ La producción no debe usarse para descubrir problemas de configuración. Antes 
 
 ## Reversión
 
-No borrar Worker, Durable Objects ni secrets. Ante una regresión, desactivar temporalmente el formulario mediante `LEADS_TRANSPORT=disabled` o volver a una versión anterior desde Cloudflare; después verificar de nuevo las cabeceras y el estado HTTP. Cualquier reversión es también una mutación externa y requiere autorización.
+No borrar Worker, Durable Objects ni secrets. Ante una regresión, desactivar temporalmente el formulario mediante `COMMERCIAL_LEADS_ENABLED=false` (barrera más temprana), `LEADS_TRANSPORT=disabled` o volver a una versión anterior desde Cloudflare; después verificar de nuevo las cabeceras y el estado HTTP. Cualquier reversión es también una mutación externa y requiere autorización.

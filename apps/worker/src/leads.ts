@@ -1,6 +1,7 @@
 import { z } from 'zod';
+import { commercialLeadsEnabled, demoBlockedResponse, type DemoModeEnv } from './demo-mode';
 
-export interface LeadEnv {
+export interface LeadEnv extends DemoModeEnv {
   LEADS_TRANSPORT?: 'resend' | 'disabled';
   LEADS_RESEND_API_KEY?: string;
   LEADS_FROM_EMAIL?: string;
@@ -38,6 +39,8 @@ export interface LeadCoordination {
 }
 
 export async function handleLead(request: Request, env: LeadEnv, coordination = cloudflareCoordination(env)): Promise<Response> {
+  // Keep this second guard: callers cannot bypass the public Worker router.
+  if (!commercialLeadsEnabled(env)) return demoBlockedResponse('commercial_lead_delivery');
   if (!coordination) return json({ ok: false, outcome: 'disabled', error: 'lead_coordination_unavailable' }, 503);
   const ip = request.headers.get('cf-connecting-ip') ?? 'local';
   let retryAfter: number | null;
@@ -69,6 +72,8 @@ export async function handleLead(request: Request, env: LeadEnv, coordination = 
 }
 
 export async function deliverLead(lead: Lead, env: LeadEnv, ref: string): Promise<Response> {
+  // Provider adapter also fails closed if invoked directly.
+  if (!commercialLeadsEnabled(env)) return demoBlockedResponse('commercial_email_provider');
   const configuration = parseEmailConfiguration(env);
   if ((env.LEADS_TRANSPORT ?? 'disabled') !== 'resend' || !configuration) return json({ ok: false, outcome: 'disabled', error: 'lead_delivery_disabled' }, 503);
   const rows: [string, string][] = [

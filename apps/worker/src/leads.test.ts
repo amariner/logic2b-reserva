@@ -3,6 +3,8 @@ import { deliverLead, handleLead, leadSchema, type LeadCoordination, type LeadEn
 
 const lead = { name: 'Ada Sala', restaurant: 'Bistró Ada', email: 'ada@example.test', phone: '+34 600 000 000', level: 'gestion', message: 'Quiero ordenar reservas y grupos.', accept: true, website: '', lang: 'es' } as const;
 const emailEnv = {
+  DEMO_MODE: 'true',
+  COMMERCIAL_LEADS_ENABLED: 'true',
   LEADS_TRANSPORT: 'resend',
   LEADS_RESEND_API_KEY: 'secret-test-key',
   LEADS_FROM_EMAIL: 'hola@logic2b.com',
@@ -36,6 +38,26 @@ describe('leads de Logic Reserva', () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it('bloquea leads no habilitados antes de leer el cuerpo, coordinar, persistir o llamar al proveedor', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch');
+    const coordination: LeadCoordination = {
+      rateLimit: vi.fn(async () => null),
+      submit: vi.fn(async () => new Response()),
+    };
+    const request = new Request('https://test/api/leads', { method: 'POST', body: '{json deliberadamente inválido' });
+    const response = await handleLead(request, { DEMO_MODE: 'true', LEADS_TRANSPORT: 'resend', LEADS_RESEND_API_KEY: 'must-not-be-used' }, coordination);
+    expect(response.status).toBe(403);
+    expect(await response.json()).toMatchObject({ outcome: 'demo_blocked', capability: 'commercial_lead_delivery' });
+    expect(coordination.rateLimit).not.toHaveBeenCalled();
+    expect(coordination.submit).not.toHaveBeenCalled();
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
+  it('la excepción comercial falla cerrada si su flag falta o tiene un valor inesperado', async () => {
+    expect((await submit({})).status).toBe(403);
+    expect((await submit({ DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'TRUE', LEADS_TRANSPORT: 'resend' })).status).toBe(403);
+  });
+
   it('responde limited(429) con Retry-After', async () => {
     const coordination: LeadCoordination = { rateLimit: async () => 37, submit: async () => new Response() };
     const response = await submit(emailEnv, lead, coordination);
@@ -45,11 +67,11 @@ describe('leads de Logic Reserva', () => {
   });
 
   it('responde disabled(503) cuando el transporte o la configuración no están listos', async () => {
-    const disabled = await submit({ LEADS_TRANSPORT: 'disabled' });
+    const disabled = await submit({ DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'true', LEADS_TRANSPORT: 'disabled' });
     expect(disabled.status).toBe(503);
     expect(await disabled.json()).toMatchObject({ outcome: 'disabled' });
     const logger = vi.spyOn(console, 'error').mockImplementation(() => undefined);
-    const incomplete = await submit({ LEADS_TRANSPORT: 'resend', LEADS_RESEND_API_KEY: 'secret-that-must-not-leak' });
+    const incomplete = await submit({ DEMO_MODE: 'true', COMMERCIAL_LEADS_ENABLED: 'true', LEADS_TRANSPORT: 'resend', LEADS_RESEND_API_KEY: 'secret-that-must-not-leak' });
     expect(incomplete.status).toBe(503);
     expect(await incomplete.json()).toMatchObject({ error: 'lead_email_configuration_invalid' });
     expect(logger.mock.calls.flat().join(' ')).not.toContain('secret-that-must-not-leak');
