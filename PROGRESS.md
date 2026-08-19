@@ -11,7 +11,8 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 - Defensa en profundidad añadida en router, handler, Durable Object y adaptador. Sin la allowlist comercial exacta, `POST /api/leads` responde `403` antes de leer el body, persistir o llamar al proveedor; el resto de `/api/*` continúa en `404`.
 - `verify-demo-boundaries.mjs` fija la ausencia de red en demos, el manifest y el orden temprano de la guarda. `verify-deploy-config.mjs` fija ambos flags, la excepción única, el destinatario y la ausencia de triggers/colas.
 - Contrato, matriz de efectos, inventario visual, activación real, recuperación, rollback y limitaciones documentados en `docs/DEMO-MODE.md`; decisión registrada en ADR-014 y enlazada desde README/contrato de trabajo/runbook.
-- Gates: `git diff --check`, `pnpm check` 28/28 con 15 tests del Worker, `pnpm e2e` 49/49 y dry-runs estrictos de preview/producción con 139 assets y los bindings esperados. No se desplegó ni se envió ningún lead.
+- Gates: `git diff --check`, `pnpm check` 28/28 con 15 tests del Worker, `pnpm e2e` 49/49 y dry-runs estrictos de preview/producción con 139 assets y los bindings esperados.
+- El cambio funcional se integró en `main` como `9df0ea7` y se publicó en GitHub. Producción subió dos assets modificados a `reserva.logic2b.com`, versión Cloudflare `d7b6ca68-d0ae-44bb-ab6a-2eb75164435e`; el smoke público quedó verde exclusivamente con GET. No se envió ningún lead.
 
 ## 2026-08-19 · Sesión 34 · Capturas guiadas de venta completadas y publicadas ✅
 

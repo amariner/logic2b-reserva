@@ -13,7 +13,7 @@
 
 - El contrato vigente de seguridad está en `docs/DEMO-MODE.md` y ADR-014: los despliegues públicos usan `DEMO_MODE=true`; Brasca, Vedra y Solane no tienen efectos externos.
 - La landing comercial es la única excepción real y separada: `COMMERCIAL_LEADS_ENABLED=true` permite exclusivamente `POST /api/leads`. No reutilizar ese flag para correo de restaurante, pagos, webhooks, jobs o integraciones.
-- Gates de sesión 35: `pnpm check` 28/28, Worker 15/15, E2E 49/49 y dry-runs de preview/producción con 139 assets. No se desplegó ni se envió ningún lead.
+- Gates de sesión 35: `pnpm check` 28/28, Worker 15/15, E2E 49/49 y dry-runs de preview/producción con 139 assets. El cambio está en `main` (`9df0ea7`) y en producción (`d7b6ca68-d0ae-44bb-ab6a-2eb75164435e`), con smoke por GET verde y sin enviar leads.
 - La arquitectura comercial cerrada tiene exactamente tres planes: Básico → Gestión → Inteligente. Ver `docs/adr/ADR-010-tres-planes-y-backends-demostrativos.md`; no reintroducir Inicio ni Automatiza como planes.
 - Los heroes v2 de Brasca, Vedra y Solane ya se generaron con OpenAI y se sirven como AVIF responsive. Para nuevas imágenes: OpenAI integrado, nunca Higgsfield, una generación cada vez y con pausa entre solicitudes.
 - Brasca escenifica Básico (web + solicitud que en una implantación real llegaría por email), Vedra es el backend demo de Gestión y Solane es Gestión ampliado con IA, automatizaciones y operación avanzada.
