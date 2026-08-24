@@ -98,12 +98,20 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page).toHaveTitle('Reservas para restaurantes y eventos | Logic Reserva');
     await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/');
     await expect(page.locator('link[rel="alternate"][hreflang="en"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/en/');
-    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /solane-v2-1600\.avif$/);
+    await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /05-solane-inventario-desktop\.png$/);
+    await expect(page.locator('meta[property="og:image:width"]')).toHaveAttribute('content', '1366');
+    await expect(page.locator('meta[property="og:image:height"]')).toHaveAttribute('content', '900');
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
     await expect(page.locator('.demo-card__preview img')).toHaveCount(3);
-    await expect(page.locator('.demo-card__preview img').first()).toHaveAttribute('alt', /Brasca/);
-    await expect(page.getByRole('heading', { level: 2, name: 'No te damos acceso y desaparecemos. Lo dejamos funcionando contigo.' })).toBeVisible();
-    await expect(page.getByText('Logic2B lo configura para tu operativa')).toBeVisible();
+    await expect(page.locator('.demo-card__preview img').first()).toHaveAttribute('alt', /Solane/);
+    await expect(page.locator('.product-proof__screen img')).toHaveAttribute('src', '/images/screens/05-solane-inventario-desktop.png');
+    await expect(page.getByRole('heading', { level: 2, name: 'Tu operativa marca las reglas. Logic2B diseña el encaje.' })).toBeVisible();
+    await expect(page.getByText('La implantación se define con Logic2B a partir de tu operativa real.')).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Abrir la demo · 2 min' })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+
+    const header = page.getByRole('banner');
+    await expect(header.getByRole('link', { name: 'Logic2B — ir a logic2b.com' })).toHaveAttribute('href', 'https://logic2b.com');
+    await expect(header.getByRole('link', { name: 'Logic2B Reservas — ir al inicio' })).toHaveAttribute('href', '/');
 
     const homeSchemas = await page.locator('script[type="application/ld+json"]').allTextContents();
     const homeTypes = homeSchemas.map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type']);
@@ -114,12 +122,12 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.getByRole('heading', { level: 1, name: 'El evento deja de competir con la sala.' })).toBeVisible();
     const solutionSchemas = await page.locator('script[type="application/ld+json"]').allTextContents();
     const solutionTypes = solutionSchemas.map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type']);
-    expect(solutionTypes).toEqual(expect.arrayContaining(['BreadcrumbList', 'Service', 'FAQPage']));
+    expect(solutionTypes).toEqual(expect.arrayContaining(['BreadcrumbList', 'WebPage', 'FAQPage']));
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
     await expect(page).toHaveTitle('Restaurant and event bookings | Logic Reserva');
     await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/');
-    await expect(page.getByRole('heading', { level: 2, name: 'We do not hand over a login and disappear. We make it work with you.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Your operation sets the rules. Logic2B designs the fit.' })).toBeVisible();
   });
 
   test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {
@@ -135,13 +143,27 @@ test.describe('landing comercial Logic Reserva', () => {
     }
   });
 
+  test('la navegación móvil mantiene producto, idioma y contacto disponibles', async ({ page }) => {
+    await page.setViewportSize({ width: 375, height: 812 });
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await page.locator('.mobile-menu > summary').click();
+    const menu = page.locator('.mobile-menu nav');
+    await expect(menu.getByRole('link', { name: 'Cómo funciona' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Grupos y eventos' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Solicitar demo' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'EN', exact: true })).toBeVisible();
+    await menu.getByRole('link', { name: 'Cómo funciona' }).click();
+    await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
+    expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
+  });
+
   test('el texto pequeño conserva contraste AA sobre los acentos de la landing', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const selectors = [
-      '.eyebrow', '.mockup-board .event-card small', '.demo-note', '.hero-flow i', '.stat-card--2 span',
-      '.source-note', '.difference-card--coral p', '.pill.ghost', '.level-index',
-      '.level-card:nth-child(3) .level-index', '.calculator-band .eyebrow', '.calculator-band .editorial',
-      '.estimate-label', '.footer-bottom',
+      '.eyebrow', '.brand-wordmark__product', '.product-proof__bar', '.product-proof figcaption div span',
+      '.demo-note', '.hero-flow i', '.path-card--restaurant .path-card__body',
+      '.path-card--events .path-card__body', '.path-card--events li', '.demo-card__evidence',
+      '.pill.ghost', '.human-intro > p', '.privacy-check', '.footer-bottom',
     ];
     const ratios = await page.evaluate((targets) => {
       type Rgb = { r: number; g: number; b: number; a: number };
@@ -149,19 +171,22 @@ test.describe('landing comercial Logic Reserva', () => {
         const channels = value.match(/[\d.]+/g)?.map(Number) ?? [];
         return { r: channels[0] ?? 0, g: channels[1] ?? 0, b: channels[2] ?? 0, a: channels[3] ?? 1 };
       };
-      const background = (element: Element): Rgb => {
-        for (let current: Element | null = element; current; current = current.parentElement) {
-          const color = parse(getComputedStyle(current).backgroundColor);
-          if (color.a === 1) return color;
-        }
-        return { r: 255, g: 255, b: 255, a: 1 };
-      };
       const composite = (foreground: Rgb, backdrop: Rgb): Rgb => ({
         r: foreground.r * foreground.a + backdrop.r * (1 - foreground.a),
         g: foreground.g * foreground.a + backdrop.g * (1 - foreground.a),
         b: foreground.b * foreground.a + backdrop.b * (1 - foreground.a),
         a: 1,
       });
+      const background = (element: Element): Rgb => {
+        const layers: Rgb[] = [];
+        for (let current: Element | null = element; current; current = current.parentElement) {
+          layers.push(parse(getComputedStyle(current).backgroundColor));
+        }
+        return layers.reduceRight(
+          (backdrop, layer) => composite(layer, backdrop),
+          { r: 255, g: 255, b: 255, a: 1 },
+        );
+      };
       const luminance = (color: Rgb): number => {
         const channel = (value: number): number => {
           const normalized = value / 255;
@@ -239,31 +264,20 @@ test.describe('landing comercial Logic Reserva', () => {
     });
   }
 
-  test('configurador, calculadora y madurez comparten las reglas del dominio', async ({ page }) => {
+  test('el formulario convierte la prioridad operativa en un alcance comercial legible', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
-    await expect(page.locator('[data-recommendation-name]')).toHaveText('Gestión');
-    await page.locator('input[name="eventsPerMonth"]').fill('2');
-    await expect(page.locator('[data-recommendation-name]')).toHaveText('Inteligente');
-    await page.locator('input[name="eventsPerMonth"]').fill('0');
-    await page.locator('input[name="wantsOnlineBooking"]').uncheck();
-    await page.locator('input[name="hasGroupsOrMenus"]').uncheck();
-    await expect(page.locator('[data-recommendation-name]')).toHaveText('Básico');
-    await page.locator('input[name="noShowPain"]').check();
-    await expect(page.locator('[data-recommendation-name]')).toHaveText('Inteligente');
-
-    await page.locator('#covers-input').fill('1000');
-    await expect(page.locator('[data-monthly-saving]')).toContainText(/3[.\s]?000/);
-    await expect(page.getByText(/Estimación basada en tarifas publicadas por terceros/)).toBeVisible();
-
-    await page.getByRole('button', { name: 'Llevarlo a mi caso' }).click();
-    await expect(page.locator('[data-lead-level]')).toHaveValue('inteligente');
+    const priority = page.getByLabel('Qué quieres ordenar primero');
+    await expect(priority).toHaveValue('gestion');
+    await expect(priority.locator('option')).toHaveCount(3);
+    await priority.selectOption('inteligente');
+    await expect(priority).toHaveValue('inteligente');
   });
 
   test('el consentimiento no tapa las acciones principales del hero', async ({ page }) => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/', { waitUntil: 'networkidle' });
     const banner = await page.locator('[data-cookie-banner]').boundingBox();
-    const secondaryAction = await page.getByRole('link', { name: 'Probar una demo' }).boundingBox();
+    const secondaryAction = await page.getByRole('link', { name: 'Hablar de mi operativa' }).boundingBox();
     expect(banner).not.toBeNull();
     expect(secondaryAction).not.toBeNull();
     expect(banner!.x).toBeGreaterThanOrEqual(secondaryAction!.x + secondaryAction!.width);
@@ -742,7 +756,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
     expect(networkWrites).toEqual([]);
   });
 
-  test('depósito informado: no-show aplica el máximo proporcional y sentar lo libera', async ({ page }) => {
+  test('regla ficticia informada: no-show aplica como máximo el depósito demo y sentar lo libera', async ({ page }) => {
     const storageKey = 'logic-reserva-demo-solane-v1';
     await page.setViewportSize({ width: 375, height: 900 });
 
@@ -773,7 +787,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
       await expect(gateway).toBeVisible();
       await expect(gateway).toContainText('Pasarela neutra · demo — no se realizará ningún cobro');
       await expect(gateway).toContainText('Menú Solane');
-      await expect(gateway).toContainText('Cálculo proporcional');
+      await expect(gateway).toContainText('Regla ficticia aplicada');
       await expect(gateway).toContainText('50% · 2');
       await expect(gateway).toContainText('125,00');
       await expect(gateway).toContainText('Condiciones aceptadas antes de continuar');
@@ -801,7 +815,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await expect(noShowBooking.locator('[data-booking-status]')).toHaveText('No presentado');
     await expect(noShowBooking.locator('[data-deposit-record]')).toHaveAttribute('data-deposit-status', 'charged');
     await expect(noShowBooking.locator('[data-deposit-resolution-amount]')).toContainText('125,00');
-    await expect(page.getByRole('status')).toContainText('únicamente el depósito proporcional mostrado');
+    await expect(page.getByRole('status')).toContainText('depósito ficticio mostrado pasa a aplicado en el estado local');
     await page.reload({ waitUntil: 'networkidle' });
     await expect(page.locator('[data-booking-id]').filter({ hasText: 'Nora Depósito' }).locator('[data-deposit-record]')).toHaveAttribute('data-deposit-status', 'charged');
 
@@ -986,8 +1000,10 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await expect(page).toHaveURL(/vista=informes/);
     await expect(page.locator('[data-report-occupancy]')).toContainText('Ocupación por servicio');
     await expect(page.locator('[data-report-sources]')).toContainText('Web directa');
-    await expect(page.locator('[data-report-no-shows]')).toContainText('Estimación');
-    await expect(page.locator('[data-report-marketplace] [data-estimate-label]')).toHaveText('estimación basada en tarifas publicadas por terceros');
+    await expect(page.locator('[data-report-no-shows]')).toContainText('Exposición estimada a no-show');
+    await expect(page.locator('[data-report-no-shows]')).toContainText('no son no-shows observados ni evitados');
+    await expect(page.locator('[data-report-marketplace]')).toContainText('Coste comparativo hipotético');
+    await expect(page.locator('[data-report-marketplace] [data-estimate-label]')).toHaveText('Supuesto editable: 3,00 €/cubierto; no es una tarifa atribuida ni un periodo mensual real.');
     await expect(page.locator('[data-ai-decision-support]')).toContainText('IA demostrativa · cálculo local, sin modelo conectado');
     await expect(page.locator('[data-ai-decision-support] [data-decision]')).toHaveCount(3);
     await expect(page.locator('[data-automation-center]')).toContainText('Evento publicado → mesas fuera del widget');
@@ -1079,7 +1095,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await page.getByRole('button', { name: 'Confirmar experiencia demo' }).click();
     await page.locator('[data-confirm-deposit]').click();
 
-    // 4 · Dirección registra el no-show con el límite proporcional mostrado.
+    // 4 · Dirección registra el no-show con el límite de la regla ficticia mostrada.
     await page.getByRole('link', { name: 'Abrir en el gestor' }).click();
     const booking = page.locator('[data-booking-id]').filter({ hasText: 'Guion Comercial' });
     await booking.locator('[data-deposit-action="no_show"]').click();
@@ -1093,7 +1109,7 @@ test.describe('demo Solane · nivel Inteligente', () => {
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toContain('solane-clientes-demo');
     await page.getByRole('button', { name: 'Informes', exact: true }).click();
-    await expect(page.locator('[data-report-marketplace] [data-estimate-label]')).toHaveText('estimación basada en tarifas publicadas por terceros');
+    await expect(page.locator('[data-report-marketplace] [data-estimate-label]')).toHaveText('Supuesto editable: 3,00 €/cubierto; no es una tarifa atribuida ni un periodo mensual real.');
     expect(networkWrites).toEqual([]);
   });
 

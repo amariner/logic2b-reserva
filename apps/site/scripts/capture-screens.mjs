@@ -259,7 +259,10 @@ try {
   const jobs = scenes.flatMap((scene) =>
     viewports.map((viewport) => ({ scene, viewport })),
   );
-  const captures = await mapConcurrent(jobs, 4, ({ scene, viewport }) =>
+  // El render concurrente de dos viewports de la misma escena puede variar el
+  // rasterizado de AVIF en Chrome. El catálogo es pequeño y su contrato exige
+  // hashes reproducibles, así que se captura estrictamente en orden.
+  const captures = await mapConcurrent(jobs, 1, ({ scene, viewport }) =>
     captureScene(browser, scene, viewport, temporaryDir),
   );
   manifest.captures.push(...captures);

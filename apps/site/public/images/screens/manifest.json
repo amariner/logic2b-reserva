@@ -133,7 +133,7 @@
       "width": 1366,
       "height": 900,
       "file": "06-solane-deposito-desktop.png",
-      "sha256": "29d84becde754716e36702c1a15a3b9ae17173d04b8c3d4296504087a5d224de"
+      "sha256": "302b81a628eba3e076e5b4dc8a61516f3675ed110a05095cd876438563c3924e"
     },
     {
       "order": "06",
@@ -145,7 +145,7 @@
       "width": 375,
       "height": 812,
       "file": "06-solane-deposito-mobile.png",
-      "sha256": "bbe09da13a069b01752e3153275b08d141d8ee13eea09aa501d33025ad807c4b"
+      "sha256": "a06216ca452d824f1f5d987122ec37e4a6bbc8fb6726fe801423e60aa5dc2373"
     },
     {
       "order": "07",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "ab1ad3d4c6782b3d916b60393888e2b8d42278fd959e2a1f29c27bf7113a9f0f"
+      "sha256": "aa64640fa0e37ae660ce78f884388dabb53cfaa9fab1dfbe275539173cd25821"
     },
     {
       "order": "08",

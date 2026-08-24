@@ -3,6 +3,7 @@ import type { Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
 import Base from '../layouts/Base.astro';
 import { COMMERCIAL_PAGE_DETAILS, INFO_PAGES, SITE_CONTENT, type CommercialPageKey, type InfoPageKey } from '../content';
+import BrandLockup from './BrandLockup.astro';
 
 interface Props { locale?: Locale; page: InfoPageKey; path: string }
 
@@ -26,13 +27,12 @@ const structuredData: Array<Record<string, unknown>> = [{
 if (detail) {
   structuredData.push({
     '@context': 'https://schema.org',
-    '@type': 'Service',
+    '@type': 'WebPage',
     name: content.title,
     description: detail.metaDescription,
     url: pageUrl,
-    provider: { '@id': 'https://reserva.logic2b.com/#organization' },
-    areaServed: { '@type': 'Country', name: 'Spain' },
-    audience: { '@type': 'BusinessAudience', audienceType: 'Restaurants and hospitality businesses' },
+    isPartOf: { '@id': 'https://reserva.logic2b.com/#website' },
+    about: { '@type': 'Thing', name: locale === 'en' ? 'Restaurant booking commercial demo' : 'Demostración comercial de reservas para restaurantes' },
   });
   structuredData.push({
     '@context': 'https://schema.org',
@@ -41,8 +41,8 @@ if (detail) {
   });
 }
 const ui = locale === 'en'
-  ? { back: 'Back to Logic Reserva', chapters: 'From bottleneck to service', outcomes: 'What changes for the team', faq: 'Questions before deciding', context: 'Configured with you', title: 'Your operation sets the rules. Logic2B makes the platform fit.', action: 'Discuss my setup', related: 'Keep exploring', plans: 'Compare plans', restaurants: 'Restaurant bookings', groups: 'Groups and events' }
-  : { back: 'Volver a Logic Reserva', chapters: 'Del cuello de botella al servicio', outcomes: 'Lo que cambia para el equipo', faq: 'Preguntas antes de decidir', context: 'Configurado contigo', title: 'Tu operativa marca las reglas. Logic2B adapta la plataforma.', action: 'Hablar de mi configuración', related: 'Sigue explorando', plans: 'Comparar planes', restaurants: 'Reservas de restaurante', groups: 'Grupos y eventos' };
+  ? { back: 'Back to Logic Reserva', chapters: 'From bottleneck to service', outcomes: 'What changes for the team', faq: 'Questions before deciding', context: 'Scope to define', title: 'Your operation sets the requirements. Logic2B reviews the implementation scope.', action: 'Discuss my scope', related: 'Keep exploring', plans: 'Compare plans', restaurants: 'Restaurant bookings', groups: 'Groups and events' }
+  : { back: 'Volver a Logic Reserva', chapters: 'Del cuello de botella al servicio', outcomes: 'Lo que cambia para el equipo', faq: 'Preguntas antes de decidir', context: 'Alcance por definir', title: 'Tu operativa marca los requisitos. Logic2B revisa el alcance de implantación.', action: 'Hablar de mi alcance', related: 'Sigue explorando', plans: 'Comparar planes', restaurants: 'Reservas de restaurante', groups: 'Grupos y eventos' };
 const relatedLinks = [
   { key: 'planes', label: ui.plans, href: `${prefix}/planes/` },
   { key: 'restaurantes', label: ui.restaurants, href: `${prefix}/soluciones/restaurantes/` },
@@ -62,7 +62,7 @@ const fallbackTitles = locale === 'en'
 >
   <header class="info-nav">
     <div class="shell">
-      <a class="info-brand" href={`${prefix}/`}><span>R</span>Logic Reserva</a>
+      <BrandLockup locale={locale} homeHref={`${prefix}/`} />
       <div><a href={languageHref}>{shared.nav.language}</a><a class="pill" href={contact.href} target="_blank" rel="noreferrer">{shared.nav.contact}</a></div>
     </div>
   </header>
@@ -97,7 +97,7 @@ const fallbackTitles = locale === 'en'
         <nav class="related-links" aria-label={ui.related}><span>{ui.related}</span>{relatedLinks.map((item) => <a href={item.href}>{item.label}<i aria-hidden="true">↗</i></a>)}</nav>
         <aside class="info-cta">
           <div><p class="eyebrow">{ui.context}</p><h2>{ui.title}</h2></div>
-          <a class="pill" href={`${prefix}/#configurador`}>{ui.action}</a>
+          <a class="pill" href={`${prefix}/#contacto`}>{ui.action}</a>
         </aside>
       </>
     )}
@@ -106,9 +106,8 @@ const fallbackTitles = locale === 'en'
 </Base>
 
 <style>
-  .info-nav { height: 64px; border-bottom: 1px solid var(--line); background: rgb(246 245 244 / 94%); }
+  .info-nav { position: sticky; z-index: 50; top: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
   .info-nav .shell, .info-footer .shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
-  .info-brand { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; font-weight: 700; text-decoration: none; }.info-brand span { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--ink); border-radius: 8px; }
   .info-nav div div { display: flex; align-items: center; gap: 12px; }.info-nav div div > a:first-child { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 8px; color: var(--slate); font-size: .84rem; text-decoration: none; }.info-nav .pill { min-height: 44px; }
   .info-main { padding-block: clamp(64px, 9vw, 120px); }.back-link { display: inline-flex; min-height: 44px; align-items: center; margin-bottom: clamp(60px, 9vw, 110px); color: var(--slate); font-size: .84rem; text-decoration: none; }.back-link:hover { color: var(--ink); }
   .info-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(50px, 10vw, 150px); }.info-grid h1 { max-width: 850px; }.info-intro { max-width: 62ch; margin: 30px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.6; }

@@ -14,8 +14,8 @@ Todos los informes se calculan en el navegador a partir de las reservas visibles
 - el gasto CRM suma únicamente visitas `finished` con menú y precio conocidos;
 - la ocupación divide cubiertos operativos por capacidad física acumulada en las fechas de la muestra;
 - el origen cuenta cada reserva por su `source`;
-- los no-shows evitados aplican una tasa sectorial a la muestra y se rotulan como estimación;
-- el ahorro frente a marketplace usa `marketplaceSavings` y muestra siempre «estimación basada en tarifas publicadas por terceros».
+- la exposición estimada a no-show aplica una tasa sectorial a la muestra y se presenta como escenario, no como no-shows observados ni evitados;
+- el coste comparativo hipotético usa `marketplaceSavings` con el supuesto editable de 3 €/cubierto, sin atribuirlo a una tarifa ni tratar la muestra como un mes real.
 
 El CSV contiene exactamente los registros agregados visibles y se descarga localmente, sin red. Su serializador protege además frente a fórmulas al abrirlo en una hoja de cálculo.
 

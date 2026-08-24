@@ -1,0 +1,66 @@
+---
+import type { Locale } from '@logic-reserva/config';
+
+interface Props {
+  locale?: Locale;
+  homeHref?: string;
+  class?: string;
+}
+
+const { locale = 'es', homeHref = locale === 'en' ? '/en/' : '/', class: className } = Astro.props;
+const labels = locale === 'en'
+  ? { company: 'Logic2B — go to logic2b.com', product: 'Logic2B Reservas — go to home' }
+  : { company: 'Logic2B — ir a logic2b.com', product: 'Logic2B Reservas — ir al inicio' };
+---
+
+<span class:list={['brand-wordmark', className]}>
+  {/* prettier-ignore */}
+  <a class="brand-wordmark__company" href="https://logic2b.com" aria-label={labels.company}>Logic<span class="brand-wordmark__2b">2B</span></a>
+  {/* El espacio visual vive en `gap`; no forma parte del área activa de ningún enlace. */}
+  {/* prettier-ignore */}
+  <a class="brand-wordmark__product" href={homeHref} aria-label={labels.product}>Reservas</a>
+</span>
+
+<style>
+  @font-face {
+    font-family: 'Poppins Logic2B';
+    src: url('/fonts/poppins-600-latin.woff2') format('woff2');
+    font-weight: 600;
+    font-display: swap;
+  }
+  @font-face {
+    font-family: 'Poppins Logic2B';
+    src: url('/fonts/poppins-800-logo.woff2') format('woff2');
+    font-weight: 800;
+    font-display: swap;
+    unicode-range: U+30-32, U+42;
+  }
+  .brand-wordmark {
+    display: inline-flex;
+    min-height: 44px;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: .28em;
+    color: var(--ink);
+    font-family: 'Poppins Logic2B', var(--sans);
+    font-size: 1.125rem;
+    font-weight: 600;
+    letter-spacing: .015em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .brand-wordmark a {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    color: inherit;
+    text-decoration: none;
+    transition: opacity 180ms ease;
+  }
+  .brand-wordmark a:hover { opacity: .66; }
+  .brand-wordmark__2b { color: var(--logo-2b, #2a2c30); font-weight: 800; }
+  .brand-wordmark__product { color: var(--slate) !important; }
+  @media (max-width: 640px) {
+    .brand-wordmark { font-size: 1rem; }
+  }
+</style>

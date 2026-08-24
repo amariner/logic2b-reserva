@@ -30,7 +30,7 @@ La primera versión contiene ocho escenas y dieciséis PNG. No incluye vídeo, v
 
 ## Contrato de ejecución
 
-Cada combinación escena/viewport se ejecuta en un contexto de navegador nuevo y en este orden:
+Cada combinación escena/viewport se ejecuta en serie, en un contexto de navegador nuevo y en este orden. No se paralelizan viewports: Chrome puede variar el rasterizado AVIF cuando dos contextos capturan la misma escena simultáneamente y el contrato exige hashes reproducibles.
 
 1. Fijar locale `es-ES`, zona horaria `Europe/Madrid`, esquema claro, movimiento reducido y reloj en `2026-08-18T10:00:00+02:00`.
 2. Bloquear todo origen salvo `http://127.0.0.1:8791` y todo método salvo GET/HEAD antes de abrir la primera página.

@@ -17,7 +17,7 @@ Logic Reserva ofrece exactamente tres planes:
 - **Gestión:** todo lo necesario para organizar reservas, mesas, grupos, clientes e informes desde un backend. Vedra es la demo de este gestor.
 - **Inteligente:** todo Gestión más apoyo de IA para decisiones, automatizaciones y operación avanzada, incluidos eventos, depósitos, privatizaciones e inventario unificado. Solane es la demo de este gestor ampliado.
 
-El antiguo plan Automatiza desaparece; sus capacidades pertenecen a Inteligente. La recomendación comercial usa `basico | gestion | inteligente`, en ese orden.
+El antiguo plan Automatiza desaparece; sus capacidades pertenecen a Inteligente. El contrato comercial usa `basico | gestion | inteligente`, en ese orden. La landing puede presentar esos valores como prioridades operativas en vez de recomendar automáticamente un plan.
 
 Los dos gestores son experiencias locales basadas en fixtures y `localStorage`. La IA de Solane se presenta expresamente como un cálculo demostrativo y determinista, sin modelo ni servicio externo conectado. Las automatizaciones también son recorridos simulados en el navegador.
 
@@ -25,7 +25,7 @@ El único formulario técnicamente conectado es el formulario comercial de la la
 
 ## Consecuencias
 
-- `PlanLevel`, el configurador y el payload de leads solo aceptan `basico`, `gestion` e `inteligente`; los valores heredados `inicio` y `automatiza` dejan de ser válidos.
+- `PlanLevel` y el payload de leads solo aceptan `basico`, `gestion` e `inteligente`; los valores heredados `inicio` y `automatiza` dejan de ser válidos.
 - Cada plan tiene una demostración inequívoca: Brasca → Básico, Vedra → Gestión y Solane → Inteligente.
 - Gestión e Inteligente pueden compartir componentes, pero la interfaz de Vedra no muestra IA ni automatizaciones y la de Solane debe identificarlas como demostrativas.
 - Esta decisión no añade backend, autenticación, base de datos, proveedor de IA ni automatizaciones externas a las demos.

@@ -7,10 +7,10 @@ Arquitectura comercial vigente: **Básico → Gestión → Inteligente**. Brasca
 Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validado contra la competencia en `COMPETENCIA.md`):
 
 1. Vista de servicio del día con plano de sala vivo →
-2. Crear evento "Cena maridaje, 24 plazas" seleccionando mesas reales → el widget deja de ofrecerlas (**inventario único, gap nº1 del mercado**) →
-3. Un comensal reserva: mesa + menú degustación + depósito proporcional con condiciones y timestamp →
-4. Marcar no-show con cobro proporcional / sentar y liberar depósito automáticamente →
-5. CRM + export + calculadora de ahorro vs marketplace ("estimación de terceros").
+2. Crear evento "Cena maridaje, 24 plazas" seleccionando mesas reales → el widget deja de ofrecerlas (**inventario compartido como diferencial central demostrado**) →
+3. Un comensal reserva: mesa + menú degustación + regla ficticia de depósito informada y aceptada con timestamp →
+4. Marcar no-show y simular la aplicación del depósito / sentar y liberarlo automáticamente →
+5. CRM + export + escenario de exposición a no-show y coste comparativo hipotético.
 
 ---
 
@@ -73,13 +73,12 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** el funnel de venta y captación de leads (la razón de ser de la demo).
 **Dependencias:** F2.
 
-- [x] `apps/site/src/content.ts` — todo el copy es (en mínimo viable), tipado `as const`
-- [x] Escalera consolidada en tres planes: Básico, Gestión e Inteligente; configurador y formulario comparten el mismo contrato
-- [x] `Landing.astro`: hero "Tus reservas, tu marca, tus datos" → problema con datos duros (no-show 3,3%, ~78€/mesa, >15.500€/año; experiencias +83%; ver COMPETENCIA.md §6) → los 4 diferenciales → tarjetas de las 3 demos → escalera de niveles con madurez visible → FAQ (legalidad de depósitos, RGPD, qué es demo) → formulario de leads
-- [x] Configurador de alcance (isla o script): `recommendLevel(ScopeSignals)` → recomienda plan y lo preselecciona en el form
-- [x] Calculadora pública de ahorro con `marketplaceSavings` + rótulo de estimación
-- [x] Form de leads → `POST /api/leads` (aún responde 503; UI muestra estado honesto "demo sin envío")
-- [x] Páginas: `/planes/`, `/soluciones/restaurantes/`, `/soluciones/grupos-y-eventos/`, `/legal/`, `/privacidad/`, `/cookies/` + espejos `/en/` stub
+- [x] `apps/site/src/content.ts` — copy completo es/en, tipado `as const`
+- [x] Escalera consolidada en tres planes: Básico, Gestión e Inteligente; las páginas comerciales, demos y payload de leads comparten el mismo contrato
+- [x] `Landing.astro`: hero centrado en producto → prueba visual del inventario → recorridos de restaurante y eventos → tres demos → implantación → FAQ → formulario de leads
+- [x] La landing evita calculadoras y cifras sectoriales no verificables; el escenario comparativo permanece dentro de Informes, rotulado como hipótesis editable
+- [x] Form de leads → `POST /api/leads`, única excepción comercial real y separada del modo demo; falla de forma cerrada si la configuración no está habilitada
+- [x] Páginas: `/planes/`, `/soluciones/restaurantes/`, `/soluciones/grupos-y-eventos/`, `/legal/`, `/privacidad/`, `/cookies/` + espejos completos `/en/`
 - [x] `sitemap.xml.ts` (excluye /demos/), `robots.txt` (Disallow /demos/), consentimiento antes de cualquier analítica
 
 **Hecho cuando:** E2E site en `tests/e2e/reserva.spec.ts`: 200 en todas las rutas, sin overflow horizontal a 320/375/430/1366px, cero errores de consola.
@@ -145,14 +144,14 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F8 · Depósitos anti no-show (ley española)
+## F8 · Depósitos anti no-show (regla demostrativa)
 
-**Objetivo:** pasos 3–4 del guion; el argumento con números duros.
+**Objetivo:** pasos 3–4 del guion; un recorrido ficticio, informado y auditable.
 **Dependencias:** F7.
 
-- [x] En el widget Solane: `riskTier` (grupo grande / viernes noche / sin historial) → depósito proporcional al menú con desglose visible, checkbox de condiciones + `termsAcceptedAt` mostrado, pasarela simulada en `<dialog>` etiquetada "Pasarela neutra · demo — no se realizará ningún cobro"
-- [x] En el gestor: marcar no-show → cobro proporcional con breakdown y referencia a las condiciones aceptadas; sentar la reserva → "Depósito liberado automáticamente"
-- [x] Panel lateral explicativo (copy de COMPETENCIA.md §5-C): informado antes de reservar + proporcional al perjuicio
+- [x] En el widget Solane: `riskTier` (grupo grande / viernes noche / sin historial) → regla ficticia 0/25/50 % sobre el menú con desglose visible, checkbox de condiciones + `termsAcceptedAt` mostrado, pasarela simulada en `<dialog>` etiquetada "Pasarela neutra · demo — no se realizará ningún cobro"
+- [x] En el gestor: marcar no-show → aplicación local de la regla demo con breakdown y referencia a las condiciones aceptadas; sentar la reserva → "Depósito liberado automáticamente"
+- [x] Panel lateral explicativo: regla ficticia informada antes de reservar; condiciones, importe y validez sujetos a revisión por proyecto
 
 **Hecho cuando:** E2E pasos 3–4 completos con aserciones sobre el desglose y la liberación.
 
@@ -177,7 +176,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Dependencias:** F8.
 
 - [x] Vista `?vista=clientes` Solane: ficha con histórico, gasto, alergias, notas de sala, export CSV simulado (descarga real de los fixtures)
-- [x] Vista `?vista=informes`: ocupación por servicio, no-shows evitados (estimación etiquetada), origen de reservas, y la **calculadora de ahorro vs marketplace** con el rótulo "estimación basada en tarifas publicadas por terceros"
+- [x] Vista `?vista=informes`: ocupación por servicio, exposición estimada a no-show, origen de reservas y **coste comparativo hipotético** con un supuesto editable de 3 €/cubierto, sin tarifa atribuida ni periodo mensual real
 - [x] Informes de organización en Vedra (subset de Gestión, sin IA ni automatizaciones)
 - [x] Solane amplía Gestión con un asistente de decisiones y un centro de automatizaciones, ambos rotulados como simulación local sin IA conectada
 
@@ -226,12 +225,12 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** convertir la landing y las páginas de intención en un recorrido comercial coherente, específico para restauración y preparado para buscadores.
 **Dependencias:** F3, F11.
 
-- [x] Hero orientado al resultado operativo, con la sala como protagonista, CTA de diagnóstico y demostración visible sin promesas de producto genéricas
-- [x] Hilo comercial completo: coste del cruce entre canales → inventario compartido → casos navegables → nivel adecuado → ahorro estimado → conversación
-- [x] Demos Brasca, Vedra y Solane presentadas con sus imágenes editoriales AVIF, `srcset`, tamaños y textos alternativos
+- [x] Hero orientado al resultado operativo, con la sala como protagonista, acceso directo a Solane y una captura real del inventario compartido
+- [x] Hilo comercial completo: inventario compartido → recorridos de restaurante y eventos → casos navegables → alcance de implantación → conversación
+- [x] Solane se presenta primero con capturas guiadas del producto; Vedra y Brasca conservan sus imágenes editoriales AVIF responsive
 - [x] Páginas de planes, restaurantes y grupos/eventos ampliadas con contenido específico por intención, preguntas frecuentes y enlaces internos contextuales
 - [x] SEO técnico bilingüe: títulos y descripciones únicos, canonical, hreflang + x-default, Open Graph, Twitter Card, robots por tipo de página y sitemap enriquecido
-- [x] Datos estructurados JSON-LD: Organization, WebSite, BreadcrumbList, Service y FAQPage según la ruta
+- [x] Datos estructurados JSON-LD: Organization, WebSite, BreadcrumbList, WebPage y FAQPage según la ruta, sin presentar la demo como un servicio ya activo
 - [x] Accesibilidad común es/en: salto al contenido, contraste AA en texto pequeño y objetivos táctiles efectivos de al menos 44 px en site, demos y gestores
 - [x] Pruebas E2E de metadatos, schema, rastreabilidad, longitud de snippets, imágenes y responsive sin romper los recorridos F7–F12
 

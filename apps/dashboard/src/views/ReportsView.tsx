@@ -61,14 +61,14 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
     body: 'Todas las cifras se calculan en el navegador a partir de la muestra ficticia visible; no existe analítica conectada.',
     occupancy: 'Ocupación por servicio', covers: 'cubiertos', capacity: 'plazas acumuladas', days: 'servicios de muestra',
     sources: 'Origen de reservas', bookings: 'reservas', direct: 'Cubiertos directos de la muestra',
-    avoided: 'No-shows evitados', avoidedValue: 'reservas potenciales', avoidedLabel: 'Estimación sectorial aplicada a las reservas activas de la muestra.',
-    marketplace: 'Ahorro frente a marketplace', monthly: 'al mes en la muestra', yearly: 'proyección anual',
-    marketplaceLabel: 'estimación basada en tarifas publicadas por terceros', sample: 'Muestra demo · no es contabilidad real',
+    avoided: 'Exposición estimada a no-show', avoidedValue: 'reservas en el escenario', avoidedLabel: 'Escenario sectorial aplicado a las reservas activas de esta muestra ficticia; no son no-shows observados ni evitados.',
+    marketplace: 'Coste comparativo hipotético', monthly: 'para los cubiertos directos de esta muestra', yearly: 'misma muestra × 12 · no es un año real',
+    marketplaceLabel: 'Supuesto editable: 3,00 €/cubierto; no es una tarifa atribuida ni un periodo mensual real.', sample: 'Muestra demo · no es contabilidad real',
     lunch: 'Comida', dinner: 'Cena',
     ai: 'Asistente de decisiones', aiLabel: 'IA demostrativa · cálculo local, sin modelo conectado',
     aiPeak: 'Proteger el servicio con mayor demanda', aiPeakBody: 'Revisar capacidad, tiempos y equipo antes de abrir más inventario.',
     aiDirect: 'Consolidar el canal directo', aiDirectBody: 'Priorizar acciones que mantengan la relación y los datos en el restaurante.',
-    aiNoShow: 'Anticipar riesgo de no-show', aiNoShowBody: 'Aplicar recordatorio o depósito proporcional solo a las reservas con señales de riesgo.',
+    aiNoShow: 'Anticipar riesgo de no-show', aiNoShowBody: 'Revisar manualmente recordatorios o la regla ficticia de depósito para reservas con señales de riesgo.',
     riskTitle: 'Revisión de no-show explicable', riskIntro: 'Orden operativo reproducible a partir de la muestra local. El score 0–100 no es una probabilidad ni decide por el equipo.',
     riskBasis: 'Reglas demo · sin modelo conectado', riskScore: 'Score operativo', riskLead: 'Antelación', riskHistory: 'Histórico anterior',
     riskDays: 'días', riskVisits: 'asistencias', riskNoShows: 'no-shows', riskSignals: 'Señales y contribución', riskAction: 'Sugerencia, sin ejecución automática', riskEmpty: 'No hay reservas activas para evaluar en el día operativo.',
@@ -79,14 +79,14 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
     body: 'Every figure is calculated in the browser from the visible fictional sample; no analytics service is connected.',
     occupancy: 'Occupancy by service', covers: 'covers', capacity: 'accumulated seats', days: 'sample services',
     sources: 'Booking sources', bookings: 'bookings', direct: 'Direct covers in the sample',
-    avoided: 'Avoided no-shows', avoidedValue: 'potential bookings', avoidedLabel: 'Sector estimate applied to active bookings in the sample.',
-    marketplace: 'Marketplace savings', monthly: 'per month in the sample', yearly: 'annual projection',
-    marketplaceLabel: 'estimate based on third-party published fees', sample: 'Demo sample · not real accounting',
+    avoided: 'Estimated no-show exposure', avoidedValue: 'bookings in the scenario', avoidedLabel: 'Sector scenario applied to active bookings in this fictional sample; these are neither observed nor avoided no-shows.',
+    marketplace: 'Hypothetical comparison cost', monthly: 'for direct covers in this sample', yearly: 'same sample × 12 · not a real year',
+    marketplaceLabel: 'Editable assumption: €3.00/cover; not an attributed fee or a real monthly period.', sample: 'Demo sample · not real accounting',
     lunch: 'Lunch', dinner: 'Dinner',
     ai: 'Decision assistant', aiLabel: 'Demo AI · local calculation, no connected model',
     aiPeak: 'Protect the highest-demand service', aiPeakBody: 'Review capacity, timing and staffing before opening more inventory.',
     aiDirect: 'Consolidate the direct channel', aiDirectBody: 'Prioritise actions that keep the relationship and data with the restaurant.',
-    aiNoShow: 'Anticipate no-show risk', aiNoShowBody: 'Apply reminders or proportional deposits only to bookings with risk signals.',
+    aiNoShow: 'Anticipate no-show risk', aiNoShowBody: 'Manually review reminders or the fictional deposit rule for bookings with risk signals.',
     riskTitle: 'Explainable no-show review', riskIntro: 'Reproducible operational order from the local sample. The 0–100 score is not a probability and never decides for the team.',
     riskBasis: 'Demo rules · no connected model', riskScore: 'Operational score', riskLead: 'Lead time', riskHistory: 'Previous history',
     riskDays: 'days', riskVisits: 'attendances', riskNoShows: 'no-shows', riskSignals: 'Signals and contribution', riskAction: 'Suggestion, without automatic execution', riskEmpty: 'There are no active bookings to assess on the operational day.',
@@ -141,7 +141,7 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
           <article className="rd-report-card" data-report-no-shows>
             <header><span><ShieldCheck size={19} aria-hidden="true" /></span><h2>{copy.avoided}</h2></header>
             <strong className="rd-report-number">{new Intl.NumberFormat(locale, { maximumFractionDigits: 2 }).format(report.noShowsPrevented)}</strong>
-            <p>{copy.avoidedValue}</p><small>{copy.avoidedLabel}</small><small>{report.noShowSavings.assumptions}</small>
+            <p>{copy.avoidedValue}</p><small>{copy.avoidedLabel}</small>
           </article>
           <article className="rd-report-card rd-report-card--marketplace" data-report-marketplace>
             <header><span><CircleDollarSign size={19} aria-hidden="true" /></span><h2>{copy.marketplace}</h2></header>

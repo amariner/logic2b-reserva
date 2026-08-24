@@ -2,6 +2,7 @@
 import type { Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
 import { SITE_CONTENT } from '../content';
+import BrandLockup from './BrandLockup.astro';
 
 interface Props { locale?: Locale }
 
@@ -12,30 +13,34 @@ const languageHref = locale === 'en' ? '/' : '/en/';
 const contact = logic2bContact(locale, 'commercial');
 const pageHref = (path: string) => `${prefix}${path}`;
 const ui = locale === 'en' ? {
-  mainNav: 'Main navigation', otherLanguage: 'es', mockupLabel: 'Logic Reserva service view preview', mockupDate: 'Friday 18 September', mockupService: 'Dinner service', live: 'Live', guests: 'guests', tables: 'tables', event: 'event', seated: 'Seated · Tasting menu', confirmed: 'Confirmed · Website', eventName: 'Wine pairing dinner', eventDetail: 'Tables 7 + 8 · 8 seats', productLinks: 'Product links', legalLinks: 'Legal links', cookies: 'Cookie preferences', flowLabel: 'One continuous operation', flow: ['Guest books', 'Inventory responds', 'Floor team decides'], solutionPrompt: 'Explore by operational need:', restaurantSolution: 'Restaurant bookings', groupSolution: 'Groups and events',
+  mainNav: 'Main navigation', otherLanguage: 'es', menu: 'Menu', product: 'How it works', productLinks: 'Product links', legalLinks: 'Legal links', cookies: 'Cookie preferences', flowLabel: 'One availability view', flow: ['Guest books', 'Inventory updates', 'Floor team decides'], restaurantSolution: 'Restaurant bookings', groupSolution: 'Groups and events', productView: 'Product view', productTitle: 'The event takes up tables too.', productDetail: 'Publish a dinner and the booking engine stops offering the tables it uses.', productAction: 'Open this scenario', productAlt: 'Solane floor plan showing tables reserved for service and a wine pairing event', inventoryAction: 'Open inventory', productEvidence: 'Product journey · demo data',
   } : {
-  mainNav: 'Navegación principal', otherLanguage: 'en', mockupLabel: 'Vista previa del servicio en Logic Reserva', mockupDate: 'Viernes, 18 de septiembre', mockupService: 'Servicio de cena', live: 'En vivo', guests: 'comensales', tables: 'mesas', event: 'evento', seated: 'Sentados · Menú degustación', confirmed: 'Confirmada · Desde la web', eventName: 'Cena maridaje', eventDetail: 'Mesas 7 + 8 · 8 plazas', productLinks: 'Enlaces de producto', legalLinks: 'Enlaces legales', cookies: 'Preferencias de cookies', flowLabel: 'Una operación continua', flow: ['El cliente reserva', 'El inventario responde', 'Sala decide'], solutionPrompt: 'Explora por necesidad operativa:', restaurantSolution: 'Reservas de restaurante', groupSolution: 'Grupos y eventos',
+  mainNav: 'Navegación principal', otherLanguage: 'en', menu: 'Menú', product: 'Cómo funciona', productLinks: 'Enlaces de producto', legalLinks: 'Enlaces legales', cookies: 'Preferencias de cookies', flowLabel: 'Una sola disponibilidad', flow: ['El cliente reserva', 'El inventario se actualiza', 'Sala decide'], restaurantSolution: 'Reservas de restaurante', groupSolution: 'Grupos y eventos', productView: 'Vista de producto', productTitle: 'El evento también ocupa mesa.', productDetail: 'Publica una cena y el motor deja de ofrecer las mesas que utiliza.', productAction: 'Abrir este escenario', productAlt: 'Plano de Solane con mesas reservadas para el servicio y para una cena maridaje', inventoryAction: 'Abrir inventario', productEvidence: 'Recorrido de producto · datos demo',
 };
+const demoTones = { solane: 'warning', vedra: 'success', brasca: 'info' } as const;
+const navItems = [
+  { href: '#diferenciales', label: ui.product },
+  { href: pageHref('/soluciones/restaurantes/'), label: ui.restaurantSolution },
+  { href: pageHref('/soluciones/grupos-y-eventos/'), label: ui.groupSolution },
+  { href: '#demos', label: c.nav.demos },
+  { href: pageHref('/planes/'), label: c.nav.plans },
+];
 ---
 
 <div class="landing">
   <header class="site-header">
     <div class="shell nav-shell">
-      <a class="brand-lockup" href={pageHref('/')} aria-label="Logic Reserva, inicio">
-        <span class="brand-lockup__mark" aria-hidden="true">R</span>
-        <span>Logic Reserva</span>
-      </a>
+      <BrandLockup locale={locale} homeHref={pageHref('/')} />
       <nav class="main-nav" aria-label={ui.mainNav}>
-        <a href="#problema">{c.nav.problem}</a>
-        <a href="#diferenciales">{c.nav.differences}</a>
-        <a href="#demos">{c.nav.demos}</a>
-        <a href="#niveles">{c.nav.plans}</a>
-        <a href="#acompanamiento">{c.nav.support}</a>
-        <a href="#preguntas">{c.nav.faq}</a>
+        {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
       </nav>
       <div class="nav-actions">
         <a class="language-link" href={languageHref} lang={ui.otherLanguage}>{c.nav.language}</a>
         <a class="pill nav-cta" href="#contacto">{c.nav.contact}</a>
+        <details class="mobile-menu">
+          <summary>{ui.menu}<span aria-hidden="true">+</span></summary>
+          <nav aria-label={ui.mainNav}>{navItems.map((item) => <a href={item.href}>{item.label}</a>)}<a href="#contacto">{c.nav.contact}</a></nav>
+        </details>
       </div>
     </div>
   </header>
@@ -48,31 +53,29 @@ const ui = locale === 'en' ? {
           <h1 id="hero-title" class="hero-title">
             {c.hero.beforeHighlight}<span>{c.hero.highlight}</span>{c.hero.afterHighlight}
           </h1>
+          <p class="hero-promise">{c.hero.promise}</p>
           <p class="hero-body">{c.hero.body}</p>
           <div class="hero-actions">
-            <a class="hero-primary" href="#configurador">{c.hero.primary}<span aria-hidden="true">↘</span></a>
-            <a class="hero-secondary" href="#demos">{c.hero.secondary}<span aria-hidden="true">→</span></a>
+            <a class="hero-primary" href={`${prefix}/demos/solane/gestion/?vista=plano`}>{c.hero.primary}<span aria-hidden="true">↗</span></a>
+            <a class="hero-secondary" href="#contacto">{c.hero.secondary}<span aria-hidden="true">→</span></a>
           </div>
-          <p class="hero-support"><span aria-hidden="true">L2B</span>{c.hero.support}</p>
+          <p class="hero-support"><span aria-hidden="true">2B</span>{c.hero.support}</p>
         </div>
 
         <div class="hero-product">
-          <div class="product-mockup artifact" aria-label={ui.mockupLabel}>
-            <div class="mockup-sidebar">
-              <div class="mockup-logo"><span>R</span><b>Solane</b></div>
-              <div class="mockup-nav-line active"></div><div class="mockup-nav-line"></div><div class="mockup-nav-line short"></div>
-              <div class="mockup-nav-line"></div><div class="mockup-nav-line short"></div>
+          <figure class="product-proof artifact">
+            <div class="product-proof__bar">
+              <span class="status">{ui.productView}</span>
+              <span>Solane · 18.09.2026</span>
             </div>
-            <div class="mockup-main">
-              <div class="mockup-topbar"><div><small>{ui.mockupDate}</small><strong>{ui.mockupService}</strong></div><span class="badge" data-tone="success">{ui.live}</span></div>
-              <div class="service-summary"><div><b>42</b><span>{ui.guests}</span></div><div><b>6</b><span>{ui.tables}</span></div><div><b>1</b><span>{ui.event}</span></div></div>
-              <div class="mockup-board">
-                <article><span class="badge" data-tone="success">19:30</span><b>Mesa 3 · 3</b><small>{ui.seated}</small></article>
-                <article><span class="badge" data-tone="warning">20:00</span><b>Mesa 1 · 2</b><small>{ui.confirmed}</small></article>
-                <article class="event-card"><span class="badge" data-tone="danger">21:00</span><b>{ui.eventName}</b><small>{ui.eventDetail}</small></article>
-              </div>
+            <div class="product-proof__screen">
+              <picture>
+                <source media="(max-width: 640px)" srcset="/images/screens/05-solane-inventario-mobile.png" />
+                <img src="/images/screens/05-solane-inventario-desktop.png" alt={ui.productAlt} width="1366" height="900" loading="eager" fetchpriority="high" decoding="async" />
+              </picture>
             </div>
-          </div>
+            <figcaption><div><strong>{ui.productTitle}</strong><span>{ui.productDetail}</span></div><a href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.productAction}<span aria-hidden="true">↗</span></a></figcaption>
+          </figure>
           <p class="demo-note">{c.hero.note}</p>
         </div>
       </div>
@@ -82,31 +85,24 @@ const ui = locale === 'en' ? {
       </div>
     </section>
 
-    <section id="problema" class="section shell problem-section" aria-labelledby="problem-title">
+    <section id="diferenciales" class="section shell product-section" aria-labelledby="differences-title">
       <div class="section-intro">
-        <p class="eyebrow">{c.problem.eyebrow}</p>
-        <h2 id="problem-title" class="heading">{c.problem.title}</h2>
-        <p class="editorial">{c.problem.intro}</p>
-      </div>
-      <div class="stats-grid">
-        {c.problem.stats.map((stat, index) => <article class={`stat-card stat-card--${index + 1}`}><strong>{stat.value}</strong><span>{stat.label}</span></article>)}
-      </div>
-      <p class="source-note">{c.problem.source}</p>
-    </section>
-
-    <section id="diferenciales" class="section shell" aria-labelledby="differences-title">
-      <div class="section-intro centered">
         <p class="eyebrow">{c.differences.eyebrow}</p>
         <h2 id="differences-title" class="heading">{c.differences.title}</h2>
+        <p class="editorial">{c.differences.intro}</p>
       </div>
-      <div class="difference-grid">
-        {c.differences.items.map((item) => (
-          <article class={`difference-card difference-card--${item.tone}`}>
-            <span>{item.number}</span><h3>{item.title}</h3><p>{item.body}</p>
+      <div class="path-grid">
+        {c.differences.paths.map((path, index) => (
+          <article class={`path-card path-card--${path.id}`}>
+            <span class="path-card__index">0{index + 1}</span>
+            <p class="path-card__eyebrow">{path.eyebrow}</p>
+            <h3>{path.title}</h3>
+            <p class="path-card__body">{path.body}</p>
+            <ul>{path.points.map((point) => <li>{point}</li>)}</ul>
+            <a href={path.id === 'restaurant' ? pageHref('/soluciones/restaurantes/') : pageHref('/soluciones/grupos-y-eventos/')}>{path.action}<span aria-hidden="true"> ↗</span></a>
           </article>
         ))}
       </div>
-      <div class="solution-paths"><span>{ui.solutionPrompt}</span><a href={pageHref('/soluciones/restaurantes/')}>{ui.restaurantSolution}</a><a href={pageHref('/soluciones/grupos-y-eventos/')}>{ui.groupSolution}</a></div>
     </section>
 
     <section id="demos" class="section shell" aria-labelledby="demos-title">
@@ -116,34 +112,27 @@ const ui = locale === 'en' ? {
         <p class="editorial">{c.demos.intro}</p>
       </div>
       <div class="demo-grid">
-        {c.demos.items.map((demo, index) => (
+        {c.demos.items.map((demo) => (
           <article class={`demo-card demo-card--${demo.slug}`}>
             <div class="demo-card__preview">
-              <picture>
-                <source type="image/avif" srcset={`/images/heroes/${demo.slug}-v2-640.avif 640w, /images/heroes/${demo.slug}-v2-960.avif 960w, /images/heroes/${demo.slug}-v2-1600.avif 1600w`} sizes={index === 0 ? '(max-width: 1000px) 100vw, 55vw' : '(max-width: 1000px) 100vw, 34vw'} />
-                <img src={`/images/heroes/${demo.slug}-v2-960.avif`} alt={demo.alt} width="960" height="720" loading="lazy" decoding="async" />
-              </picture>
+              {demo.slug === 'solane' ? (
+                <>
+                  <picture>
+                    <source media="(max-width: 640px)" srcset="/images/screens/07-solane-privatizacion-mobile.png" />
+                    <img src="/images/screens/07-solane-privatizacion-desktop.png" alt={demo.alt} width="1366" height="900" loading="lazy" decoding="async" />
+                  </picture>
+                  <span class="demo-card__evidence">{ui.productEvidence}</span>
+                </>
+              ) : (
+                <picture>
+                  <source type="image/avif" srcset={`/images/heroes/${demo.slug}-v2-640.avif 640w, /images/heroes/${demo.slug}-v2-960.avif 960w, /images/heroes/${demo.slug}-v2-1600.avif 1600w`} sizes="(max-width: 1000px) 100vw, 34vw" />
+                  <img src={`/images/heroes/${demo.slug}-v2-960.avif`} alt={demo.alt} width="960" height="720" loading="lazy" decoding="async" />
+                </picture>
+              )}
             </div>
-            <div class="demo-card__copy"><span class="badge" data-tone={index === 0 ? 'warning' : index === 1 ? 'success' : 'info'}>{demo.level}</span><h3>{demo.name}</h3><h4>{demo.title}</h4><p>{demo.body}</p><a href={`${prefix}/demos/${demo.slug}/`}>{demo.action}<span aria-hidden="true"> →</span></a></div>
+            <div class="demo-card__copy"><span class="badge" data-tone={demoTones[demo.slug]}>{demo.level}</span><h3>{demo.name}</h3><h4>{demo.title}</h4><p>{demo.body}</p><div class="demo-card__actions"><a href={`${prefix}/demos/${demo.slug}/`}>{demo.action}<span aria-hidden="true"> →</span></a>{demo.slug === 'solane' && <a class="demo-card__manager" href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.inventoryAction}<span aria-hidden="true"> ↗</span></a>}</div></div>
           </article>
         ))}
-      </div>
-    </section>
-
-    <section id="niveles" class="section levels-section" aria-labelledby="levels-title">
-      <div class="shell">
-        <div class="section-intro centered">
-          <p class="eyebrow">{c.levels.eyebrow}</p>
-          <h2 id="levels-title" class="heading">{c.levels.title}</h2>
-        </div>
-        <div class="level-grid">
-          {c.levels.items.map((level, index) => (
-            <article class="level-card" data-level-card={level.id}>
-              <span class="level-index">0{index + 1}</span><span class="level-maturity">{level.maturity}</span><h3>{level.name}</h3><p>{level.body}</p><small>{level.evidence}</small>
-            </article>
-          ))}
-        </div>
-        <p class="levels-link"><a href={pageHref('/planes/')}>{c.footer.plans}<span aria-hidden="true"> →</span></a></p>
       </div>
     </section>
 
@@ -172,30 +161,6 @@ const ui = locale === 'en' ? {
       </div>
     </section>
 
-    <section id="configurador" class="section shell tool-grid" aria-labelledby="config-title">
-      <div class="tool-copy">
-        <p class="eyebrow">{c.configurator.eyebrow}</p><h2 id="config-title" class="heading">{c.configurator.title}</h2><p class="editorial">{c.configurator.body}</p>
-      </div>
-      <form id="scope-form" class="tool-card card" data-description-basico={c.configurator.descriptions.basico} data-description-gestion={c.configurator.descriptions.gestion} data-description-inteligente={c.configurator.descriptions.inteligente}>
-        <div class="field-row"><label>{c.configurator.fields.services}<select name="servicesPerDay"><option value="1">{c.configurator.fields.servicesOne}</option><option value="2" selected>{c.configurator.fields.servicesTwo}</option></select></label><label>{c.configurator.fields.seats}<input name="seats" type="number" min="1" max="1000" value="60" /></label></div>
-        <div class="check-grid"><label><input name="wantsOnlineBooking" type="checkbox" checked />{c.configurator.fields.online}</label><label><input name="hasGroupsOrMenus" type="checkbox" checked />{c.configurator.fields.groups}</label><label><input name="noShowPain" type="checkbox" />{c.configurator.fields.noShow}</label><label><input name="wantsPrivateHire" type="checkbox" />{c.configurator.fields.privateHire}</label></div>
-        <label>{c.configurator.fields.events}<input name="eventsPerMonth" type="range" min="0" max="12" value="0" /><output data-events-output>0</output></label>
-        <div class="recommendation" aria-live="polite"><span>{c.configurator.resultPrefix}</span><strong data-recommendation-name>Gestión</strong><p data-recommendation-description>{c.configurator.descriptions.gestion}</p></div>
-        <button class="scope-action" type="button" data-use-recommendation>{c.configurator.action}<span aria-hidden="true">↓</span></button>
-      </form>
-    </section>
-
-    <section class="section calculator-band" aria-labelledby="calculator-title">
-      <div class="shell calculator-grid">
-        <div><p class="eyebrow">{c.calculator.eyebrow}</p><h2 id="calculator-title" class="heading">{c.calculator.title}</h2><p class="editorial">{c.calculator.body}</p></div>
-        <div class="calculator-card card">
-          <label>{c.calculator.covers}<input id="covers-input" type="number" min="0" max="100000" step="10" value="1130" /></label>
-          <div class="saving-row"><span>{c.calculator.monthly}</span><strong data-monthly-saving>3.390 €</strong></div><div class="saving-row"><span>{c.calculator.yearly}</span><strong data-yearly-saving>40.680 €</strong></div>
-          <p class="estimate-label">{c.calculator.disclaimer}</p>
-        </div>
-      </div>
-    </section>
-
     <section id="preguntas" class="section shell faq-section" aria-labelledby="faq-title">
       <div class="section-intro"><p class="eyebrow">{c.faq.eyebrow}</p><h2 id="faq-title" class="heading">{c.faq.title}</h2></div>
       <div class="faq-list">{c.faq.items.map((item, index) => <details open={index === 0}><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div>
@@ -205,8 +170,8 @@ const ui = locale === 'en' ? {
       <div class="contact-copy"><p class="eyebrow">{c.lead.eyebrow}</p><h2 id="contact-title" class="heading">{c.lead.title}</h2><p class="editorial">{c.lead.body}</p><a class="whatsapp-link" href={contact.href} target="_blank" rel="noreferrer">{c.lead.whatsapp}<span aria-hidden="true"> ↗</span></a></div>
       <form id="lead-form" class="lead-form card" novalidate>
         <div class="field-row"><label>{c.lead.fields.name}<input name="name" required autocomplete="name" /></label><label>{c.lead.fields.restaurant}<input name="restaurant" required autocomplete="organization" /></label></div>
-        <div class="field-row"><label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label><label>{c.lead.fields.phone}<input name="phone" type="tel" autocomplete="tel" /></label></div>
-        <label>{c.lead.fields.level}<select name="level" data-lead-level>{c.levels.items.map((level) => <option value={level.id} selected={level.id === 'gestion'}>{level.name}</option>)}</select></label>
+        <label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label>
+        <label>{c.lead.fields.level}<select name="level">{c.lead.priorities.map((priority) => <option value={priority.value} selected={priority.value === 'gestion'}>{priority.label}</option>)}</select></label>
         <label>{c.lead.fields.message}<textarea name="message" rows="4" required></textarea></label>
         <label class="privacy-check"><input name="privacyAccepted" type="checkbox" required /><span>{c.lead.fields.privacy} <a href={pageHref('/privacidad/')}>{c.footer.privacy}</a>.</span></label>
         <input name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
@@ -217,7 +182,7 @@ const ui = locale === 'en' ? {
   </main>
 
   <footer class="site-footer">
-    <div class="shell footer-grid"><div><a class="brand-lockup" href={pageHref('/')}><span class="brand-lockup__mark">R</span><span>Logic Reserva</span></a><p>{c.footer.line}</p></div><nav aria-label={ui.productLinks}><a href={pageHref('/planes/')}>{c.footer.plans}</a><a href={pageHref('/soluciones/restaurantes/')}>{c.footer.restaurants}</a><a href={pageHref('/soluciones/grupos-y-eventos/')}>{c.footer.groups}</a></nav><nav aria-label={ui.legalLinks}><a href={pageHref('/legal/')}>{c.footer.legal}</a><a href={pageHref('/privacidad/')}>{c.footer.privacy}</a><a href={pageHref('/cookies/')}>{c.footer.cookies}</a></nav></div>
+    <div class="shell footer-grid"><div><BrandLockup locale={locale} homeHref={pageHref('/')} /><p>{c.footer.line}</p></div><nav aria-label={ui.productLinks}><a href={pageHref('/planes/')}>{c.footer.plans}</a><a href={pageHref('/soluciones/restaurantes/')}>{c.footer.restaurants}</a><a href={pageHref('/soluciones/grupos-y-eventos/')}>{c.footer.groups}</a></nav><nav aria-label={ui.legalLinks}><a href={pageHref('/legal/')}>{c.footer.legal}</a><a href={pageHref('/privacidad/')}>{c.footer.privacy}</a><a href={pageHref('/cookies/')}>{c.footer.cookies}</a></nav></div>
     <div class="shell footer-bottom"><span>© 2026 Logic2B</span><span>{c.footer.demo}</span></div>
   </footer>
 
@@ -227,59 +192,6 @@ const ui = locale === 'en' ? {
 </div>
 
 <script>
-  import { marketplaceSavings, recommendLevel, type PlanLevel } from '@logic-reserva/domain';
-
-  const scopeForm = document.querySelector<HTMLFormElement>('#scope-form');
-  const leadLevel = document.querySelector<HTMLSelectElement>('[data-lead-level]');
-  let currentLevel: PlanLevel = 'gestion';
-
-  const levelName = (level: PlanLevel): string => {
-    const option = leadLevel?.querySelector<HTMLOptionElement>(`option[value="${level}"]`);
-    return option?.textContent?.trim() ?? level;
-  };
-
-  const updateRecommendation = () => {
-    if (!scopeForm) return;
-    const field = <T extends HTMLInputElement | HTMLSelectElement>(name: string) => scopeForm.elements.namedItem(name) as T;
-    const servicesValue = Number(field<HTMLSelectElement>('servicesPerDay').value);
-    currentLevel = recommendLevel({
-      servicesPerDay: servicesValue === 1 ? 1 : 2,
-      seats: Math.max(1, Number(field<HTMLInputElement>('seats').value) || 1),
-      wantsOnlineBooking: field<HTMLInputElement>('wantsOnlineBooking').checked,
-      hasGroupsOrMenus: field<HTMLInputElement>('hasGroupsOrMenus').checked,
-      eventsPerMonth: Math.max(0, Number(field<HTMLInputElement>('eventsPerMonth').value) || 0),
-      noShowPain: field<HTMLInputElement>('noShowPain').checked,
-      wantsPrivateHire: field<HTMLInputElement>('wantsPrivateHire').checked,
-    });
-    const name = scopeForm.querySelector<HTMLElement>('[data-recommendation-name]');
-    const description = scopeForm.querySelector<HTMLElement>('[data-recommendation-description]');
-    const eventsOutput = scopeForm.querySelector<HTMLOutputElement>('[data-events-output]');
-    if (name) name.textContent = levelName(currentLevel);
-    if (description) description.textContent = scopeForm.dataset[`description${currentLevel.charAt(0).toUpperCase()}${currentLevel.slice(1)}`] ?? '';
-    if (eventsOutput) eventsOutput.value = field<HTMLInputElement>('eventsPerMonth').value;
-  };
-
-  scopeForm?.addEventListener('input', updateRecommendation);
-  scopeForm?.querySelector('[data-use-recommendation]')?.addEventListener('click', () => {
-    if (leadLevel) leadLevel.value = currentLevel;
-    document.querySelector('#contacto')?.scrollIntoView({ behavior: 'smooth' });
-    window.setTimeout(() => document.querySelector<HTMLInputElement>('#lead-form input[name="name"]')?.focus(), 350);
-  });
-  updateRecommendation();
-
-  const coversInput = document.querySelector<HTMLInputElement>('#covers-input');
-  const formatMoney = (cents: number) => new Intl.NumberFormat(document.documentElement.lang, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(cents / 100);
-  const updateSavings = () => {
-    const covers = Math.max(0, Math.trunc(Number(coversInput?.value) || 0));
-    const estimate = marketplaceSavings(covers);
-    const monthly = document.querySelector<HTMLElement>('[data-monthly-saving]');
-    const yearly = document.querySelector<HTMLElement>('[data-yearly-saving]');
-    if (monthly) monthly.textContent = formatMoney(estimate.monthlyCents);
-    if (yearly) yearly.textContent = formatMoney(estimate.yearlyCents);
-  };
-  coversInput?.addEventListener('input', updateSavings);
-  updateSavings();
-
   const leadForm = document.querySelector<HTMLFormElement>('#lead-form');
   const leadStatus = document.querySelector<HTMLElement>('[data-lead-status]');
   leadForm?.addEventListener('submit', async (event) => {
@@ -295,7 +207,7 @@ const ui = locale === 'en' ? {
       const formData = new FormData(leadForm);
       const payload = {
         name: String(formData.get('name') ?? ''), restaurant: String(formData.get('restaurant') ?? ''),
-        email: String(formData.get('email') ?? ''), phone: String(formData.get('phone') ?? ''),
+        email: String(formData.get('email') ?? ''),
         level: String(formData.get('level') ?? ''), message: String(formData.get('message') ?? ''),
         website: String(formData.get('website') ?? ''), accept: formData.get('privacyAccepted') === 'on',
         lang: document.documentElement.lang === 'en' ? 'en' : 'es',
@@ -326,63 +238,63 @@ const ui = locale === 'en' ? {
   } catch {
     if (cookieBanner) cookieBanner.hidden = false;
   }
+
+  const mobileMenu = document.querySelector<HTMLDetailsElement>('.mobile-menu');
+  mobileMenu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
+    mobileMenu.open = false;
+  }));
 </script>
 
 <style>
   .landing { overflow: clip; background: var(--paper); }
-  section[id] { scroll-margin-top: 84px; }
-  .site-header { position: fixed; z-index: 50; top: 0; right: 0; left: 0; height: 64px; border-bottom: 1px solid var(--line); background: rgb(246 245 244 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(12px); }
+  section[id] { scroll-margin-top: 92px; }
+  .site-header { position: fixed; z-index: 50; top: 0; right: 0; left: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
   .nav-shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
-  .brand-lockup { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--ink); font-weight: 700; text-decoration: none; white-space: nowrap; }
-  .brand-lockup__mark { display: grid; width: 30px; height: 30px; place-items: center; border: 1px solid var(--ink); border-radius: 8px; font-size: .88rem; }
   .main-nav { display: flex; align-items: center; gap: 2px; }
-  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 12px; color: rgb(0 0 0 / 58%); font-size: .82rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
+  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 11px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
   .main-nav a:hover, .language-link:hover { color: var(--ink); background: rgb(0 0 0 / 4%); }
-  .nav-actions { display: flex; align-items: center; gap: 4px; }
+  .nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
   .nav-cta { min-height: 44px; border-radius: 999px; padding-inline: 17px; }
+  .mobile-menu { position: relative; display: none; width: max-content; flex: 0 0 auto; }
+  .mobile-menu summary { display: flex; min-height: 44px; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 10px; color: var(--slate); cursor: pointer; font-size: .8rem; font-weight: 600; list-style: none; }
+  .mobile-menu summary::-webkit-details-marker { display: none; }
+  .mobile-menu summary span { font-size: 1.1rem; transition: transform 180ms ease; }
+  .mobile-menu[open] summary span { transform: rotate(45deg); }
+  .mobile-menu nav { position: absolute; top: calc(100% + 8px); right: 0; display: grid; width: min(310px, calc(100vw - 28px)); overflow: hidden; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: white; box-shadow: var(--shadow-artifact); }
+  .mobile-menu nav a { display: flex; min-height: 46px; align-items: center; border-radius: 8px; padding: 10px 12px; color: var(--slate); font-size: .84rem; font-weight: 550; text-decoration: none; }
+  .mobile-menu nav a:hover { color: var(--ink); background: var(--color-sky-tint); }
 
-  .hero { padding-top: clamp(116px, 12vh, 150px); padding-bottom: 54px; }
-  .hero-grid { display: grid; min-height: min(690px, calc(100dvh - 170px)); grid-template-columns: .86fr 1.14fr; align-items: center; gap: clamp(44px, 6vw, 96px); }
-  .hero-copy { padding-bottom: 32px; }
+  .hero { padding-top: clamp(128px, 14vh, 164px); padding-bottom: 54px; }
+  .hero-grid { display: grid; min-height: min(690px, calc(100dvh - 174px)); grid-template-columns: .88fr 1.12fr; align-items: center; gap: clamp(44px, 5.5vw, 88px); }
+  .hero-copy { padding-bottom: 22px; }
   .hero-title { max-width: 720px; margin: 0; font-size: clamp(3.8rem, 5.6vw, 5.7rem); font-weight: 600; letter-spacing: -.062em; line-height: .92; text-wrap: balance; }
   .hero-title span { position: relative; display: inline-block; z-index: 0; white-space: nowrap; }
   .hero-title span::after { position: absolute; z-index: -1; right: -.05em; bottom: .02em; left: -.05em; height: .22em; border-radius: 999px; background: var(--color-sky-wash); content: ''; opacity: .62; transform: rotate(-1.5deg); }
-  .hero-body { max-width: 590px; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.08rem, 1.5vw, 1.26rem); line-height: 1.55; }
+  .hero-promise { max-width: 610px; margin: 28px 0 0; font-size: clamp(1.15rem, 1.55vw, 1.35rem); font-weight: 680; letter-spacing: -.018em; line-height: 1.25; }
+  .hero-body { max-width: 590px; margin: 12px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.02rem, 1.35vw, 1.18rem); line-height: 1.58; }
   .hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 32px; }
-  .hero-primary, .scope-action, .lead-submit { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 18px; border: 0; border-radius: 8px; padding: 10px 18px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 650; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
-  .hero-primary:hover, .scope-action:hover, .lead-submit:hover { background: #0065bd; transform: translateY(-2px); }
-  .hero-primary span, .scope-action span, .lead-submit span { font-size: 1.05rem; transition: transform 180ms ease; }
+  .hero-primary, .lead-submit { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 18px; border: 0; border-radius: 8px; padding: 10px 18px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 650; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
+  .hero-primary:hover, .lead-submit:hover { background: #0065bd; transform: translateY(-2px); }
+  .hero-primary span, .lead-submit span { font-size: 1.05rem; transition: transform 180ms ease; }
   .hero-primary:hover span { transform: translate(3px, 3px); }
-  .scope-action:hover span { transform: translateY(3px); }
   .lead-submit:hover span { transform: translateX(3px); }
   .hero-secondary { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; border-bottom: 1px solid rgb(0 0 0 / 28%); padding: 10px 2px 8px; font-size: .9rem; font-weight: 650; text-decoration: none; transition: border-color 180ms ease, color 180ms ease; }
   .hero-secondary:hover { border-color: var(--color-notion-blue-strong); color: var(--color-notion-blue-strong); }
   .hero-support { display: flex; max-width: 600px; align-items: center; gap: 12px; margin: 24px 0 0; color: rgb(0 0 0 / 58%); font-size: .78rem; line-height: 1.45; }
-  .hero-support span { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--color-midnight-ink); font-size: .6rem; font-weight: 750; letter-spacing: .04em; }
+  .hero-support span { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--color-midnight-ink); font-size: .68rem; font-weight: 750; letter-spacing: .04em; }
   .hero-product { min-width: 0; }
-  .product-mockup { display: grid; width: 100%; min-height: 500px; grid-template-columns: 168px 1fr; overflow: hidden; text-align: left; transform: rotate(.45deg); }
-  .mockup-sidebar { padding: 24px 16px; border-right: 1px solid var(--line); background: #fafafa; }
-  .mockup-logo { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
-  .mockup-logo span { display: grid; width: 30px; height: 30px; place-items: center; border-radius: 8px; color: white; background: var(--color-midnight-ink); }
-  .mockup-nav-line { width: 78%; height: 9px; margin: 22px 8px; border-radius: 8px; background: #d8d6d4; }
-  .mockup-nav-line.short { width: 54%; }
-  .mockup-nav-line.active { width: 100%; height: 34px; margin: 0 0 22px; background: var(--color-sky-tint); }
-  .mockup-main { padding: clamp(22px, 3.2vw, 38px); background: white; }
-  .mockup-topbar { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
-  .mockup-topbar div { display: grid; gap: 4px; }
-  .mockup-topbar small { color: var(--slate); }
-  .mockup-topbar strong { font-size: 1.35rem; }
-  .service-summary { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 32px; border: 1px solid var(--line); border-radius: 12px; }
-  .service-summary div { display: grid; gap: 2px; padding: 17px 16px; }
-  .service-summary div + div { border-left: 1px solid var(--line); }
-  .service-summary b { font-size: 1.4rem; }
-  .service-summary span { color: var(--slate); font-size: .78rem; }
-  .mockup-board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 22px; }
-  .mockup-board article { display: grid; min-height: 170px; align-content: start; gap: 12px; border: 1px solid var(--line); border-radius: 12px; padding: 14px; background: white; }
-  .mockup-board article .badge { justify-self: start; }
-  .mockup-board article small { color: var(--slate); line-height: 1.4; }
-  .mockup-board .event-card { background: var(--color-marigold); border-color: transparent; }
-  .mockup-board .event-card small { color: var(--ink); }
+  .product-proof { width: 100%; margin: 0; overflow: hidden; background: white; }
+  .product-proof__bar { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding: 10px 16px; color: var(--slate); font-size: .7rem; }
+  .product-proof__bar > span:last-child { white-space: nowrap; }
+  .product-proof__screen { aspect-ratio: 1366 / 900; overflow: hidden; background: #f1f2f7; }
+  .product-proof__screen picture, .product-proof__screen img { display: block; width: 100%; height: 100%; }
+  .product-proof__screen img { object-fit: cover; object-position: center top; }
+  .product-proof figcaption { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 24px; border-top: 1px solid var(--line); padding: 18px 20px; }
+  .product-proof figcaption div { display: grid; gap: 5px; }
+  .product-proof figcaption strong { font-size: .92rem; }
+  .product-proof figcaption div span { max-width: 56ch; color: var(--slate); font-family: var(--serif); font-size: .78rem; line-height: 1.45; }
+  .product-proof figcaption a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--color-notion-blue-strong); font-size: .76rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
+  .product-proof figcaption a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .demo-note { margin: 14px 0 0; color: var(--slate); font-size: .72rem; text-align: right; }
   .hero-flow { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); align-items: center; margin-top: 44px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .hero-flow > * { min-height: 74px; display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
@@ -395,108 +307,72 @@ const ui = locale === 'en' ? {
   .section-intro { max-width: 920px; }
   .section-intro.centered { margin-inline: auto; text-align: center; }
   .editorial { max-width: 66ch; margin: 24px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.08rem, 1.6vw, 1.28rem); line-height: 1.58; }
-  .problem-section { border-bottom: 1px solid var(--line); }
-  .stats-grid { display: grid; grid-template-columns: 1.25fr .85fr 1fr 1fr; gap: 12px; margin-top: 54px; }
-  .stat-card { display: grid; min-height: 186px; align-content: space-between; border-radius: 12px; padding: 24px; }
-  .stat-card strong { font-size: clamp(2.4rem, 4vw, 4.2rem); letter-spacing: -.055em; }
-  .stat-card span { max-width: 20ch; line-height: 1.4; }
-  .stat-card--1 { background: var(--color-marigold); }
-  .stat-card--2 { color: var(--ink); background: var(--color-coral); }
-  .stat-card--3 { background: var(--color-sky-wash); }
-  .stat-card--4 { color: white; background: var(--color-midnight-ink); }
-  .source-note { max-width: 90ch; margin: 18px 0 0; color: var(--slate); font-size: .73rem; line-height: 1.5; }
-  .difference-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; margin-top: 54px; }
-  .difference-card { grid-column: span 6; min-height: 330px; border-radius: 12px; padding: clamp(24px, 4vw, 42px); }
-  .difference-card:nth-child(1), .difference-card:nth-child(4) { grid-column: span 7; }
-  .difference-card:nth-child(2), .difference-card:nth-child(3) { grid-column: span 5; }
-  .difference-card > span { font-size: .75rem; font-weight: 700; letter-spacing: .1em; }
-  .difference-card h3 { max-width: 13ch; margin: 68px 0 16px; font-size: clamp(2rem, 3.6vw, 3.45rem); letter-spacing: -.045em; line-height: .98; }
-  .difference-card p { max-width: 48ch; margin: 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.55; }
-  .difference-card--yellow { background: var(--color-marigold); }
-  .difference-card--coral { color: var(--ink); background: var(--color-coral); }
-  .difference-card--blue { background: var(--color-sky-wash); }
-  .difference-card--midnight { color: white; background: var(--color-midnight-ink); }
-  .solution-paths { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; margin-top: 24px; padding-top: 22px; border-top: 1px solid var(--line); font-size: .86rem; }
-  .solution-paths span { color: var(--slate); }
-  .solution-paths a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 650; text-decoration: none; }
-  .solution-paths a::after { margin-left: 7px; content: '↗'; }
+  .product-section { border-bottom: 1px solid var(--line); }
+  .path-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 54px; }
+  .path-card { min-height: 490px; border: 1px solid var(--line); border-radius: 12px; padding: clamp(28px, 4vw, 46px); background: white; }
+  .path-card--restaurant { border-top: 4px solid var(--color-marigold); }
+  .path-card--events { color: white; background: var(--color-midnight-ink); }
+  .path-card__index { display: block; font-size: .72rem; font-weight: 750; letter-spacing: .1em; opacity: .58; }
+  .path-card__eyebrow { margin: 58px 0 12px; font-size: .74rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+  .path-card--restaurant .path-card__eyebrow { color: var(--color-notion-blue-strong); }
+  .path-card--events .path-card__eyebrow { color: var(--color-marigold); }
+  .path-card h3 { max-width: 15ch; margin: 0; font-size: clamp(2rem, 3.4vw, 3.2rem); letter-spacing: -.045em; line-height: .98; }
+  .path-card__body { max-width: 52ch; margin: 20px 0 0; color: var(--slate); font-family: var(--serif); font-size: 1.06rem; line-height: 1.56; }
+  .path-card--events .path-card__body { color: rgb(255 255 255 / 72%); }
+  .path-card ul { margin: 32px 0 20px; padding: 0; border-top: 1px solid var(--line); list-style: none; }
+  .path-card--events ul { border-color: rgb(255 255 255 / 20%); }
+  .path-card li { display: flex; min-height: 44px; align-items: center; gap: 12px; border-bottom: 1px solid var(--line); font-size: .86rem; }
+  .path-card--events li { border-color: rgb(255 255 255 / 20%); }
+  .path-card li::before { color: var(--color-notion-blue-strong); content: '↳'; font-weight: 750; }
+  .path-card--events li::before { color: var(--color-marigold); }
+  .path-card a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 700; text-decoration: none; }
+  .path-card a:hover { color: var(--color-notion-blue-strong); }
+  .path-card--events a:hover { color: var(--color-marigold); }
 
   .demo-grid { display: grid; grid-template-columns: 1.05fr .95fr; grid-template-rows: repeat(2, minmax(310px, auto)); gap: 12px; margin-top: 54px; }
   .demo-card { overflow: hidden; border: 1px solid var(--line); border-radius: 12px; background: white; }
   .demo-card:first-child { grid-row: 1 / 3; }
   .demo-card:not(:first-child) { display: grid; grid-template-columns: .88fr 1.12fr; }
-  .demo-card__preview { min-height: 250px; overflow: hidden; background: #ebe8e4; }
+  .demo-card__preview { position: relative; min-height: 250px; overflow: hidden; background: #ebe8e4; }
   .demo-card:first-child .demo-card__preview { min-height: 430px; }
   .demo-card__preview picture, .demo-card__preview img { display: block; width: 100%; height: 100%; }
   .demo-card__preview img { object-fit: cover; transition: transform 600ms cubic-bezier(.22,.61,.36,1); }
+  .demo-card--solane .demo-card__preview img { object-position: center top; }
+  .demo-card__evidence { position: absolute; top: 14px; right: 14px; display: inline-flex; min-height: 32px; align-items: center; border: 1px solid rgb(255 255 255 / 30%); border-radius: 999px; padding: 6px 10px; color: white; background: rgb(5 13 48 / 88%); font-size: .68rem; font-weight: 650; letter-spacing: .025em; }
   .demo-card:hover .demo-card__preview img { transform: scale(1.025); }
   .demo-card__copy { padding: clamp(22px, 3vw, 30px); }
   .demo-card h3 { margin: 20px 0 5px; font-size: 1.7rem; }
   .demo-card h4 { margin: 0; font-size: 1rem; }
   .demo-card p { color: var(--slate); line-height: 1.5; }
-  .demo-card a, .levels-link a, .whatsapp-link { display: inline-flex; min-height: 44px; align-items: center; font-weight: 650; text-decoration: none; }
-  .demo-card a:hover, .levels-link a:hover, .whatsapp-link:hover, .solution-paths a:hover { color: var(--color-notion-blue-strong); }
+  .demo-card__actions { display: flex; flex-wrap: wrap; gap: 4px 18px; }
+  .demo-card a, .whatsapp-link { display: inline-flex; min-height: 44px; align-items: center; font-weight: 650; text-decoration: none; }
+  .demo-card a:hover, .whatsapp-link:hover { color: var(--color-notion-blue-strong); }
+  .demo-card .demo-card__manager { color: var(--color-notion-blue-strong); }
 
-  .levels-section { background: white; }
-  .level-grid { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 54px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
-  .level-card { position: relative; min-height: 320px; padding: 26px; }
-  .level-card + .level-card { border-left: 1px solid var(--line); }
-  .level-card:nth-child(2) { background: var(--color-sky-tint); }
-  .level-card:nth-child(3) { color: white; background: var(--color-midnight-ink); }
-  .level-index { color: var(--slate); font-size: .75rem; }
-  .level-card:nth-child(3) .level-index { color: rgb(255 255 255 / 70%); }
-  .level-maturity { position: absolute; top: 20px; right: 20px; border-radius: 999px; padding: 5px 8px; background: rgb(0 0 0 / 7%); font-size: .67rem; }
-  .level-card:nth-child(3) .level-maturity { background: rgb(255 255 255 / 15%); }
-  .level-card h3 { margin: 92px 0 14px; font-size: 1.75rem; }
-  .level-card p { max-width: 34ch; line-height: 1.48; }
-  .level-card small { color: currentColor; opacity: .62; }
-  .levels-link { margin: 22px 0 0; text-align: right; }
-
-  .human-section { color: white; background: var(--color-midnight-ink); }
+  .human-section { padding-block: clamp(76px, 7vw, 98px); color: white; background: var(--color-midnight-ink); }
   .human-section .eyebrow { color: var(--color-marigold); }
   .human-intro { display: grid; grid-template-columns: 1.16fr .84fr; align-items: end; gap: clamp(42px, 8vw, 120px); }
   .human-intro .heading { color: white; }
   .human-intro > p { max-width: 56ch; margin: 0 0 6px; color: rgb(255 255 255 / 70%); font-family: var(--serif); font-size: clamp(1.08rem, 1.6vw, 1.28rem); line-height: 1.62; }
-  .human-steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: clamp(48px, 7vw, 82px); }
-  .human-steps article { min-height: 330px; border: 1px solid rgb(255 255 255 / 18%); border-radius: 12px; padding: clamp(24px, 3vw, 34px); background: rgb(255 255 255 / 5%); }
-  .human-steps article:nth-child(2) { color: var(--ink); background: var(--color-marigold); border-color: transparent; }
+  .human-steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: clamp(42px, 6vw, 64px); border-top: 1px solid rgb(255 255 255 / 20%); border-bottom: 1px solid rgb(255 255 255 / 20%); }
+  .human-steps article { min-height: 0; padding: 28px 28px 30px; }
+  .human-steps article + article { border-left: 1px solid rgb(255 255 255 / 20%); }
   .human-steps article > span { font-size: .72rem; font-weight: 750; letter-spacing: .08em; opacity: .58; }
-  .human-steps h3 { max-width: 12ch; margin: 82px 0 18px; font-size: clamp(1.6rem, 2.6vw, 2.35rem); letter-spacing: -.035em; line-height: 1; }
+  .human-steps h3 { max-width: 14ch; margin: 30px 0 12px; font-size: clamp(1.35rem, 2vw, 1.8rem); letter-spacing: -.035em; line-height: 1; }
   .human-steps p { margin: 0; color: rgb(255 255 255 / 67%); font-family: var(--serif); line-height: 1.58; }
-  .human-steps article:nth-child(2) p { color: rgb(0 0 0 / 66%); }
-  .human-promise { display: flex; align-items: center; justify-content: space-between; gap: 32px; margin-top: 12px; border-radius: 12px; padding: clamp(24px, 4vw, 38px); color: var(--ink); background: var(--color-sky-wash); }
-  .human-promise p { max-width: 720px; margin: 0; font-size: clamp(1.25rem, 2.25vw, 2rem); font-weight: 650; letter-spacing: -.025em; line-height: 1.18; }
+  .human-promise { display: flex; align-items: center; justify-content: space-between; gap: 32px; padding-top: 32px; }
+  .human-promise p { max-width: 720px; margin: 0; font-size: clamp(1.08rem, 1.8vw, 1.35rem); font-weight: 650; letter-spacing: -.02em; line-height: 1.3; }
   .human-promise .pill { flex: 0 0 auto; }
 
-  .tool-grid { display: grid; grid-template-columns: .78fr 1.22fr; align-items: start; gap: clamp(40px, 8vw, 120px); }
-  .tool-copy { position: sticky; top: 104px; }
-  .tool-card, .calculator-card, .lead-form { padding: clamp(22px, 4vw, 36px); }
+  .lead-form { padding: clamp(22px, 4vw, 36px); }
   .field-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
   label { display: grid; gap: 8px; color: rgb(0 0 0 / 68%); font-size: .82rem; font-weight: 600; }
   input, select, textarea { width: 100%; min-height: 44px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 8px; padding: 11px 12px; color: var(--ink); background: white; }
   input:hover, select:hover, textarea:hover { border-color: rgb(0 0 0 / 28%); }
-  input[type='range'] { min-height: 44px; padding: 0; accent-color: var(--color-notion-blue); }
-  .check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 18px 0; }
-  .check-grid label, .privacy-check { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-weight: 500; line-height: 1.35; }
-  .check-grid label:has(input:checked) { border-color: rgb(0 117 222 / 30%); background: var(--color-sky-tint); }
-  .check-grid input, .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
+  .privacy-check { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-weight: 500; line-height: 1.35; }
+  .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
   .privacy-check a { display: inline-flex; min-height: 44px; align-items: center; }
-  .tool-card output { justify-self: end; }
-  .recommendation { margin: 24px 0; border-left: 4px solid var(--color-notion-blue); border-radius: 8px; padding: 20px; background: var(--color-sky-tint); }
-  .recommendation span { display: block; color: var(--slate); font-size: .78rem; }
-  .recommendation strong { display: block; margin-top: 5px; font-size: 1.6rem; }
-  .recommendation p { margin: 8px 0 0; line-height: 1.45; }
-  .scope-action { width: 100%; justify-content: space-between; }
 
-  .calculator-band { background: var(--color-marigold); }
-  .calculator-band .eyebrow, .calculator-band .editorial { color: var(--ink); }
-  .calculator-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: clamp(40px, 8vw, 120px); }
-  .calculator-card { background: white; }
-  .saving-row { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); padding: 22px 0; }
-  .saving-row:first-of-type { margin-top: 22px; }
-  .saving-row span { color: var(--slate); }
-  .saving-row strong { font-size: clamp(1.7rem, 3vw, 2.6rem); letter-spacing: -.04em; }
-  .estimate-label { margin: 0; color: var(--slate); font-size: .72rem; line-height: 1.5; }
   .faq-section { display: grid; grid-template-columns: .78fr 1.22fr; gap: clamp(40px, 8vw, 120px); }
   .faq-list { border-top: 1px solid var(--line); }
   .faq-list details { border-bottom: 1px solid var(--line); }
@@ -529,10 +405,8 @@ const ui = locale === 'en' ? {
 
   @media (max-width: 1120px) {
     .main-nav { display: none; }
+    .mobile-menu { display: inline-block; }
     .hero-grid { grid-template-columns: .78fr 1.22fr; gap: 34px; }
-    .product-mockup { grid-template-columns: 128px 1fr; }
-    .mockup-board { grid-template-columns: 1fr; }
-    .mockup-board article { min-height: 96px; }
     .demo-card:not(:first-child) { grid-template-columns: 1fr; }
     .demo-card__preview { min-height: 180px; }
   }
@@ -543,63 +417,93 @@ const ui = locale === 'en' ? {
     .hero-flow { grid-template-columns: 1fr 1fr 1fr; }
     .hero-flow strong { grid-column: 1 / -1; min-height: 48px; border-bottom: 1px solid var(--line); }
     .hero-flow span:first-of-type { border-left: 0; }
-    .stats-grid { grid-template-columns: repeat(2, 1fr); }
-    .difference-card, .difference-card:nth-child(n) { grid-column: span 6; }
-    .level-grid { grid-template-columns: 1fr; }
-    .level-card + .level-card { border-top: 1px solid var(--line); border-left: 0; }
+    .path-grid { grid-template-columns: 1fr; }
     .demo-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
     .demo-card:first-child { grid-row: auto; }
     .demo-card, .demo-card:not(:first-child) { display: grid; grid-template-columns: .9fr 1.1fr; }
     .demo-card:first-child .demo-card__preview, .demo-card__preview { min-height: 260px; }
-    .human-intro, .tool-grid, .faq-section, .contact-section { grid-template-columns: 1fr; }
+    .human-intro, .faq-section, .contact-section { grid-template-columns: 1fr; }
     .human-steps { grid-template-columns: 1fr; }
-    .human-steps article { min-height: 260px; }
-    .human-steps h3 { margin-top: 56px; }
-    .tool-copy { position: static; }
-    .calculator-grid { grid-template-columns: 1fr; }
+    .human-steps article { min-height: 0; }
+    .human-steps article + article { border-top: 1px solid rgb(255 255 255 / 20%); border-left: 0; }
+  }
+  @media (min-width: 720px) and (max-width: 860px) {
+    .path-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .path-card { min-height: 560px; padding: 28px; }
+    .path-card__eyebrow { margin-top: 34px; }
+    .path-card h3 { font-size: 2.25rem; }
+    .human-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .human-steps article { padding: 24px 20px 26px; }
+    .human-steps article + article { border-top: 0; border-left: 1px solid rgb(255 255 255 / 20%); }
+    .human-steps h3 { margin-top: 24px; font-size: 1.35rem; }
   }
   @media (max-width: 640px) {
     .nav-cta { display: none; }
     .site-header .shell { width: min(100% - 24px, var(--page-max-width)); }
-    .hero { padding-top: 108px; }
+    .hero { padding-top: 116px; padding-bottom: 36px; }
     .hero-title { font-size: clamp(3.4rem, 16vw, 5rem); }
     .hero-title span { white-space: normal; }
     .hero-actions { align-items: stretch; flex-direction: column; }
     .hero-primary { width: 100%; justify-content: space-between; }
     .hero-secondary { align-self: flex-start; }
     .hero-support { align-items: flex-start; }
-    .product-mockup { min-height: 0; grid-template-columns: 1fr; transform: none; }
-    .mockup-sidebar { display: none; }
-    .mockup-main { padding: 18px; }
-    .mockup-board { grid-template-columns: 1fr; }
+    .product-proof__screen { aspect-ratio: 1 / .9; }
+    .product-proof__screen img { object-position: center 8%; }
+    .product-proof figcaption { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
+    .product-proof figcaption a { width: fit-content; }
     .demo-note { text-align: left; }
-    .hero-flow { grid-template-columns: 1fr; }
-    .hero-flow > *, .hero-flow strong, .hero-flow span:first-of-type { grid-column: auto; border-left: 0; }
-    .hero-flow > * + * { border-top: 1px solid var(--line); }
-    .stats-grid { grid-template-columns: 1fr; }
-    .difference-grid { grid-template-columns: 1fr; }
-    .difference-card, .difference-card:nth-child(n) { grid-column: auto; min-height: 280px; }
-    .difference-card h3 { margin-top: 54px; }
-    .human-promise { align-items: flex-start; flex-direction: column; }
+    .hero-flow { grid-template-columns: repeat(3, 1fr); margin-top: 32px; }
+    .hero-flow strong { grid-column: 1 / -1; min-height: 46px; border-bottom: 1px solid var(--line); padding: 12px 14px; }
+    .hero-flow span { min-height: 72px; align-items: flex-start; flex-direction: column; gap: 6px; padding: 12px 10px; line-height: 1.25; }
+    .hero-flow span + span { border-left: 1px solid var(--line); }
+    .path-card { min-height: 0; padding: 22px; }
+    .path-card__eyebrow { margin-top: 24px; }
+    .path-card h3 { font-size: 2rem; }
+    .path-card__body { margin-top: 14px; font-size: 1rem; line-height: 1.48; }
+    .path-card ul { margin: 20px 0 12px; }
+    .path-card li { min-height: 40px; }
+    .human-intro { gap: 20px; }
+    .human-intro > p { font-size: 1rem; line-height: 1.5; }
+    .human-steps { margin-top: 32px; }
+    .human-steps article { display: grid; grid-template-columns: 36px 1fr; column-gap: 10px; padding: 18px 0; }
+    .human-steps article > span { grid-row: 1 / 3; padding-top: 3px; }
+    .human-steps h3 { max-width: none; margin: 0 0 7px; font-size: 1.2rem; line-height: 1.08; }
+    .human-steps p { font-size: .92rem; line-height: 1.45; }
+    .human-promise { align-items: stretch; flex-direction: column; gap: 20px; padding-top: 24px; }
+    .human-promise .pill { justify-content: space-between; }
     .demo-card, .demo-card:not(:first-child) { display: block; }
     .demo-card:first-child .demo-card__preview, .demo-card__preview { min-height: 240px; }
-    .field-row, .check-grid { grid-template-columns: 1fr; }
+    .demo-card--solane .demo-card__preview { height: 320px; min-height: 0; }
+    .demo-card:not(:first-child) .demo-card__preview { display: none; }
+    .demo-card__copy { padding: 20px; }
+    .demo-card h3 { margin-top: 14px; }
+    .demo-card:not(:first-child) p { display: none; }
+    .demo-card:not(:first-child) h3 { display: inline-block; margin: 0 8px 5px 0; }
+    .demo-card:not(:first-child) .badge { vertical-align: 4px; }
+    .demo-card:not(:first-child) h4 { margin-top: 8px; }
+    .demo-card:not(:first-child) .demo-card__actions { margin-top: 10px; }
+    .faq-section, .contact-section { gap: 28px; }
+    .faq-list summary { padding-block: 18px; font-size: 1rem; }
+    .faq-list p { padding: 0 24px 20px 0; }
+    .field-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .footer-grid > div { grid-column: 1 / -1; }
     .footer-bottom { align-items: flex-start; flex-direction: column; }
-    .saving-row { align-items: flex-start; flex-direction: column; gap: 8px; }
   }
   @media (max-width: 420px) {
-    .section { padding-block: 72px; }
-    .service-summary div { padding: 12px 10px; }
-    .footer-grid { grid-template-columns: 1fr; }
-    .footer-grid > div { grid-column: auto; }
+    .section { padding-block: 56px; }
+    .human-section { padding-block: 56px; }
+    .site-footer { padding-top: 48px; }
+    .footer-grid { gap: 24px; }
+    .footer-bottom { margin-top: 30px; }
     .cookie-banner { right: 12px; bottom: 12px; width: calc(100% - 24px); }
     .cookie-banner div { display: grid; grid-template-columns: .95fr 1.25fr; }
     .cookie-banner .pill { width: 100%; }
   }
+  @media (max-width: 350px) {
+    .field-row { grid-template-columns: 1fr; }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .product-mockup { transform: none; }
-    .demo-card__preview img, .hero-primary, .scope-action, .lead-submit { transition: none; }
+    .demo-card__preview img, .hero-primary, .lead-submit { transition: none; }
   }
 </style>
