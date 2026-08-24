@@ -1,6 +1,6 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F18 completas y publicadas en producción ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Fase actual:** F0–F18 completas y publicadas en producción ✅ · web comercial y límites demo reforzados y publicados ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
 **Siguiente hito:** desarrollar F19 de confirmación de asistencia con enlace local
 
 ## Siguiente paso concreto
@@ -11,6 +11,8 @@
 
 ## Bloqueos / avisos
 
+- Release comercial de 2026-08-24: landing es/en, marca Logic2B, copy prudente, informes demo y capturas actualizados en `main` (`1a3a94c`) y producción (`417bcaac-0308-4a5d-a01d-e070e9bc88ee`). Gates: `pnpm check` 28/28, 132 tests, `pnpm e2e` 50/50, `pnpm fotos` reproducible 16/16 y dry-run con 143 assets; smoke público por GET verde sin enviar leads.
+- `pnpm fotos` se ejecuta deliberadamente en serie: paralelizar viewports puede variar el rasterizado AVIF de Chrome y rompe el contrato de hashes reproducibles.
 - El contrato vigente de seguridad está en `docs/DEMO-MODE.md` y ADR-014: los despliegues públicos usan `DEMO_MODE=true`; Brasca, Vedra y Solane no tienen efectos externos.
 - La landing comercial es la única excepción real y separada: `COMMERCIAL_LEADS_ENABLED=true` permite exclusivamente `POST /api/leads`. No reutilizar ese flag para correo de restaurante, pagos, webhooks, jobs o integraciones.
 - Gates de sesión 35: `pnpm check` 28/28, Worker 15/15, E2E 49/49 y dry-runs de preview/producción con 139 assets. El cambio está en `main` (`9df0ea7`) y en producción (`d7b6ca68-d0ae-44bb-ab6a-2eb75164435e`), con smoke por GET verde y sin enviar leads.

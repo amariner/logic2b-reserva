@@ -4,6 +4,15 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-24 · Sesión 36 · Web comercial y límites demostrativos reforzados ✅
+
+- Landing es/en reconstruida alrededor de la prueba de producto: inventario compartido visible en el hero, acceso directo a Solane, recorridos separados para restaurante y eventos, demos ordenadas por madurez, implantación explícita y formulario comercial simplificado.
+- Identidad alineada con Logic2B mediante lockup reutilizable, isotipo y fuentes Poppins recortadas; cabecera, menú móvil, favicon, metadatos sociales y páginas de intención comparten la misma marca.
+- Claims comerciales revisados contra fuentes primarias: se eliminan exclusividades no demostrables, cifras sectoriales de la landing y promesas jurídicas. Depósitos, exposición a no-show y coste comparativo quedan rotulados como reglas o escenarios ficticios sujetos a validación por proyecto.
+- El paquete de capturas se regeneró para el nuevo copy. Se detectó que cuatro contextos simultáneos podían alternar el rasterizado AVIF de Brasca; `pnpm fotos` captura ahora las 16 combinaciones en serie y dos ejecuciones consecutivas coincidieron byte a byte.
+- QA visual local completada en 1366×900 y 375×812 para es/en, sin overflow, recursos rotos ni errores. Gates: `pnpm check` 28/28 con 132 tests, `pnpm e2e` 50/50 y dry-run estricto con 143 assets y los bindings esperados.
+- El bundle se consolidó en `main` como `1a3a94c`, se publicó en GitHub y se desplegó en `reserva.logic2b.com`, versión Cloudflare `417bcaac-0308-4a5d-a01d-e070e9bc88ee`. El smoke público quedó verde exclusivamente con GET; no se envió ningún lead.
+
 ## 2026-08-20 · Sesión 35 · Contrato `DEMO_MODE` y excepción comercial de leads ✅
 
 - Los despliegues públicos declaran ahora `DEMO_MODE=true`; el manifest ejecutable separa el producto simulado (`sideEffects=false`, `jobs=false`, proveedores externos deshabilitados o mock) de la landing comercial.
