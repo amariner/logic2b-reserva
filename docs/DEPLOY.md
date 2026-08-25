@@ -23,7 +23,7 @@ pnpm deploy:dry-run
 pnpm verify:public
 ```
 
-Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que fija `DEMO_MODE=true`, la única excepción comercial, la ausencia de triggers/colas, los nombres aislados, `routes: []`/`workers.dev` en preview y exclusivamente `reserva.logic2b.com` en producción. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad; no crea leads ni modifica estado.
+Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que fija `DEMO_MODE=true`, la única excepción comercial, la ausencia de triggers/colas/D1, los nombres aislados, `routes: []`/`workers.dev` en preview y exclusivamente `reserva.logic2b.com` en producción. `verify-d1-budget.mjs` añade un fusible de 0 consultas, 0 filas y 0 crons; cualquier cambio requiere actualizar primero la decisión y el presupuesto de `docs/D1-BUDGET.md`. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad; no crea leads ni modifica estado.
 
 ## Estado actual
 

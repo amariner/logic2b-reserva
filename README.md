@@ -11,6 +11,8 @@ Los despliegues públicos usan `DEMO_MODE=true`: ninguna interacción de Brasca,
 
 Contrato, matriz de efectos, inventario de capacidades, activación y rollback: [`docs/DEMO-MODE.md`](docs/DEMO-MODE.md).
 
+Presupuesto D1, inventario de jobs y medición remota agregada: [`docs/D1-BUDGET.md`](docs/D1-BUDGET.md). El presupuesto de este Worker es cero y `pnpm check` bloquea bindings, SQL y crons D1 accidentales.
+
 ## Arranque
 
 ```bash

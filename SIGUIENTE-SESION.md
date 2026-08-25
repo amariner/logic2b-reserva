@@ -1,6 +1,6 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F18 completas y publicadas en producción ✅ · web comercial y límites demo reforzados y publicados ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Fase actual:** F0–F18 completas y publicadas en producción ✅ · M1 presupuesto D1 cero completado localmente y pendiente de publicación ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
 **Siguiente hito:** desarrollar F19 de confirmación de asistencia con enlace local
 
 ## Siguiente paso concreto
@@ -11,6 +11,7 @@
 
 ## Bloqueos / avisos
 
+- Auditoría D1 de 2026-08-25: `logic-reserva` consume 0 filas D1, no declara base ni crons y ahora tiene un fusible local a cero en `apps/worker/d1-budget.json`. Publicar el código no migra ni reemplaza datos; no relajar el gate sin ADR, presupuesto medido y autorización explícita.
 - Release comercial de 2026-08-24: landing es/en, marca Logic2B, copy prudente, informes demo y capturas actualizados en `main` (`1a3a94c`) y producción (`417bcaac-0308-4a5d-a01d-e070e9bc88ee`). Gates: `pnpm check` 28/28, 132 tests, `pnpm e2e` 50/50, `pnpm fotos` reproducible 16/16 y dry-run con 143 assets; smoke público por GET verde sin enviar leads.
 - `pnpm fotos` se ejecuta deliberadamente en serie: paralelizar viewports puede variar el rasterizado AVIF de Chrome y rompe el contrato de hashes reproducibles.
 - El contrato vigente de seguridad está en `docs/DEMO-MODE.md` y ADR-014: los despliegues públicos usan `DEMO_MODE=true`; Brasca, Vedra y Solane no tienen efectos externos.

@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-25 · Sesión 37 · Presupuesto D1 cero y auditoría de jobs ✅
+
+- Auditoría completa local y remota de solo lectura: la versión activa de `logic-reserva` no tiene binding D1, SQL, handler `scheduled` ni Cron Trigger. Reservas, eventos, bonos y resets continúan en fixtures + `localStorage`; `/api/leads` conserva Durable Objects + Resend y consume 0 filas D1.
+- Inventario agregado de las cuatro bases de la cuenta documentado sin leer registros. Logic Reserva aporta 0; el exceso de lectura de las últimas 24 h procede de otro Worker no enlazado y queda fuera de este cambio.
+- `d1-budget.json` fija 0 consultas, 0 lecturas, 0 escrituras, 0 crons y 0 jobs. `verify-d1-budget.mjs` hace fallar CI ante bindings, SQL o handlers programados accidentales y protege reservas reales y contactos.
+- Decisión registrada en ADR-015 y análisis antes/después en `docs/D1-BUDGET.md`. No se desplegó, no se cambiaron triggers remotos, no se ejecutó SQL y no se leyó ni sustituyó ningún dato de producción.
+- Línea base previa y gate final: `pnpm check` 28/28 verde; `pnpm e2e` 50/50; dry-run estricto con 143 assets y únicamente Assets + Durable Object + variables, sin D1 ni triggers.
+
 ## 2026-08-24 · Sesión 36 · Web comercial y límites demostrativos reforzados ✅
 
 - Landing es/en reconstruida alrededor de la prueba de producto: inventario compartido visible en el hero, acceso directo a Solane, recorridos separados para restaurante y eventos, demos ordenadas por madurez, implantación explícita y formulario comercial simplificado.

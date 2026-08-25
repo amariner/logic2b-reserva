@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "mode": "disabled",
+  "freeDailyLimits": {
+    "rowsRead": 5000000,
+    "rowsWritten": 100000
+  },
+  "projectDailyBudget": {
+    "queries": 0,
+    "rowsRead": 0,
+    "rowsWritten": 0
+  },
+  "fuse": {
+    "maxCronTriggers": 0,
+    "maxScheduledJobs": 0,
+    "maxQueriesPerExecution": 0,
+    "maxRowsReadPerExecution": 0,
+    "maxRowsWrittenPerExecution": 0,
+    "maxBatchRows": 0,
+    "minimumIntervalHoursIfEnabled": 168
+  },
+  "scheduledJobs": [],
+  "protectedTables": [
+    "real_reservations",
+    "real_contacts"
+  ],
+  "staticTables": [
+    "restaurant_catalog",
+    "activities",
+    "frontend_content",
+    "demo_reservations"
+  ]
+}

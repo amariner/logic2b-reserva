@@ -339,6 +339,21 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## M1 · Presupuesto D1 cero ✅
+
+**Objetivo:** mantener Logic Reserva fuera de la cuota D1 y detectar antes del despliegue cualquier persistencia o tarea programada accidental.
+
+- [x] Inventario local y remoto de bases, bindings, endpoints, crons, jobs, alarmas, seeds y resets
+- [x] Separación explícita de reservas reales, contactos, reservas ficticias y contenido estático
+- [x] Medición agregada de las últimas 24 h y perfil de consultas de siete días sin leer filas ni datos personales
+- [x] Fusible versionado de 0 consultas, 0 filas leídas/escritas y 0 Cron Triggers
+- [x] Gate de CI que falla ante bindings D1, SQL de runtime, handlers `scheduled` o crons no presupuestados
+- [x] Tabla antes/después, porcentaje de límites y contrato de preservación en `docs/D1-BUDGET.md`
+
+**Hecho cuando:** `pnpm check` demuestra que producción y preview conservan presupuesto D1 cero y la documentación identifica qué puede publicarse sin mutar datos remotos.
+
+---
+
 ## Después (backlog, no fases)
 
 Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

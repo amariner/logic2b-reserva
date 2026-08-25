@@ -44,6 +44,8 @@ for (const vars of [config.vars, preview.vars]) {
 
 invariant(!config.triggers && !preview.triggers, 'la demo no puede declarar tareas programadas');
 invariant(!config.queues && !preview.queues, 'la demo no puede declarar colas');
+invariant(!config.workflows && !preview.workflows, 'la demo no puede declarar Cloudflare Workflows');
+invariant(!config.d1_databases && !preview.d1_databases, 'Logic Reserva no puede declarar bindings D1');
 
 const productionBinding = config.durable_objects?.bindings?.find((binding) => binding.name === 'LEAD_COORDINATOR');
 const previewBinding = preview.durable_objects?.bindings?.find((binding) => binding.name === 'LEAD_COORDINATOR');
