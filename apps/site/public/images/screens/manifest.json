@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "aa64640fa0e37ae660ce78f884388dabb53cfaa9fab1dfbe275539173cd25821"
+      "sha256": "8fe1dac4fa995f959c9409ba2548dcc17a1e85265e98facc1a152296cb44fe9e"
     },
     {
       "order": "08",
@@ -193,7 +193,7 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "ad6aa020fa8ff5eb235acb82cd369b3b38b6c7b6c6ddc8cbe858a8b91197b981"
+      "sha256": "67a01e388edd3a16712097e798b68b3822699cc06d30a32c51c4a18f1891565a"
     }
   ]
 }

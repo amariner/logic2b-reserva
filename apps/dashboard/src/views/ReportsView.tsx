@@ -1,5 +1,5 @@
-import { BarChart3, CircleDollarSign, ScanSearch, ShieldCheck, Sparkles, UsersRound, Workflow } from 'lucide-react';
-import type { BookingSource, NoShowSignalCode, NoShowSuggestedAction, Restaurant, RiskTier, TableBooking } from '@logic-reserva/domain';
+import { BarChart3, CircleDollarSign, ExternalLink, Link2, ScanSearch, ShieldCheck, Sparkles, UsersRound, Workflow } from 'lucide-react';
+import type { AttendanceConfirmation, BookingSource, NoShowSignalCode, NoShowSuggestedAction, Restaurant, RiskTier, TableBooking } from '@logic-reserva/domain';
 import type { DashboardLocale } from '../content';
 import { bookingReports, noShowRiskAssessments } from '../analytics';
 
@@ -8,6 +8,10 @@ interface ReportsViewProps {
   restaurant: Restaurant;
   bookings: readonly TableBooking[];
   mode: 'management' | 'intelligent';
+  attendanceConfirmations?: readonly AttendanceConfirmation[];
+  canPrepareAttendance?: boolean;
+  confirmationBaseHref?: string;
+  onPrepareAttendance?: (bookingId: string) => void;
 }
 
 const SOURCE_LABELS: Record<BookingSource, { es: string; en: string }> = {
@@ -50,7 +54,7 @@ const SIGNAL_LABELS: Record<NoShowSignalCode, { es: string; en: string }> = {
 
 const money = (cents: number, locale: DashboardLocale) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(cents / 100);
 
-export default function ReportsView({ locale, restaurant, bookings, mode }: ReportsViewProps) {
+export default function ReportsView({ locale, restaurant, bookings, mode, attendanceConfirmations = [], canPrepareAttendance = false, confirmationBaseHref = '/demos/solane/confirmacion/', onPrepareAttendance }: ReportsViewProps) {
   const report = bookingReports(bookings, restaurant);
   const operationalDate = [...bookings].filter((booking) => booking.status === 'pending' || booking.status === 'confirmed').map((booking) => booking.slot.date).sort().at(-1) ?? '';
   const riskAssessments = mode === 'intelligent' && operationalDate ? noShowRiskAssessments(bookings, restaurant, operationalDate) : [];
@@ -72,6 +76,7 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
     riskTitle: 'Revisión de no-show explicable', riskIntro: 'Orden operativo reproducible a partir de la muestra local. El score 0–100 no es una probabilidad ni decide por el equipo.',
     riskBasis: 'Reglas demo · sin modelo conectado', riskScore: 'Score operativo', riskLead: 'Antelación', riskHistory: 'Histórico anterior',
     riskDays: 'días', riskVisits: 'asistencias', riskNoShows: 'no-shows', riskSignals: 'Señales y contribución', riskAction: 'Sugerencia, sin ejecución automática', riskEmpty: 'No hay reservas activas para evaluar en el día operativo.',
+    confirmationPrepare: 'Preparar enlace local', confirmationPrepared: 'Enlace preparado · no enviado', confirmationOpen: 'Abrir enlace del comensal', confirmationConfirmed: 'Asistencia confirmada', confirmationChange: 'Cambio solicitado · seguimiento manual', confirmationExpired: 'Enlace caducado', confirmationReadOnly: 'Cocina solo puede consultar el estado.',
     automations: 'Automatizaciones', automationLabel: 'Ejecución simulada en este navegador', active: 'Activa · demo', suggested: 'Sugerida por IA · demo',
     inventoryAutomation: 'Evento publicado → mesas fuera del widget', depositAutomation: 'Reserva sentada → depósito liberado', followupAutomation: 'Privatización pendiente → preparar seguimiento',
   } : {
@@ -90,6 +95,7 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
     riskTitle: 'Explainable no-show review', riskIntro: 'Reproducible operational order from the local sample. The 0–100 score is not a probability and never decides for the team.',
     riskBasis: 'Demo rules · no connected model', riskScore: 'Operational score', riskLead: 'Lead time', riskHistory: 'Previous history',
     riskDays: 'days', riskVisits: 'attendances', riskNoShows: 'no-shows', riskSignals: 'Signals and contribution', riskAction: 'Suggestion, without automatic execution', riskEmpty: 'There are no active bookings to assess on the operational day.',
+    confirmationPrepare: 'Prepare local link', confirmationPrepared: 'Link prepared · not sent', confirmationOpen: 'Open guest link', confirmationConfirmed: 'Attendance confirmed', confirmationChange: 'Change requested · manual follow-up', confirmationExpired: 'Link expired', confirmationReadOnly: 'Kitchen can only view the status.',
     automations: 'Automations', automationLabel: 'Simulated execution in this browser', active: 'Active · demo', suggested: 'Suggested by demo AI',
     inventoryAutomation: 'Published event → tables removed from widget', depositAutomation: 'Guest seated → deposit released', followupAutomation: 'Pending private hire → prepare follow-up',
   };
@@ -130,11 +136,16 @@ export default function ReportsView({ locale, restaurant, bookings, mode }: Repo
             <p className="rd-risk-intro">{copy.riskIntro}</p>
             {riskAssessments.length === 0 ? <p className="rd-empty">{copy.riskEmpty}</p> : <div className="rd-risk-list">{riskAssessments.map((assessment) => {
               const recommendation = assessment.recommendation;
+              const confirmation = [...attendanceConfirmations].reverse().find((candidate) => candidate.bookingId === assessment.booking.id);
               return <section className="rd-risk-card" key={assessment.booking.id} data-risk-booking={assessment.booking.id} data-risk-tier={recommendation.tier}>
                 <header><div><h3>{assessment.booking.guest.name}</h3><p>{assessment.booking.slot.date} · {String(Math.floor(assessment.booking.slot.startMin / 60)).padStart(2, '0')}:{String(assessment.booking.slot.startMin % 60).padStart(2, '0')} · {assessment.booking.partySize} {copy.covers}</p></div><span className="badge" data-tone={recommendation.tier === 'high' ? 'danger' : recommendation.tier === 'medium' ? 'warning' : 'success'}>{RISK_LABELS[recommendation.tier][locale]}</span></header>
                 <dl><div><dt>{copy.riskScore}</dt><dd data-risk-score>{recommendation.operationalScore}/100</dd></div><div><dt>{copy.riskLead}</dt><dd>{assessment.leadDays === null ? '—' : `${assessment.leadDays} ${copy.riskDays}`}</dd></div><div><dt>{copy.riskHistory}</dt><dd>{assessment.previousAttended} {copy.riskVisits} · {assessment.previousNoShows} {copy.riskNoShows}</dd></div><div><dt>{SOURCE_LABELS[assessment.booking.source][locale]}</dt><dd>{assessment.isPeakSlot ? SIGNAL_LABELS.slot_peak[locale] : SIGNAL_LABELS.slot_off_peak[locale]}</dd></div></dl>
                 <h4>{copy.riskSignals}</h4><ul>{recommendation.signals.map((signal) => <li key={signal.code} data-risk-signal={signal.code}><span>{SIGNAL_LABELS[signal.code][locale]}</span><b>{signal.points > 0 ? `+${signal.points}` : signal.points}</b></li>)}</ul>
                 <footer><span>{copy.riskAction}</span><b data-risk-action={recommendation.suggestedAction}>{ACTION_LABELS[recommendation.suggestedAction][locale]}</b></footer>
+                <div className="rd-attendance" data-attendance-booking={assessment.booking.id} data-attendance-status={confirmation?.status ?? 'none'}>
+                  {confirmation === undefined || confirmation.status !== 'prepared' ? <button type="button" disabled={!canPrepareAttendance} data-prepare-attendance onClick={() => onPrepareAttendance?.(assessment.booking.id)}><Link2 size={14} aria-hidden="true" />{copy.confirmationPrepare}</button> : <a href={`${confirmationBaseHref}?ref=${encodeURIComponent(confirmation.reference)}`} data-attendance-link><ExternalLink size={14} aria-hidden="true" />{copy.confirmationOpen}</a>}
+                  <span>{confirmation === undefined ? (!canPrepareAttendance ? copy.confirmationReadOnly : '') : confirmation.status === 'prepared' ? copy.confirmationPrepared : confirmation.status === 'attendance_confirmed' ? copy.confirmationConfirmed : confirmation.status === 'change_requested' ? copy.confirmationChange : copy.confirmationExpired}</span>
+                </div>
               </section>;
             })}</div>}
           </article>

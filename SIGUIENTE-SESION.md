@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F18 completas y publicadas en producción ✅ · M1 presupuesto D1 cero completado localmente y pendiente de publicación ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** desarrollar F19 de confirmación de asistencia con enlace local
+**Fase actual:** F0–F19 completas ✅ · F19 validada localmente y pendiente de publicación · M1 presupuesto D1 cero completado localmente y pendiente de publicación ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** publicar F19 y escoger el siguiente bloque de producto sin activar transporte externo
 
 ## Siguiente paso concreto
 
-1. Añadir al dominio la confirmación de asistencia terminal e idempotente y ampliar defensivamente el estado local de Solane.
-2. Permitir que Dirección o Sala preparen un enlace ficticio desde una reserva activa; Cocina solo consulta y ningún rol envía mensajes.
-3. Construir la ruta bilingüe de respuesta del comensal y demostrar preparación → respuesta → gestor sin cambiar inventario, score o depósito.
+1. Publicar el commit validado de F19 en `origin/main` y desplegar exactamente ese bundle en producción.
+2. Ejecutar el smoke público por GET sobre landing, gestor y rutas de confirmación es/en; no generar referencias ni enviar leads en producción.
+3. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
 
 ## Bloqueos / avisos
 

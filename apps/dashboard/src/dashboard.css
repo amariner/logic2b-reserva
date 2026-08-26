@@ -363,6 +363,7 @@
 .rd-risk-card h4 { margin: 0 0 7px; color: var(--brand-muted); font-size: .55rem; text-transform: uppercase; }
 .rd-risk-card ul { display: flex; flex-wrap: wrap; gap: 5px; margin: 0; padding: 0; list-style: none; }.rd-risk-card li { display: flex; min-height: 28px; align-items: center; gap: 6px; border: 1px solid var(--brand-line); border-radius: 99px; padding: 4px 7px; color: var(--brand-muted); background: #fbfcf8; font-size: .54rem; }.rd-risk-card li b { color: var(--brand); }
 .rd-risk-card > footer { display: grid; gap: 4px; margin-top: 13px; border-top: 1px solid var(--brand-line); padding-top: 10px; }.rd-risk-card > footer span { color: var(--brand-muted); font-size: .53rem; }.rd-risk-card > footer b { font-size: .66rem; }
+.rd-attendance { display: grid; gap: 6px; margin-top: 12px; border-top: 1px solid var(--brand-line); padding-top: 10px; }.rd-attendance button, .rd-attendance a { display: inline-flex; width: max-content; max-width: 100%; min-height: 38px; align-items: center; justify-content: center; gap: 7px; border: 1px solid var(--brand); border-radius: 8px; padding: 7px 10px; color: white; background: var(--brand); font: inherit; font-size: .58rem; font-weight: 750; text-decoration: none; cursor: pointer; }.rd-attendance button:disabled { border-color: var(--brand-line); color: var(--brand-muted); background: #f5f6f2; cursor: not-allowed; }.rd-attendance span { color: var(--brand-muted); font-size: .53rem; line-height: 1.4; }
 
 @media (max-width: 1100px) {
   .rd-app { grid-template-columns: 204px minmax(0, 1fr); }

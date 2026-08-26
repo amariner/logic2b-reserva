@@ -28,6 +28,7 @@ import {
   parseSolaneStored,
   publishSolaneEvent,
   prepareSolanePrivateHire,
+  prepareSolaneAttendanceConfirmation,
   registerSolanePrivateHireDeposit,
   redeemSolaneVoucher,
   resetSolanePrivateHireTour,
@@ -405,6 +406,19 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
     setNotice(local(COPY.vouchers.redeemDone, locale));
   };
 
+  const prepareAttendance = (bookingId: string) => {
+    const preparedAt = new Date();
+    const expiresAt = new Date(preparedAt.getTime() + 48 * 60 * 60 * 1000);
+    const reference = `solane_${crypto.randomUUID().replaceAll('-', '_')}`;
+    const next = prepareSolaneAttendanceConfirmation(state, bookingId, reference, preparedAt.toISOString(), expiresAt.toISOString());
+    if (next === state) {
+      setNotice(local(COPY.role.readOnly, locale));
+      return;
+    }
+    commit(next);
+    setNotice(locale === 'en' ? 'Local confirmation link prepared. Nothing was sent.' : 'Enlace local de confirmación preparado. No se ha enviado nada.');
+  };
+
   const activeBookings = state.bookings.filter((booking) => ACTIVE_BOOKING_STATUSES.has(booking.status));
   const activeEvents = state.events.filter((event) => ACTIVE_EVENT_STATUSES.has(event.status));
   const privateHire = state.privateHires[0];
@@ -419,6 +433,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
   const websiteHref = `${locale === 'en' ? '/en' : ''}/demos/solane/`;
   const ticketsHref = `${websiteHref}eventos/`;
   const vouchersHref = `${websiteHref}bonos/`;
+  const confirmationHref = `${websiteHref}confirmacion/`;
 
   return (
     <div className="rd-app rd-app--solane" data-dashboard-demo data-dashboard-brand="solane">
@@ -587,7 +602,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
           onSeat={(entryId, bookingId) => commit(seatSolaneWaitlistEntry(state, entryId, restaurant, bookingId))}
         />}
         {view === 'clientes' && <SolaneCustomersView locale={locale} restaurant={restaurant} bookings={state.bookings} profiles={initialCustomers} />}
-        {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="intelligent" />}
+        {view === 'informes' && <ReportsView locale={locale} restaurant={restaurant} bookings={state.bookings} mode="intelligent" attendanceConfirmations={state.attendanceConfirmations} canPrepareAttendance={canOperate(state.role, 'manage_attendance_confirmations')} confirmationBaseHref={confirmationHref} onPrepareAttendance={prepareAttendance} />}
       </main>
       <MobileDashboardNav
         ariaLabel={local(COPY.product, locale)}

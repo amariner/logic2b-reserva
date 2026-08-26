@@ -8,11 +8,13 @@ import {
   initialSolaneState,
   issueSolaneVoucher,
   parseSolaneStored,
+  prepareSolaneAttendanceConfirmation,
   publishSolaneEvent,
   prepareSolanePrivateHire,
   registerSolanePrivateHireDeposit,
   redeemSolaneVoucher,
   resolveSolaneBookingDeposit,
+  respondSolaneAttendanceConfirmation,
   seatSolaneWaitlistEntry,
   sellSolaneTickets,
   serializeSolaneState,
@@ -128,6 +130,7 @@ describe('estado Solane versionado', () => {
     expect(state.privateHireTour).toEqual({ mode: 'choice', step: 1, completed: false });
     expect(state.waitlist).toEqual([]);
     expect(state.vouchers).toEqual([]);
+    expect(state.attendanceConfirmations).toEqual([]);
   });
 
   it('conserva un depósito válido y descarta una reserva con desglose corrupto', () => {
@@ -252,6 +255,35 @@ describe('estado Solane versionado', () => {
   it('serializa y restaura el depósito y su aceptación temporal', () => {
     const state = initialSolaneState([depositedBooking()]);
     expect(parseSolaneStored(serializeSolaneState(state))).toEqual(state);
+  });
+
+  it('prepara una confirmación solo para una reserva activa y con permiso', () => {
+    const initial = initialSolaneState([booking(), { ...booking('cancelled'), status: 'cancelled' }]);
+    const prepared = prepareSolaneAttendanceConfirmation(initial, 'booking-1', 'solane_booking_demo_123', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z');
+    expect(prepared.attendanceConfirmations).toHaveLength(1);
+    expect(prepareSolaneAttendanceConfirmation(initial, 'cancelled', 'solane_cancelled_demo_1', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z')).toBe(initial);
+    expect(prepareSolaneAttendanceConfirmation(setSolaneRole(initial, 'kitchen'), 'booking-1', 'solane_kitchen_demo_123', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z')).toEqual(setSolaneRole(initial, 'kitchen'));
+  });
+
+  it('no reutiliza referencias ni crea dos confirmaciones pendientes para una reserva', () => {
+    const first = prepareSolaneAttendanceConfirmation(initialSolaneState([booking(), booking('booking-2')]), 'booking-1', 'solane_booking_demo_123', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z');
+    expect(prepareSolaneAttendanceConfirmation(first, 'booking-2', 'solane_booking_demo_123', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z')).toBe(first);
+    expect(prepareSolaneAttendanceConfirmation(first, 'booking-1', 'solane_booking_other_456', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z')).toBe(first);
+  });
+
+  it('deduplica referencias opacas y descarta confirmaciones corruptas o huérfanas', () => {
+    const valid = { reference: 'solane_booking_demo_123', restaurantId: 'solane', bookingId: 'booking-1', preparedAt: '2026-09-17T18:00:00.000Z', expiresAt: '2026-09-18T18:00:00.000Z', status: 'prepared' };
+    const state = parseSolaneStored(JSON.stringify({ version: 1, bookings: [booking()], events: [], attendanceConfirmations: [valid, valid, { ...valid, reference: 'short' }, { ...valid, reference: 'solane_orphan_demo_123', bookingId: 'missing' }] }));
+    expect(state.attendanceConfirmations).toEqual([valid]);
+  });
+
+  it('persiste la respuesta sin alterar reserva, inventario ni depósito y falla seguro al reutilizarla', () => {
+    const initial = initialSolaneState([depositedBooking('booking-1')]);
+    const prepared = prepareSolaneAttendanceConfirmation(initial, 'booking-1', 'solane_booking_demo_123', '2026-09-17T18:00:00.000Z', '2026-09-18T18:00:00.000Z');
+    const answered = respondSolaneAttendanceConfirmation(prepared, 'solane_booking_demo_123', 'change_requested', '2026-09-17T19:00:00.000Z');
+    expect(answered.attendanceConfirmations[0]).toMatchObject({ status: 'change_requested', respondedAt: '2026-09-17T19:00:00.000Z' });
+    expect(answered.bookings).toEqual(prepared.bookings);
+    expect(respondSolaneAttendanceConfirmation(answered, 'solane_booking_demo_123', 'attendance_confirmed', '2026-09-17T20:00:00.000Z')).toBe(answered);
   });
 
   it('gestiona la cola y la convierte en reserva sentada sin saltarse el inventario', () => {

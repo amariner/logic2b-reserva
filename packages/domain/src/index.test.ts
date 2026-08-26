@@ -14,6 +14,8 @@ import {
   noShowRiskRecommendation,
   recommendLevel,
   redeemExperienceVoucher,
+  prepareAttendanceConfirmation,
+  respondAttendanceConfirmation,
   riskTier,
   seatingTimes,
   slotsOverlap,
@@ -26,6 +28,7 @@ import {
   validateWaitlistEntry,
   voucherValue,
   type DepositRecord,
+  type AttendanceConfirmation,
   type ExperienceVoucher,
   type PrivateHire,
   type Restaurant,
@@ -454,6 +457,46 @@ describe('riesgo y depósitos', () => {
   });
 });
 
+describe('confirmaciones de asistencia', () => {
+  const prepared = (): AttendanceConfirmation => ({
+    reference: 'solane_ref_demo_123456',
+    restaurantId: 'solane',
+    bookingId: 'booking-1',
+    preparedAt: '2026-09-17T18:00:00.000Z',
+    expiresAt: '2026-09-18T18:00:00.000Z',
+    status: 'prepared',
+  });
+
+  it('prepara una referencia opaca con vigencia positiva', () => {
+    const input = {
+      reference: prepared().reference,
+      restaurantId: prepared().restaurantId,
+      bookingId: prepared().bookingId,
+      preparedAt: prepared().preparedAt,
+      expiresAt: prepared().expiresAt,
+    };
+    expect(prepareAttendanceConfirmation(input)).toEqual(prepared());
+    expect(prepareAttendanceConfirmation({ ...input, reference: 'visible' })).toBeNull();
+  });
+
+  it('confirma o solicita cambio una sola vez y conserva el estado terminal', () => {
+    const confirmed = respondAttendanceConfirmation(prepared(), 'attendance_confirmed', '2026-09-17T19:00:00.000Z');
+    expect(confirmed).toMatchObject({ status: 'attendance_confirmed', respondedAt: '2026-09-17T19:00:00.000Z' });
+    expect(respondAttendanceConfirmation(confirmed!, 'change_requested', '2026-09-17T20:00:00.000Z')).toBe(confirmed);
+  });
+
+  it('caduca de forma terminal al alcanzar el límite y rechaza respuestas tardías', () => {
+    const expired = respondAttendanceConfirmation(prepared(), 'attendance_confirmed', '2026-09-18T18:00:00.000Z');
+    expect(expired).toMatchObject({ status: 'expired', respondedAt: '2026-09-18T18:00:00.000Z' });
+    expect(respondAttendanceConfirmation(expired!, 'attendance_confirmed', '2026-09-18T19:00:00.000Z')).toBe(expired);
+  });
+
+  it('rechaza timestamps anteriores a la preparación y una caducidad prematura', () => {
+    expect(respondAttendanceConfirmation(prepared(), 'attendance_confirmed', '2026-09-17T17:59:59.000Z')).toBeNull();
+    expect(respondAttendanceConfirmation(prepared(), 'expired', '2026-09-17T19:00:00.000Z')).toBeNull();
+  });
+});
+
 describe('bonos de experiencia', () => {
   const voucher = (overrides: Partial<ExperienceVoucher> = {}): ExperienceVoucher => ({
     id: 'voucher-1',
@@ -496,6 +539,7 @@ describe('roles del gestor', () => {
     expect(canOperate('floor', 'seat_booking')).toBe(true);
     expect(canOperate('floor', 'manage_waitlist')).toBe(true);
     expect(canOperate('floor', 'manage_vouchers')).toBe(true);
+    expect(canOperate('floor', 'manage_attendance_confirmations')).toBe(true);
     expect(canOperate('floor', 'charge_no_show')).toBe(false);
     expect(canOperate('floor', 'manage_events')).toBe(false);
     expect(canOperate('floor', 'manage_private_hires')).toBe(false);

@@ -30,6 +30,7 @@ El manifest ejecutable vive en `apps/worker/src/demo-mode.ts`:
 | Superficie | Efecto posible | Barrera | Respuesta/evidencia |
 |---|---|---|---|
 | Demos y gestores | Reservas, eventos, bonos, depósitos, CRM | Sin APIs; estado versionado en `localStorage`; gate que prohíbe red | Recorrido local y restaurable |
+| Confirmación de asistencia | Preparación y respuesta por referencia opaca | Ruta local sin transporte, endpoint, job ni datos de contacto visibles | Estado terminal en el mismo navegador; el enlace no se envía |
 | Pagos | Cobro o sesión de pasarela | Sin proveedor, tarjeta ni endpoint | Representación visual inerte |
 | Email/SMS de producto | Notificación a clientes | Sin proveedor ni endpoint | Aviso local; APIs desconocidas responden `404` |
 | Webhooks/almacenamiento | Mutación de terceros | Sin rutas, bindings ni credenciales | APIs desconocidas responden `404` |
@@ -48,6 +49,7 @@ Los logs del proveedor solo incluyen evento, estado y tipo de error. No registra
 | Lista de espera, CRM e informes | `demo_visual_disponible` | Recorridos de gestión y métricas derivadas | Sin perfiles reales ni exportación a terceros |
 | Eventos y ticketing Solane | `demo_visual_disponible` | Aforo conectado al plano | Venta ficticia; sin cobro ni ticket real |
 | Depósitos anti no-show | `demo_visual_disponible` | Política, desglose y consentimiento | Pasarela neutra; no crea sesiones ni cargos |
+| Confirmación de asistencia | `demo_visual_disponible` | Enlace es/en, respuesta y seguimiento manual | Solo `localStorage`; sin WhatsApp, correo ni validez entre dispositivos |
 | Privatizaciones y bonos | `demo_visual_disponible` | Propuesta, señal, bloqueo y canje | Todo queda en el navegador, sin validez económica |
 | IA y automatizaciones | `demo_visual_disponible` | Recomendaciones deterministas y recorridos | Sin modelo, job o proveedor conectado |
 | Email/SMS transaccional de producto | `demo_visual_pendiente` | Hay avisos visuales locales | Requiere proveedor, plantillas, consentimiento y pruebas por proyecto |

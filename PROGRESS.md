@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-26 · Sesión 38 · Confirmación de asistencia local completada ✅
+
+- F19 cerrada: Solane prepara desde Informes un enlace opaco para reservas activas; Dirección y Sala operan, Cocina solo consulta y ninguna acción envía WhatsApp, correo, jobs ni peticiones de escritura.
+- El dominio puro incorpora vigencia semiabierta, timestamps validados y estados terminales idempotentes. El estado local v1 descarta referencias corruptas, duplicadas u huérfanas y evita reutilizar una referencia o abrir dos confirmaciones pendientes para la misma reserva.
+- Las rutas es/en muestran solo restaurante, fecha, hora y grupo. Confirmar o solicitar cambio persiste en el gestor sin alterar reserva, inventario, score o depósito; enlaces desconocidos, caducados o respondidos fallan sin revelar datos.
+- Decisión y frontera registradas en ADR-016 y `docs/DEMO-MODE.md`. Las capturas comerciales de riesgo se regeneraron para hacer visible la nueva acción.
+- Gates: `pnpm check` 28/28 con 140 tests, 66 de dominio y 49 de dashboard; suite E2E 51/51 (un escenario de teclado pasó en el reintento automático); `pnpm fotos` 16/16. La ejecución completa inicial sufrió un deadlock interno del watcher Wrangler/esbuild y se repitió con servidor limpio hasta completar todos los escenarios.
+
 ## 2026-08-25 · Sesión 37 · Presupuesto D1 cero y auditoría de jobs ✅
 
 - Auditoría completa local y remota de solo lectura: la versión activa de `logic-reserva` no tiene binding D1, SQL, handler `scheduled` ni Cron Trigger. Reservas, eventos, bonos y resets continúan en fixtures + `localStorage`; `/api/leads` conserva Durable Objects + Resend y consume 0 filas D1.

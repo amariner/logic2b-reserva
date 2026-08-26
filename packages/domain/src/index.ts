@@ -583,6 +583,74 @@ export function noShowRiskRecommendation(input: NoShowRiskInput): NoShowRiskReco
   return { ruleset: 'no-show-demo-v1', basis: 'deterministic-demo', operationalScore, tier, suggestedAction, signals };
 }
 
+// ── Confirmaciones de asistencia locales ──────────────────────────────
+
+export type AttendanceConfirmationStatus = 'prepared' | 'attendance_confirmed' | 'change_requested' | 'expired';
+export type AttendanceConfirmationResponse = Exclude<AttendanceConfirmationStatus, 'prepared'>;
+
+export interface AttendanceConfirmation {
+  reference: string;
+  restaurantId: string;
+  bookingId: string;
+  preparedAt: string;
+  expiresAt: string;
+  status: AttendanceConfirmationStatus;
+  respondedAt?: string;
+}
+
+const ATTENDANCE_REFERENCE = /^[A-Za-z0-9_-]{16,120}$/;
+
+export function validateAttendanceConfirmation(confirmation: AttendanceConfirmation): string[] {
+  const errors: string[] = [];
+  const preparedMs = Date.parse(confirmation.preparedAt);
+  const expiresMs = Date.parse(confirmation.expiresAt);
+  const respondedMs = confirmation.respondedAt === undefined ? Number.NaN : Date.parse(confirmation.respondedAt);
+
+  if (!ATTENDANCE_REFERENCE.test(confirmation.reference)) errors.push('attendance confirmation reference is invalid');
+  if (!confirmation.restaurantId.trim() || confirmation.restaurantId.length > 120) errors.push('attendance confirmation restaurantId is invalid');
+  if (!confirmation.bookingId.trim() || confirmation.bookingId.length > 120) errors.push('attendance confirmation bookingId is invalid');
+  if (Number.isNaN(preparedMs)) errors.push('attendance confirmation preparedAt is invalid');
+  if (Number.isNaN(expiresMs) || (!Number.isNaN(preparedMs) && expiresMs <= preparedMs)) errors.push('attendance confirmation expiresAt must be after preparedAt');
+  if (!['prepared', 'attendance_confirmed', 'change_requested', 'expired'].includes(confirmation.status)) errors.push('attendance confirmation status is invalid');
+  if (confirmation.status === 'prepared' && confirmation.respondedAt !== undefined) errors.push('attendance confirmation respondedAt is only valid for terminal states');
+  if (confirmation.status !== 'prepared') {
+    if (Number.isNaN(respondedMs) || (!Number.isNaN(preparedMs) && respondedMs < preparedMs)) errors.push('attendance confirmation respondedAt must not be before preparedAt');
+    if (confirmation.status !== 'expired' && !Number.isNaN(expiresMs) && respondedMs >= expiresMs) errors.push('attendance confirmation response must be before expiresAt');
+    if (confirmation.status === 'expired' && !Number.isNaN(expiresMs) && respondedMs < expiresMs) errors.push('attendance confirmation cannot expire before expiresAt');
+  }
+  return errors;
+}
+
+export function prepareAttendanceConfirmation(
+  confirmation: Omit<AttendanceConfirmation, 'status' | 'respondedAt'>,
+): AttendanceConfirmation | null {
+  const prepared: AttendanceConfirmation = {
+    ...confirmation,
+    reference: confirmation.reference.trim(),
+    restaurantId: confirmation.restaurantId.trim(),
+    bookingId: confirmation.bookingId.trim(),
+    status: 'prepared',
+  };
+  return validateAttendanceConfirmation(prepared).length === 0 ? prepared : null;
+}
+
+export function respondAttendanceConfirmation(
+  confirmation: AttendanceConfirmation,
+  response: AttendanceConfirmationResponse,
+  respondedAt: string,
+): AttendanceConfirmation | null {
+  if (validateAttendanceConfirmation(confirmation).length > 0) return null;
+  if (confirmation.status !== 'prepared') return confirmation;
+  const respondedMs = Date.parse(respondedAt);
+  const preparedMs = Date.parse(confirmation.preparedAt);
+  const expiresMs = Date.parse(confirmation.expiresAt);
+  if (Number.isNaN(respondedMs) || respondedMs < preparedMs) return null;
+  const status: AttendanceConfirmationResponse = respondedMs >= expiresMs ? 'expired' : response === 'expired' ? 'expired' : response;
+  if (status === 'expired' && respondedMs < expiresMs) return null;
+  const resolved: AttendanceConfirmation = { ...confirmation, status, respondedAt };
+  return validateAttendanceConfirmation(resolved).length === 0 ? resolved : null;
+}
+
 export type DepositPolicyKind = 'none' | 'card_hold' | 'prepay';
 
 export interface DepositPolicy {
@@ -702,11 +770,11 @@ export function redeemExperienceVoucher(voucher: ExperienceVoucher, redeemedAt: 
 // ── Permisos demostrativos del gestor ─────────────────────────────
 
 export type RestaurantRole = 'direction' | 'floor' | 'kitchen';
-export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'manage_waitlist' | 'manage_vouchers' | 'seat_booking' | 'charge_no_show';
+export type RestaurantAction = 'manage_events' | 'manage_private_hires' | 'manage_waitlist' | 'manage_vouchers' | 'manage_attendance_confirmations' | 'seat_booking' | 'charge_no_show';
 
 export function canOperate(role: RestaurantRole, action: RestaurantAction): boolean {
   if (role === 'direction') return true;
-  if (role === 'floor') return action === 'seat_booking' || action === 'manage_waitlist' || action === 'manage_vouchers';
+  if (role === 'floor') return action === 'seat_booking' || action === 'manage_waitlist' || action === 'manage_vouchers' || action === 'manage_attendance_confirmations';
   return false;
 }
 
@@ -729,6 +797,7 @@ export const CAPABILITIES: readonly Capability[] = [
   { id: 'unified-inventory', label: 'Inventario único de mesas y eventos', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'no-show-deposits', label: 'Depósitos anti no-show', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'explainable-no-show-risk', label: 'Riesgo de no-show explicable', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
+  { id: 'local-attendance-confirmation', label: 'Confirmación de asistencia con enlace local', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'private-hire', label: 'Privatizaciones', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'guest-crm', label: 'CRM de comensales y exportación', level: 'inteligente', evidence: 'solane', maturity: 'functional-demo' },
   { id: 'booking-reports', label: 'Informes de ocupación y origen', level: 'gestion', evidence: 'vedra', maturity: 'functional-demo' },

@@ -5,12 +5,17 @@ import {
   depositFor,
   issueExperienceVoucher,
   noShowCharge,
+  prepareAttendanceConfirmation,
   redeemExperienceVoucher,
+  respondAttendanceConfirmation,
+  validateAttendanceConfirmation,
   validateExperienceVoucher,
   validateEvent,
   validateSlot,
   type BookingSource,
   type BookingStatus,
+  type AttendanceConfirmation,
+  type AttendanceConfirmationResponse,
   type DepositPolicyKind,
   type DepositRecord,
   type EventStatus,
@@ -45,6 +50,7 @@ export interface SolaneDemoState {
   sales: SolaneEventSale[];
   privateHires: PrivateHire[];
   vouchers: ExperienceVoucher[];
+  attendanceConfirmations: AttendanceConfirmation[];
   role: RestaurantRole;
   privateHireTour: SolanePrivateHireTour;
 }
@@ -75,6 +81,7 @@ const cloneEvent = (event: RestaurantEvent): RestaurantEvent => ({ ...event, slo
 const cloneSale = (sale: SolaneEventSale): SolaneEventSale => ({ ...sale });
 const clonePrivateHire = (hire: PrivateHire): PrivateHire => ({ ...hire, slot: { ...hire.slot }, proposal: hire.proposal === undefined ? undefined : { ...hire.proposal } });
 const cloneVoucher = (voucher: ExperienceVoucher): ExperienceVoucher => ({ ...voucher, value: { ...voucher.value } });
+const cloneAttendanceConfirmation = (confirmation: AttendanceConfirmation): AttendanceConfirmation => ({ ...confirmation });
 const initialPrivateHireTour = (): SolanePrivateHireTour => ({ mode: 'choice', step: 1, completed: false });
 
 function parseDeposit(value: unknown, partySize: number): DepositRecord | null {
@@ -110,6 +117,7 @@ export const initialSolaneState = (
   sales: [],
   privateHires: fixturePrivateHires.map(clonePrivateHire),
   vouchers: [],
+  attendanceConfirmations: [],
   role: 'direction',
   privateHireTour: initialPrivateHireTour(),
 });
@@ -254,6 +262,21 @@ function parseVoucher(value: unknown): ExperienceVoucher | null {
   return validateExperienceVoucher(voucher).length === 0 ? voucher : null;
 }
 
+function parseAttendanceConfirmation(value: unknown): AttendanceConfirmation | null {
+  if (value === null || typeof value !== 'object') return null;
+  const candidate = value as Partial<AttendanceConfirmation>;
+  const confirmation: AttendanceConfirmation = {
+    reference: typeof candidate.reference === 'string' ? candidate.reference.trim() : '',
+    restaurantId: candidate.restaurantId === 'solane' ? 'solane' : '',
+    bookingId: typeof candidate.bookingId === 'string' ? candidate.bookingId.trim() : '',
+    preparedAt: typeof candidate.preparedAt === 'string' ? candidate.preparedAt : '',
+    expiresAt: typeof candidate.expiresAt === 'string' ? candidate.expiresAt : '',
+    status: candidate.status ?? 'prepared',
+    ...(typeof candidate.respondedAt === 'string' ? { respondedAt: candidate.respondedAt } : {}),
+  };
+  return validateAttendanceConfirmation(confirmation).length === 0 ? confirmation : null;
+}
+
 export function parseSolaneStored(
   raw: string | null,
   fixtureBookings: readonly TableBooking[] = [],
@@ -273,6 +296,17 @@ export function parseSolaneStored(
     const sales = (Array.isArray(value.sales) ? value.sales : []).map(parseSale).filter((sale): sale is SolaneEventSale => sale !== null && eventIds.has(sale.eventId)).slice(0, 500);
     const privateHires = new Map(fallback.privateHires.map((hire) => [hire.id, hire]));
     for (const hire of (Array.isArray(value.privateHires) ? value.privateHires : []).map(parsePrivateHire).filter((hire): hire is PrivateHire => hire !== null).slice(0, 100)) privateHires.set(hire.id, hire);
+    const bookingIds = new Set(bookings.keys());
+    const attendanceReferences = new Set<string>();
+    const pendingBookingIds = new Set<string>();
+    const attendanceConfirmations: AttendanceConfirmation[] = [];
+    for (const confirmation of (Array.isArray(value.attendanceConfirmations) ? value.attendanceConfirmations : []).map(parseAttendanceConfirmation).filter((item): item is AttendanceConfirmation => item !== null).slice(0, 500)) {
+      if (!bookingIds.has(confirmation.bookingId) || attendanceReferences.has(confirmation.reference)) continue;
+      if (confirmation.status === 'prepared' && pendingBookingIds.has(confirmation.bookingId)) continue;
+      attendanceReferences.add(confirmation.reference);
+      if (confirmation.status === 'prepared') pendingBookingIds.add(confirmation.bookingId);
+      attendanceConfirmations.push(cloneAttendanceConfirmation(confirmation));
+    }
     return {
       version: SOLANE_STATE_VERSION,
       bookings: [...bookings.values()].map(cloneBooking),
@@ -281,6 +315,7 @@ export function parseSolaneStored(
       sales: sales.map(cloneSale),
       privateHires: [...privateHires.values()].map(clonePrivateHire),
       vouchers: (Array.isArray(value.vouchers) ? value.vouchers : []).map(parseVoucher).filter((voucher): voucher is ExperienceVoucher => voucher !== null).slice(0, 500).map(cloneVoucher),
+      attendanceConfirmations,
       role: RESTAURANT_ROLES.includes(value.role as RestaurantRole) ? value.role as RestaurantRole : 'direction',
       privateHireTour: parsePrivateHireTour(value.privateHireTour),
     };
@@ -297,6 +332,7 @@ export const serializeSolaneState = (state: SolaneDemoState): string => JSON.str
   sales: state.sales.map(cloneSale),
   privateHires: state.privateHires.map(clonePrivateHire),
   vouchers: state.vouchers.map(cloneVoucher),
+  attendanceConfirmations: state.attendanceConfirmations.map(cloneAttendanceConfirmation),
   role: state.role,
   privateHireTour: { ...state.privateHireTour },
 });
@@ -446,4 +482,35 @@ export function redeemSolaneVoucher(state: SolaneDemoState, voucherId: string, r
   const redeemed = redeemExperienceVoucher(target, redeemedAt);
   if (redeemed === null) return state;
   return { ...state, vouchers: state.vouchers.map((voucher) => voucher.id === voucherId ? redeemed : cloneVoucher(voucher)) };
+}
+
+export function prepareSolaneAttendanceConfirmation(
+  state: SolaneDemoState,
+  bookingId: string,
+  reference: string,
+  preparedAt: string,
+  expiresAt: string,
+): SolaneDemoState {
+  if (!canOperate(state.role, 'manage_attendance_confirmations')) return state;
+  const booking = state.bookings.find((candidate) => candidate.id === bookingId);
+  if (booking === undefined || !['pending', 'confirmed'].includes(booking.status)) return state;
+  if (state.attendanceConfirmations.some((candidate) => candidate.reference === reference || (candidate.bookingId === bookingId && candidate.status === 'prepared'))) return state;
+  const confirmation = prepareAttendanceConfirmation({ reference, restaurantId: 'solane', bookingId, preparedAt, expiresAt });
+  return confirmation === null ? state : { ...state, attendanceConfirmations: [...state.attendanceConfirmations.map(cloneAttendanceConfirmation), confirmation] };
+}
+
+export function respondSolaneAttendanceConfirmation(
+  state: SolaneDemoState,
+  reference: string,
+  response: AttendanceConfirmationResponse,
+  respondedAt: string,
+): SolaneDemoState {
+  const target = state.attendanceConfirmations.find((candidate) => candidate.reference === reference);
+  if (target === undefined) return state;
+  const resolved = respondAttendanceConfirmation(target, response, respondedAt);
+  if (resolved === null || resolved === target) return state;
+  return {
+    ...state,
+    attendanceConfirmations: state.attendanceConfirmations.map((confirmation) => confirmation.reference === reference ? cloneAttendanceConfirmation(resolved) : cloneAttendanceConfirmation(confirmation)),
+  };
 }

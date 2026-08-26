@@ -1,0 +1,25 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import AttendanceConfirmation from '../islands/AttendanceConfirmation';
+import { DEMO_FIXTURES } from '../data';
+
+interface Props { locale?: Locale }
+const { locale = 'es' } = Astro.props;
+const fixture = DEMO_FIXTURES.solane;
+const prefix = locale === 'en' ? '/en' : '';
+---
+
+<main id="contenido" class="attendance-page" tabindex="-1">
+  <nav><a href={`${prefix}/demos/solane/`}><span>S</span><b>Solane</b></a><a href={`${prefix}/demos/solane/gestion/?vista=informes`}>{locale === 'es' ? 'Volver al gestor demo' : 'Back to demo workspace'}</a></nav>
+  <AttendanceConfirmation locale={locale} restaurantName={fixture.restaurant.name} initialBookings={fixture.bookings} initialEvents={fixture.events} initialPrivateHires={fixture.privateHires} client:load />
+</main>
+
+<style is:global>
+  .attendance-page { min-height: 100vh; padding: 24px; background: radial-gradient(circle at 50% 0, #eef0e8 0, #f7f7f3 40%, #fff 100%); }
+  .attendance-page > nav { display: flex; width: min(100%, 760px); min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0 auto 48px; }.attendance-page > nav a { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; color: var(--brand-ink); font-size: .78rem; font-weight: 700; text-decoration: none; }.attendance-page > nav a:first-child span, .attendance-mark { display: grid; width: 36px; height: 36px; place-items: center; border-radius: 50%; color: white; background: var(--brand-strong); font-family: var(--serif); font-weight: 800; }
+  .attendance-card { width: min(100%, 620px); margin: 0 auto; border: 1px solid var(--brand-line); border-radius: 20px; padding: clamp(24px, 6vw, 54px); background: rgb(255 255 255 / 94%); box-shadow: 0 24px 80px rgb(24 36 30 / 10%); }.attendance-card > header { display: flex; align-items: flex-start; gap: 16px; }.attendance-card > header p { margin: 2px 0 8px; color: var(--brand); font-size: .66rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }.attendance-card h1 { margin: 0; font-family: var(--serif); font-size: clamp(2.2rem, 8vw, 4.3rem); font-weight: 520; letter-spacing: -.05em; line-height: .95; }.attendance-intro { margin: 28px 0; color: var(--brand-muted); font-family: var(--serif); line-height: 1.6; }
+  .attendance-card dl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 0; }.attendance-card dl > div { border-radius: 10px; padding: 13px; background: var(--brand-soft); }.attendance-card dt { display: flex; align-items: center; gap: 6px; color: var(--brand-muted); font-size: .62rem; font-weight: 700; }.attendance-card dd { margin: 8px 0 0; font-size: .78rem; font-weight: 800; }.attendance-restaurant { margin: 18px 0 0; font-family: var(--serif); font-size: 1.05rem; text-align: center; }
+  .attendance-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 26px; }.attendance-actions button { min-height: 50px; border: 1px solid var(--brand-strong); border-radius: 10px; padding: 10px 14px; color: white; background: var(--brand-strong); font: inherit; font-size: .75rem; font-weight: 800; cursor: pointer; }.attendance-actions button.secondary { color: var(--brand-strong); background: white; }.attendance-card > small { display: block; margin-top: 18px; color: var(--brand-muted); font-size: .62rem; line-height: 1.5; text-align: center; }
+  .attendance-card--message { display: grid; min-height: 340px; align-content: center; justify-items: center; gap: 18px; text-align: center; }.attendance-card--message > svg { color: var(--brand); }.attendance-card--message h1 { max-width: 12ch; }.attendance-card--message p { max-width: 52ch; margin: 0; color: var(--brand-muted); font-family: var(--serif); line-height: 1.6; }
+  @media (max-width: 600px) { .attendance-page { padding: 14px; }.attendance-page > nav { margin-bottom: 28px; }.attendance-page > nav a:last-child { max-width: 14ch; text-align: right; }.attendance-card { border-radius: 16px; }.attendance-card dl, .attendance-actions { grid-template-columns: 1fr; }.attendance-card dl > div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }.attendance-card dd { margin: 0; text-align: right; } }
+</style>

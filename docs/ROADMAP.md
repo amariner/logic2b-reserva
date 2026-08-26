@@ -327,13 +327,13 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** convertir las sugerencias consultivas de F17 en un recorrido humano verificable de confirmación en un clic, sin fingir WhatsApp, correo, automatización ni envío externo.
 **Dependencias:** F7, F10, F17.
 
-- [ ] Modelo puro `AttendanceConfirmation` con referencia opaca, caducidad y transición idempotente `prepared → attendance_confirmed | change_requested | expired`
-- [ ] Estado Solane v1 ampliado de forma aditiva y defensiva; solo reservas activas pueden preparar una confirmación y ninguna respuesta altera inventario, score o depósito
-- [ ] Dirección y Sala pueden preparar el enlace desde el gestor; Cocina solo consulta y la mutación aplica el mismo permiso aunque se invoque fuera de la interfaz
-- [ ] Ruta bilingüe `/demos/solane/confirmacion/?ref=...` muestra únicamente restaurante, fecha, hora y grupo, sin correo ni teléfono, y declara que el enlace se generó pero no se envió
-- [ ] El comensal puede confirmar asistencia o solicitar un cambio; solicitarlo crea seguimiento manual y no cancela ni libera mesas
-- [ ] Referencias desconocidas, caducadas o ya respondidas fallan de forma segura, no revelan datos y conservan estados terminales
-- [ ] E2E es/en cubre preparación, respuesta, retorno al gestor, persistencia, idempotencia, permisos, frontera sin escrituras y responsive 320/375/430/1366 px
+- [x] Modelo puro `AttendanceConfirmation` con referencia opaca, caducidad y transición idempotente `prepared → attendance_confirmed | change_requested | expired`
+- [x] Estado Solane v1 ampliado de forma aditiva y defensiva; solo reservas activas pueden preparar una confirmación y ninguna respuesta altera inventario, score o depósito
+- [x] Dirección y Sala pueden preparar el enlace desde el gestor; Cocina solo consulta y la mutación aplica el mismo permiso aunque se invoque fuera de la interfaz
+- [x] Ruta bilingüe `/demos/solane/confirmacion/?ref=...` muestra únicamente restaurante, fecha, hora y grupo, sin correo ni teléfono, y declara que el enlace se generó pero no se envió
+- [x] El comensal puede confirmar asistencia o solicitar un cambio; solicitarlo crea seguimiento manual y no cancela ni libera mesas
+- [x] Referencias desconocidas, caducadas o ya respondidas fallan de forma segura, no revelan datos y conservan estados terminales
+- [x] E2E es/en cubre preparación, respuesta, retorno al gestor, persistencia, idempotencia, permisos, frontera sin escrituras y responsive 320/375/430/1366 px
 
 **Hecho cuando:** Marc puede recibir un enlace ficticio preparado por Sala, confirmar o solicitar un cambio y ver la respuesta persistida en el gestor, sin transporte ni mutaciones colaterales; `pnpm check && pnpm e2e && pnpm fotos` verdes.
 
