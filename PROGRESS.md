@@ -11,6 +11,7 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 - Las rutas es/en muestran solo restaurante, fecha, hora y grupo. Confirmar o solicitar cambio persiste en el gestor sin alterar reserva, inventario, score o depósito; enlaces desconocidos, caducados o respondidos fallan sin revelar datos.
 - Decisión y frontera registradas en ADR-016 y `docs/DEMO-MODE.md`. Las capturas comerciales de riesgo se regeneraron para hacer visible la nueva acción.
 - Gates: `pnpm check` 28/28 con 140 tests, 66 de dominio y 49 de dashboard; suite E2E 51/51 (un escenario de teclado pasó en el reintento automático); `pnpm fotos` 16/16. La ejecución completa inicial sufrió un deadlock interno del watcher Wrangler/esbuild y se repitió con servidor limpio hasta completar todos los escenarios.
+- F19 se consolidó en `main` como `aebb1f0`, se publicó en GitHub y se desplegó en `reserva.logic2b.com`, versión Cloudflare `9347ce30-858c-463d-ba96-ac26d46d0c6f`. El smoke público y las rutas de confirmación es/en respondieron 200 con `noindex, nofollow`; solo se usaron GET/HEAD y no se generaron confirmaciones ni leads.
 
 ## 2026-08-25 · Sesión 37 · Presupuesto D1 cero y auditoría de jobs ✅
 

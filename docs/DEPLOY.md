@@ -30,7 +30,7 @@ Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindin
 - Preview activa: `https://logic-reserva-preview.marinerandreu.workers.dev`.
 - Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados el 2026-08-18.
 - Producción activa: `https://reserva.logic2b.com`, enlazada a `logic-reserva` como dominio personalizado con DNS y TLS administrados por Cloudflare.
-- Producción sirve el commit `1a3a94c`, versión Cloudflare `417bcaac-0308-4a5d-a01d-e070e9bc88ee`, desplegada el 2026-08-24. El dry-run aceptó 143 assets y el smoke posterior quedó verde exclusivamente con GET, sin enviar leads.
+- Producción sirve el commit `aebb1f0`, versión Cloudflare `9347ce30-858c-463d-ba96-ac26d46d0c6f`, desplegada el 2026-08-26. El dry-run aceptó 149 assets y el smoke posterior, incluidas las rutas de confirmación es/en, quedó verde exclusivamente con GET/HEAD, sin generar confirmaciones ni enviar leads.
 - Producción declara el secret cifrado `LEADS_RESEND_API_KEY` y quedó revalidada después de la rotación: `202 delivered` y replay idempotente para la referencia `4e13fdc8-d6fa-4125-b336-e7720b64e3d8`. Falta confirmar visualmente la llegada única en la bandeja.
 - Preview también declara `LEADS_RESEND_API_KEY` como secret cifrado, pero su entrega de correo no se valida ni forma parte del gate por decisión de producto del 2026-08-18. No probar ni rotar este transporte salvo nueva orden explícita.
 - Preview sirve la instrumentación sanitizada de diagnóstico: ante rechazo del proveedor registra solo estado HTTP y tipo de error, nunca el valor del secret ni datos del lead.

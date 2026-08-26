@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F19 completas ✅ · F19 validada localmente y pendiente de publicación · M1 presupuesto D1 cero completado localmente y pendiente de publicación ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** publicar F19 y escoger el siguiente bloque de producto sin activar transporte externo
+**Fase actual:** F0–F19 completas y publicadas en producción ✅ · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** priorizar el siguiente bloque de producto sin activar transporte externo
 
 ## Siguiente paso concreto
 
-1. Publicar el commit validado de F19 en `origin/main` y desplegar exactamente ese bundle en producción.
-2. Ejecutar el smoke público por GET sobre landing, gestor y rutas de confirmación es/en; no generar referencias ni enviar leads en producción.
-3. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
+1. Revisar el roadmap y promover el siguiente hito con mayor retorno comercial.
+2. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
+3. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
 
 ## Bloqueos / avisos
 
