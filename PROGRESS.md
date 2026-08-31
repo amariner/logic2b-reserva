@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-08-31 · Sesión 39 · Logic2B UI convertido en contrato verificable ✅
+
+- `https://ui.logic2b.com` deja de ser una referencia informal: `packages/ui/components.json` fija el registro y la versión `1.0.0-rc.16`; las bases originales de `Button`, `Badge` y `cn()` quedan conservadas bajo `.logic2b/base/`.
+- Las dos primitivas se adaptaron al CSS explícito del monorepo manteniendo Radix, variantes y `data-slot`. El gestor las consume en controles de demo, estados de reserva y la lista de espera compartida por Vedra y Solane.
+- `theme.css` implementa los tokens semánticos de Logic2B UI sobre la piel de Reserva: papel cálido, azul de acción, acentos planos, estados operativos, foco visible y mínimo táctil de 44 px.
+- Nuevo `pnpm verify:ui`, incluido en `pnpm check`, protege schema, registro, versión, snapshots, tokens y consumo real. El flujo de incorporación queda fijado en `docs/DESIGN.md`, ADR-017, `CLAUDE.md`, README y F20 del roadmap.
+- QA: `pnpm check` 28/28 con 140 tests; `pnpm e2e` 51/51. La aserción E2E nueva confirma `data-slot` renderizado y volvió a pasar de forma aislada. Revisión local de Vedra y Solane: primitivas a 44 px, sin overflow ni errores de consola. No se desplegó ni se modificó ningún servicio externo.
+
 ## 2026-08-26 · Sesión 38 · Confirmación de asistencia local completada ✅
 
 - F19 cerrada: Solane prepara desde Informes un enlace opaco para reservas activas; Dirección y Sala operan, Cocina solo consulta y ninguna acción envía WhatsApp, correo, jobs ni peticiones de escritura.

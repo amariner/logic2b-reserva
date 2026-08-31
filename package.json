@@ -11,7 +11,7 @@
     "typecheck": "turbo run typecheck",
     "lint": "turbo run lint",
     "test": "turbo run test",
-    "check": "turbo run typecheck lint test build",
+    "check": "pnpm verify:ui && turbo run typecheck lint test build",
     "e2e": "pnpm build && playwright test",
     "fotos": "pnpm build && node apps/site/scripts/capture-screens.mjs",
     "images": "node scripts/images.mjs",
@@ -19,6 +19,7 @@
     "deploy:dry-run": "pnpm --filter @logic-reserva/worker deploy:production:dry-run",
     "deploy:preview": "pnpm --filter @logic-reserva/worker deploy:preview",
     "deploy:preview:dry-run": "pnpm --filter @logic-reserva/worker deploy:preview:dry-run",
+    "verify:ui": "node scripts/verify-ui-system.mjs",
     "verify:public": "pnpm verify:public:preview && pnpm verify:public:production",
     "verify:public:preview": "node apps/worker/scripts/verify-public.mjs https://logic-reserva-preview.marinerandreu.workers.dev",
     "verify:public:production": "node apps/worker/scripts/verify-public.mjs https://reserva.logic2b.com"

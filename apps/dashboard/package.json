@@ -13,6 +13,7 @@
   "dependencies": {
     "@logic-reserva/config": "workspace:*",
     "@logic-reserva/domain": "workspace:*",
+    "@logic-reserva/ui": "workspace:*",
     "lucide-react": "^0.550.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

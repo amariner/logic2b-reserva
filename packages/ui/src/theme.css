@@ -45,6 +45,43 @@
   --shadow-nav: 0 .7px 1.462px rgb(0 0 0 / 1.5%), 0 3px 9px rgb(0 0 0 / 3%);
   --shadow-artifact: 0 4px 12px rgb(0 0 0 / 10%);
 
+  /* Contrato semántico de https://ui.logic2b.com/docs/theming.
+     Conservamos la personalidad cálida de Reserva cambiando tokens, no la API
+     visual que comparten las primitivas copiadas del registro Logic2B UI. */
+  --background: var(--paper);
+  --foreground: var(--ink);
+  --card: var(--mist);
+  --card-foreground: var(--ink);
+  --popover: var(--mist);
+  --popover-foreground: var(--ink);
+  --primary: var(--color-notion-blue);
+  --primary-foreground: var(--color-pure-white);
+  --secondary: var(--color-sky-tint);
+  --secondary-foreground: var(--color-notion-blue-strong);
+  --muted: var(--fog);
+  --muted-foreground: var(--color-graphite);
+  --accent: var(--color-sky-tint);
+  --accent-foreground: var(--color-notion-blue-strong);
+  --destructive: var(--color-vermillion);
+  --destructive-foreground: var(--color-pure-white);
+  --border: var(--line);
+  --input: rgb(0 0 0 / 16%);
+  --ring: var(--color-notion-blue);
+  --radius: var(--radius-cards);
+  --chart-1: var(--color-notion-blue);
+  --chart-2: var(--color-marigold);
+  --chart-3: var(--color-coral);
+  --chart-4: var(--color-sky-wash);
+  --chart-5: var(--color-midnight-ink);
+  --sidebar: var(--color-midnight-ink);
+  --sidebar-foreground: var(--color-pure-white);
+  --sidebar-primary: var(--color-notion-blue);
+  --sidebar-primary-foreground: var(--color-pure-white);
+  --sidebar-accent: rgb(255 255 255 / 9%);
+  --sidebar-accent-foreground: var(--color-pure-white);
+  --sidebar-border: rgb(255 255 255 / 11%);
+  --sidebar-ring: var(--color-sky-wash);
+
   /* Estados operativos: siempre se acompañan de texto o icono. */
   --state-table-free: #2f7d4a;
   --state-table-free-bg: #e7f4ea;
@@ -84,6 +121,26 @@ img { max-width: 100%; }
 .artifact { border: 1px solid var(--line); border-radius: var(--radius-cards); background: var(--color-pure-white); box-shadow: var(--shadow-artifact); }
 .status { display: inline-flex; align-items: center; gap: 7px; font-size: .72rem; color: var(--slate); }
 .status::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ''; }
+.logic-button { display: inline-flex; min-height: 44px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: var(--radius-buttons); padding: 8px 16px; color: var(--primary-foreground); background: var(--primary); font-size: .875rem; font-weight: 600; line-height: 1; text-decoration: none; white-space: nowrap; cursor: pointer; transition: color var(--duration-interaction) var(--ease-interaction), background-color var(--duration-interaction) var(--ease-interaction), border-color var(--duration-interaction) var(--ease-interaction); }
+.logic-button svg { width: 1rem; height: 1rem; flex: 0 0 auto; pointer-events: none; }
+.logic-button:hover { background: var(--color-notion-blue-strong); }
+.logic-button:disabled { opacity: .5; cursor: not-allowed; }
+.logic-button--destructive { background: var(--destructive); }
+.logic-button--destructive:hover { background: var(--color-vermillion); filter: brightness(.9); }
+.logic-button--outline { border-color: var(--border); color: var(--foreground); background: var(--background); }
+.logic-button--outline:hover, .logic-button--ghost:hover { color: var(--accent-foreground); background: var(--accent); }
+.logic-button--secondary { color: var(--secondary-foreground); background: var(--secondary); }
+.logic-button--secondary:hover { background: #d7ebfc; }
+.logic-button--ghost, .logic-button--link { color: var(--primary); background: transparent; }
+.logic-button--link { padding-inline: 4px; text-decoration: underline; text-underline-offset: 4px; }
+.logic-button--size-sm { padding-inline: 12px; font-size: .8125rem; }
+.logic-button--size-lg { padding-inline: 24px; }
+.logic-button--size-icon { width: 44px; padding: 0; }
+.logic-badge { display: inline-flex; width: fit-content; min-height: 28px; flex: 0 0 auto; align-items: center; justify-content: center; gap: 6px; overflow: hidden; border: 1px solid transparent; border-radius: var(--radius-pills); padding: 4px 10px; color: var(--primary-foreground); background: var(--primary); font-size: .75rem; font-weight: 600; line-height: 1; white-space: nowrap; }
+.logic-badge svg { width: .875rem; height: .875rem; flex: 0 0 auto; pointer-events: none; }
+.logic-badge--secondary { color: var(--secondary-foreground); background: var(--secondary); }
+.logic-badge--destructive { color: var(--destructive-foreground); background: var(--destructive); }
+.logic-badge--outline { border-color: var(--border); color: var(--foreground); background: transparent; }
 .badge { display: inline-flex; min-height: 28px; align-items: center; gap: 6px; border-radius: var(--radius-pills); padding: 4px 10px; color: var(--badge-color, var(--slate)); background: var(--badge-bg, var(--fog)); font-size: .75rem; font-weight: 600; line-height: 1; }
 .badge[data-tone='success'] { --badge-color: var(--state-success); --badge-bg: var(--state-table-free-bg); }
 .badge[data-tone='warning'] { --badge-color: var(--state-warning); --badge-bg: var(--state-table-occupied-bg); }

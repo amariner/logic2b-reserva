@@ -1,16 +1,18 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F19 completas y publicadas en producción ✅ · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** priorizar el siguiente bloque de producto sin activar transporte externo
+**Fase actual:** F0–F19 completas y publicadas en producción ✅ · F20 Logic2B UI completa localmente ✅ · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** revisar/publicar F20 o priorizar el siguiente bloque de producto sin activar transporte externo
 
 ## Siguiente paso concreto
 
-1. Revisar el roadmap y promover el siguiente hito con mayor retorno comercial.
+1. Revisar el diff de F20 y, si se autoriza publicación, repetir gates y seguir el runbook de deploy sin enviar leads.
 2. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
 3. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
 
 ## Bloqueos / avisos
 
+- F20 integra `ui.logic2b.com` como contrato versionado en `packages/ui/components.json` (`1.0.0-rc.16`). Nuevos componentes deben entrar por la CLI en `packages/ui`, conservar `.logic2b/base`, adaptarse a los tokens locales y pasar `pnpm verify:ui`; no actualizar la versión de forma implícita.
+- Gates locales de F20: `pnpm check` 28/28 con 140 tests y `pnpm e2e` 51/51. Vedra y Solane renderizan `Button`/`Badge` con `data-slot`, controles de 44 px, cero overflow y cero errores de consola. El cambio aún no está publicado.
 - Auditoría D1 de 2026-08-25: `logic-reserva` consume 0 filas D1, no declara base ni crons y ahora tiene un fusible local a cero en `apps/worker/d1-budget.json`. Publicar el código no migra ni reemplaza datos; no relajar el gate sin ADR, presupuesto medido y autorización explícita.
 - Release comercial de 2026-08-24: landing es/en, marca Logic2B, copy prudente, informes demo y capturas actualizados en `main` (`1a3a94c`) y producción (`417bcaac-0308-4a5d-a01d-e070e9bc88ee`). Gates: `pnpm check` 28/28, 132 tests, `pnpm e2e` 50/50, `pnpm fotos` reproducible 16/16 y dry-run con 143 assets; smoke público por GET verde sin enviar leads.
 - `pnpm fotos` se ejecuta deliberadamente en serie: paralelizar viewports puede variar el rasterizado AVIF de Chrome y rompe el contrato de hashes reproducibles.
@@ -25,7 +27,7 @@
 - No volver a probar, rotar ni diagnosticar Resend en preview salvo nueva orden explícita. Preview conserva su función de rutas/SEO/cabeceras por GET; su respuesta de correo no forma parte del gate.
 - `logic-reserva` sirve la versión `5027ddab-56ee-4e94-9c7f-3baef8c84365`, conserva el transporte funcional y `marinerandreu+logic@gmail.com`; la verificación pública por GET quedó verde tras desplegar F18.
 - No volver a la antigua paleta burdeos: la referencia vigente es `docs/DESIGN.md` (papel cálido + azul único).
-- El servidor dev actual queda disponible en `http://localhost:8787`; si la sesión se pierde, `pnpm dev` lo recompone después de `pnpm build` cuando cambie una app estática.
+- El servidor local se inicia en `http://localhost:8787` con `pnpm dev`; recompone los assets después de `pnpm build` cuando cambie una app estática.
 - Mantener un único punto de bifurcación demo/real y la etiqueta ficticia visible en web y gestor.
 - El único formulario real es el comercial de la landing. Demos y dashboards son muestras locales sin backend, correo, pagos ni integraciones.
 - Preservar F7–F11: demos y E2E no deben depender de Resend; solo `/api/leads` cambia de fail-closed a transporte real cuando la configuración lo habilita.

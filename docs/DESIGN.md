@@ -1,6 +1,6 @@
 # DESIGN — contrato visual
 
-Referencia aprobada por producto: `DESIGN (1).md`, recibida el 2026-08-17. Su frase guía es **“cuaderno de papel cálido bajo la luz de la tarde”**. Es una referencia visual; las reglas funcionales y de producto siguen viviendo en `CLAUDE.md` y `docs/ROADMAP.md`.
+Sistema de diseño canónico: [Logic2B UI](https://ui.logic2b.com/), integrado y versionado en `packages/ui/components.json`. La piel aprobada para este producto conserva la frase guía **“cuaderno de papel cálido bajo la luz de la tarde”**: personaliza los tokens del sistema compartido, no crea un sistema paralelo. Las reglas funcionales y de producto siguen viviendo en `CLAUDE.md` y `docs/ROADMAP.md`; la decisión de integración está en `docs/adr/ADR-017-logic2b-ui-como-sistema-de-diseno.md`.
 
 ## Ámbito
 
@@ -22,12 +22,24 @@ Referencia aprobada por producto: `DESIGN (1).md`, recibida el 2026-08-17. Su fr
 
 ## Primitivas compartidas
 
-Los tokens y primitivas viven en `packages/ui/src/theme.css`: `.shell`, `.pill`, `.card`, `.artifact`, `.eyebrow`, `.heading`, `.display`, `.status`, `.sr-only`. No se inventa una primitiva transversal dentro de una app: primero se añade al paquete UI.
+Los tokens y primitivas viven en `packages/ui`. Los componentes React parten del registro de Logic2B UI y se consumen mediante exports como `@logic-reserva/ui/button` y `@logic-reserva/ui/badge`; las clases compartidas viven en `packages/ui/src/theme.css`. No se inventa una primitiva transversal dentro de una app: primero se busca en [Components](https://ui.logic2b.com/docs/components), se copia al paquete UI y después se adapta a la piel de Reserva.
+
+`Button` y `Badge` conservan el contrato `data-slot` y las variantes del registro. `.shell`, `.pill`, `.card`, `.artifact`, `.eyebrow`, `.heading`, `.display`, `.status` y `.sr-only` siguen disponibles para Astro y superficies anteriores mientras se migra por uso, no mediante una reescritura indiscriminada.
 
 - `.pill`: CTA primario azul.
 - `.pill.ghost`: CTA secundario con lavado azul.
 - `.card`: superficie blanca, radio 12 px, borde fino, sin sombra.
 - `.artifact`: mockup de producto; es una de las pocas superficies autorizadas a usar sombra.
+
+El gestor toma `admin-reservations-01`, `sidebar`, `data-table`, `button`, `badge`, `input`, `select` y `dialog` del catálogo como patrones preferentes. Se adapta el dominio y el copy; no se copia una demo genérica completa sobre los recorridos ya probados.
+
+## Incorporar o actualizar componentes
+
+1. Revisar el componente y su accesibilidad en `ui.logic2b.com`.
+2. Ejecutar `pnpm dlx logic2b@latest add <componente> --cwd packages/ui --no-install`.
+3. Añadir las dependencias declaradas al `package.json` del paquete UI y conservar `.logic2b/base/`.
+4. Resolver imports relativos y adaptar las clases a los tokens semánticos de `theme.css`, manteniendo API, estados, `data-slot`, foco y objetivos de 44 px.
+5. Consumir la primitiva desde una superficie real y cerrar con `pnpm verify:ui && pnpm check && pnpm e2e`.
 
 ## Accesibilidad y responsive
 

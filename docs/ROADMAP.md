@@ -339,6 +339,22 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## F20 · Logic2B UI como contrato visual ✅
+
+**Objetivo:** convertir `ui.logic2b.com` en una dependencia de diseño explícita, versionada y comprobable, sin borrar la identidad cálida ni reescribir los recorridos ya validados.
+**Dependencias:** F11, F16.
+
+- [x] Registro oficial y versión fijados en `packages/ui/components.json`
+- [x] `Button` y `Badge` incorporados desde el registro con snapshots de base auditables y exports del paquete UI
+- [x] Tokens semánticos de Logic2B UI adaptados a papel cálido, azul de acción, estados operativos y objetivos táctiles de 44 px
+- [x] Consumo real de ambas primitivas en el gestor Vedra/Solane, incluida la lista de espera compartida
+- [x] Gate local `pnpm verify:ui`, integrado en `pnpm check`, para proteger registro, versión, snapshots, tokens y consumo
+- [x] Contrato, flujo de incorporación y decisión arquitectónica documentados en `docs/DESIGN.md` y ADR-017
+
+**Hecho cuando:** el vínculo con `ui.logic2b.com` se puede demostrar desde configuración, código, snapshots, uso renderizado y un gate verde.
+
+---
+
 ## M1 · Presupuesto D1 cero ✅
 
 **Objetivo:** mantener Logic Reserva fuera de la cuota D1 y detectar antes del despliegue cualquier persistencia o tarea programada accidental.

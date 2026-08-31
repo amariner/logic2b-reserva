@@ -596,6 +596,9 @@ test.describe('demo Vedra · nivel Gestión', () => {
     await page.evaluate(() => localStorage.removeItem('logic-reserva-demo-vedra-v1'));
     await page.reload({ waitUntil: 'networkidle' });
 
+    await expect(page.getByRole('button', { name: 'Añadir a espera' })).toHaveAttribute('data-slot', 'button');
+    await expect(page.locator('[data-dashboard-view="espera"] [data-slot="badge"]').first()).toContainText('Aviso local');
+
     await page.getByLabel('Nombre', { exact: true }).fill('Clara Sin Reserva');
     await page.getByLabel('Teléfono (opcional)').fill('+34 600 222 333');
     await page.getByRole('button', { name: 'Añadir a espera' }).click();
