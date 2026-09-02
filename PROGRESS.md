@@ -4,6 +4,15 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-02 · Sesión 39 · Paridad estructural Camp → Reserva definida ✅
+
+- F20 cerrada tras auditar `camp.logic2b.com`: home completo y superficies de precios, temas, paneles y guías; la comparación se hizo también contra la landing pública y el repositorio actual de Reserva.
+- El diagnóstico separa la profundidad del producto de su empaquetado: Reserva ya tiene gestores y recorridos sectoriales sólidos, pero necesita exponer mejor flujo, módulos, integraciones, oferta, portfolio, paneles, implantación, guías y cierre.
+- `docs/PARIDAD-CAMP.md` fija el contrato de 14 bloques del home, el mapa Camp → restauración, las reglas de honestidad y el objetivo de doce direcciones web, tres recorridos profundos y dos niveles de gestor.
+- `docs/ROADMAP.md` incorpora F21–F27: shell/hero, flujo y cinco momentos, portfolio, catálogo de paneles, precios/guías, home completo y lanzamiento verificado.
+- El dashboard queda fuera de la copia visual: conserva Servicio, Plano, Reservas/Espera, Grupos/Eventos, Informes e Inteligente. También se preservan la estética cálida de Reserva, los tres planes vigentes y las fronteras demo/real.
+- `SIGUIENTE-SESION.md` apunta a F21 como siguiente hito. Cambio exclusivamente documental; `git diff --check` verde, sin ejecutar build, E2E, deploy ni llamadas de escritura externas.
+
 ## 2026-08-26 · Sesión 38 · Confirmación de asistencia local completada ✅
 
 - F19 cerrada: Solane prepara desde Informes un enlace opaco para reservas activas; Dirección y Sala operan, Cocina solo consulta y ninguna acción envía WhatsApp, correo, jobs ni peticiones de escritura.

@@ -1,15 +1,21 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F19 completas y publicadas en producción ✅ · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** priorizar el siguiente bloque de producto sin activar transporte externo
+**Fase actual:** F0–F20 completas ✅ · F0–F19 publicadas en producción · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** F21 · shell comercial y hero con prueba múltiple, dentro de la paridad estructural con Logic2B Campings
 
 ## Siguiente paso concreto
 
-1. Revisar el roadmap y promover el siguiente hito con mayor retorno comercial.
-2. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
-3. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
+1. Implementar F21 sobre el contrato de `docs/PARIDAD-CAMP.md`: cabecera, hero con prueba múltiple, captación breve y rail de ecosistema.
+2. Mantener la estética aprobada de Reserva; la referencia de Camp fija estructura y profundidad, no una copia visual.
+3. No alterar todavía el dashboard ni la arquitectura de tres planes. F25 empaqueta los paneles existentes y cualquier cambio de planes exige una decisión separada.
+4. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
+5. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
 
 ## Bloqueos / avisos
+
+- Dirección de producto de 2026-09-02: Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`. El contrato, el mapa de equivalencias y los criterios globales están en `docs/PARIDAD-CAMP.md`; las fases F21–F27 sustituyen la antigua situación de roadmap agotado.
+- La paridad no incluye copiar el dashboard de Camp. Reserva conserva Servicio, Plano de sala, Reservas/Espera, Grupos/Eventos, Informes e Inteligente como puertas de entrada propias del sector.
+- Objetivo de portfolio: doce direcciones web, tres recorridos profundos (Brasca/Vedra/Solane) y dos niveles de gestor. No construir doce backends ni presentar integraciones previstas como activas.
 
 - Auditoría D1 de 2026-08-25: `logic-reserva` consume 0 filas D1, no declara base ni crons y ahora tiene un fusible local a cero en `apps/worker/d1-budget.json`. Publicar el código no migra ni reemplaza datos; no relajar el gate sin ADR, presupuesto medido y autorización explícita.
 - Release comercial de 2026-08-24: landing es/en, marca Logic2B, copy prudente, informes demo y capturas actualizados en `main` (`1a3a94c`) y producción (`417bcaac-0308-4a5d-a01d-e070e9bc88ee`). Gates: `pnpm check` 28/28, 132 tests, `pnpm e2e` 50/50, `pnpm fotos` reproducible 16/16 y dry-run con 143 assets; smoke público por GET verde sin enviar leads.

@@ -4,6 +4,8 @@ Lo que surge durante las sesiones y no pertenece a la fase en curso. Nada de aqu
 
 ## Producto (post-F12)
 
+- Paridad estructural y comercial con `camp.logic2b.com` → promovida a F20–F27; contrato en `docs/PARIDAD-CAMP.md`.
+
 - Gift cards / bonos de experiencia vendidos desde el motor → promovido a F15.
 - Confirmaciones y recordatorios por WhatsApp (ojo: desde enero 2026 Meta restringe chatbots genéricos; solo vía proveedores oficiales de la API — verificar antes de prometerlo) → flujo y estado local promovidos a F19; el transporte real sigue aquí.
 - Predicción de no-show con IA (riesgo por canal/histórico) → promovida a F17 como recomendación explicable local.
