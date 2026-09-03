@@ -361,19 +361,19 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F21 · Shell comercial + hero con prueba múltiple
+## F21 · Shell comercial + hero con prueba múltiple ✅
 
 **Objetivo:** dar a Reserva una primera pantalla con la misma capacidad de orientar, captar y demostrar variedad que Camp, conservando su estética actual.
 **Dependencias:** F20.
 
-- [ ] Cabecera compacta con cuatro accesos primarios: Webs, Gestor, Precios y Contactar/recorrido; navegación móvil equivalente
-- [ ] Hero editorial de Reserva con promesa sectorial, captación breve y tres accesos verificables: web demo, recorrido guiado y gestor
-- [ ] Portfolio visual vivo en el hero con varias identidades de restaurante, sin sustituir la evidencia real de Solane
-- [ ] Rail de ecosistema previsto inmediatamente después del hero, con estado de madurez accesible para cada marca
-- [ ] Captación breve y formulario completo comparten validación, consentimiento, idempotencia y el único endpoint real ya autorizado
-- [ ] Copy es/en, foco, movimiento reducido, cookie banner sin tapar acciones y responsive 320/375/430/1366 px
+- [x] Cabecera compacta con cuatro accesos primarios: Webs, Gestor, Precios y Contactar/recorrido; navegación móvil equivalente
+- [x] Hero editorial de Reserva con promesa sectorial, captación breve y tres accesos verificables: web demo, recorrido guiado y gestor
+- [x] Portfolio visual vivo en el hero con varias identidades de restaurante, sin sustituir la evidencia real de Solane
+- [x] Rail de ecosistema previsto inmediatamente después del hero, con estado de madurez accesible para cada marca
+- [x] Captación breve y formulario completo comparten validación, consentimiento, idempotencia y el único endpoint real ya autorizado
+- [x] Copy es/en, foco, movimiento reducido, cookie banner sin tapar acciones y responsive 320/375/430/1366 px
 
-**Hecho cuando:** en una sola pantalla se entiende qué es Reserva, se puede ver una web, recorrer el producto, abrir el gestor o iniciar contacto, sin perder la identidad visual vigente.
+**Hecho cuando:** en una sola pantalla se entiende qué es Reserva, se puede ver una web, recorrer el producto, abrir el gestor o iniciar contacto, sin perder la identidad visual vigente. Cumplido con 53/53 E2E, `pnpm fotos` reproducible y `pnpm check` verde.
 
 ---
 

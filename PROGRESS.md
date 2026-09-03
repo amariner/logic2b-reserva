@@ -4,6 +4,16 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 42 · F21: shell comercial y prueba múltiple ✅
+
+- F21 completada sobre el contrato de paridad: la cabecera expone Webs, Gestor, Planes y contacto; el hero ofrece web demo, recorrido guiado y gestor tanto en es/en como en móvil.
+- La primera pantalla incorpora captación breve con el mismo endpoint comercial y la misma validación/consentimiento del formulario completo, además de portfolio vivo de Brasca, Vedra y Solane.
+- El rail de ecosistema explicita madurez por capacidad —demostrado, demostrativo y por proyecto— sin convertir integraciones previstas en promesas activas ni alterar la frontera `DEMO_MODE`.
+- Se corrigieron los objetivos táctiles legales bilingües a 44×44 px. `pnpm e2e` queda en 53/53 y `pnpm fotos` produjo dos veces los mismos 16 hashes.
+- F21 ya está cerrada en el roadmap; la paridad total con Camp no: permanecen F22–F27 para flujo, momentos, doce temas, paneles, guías, home completo y lanzamiento.
+
+---
+
 ## 2026-09-03 · Sesión 41 · Actualización de GitHub y auditoría de paridad ✅
 
 - Se descargó `origin/main` y se integró el commit remoto `2168fb3` de 2026-09-02, que incorpora la auditoría y el contrato de paridad estructural con `camp.logic2b.com`.
@@ -14,10 +24,10 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ## 2026-09-03 · Sesión 40 · Sincronización local y exportación de informes ✅
 
-- F21 implementa `subscribeToStorageKey` como punto común para que Vedra, Solane, sus widgets, ticketing y confirmación reaccionen a cambios de otra pestaña sin abandonar la frontera local.
+- M3 implementa `subscribeToStorageKey` como punto común para que Vedra, Solane, sus widgets, ticketing y confirmación reaccionen a cambios de otra pestaña sin abandonar la frontera local.
 - La nueva ADR-018 aclara el alcance: parser defensivo, `clear()` seguro, actualización inmediata del documento escritor y ausencia de consistencia multiusuario.
 - E2E añadido para publicar un evento desde un gestor y comprobar, sin recargar, que el widget pierde SS7/SS8 y otro gestor ve el evento.
-- F22 añade exportación CSV local desde Informes para ocupación, orígenes y escenarios hipotéticos, con escape de fórmulas, nombre estable y copy de muestra no contable.
+- M4 añade exportación CSV local desde Informes para ocupación, orígenes y escenarios hipotéticos, con escape de fórmulas, nombre estable y copy de muestra no contable.
 - QA: `pnpm check` 28/28 con 141 tests, `pnpm e2e` 52/52 y `pnpm fotos` 16/16 reproducible; no se generan peticiones externas desde ninguna demo.
 
 ---

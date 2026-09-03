@@ -13,16 +13,14 @@ const languageHref = locale === 'en' ? '/' : '/en/';
 const contact = logic2bContact(locale, 'commercial');
 const pageHref = (path: string) => `${prefix}${path}`;
 const ui = locale === 'en' ? {
-  mainNav: 'Main navigation', otherLanguage: 'es', menu: 'Menu', product: 'How it works', productLinks: 'Product links', legalLinks: 'Legal links', cookies: 'Cookie preferences', flowLabel: 'One availability view', flow: ['Guest books', 'Inventory updates', 'Floor team decides'], restaurantSolution: 'Restaurant bookings', groupSolution: 'Groups and events', productView: 'Product view', productTitle: 'The event takes up tables too.', productDetail: 'Publish a dinner and the booking engine stops offering the tables it uses.', productAction: 'Open this scenario', productAlt: 'Solane floor plan showing tables reserved for service and a wine pairing event', inventoryAction: 'Open inventory', productEvidence: 'Product journey · demo data',
+  mainNav: 'Main navigation', otherLanguage: 'es', menu: 'Menu', product: 'How it works', productLinks: 'Product links', legalLinks: 'Legal links', cookies: 'Cookie preferences', flowLabel: 'One availability view', flow: ['Guest books', 'Inventory updates', 'Floor team decides'], restaurantSolution: 'Restaurant bookings', groupSolution: 'Groups and events', productView: 'Product view', productTitle: 'The event takes up tables too.', productDetail: 'Publish a dinner and the booking engine stops offering the tables it uses.', productAction: 'Open this scenario', productAlt: 'Solane floor plan showing tables reserved for service and a wine pairing event', inventoryAction: 'Open inventory', productEvidence: 'Product journey · demo data', webs: 'Websites', manager: 'Manager', heroWeb: 'View web demo', heroJourney: 'See guided journey', heroPathsLabel: 'Explore the product', portfolioLabel: 'Three identities, one operating idea', ecosystemTitle: 'Context-aware ecosystem', ecosystemStateLabel: 'Maturity',
   } : {
-  mainNav: 'Navegación principal', otherLanguage: 'en', menu: 'Menú', product: 'Cómo funciona', productLinks: 'Enlaces de producto', legalLinks: 'Enlaces legales', cookies: 'Preferencias de cookies', flowLabel: 'Una sola disponibilidad', flow: ['El cliente reserva', 'El inventario se actualiza', 'Sala decide'], restaurantSolution: 'Reservas de restaurante', groupSolution: 'Grupos y eventos', productView: 'Vista de producto', productTitle: 'El evento también ocupa mesa.', productDetail: 'Publica una cena y el motor deja de ofrecer las mesas que utiliza.', productAction: 'Abrir este escenario', productAlt: 'Plano de Solane con mesas reservadas para el servicio y para una cena maridaje', inventoryAction: 'Abrir inventario', productEvidence: 'Recorrido de producto · datos demo',
+  mainNav: 'Navegación principal', otherLanguage: 'en', menu: 'Menú', product: 'Cómo funciona', productLinks: 'Enlaces de producto', legalLinks: 'Enlaces legales', cookies: 'Preferencias de cookies', flowLabel: 'Una sola disponibilidad', flow: ['El cliente reserva', 'El inventario se actualiza', 'Sala decide'], restaurantSolution: 'Reservas de restaurante', groupSolution: 'Grupos y eventos', productView: 'Vista de producto', productTitle: 'El evento también ocupa mesa.', productDetail: 'Publica una cena y el motor deja de ofrecer las mesas que utiliza.', productAction: 'Abrir este escenario', productAlt: 'Plano de Solane con mesas reservadas para el servicio y para una cena maridaje', inventoryAction: 'Abrir inventario', productEvidence: 'Recorrido de producto · datos demo', webs: 'Webs', manager: 'Gestor', heroWeb: 'Ver web demo', heroJourney: 'Ver recorrido guiado', heroPathsLabel: 'Explora el producto', portfolioLabel: 'Tres identidades, una misma forma de operar', ecosystemTitle: 'Ecosistema con contexto', ecosystemStateLabel: 'Madurez',
 };
 const demoTones = { solane: 'warning', vedra: 'success', brasca: 'info' } as const;
 const navItems = [
-  { href: '#diferenciales', label: ui.product },
-  { href: pageHref('/soluciones/restaurantes/'), label: ui.restaurantSolution },
-  { href: pageHref('/soluciones/grupos-y-eventos/'), label: ui.groupSolution },
-  { href: '#demos', label: c.nav.demos },
+  { href: '#portfolio', label: ui.webs },
+  { href: `${prefix}/demos/solane/gestion/?vista=plano`, label: ui.manager },
   { href: pageHref('/planes/'), label: c.nav.plans },
 ];
 ---
@@ -57,9 +55,25 @@ const navItems = [
           <p class="hero-body">{c.hero.body}</p>
           <div class="hero-actions">
             <a class="hero-primary" href={`${prefix}/demos/solane/gestion/?vista=plano`}>{c.hero.primary}<span aria-hidden="true">↗</span></a>
+            <a class="hero-secondary" href={`${prefix}/demos/brasca/`}>{ui.heroWeb}<span aria-hidden="true">↗</span></a>
+            <a class="hero-secondary" href={`${prefix}/demos/vedra/gestion/?vista=plano`}>{ui.heroJourney}<span aria-hidden="true">↗</span></a>
             <a class="hero-secondary" href="#contacto">{c.hero.secondary}<span aria-hidden="true">→</span></a>
           </div>
           <p class="hero-support"><span aria-hidden="true">2B</span>{c.hero.support}</p>
+          <form id="hero-lead-form" class="hero-capture" data-lead-form aria-labelledby="hero-capture-title" novalidate>
+            <div class="hero-capture__intro"><strong id="hero-capture-title">{c.hero.capture.title}</strong><span>{c.hero.capture.body}</span></div>
+            <div class="hero-capture__fields">
+              <label>{c.hero.capture.name}<input name="name" required autocomplete="name" /></label>
+              <label>{c.hero.capture.email}<input name="email" type="email" required autocomplete="email" /></label>
+              <label>{c.hero.capture.level}<select name="level">{c.lead.priorities.map((priority) => <option value={priority.value} selected={priority.value === 'gestion'}>{priority.label}</option>)}</select></label>
+            </div>
+            <input type="hidden" name="restaurant" value={c.hero.capture.restaurant} />
+            <input type="hidden" name="message" value={c.hero.capture.message} />
+            <label class="hero-capture__privacy"><input name="privacyAccepted" type="checkbox" required /><span>{c.hero.capture.privacy} <a href={pageHref('/privacidad/')}>{c.footer.privacy}</a>.</span></label>
+            <input name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button class="hero-capture__submit" type="submit">{c.hero.capture.submit}<span aria-hidden="true">→</span></button>
+            <p class="lead-status" data-lead-status data-disabled={c.lead.disabled} data-invalid={c.lead.invalid} data-failure={c.lead.failure} data-success={c.lead.success} data-limited={c.lead.limited} role="status"></p>
+          </form>
         </div>
 
         <div class="hero-product">
@@ -77,11 +91,31 @@ const navItems = [
             <figcaption><div><strong>{ui.productTitle}</strong><span>{ui.productDetail}</span></div><a href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.productAction}<span aria-hidden="true">↗</span></a></figcaption>
           </figure>
           <p class="demo-note">{c.hero.note}</p>
+          <div id="portfolio" class="hero-portfolio" aria-labelledby="portfolio-title">
+            <div class="hero-portfolio__heading"><span id="portfolio-title">{ui.portfolioLabel}</span><a href="#demos">{c.nav.demos}<span aria-hidden="true">↗</span></a></div>
+            <div class="portfolio-strip">
+              {c.demos.items.map((demo) => (
+                <a class={`portfolio-card portfolio-card--${demo.slug}`} href={`${prefix}/demos/${demo.slug}/`}>
+                  <img src={`/images/heroes/${demo.slug}-v2-640.avif`} alt={demo.alt} width="640" height="480" loading="lazy" decoding="async" />
+                  <span><strong>{demo.name}</strong><small>{demo.level}</small></span>
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
       <div class="hero-flow" aria-label={ui.flowLabel}>
         <strong>{ui.flowLabel}</strong>
         {ui.flow.map((step, index) => <span><i>0{index + 1}</i>{step}</span>)}
+      </div>
+    </section>
+
+    <section id="ecosistema" class="ecosystem-rail" aria-labelledby="ecosystem-title">
+      <div class="shell ecosystem-rail__inner">
+        <div class="ecosystem-rail__intro"><p class="eyebrow">{c.ecosystem.eyebrow}</p><h2 id="ecosystem-title" class="heading">{c.ecosystem.title}</h2><p class="editorial">{c.ecosystem.intro}</p></div>
+        <div class="ecosystem-grid">
+          {c.ecosystem.items.map((item) => <article class="ecosystem-card"><div><h3>{item.name}</h3><span class="ecosystem-status" data-state={item.state}>{item.state}</span></div><p>{item.body}</p><small>{ui.ecosystemStateLabel}: {item.state}</small></article>)}
+        </div>
       </div>
     </section>
 
@@ -168,7 +202,7 @@ const navItems = [
 
     <section id="contacto" class="section shell contact-section" aria-labelledby="contact-title">
       <div class="contact-copy"><p class="eyebrow">{c.lead.eyebrow}</p><h2 id="contact-title" class="heading">{c.lead.title}</h2><p class="editorial">{c.lead.body}</p><a class="whatsapp-link" href={contact.href} target="_blank" rel="noreferrer">{c.lead.whatsapp}<span aria-hidden="true"> ↗</span></a></div>
-      <form id="lead-form" class="lead-form card" novalidate>
+      <form id="lead-form" class="lead-form card" data-lead-form novalidate>
         <div class="field-row"><label>{c.lead.fields.name}<input name="name" required autocomplete="name" /></label><label>{c.lead.fields.restaurant}<input name="restaurant" required autocomplete="organization" /></label></div>
         <label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label>
         <label>{c.lead.fields.level}<select name="level">{c.lead.priorities.map((priority) => <option value={priority.value} selected={priority.value === 'gestion'}>{priority.label}</option>)}</select></label>
@@ -192,10 +226,8 @@ const navItems = [
 </div>
 
 <script>
-  const leadForm = document.querySelector<HTMLFormElement>('#lead-form');
-  const leadStatus = document.querySelector<HTMLElement>('[data-lead-status]');
-  leadForm?.addEventListener('submit', async (event) => {
-    event.preventDefault();
+  const submitLead = async (leadForm: HTMLFormElement) => {
+    const leadStatus = leadForm.querySelector<HTMLElement>('[data-lead-status]');
     if (!leadForm.checkValidity()) {
       if (leadStatus) leadStatus.textContent = leadStatus.dataset.invalid ?? '';
       leadForm.reportValidity();
@@ -226,7 +258,11 @@ const navItems = [
     } finally {
       if (submit) submit.disabled = false;
     }
-  });
+  };
+  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((leadForm) => leadForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    void submitLead(leadForm);
+  }));
 
   const cookieBanner = document.querySelector<HTMLElement>('[data-cookie-banner]');
   try {
@@ -282,6 +318,21 @@ const navItems = [
   .hero-secondary:hover { border-color: var(--color-notion-blue-strong); color: var(--color-notion-blue-strong); }
   .hero-support { display: flex; max-width: 600px; align-items: center; gap: 12px; margin: 24px 0 0; color: rgb(0 0 0 / 58%); font-size: .78rem; line-height: 1.45; }
   .hero-support span { display: grid; width: 36px; height: 36px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--color-midnight-ink); font-size: .68rem; font-weight: 750; letter-spacing: .04em; }
+  .hero-capture { display: grid; gap: 12px; max-width: 640px; margin-top: 26px; border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: rgb(255 255 255 / 70%); }
+  .hero-capture__intro { display: grid; gap: 4px; }
+  .hero-capture__intro strong { font-size: .88rem; }
+  .hero-capture__intro span { color: var(--slate); font-family: var(--serif); font-size: .82rem; line-height: 1.4; }
+  .hero-capture__fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .hero-capture__fields label:last-child { grid-column: 1 / -1; }
+  .hero-capture label { display: grid; gap: 6px; color: rgb(0 0 0 / 68%); font-size: .72rem; font-weight: 650; }
+  .hero-capture input, .hero-capture select { min-height: 44px; padding: 9px 10px; font-size: .82rem; }
+  .hero-capture__privacy { display: flex !important; min-height: 44px; align-items: flex-start; gap: 8px; font-size: .7rem !important; font-weight: 500 !important; line-height: 1.35; }
+  .hero-capture__privacy input { width: auto; min-height: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
+  .hero-capture__privacy a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; color: var(--color-notion-blue-strong); }
+  .hero-capture__submit { display: inline-flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 14px; border: 0; border-radius: 8px; padding: 9px 12px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .78rem; font-weight: 700; cursor: pointer; }
+  .hero-capture__submit:hover { background: #0065bd; }
+  .hero-capture__submit:disabled { cursor: wait; opacity: .55; }
+  .hero-capture .lead-status { min-height: 0; margin: 0; font-size: .72rem; }
   .hero-product { min-width: 0; }
   .product-proof { width: 100%; margin: 0; overflow: hidden; background: white; }
   .product-proof__bar { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 16px; border-bottom: 1px solid var(--line); padding: 10px 16px; color: var(--slate); font-size: .7rem; }
@@ -296,12 +347,36 @@ const navItems = [
   .product-proof figcaption a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--color-notion-blue-strong); font-size: .76rem; font-weight: 700; text-decoration: none; white-space: nowrap; }
   .product-proof figcaption a:hover { text-decoration: underline; text-underline-offset: 4px; }
   .demo-note { margin: 14px 0 0; color: var(--slate); font-size: .72rem; text-align: right; }
+  .hero-portfolio { margin-top: 24px; }
+  .hero-portfolio__heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 9px; color: var(--slate); font-size: .7rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+  .hero-portfolio__heading a { display: inline-flex; min-height: 44px; align-items: center; gap: 5px; color: var(--color-notion-blue-strong); font-size: .7rem; letter-spacing: 0; text-decoration: none; text-transform: none; }
+  .hero-portfolio__heading a:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .portfolio-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .portfolio-card { position: relative; display: block; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: white; text-decoration: none; }
+  .portfolio-card img { display: block; width: 100%; aspect-ratio: 1.35; object-fit: cover; transition: transform 300ms ease; }
+  .portfolio-card:hover img { transform: scale(1.035); }
+  .portfolio-card > span { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 7px 8px 8px; }
+  .portfolio-card strong { overflow: hidden; color: var(--ink); font-size: .72rem; text-overflow: ellipsis; white-space: nowrap; }
+  .portfolio-card small { color: var(--slate); font-size: .62rem; white-space: nowrap; }
   .hero-flow { display: grid; grid-template-columns: 1.2fr repeat(3, 1fr); align-items: center; margin-top: 44px; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
   .hero-flow > * { min-height: 74px; display: flex; align-items: center; gap: 12px; padding: 16px 20px; }
   .hero-flow > * + * { border-left: 1px solid var(--line); }
   .hero-flow strong { font-family: var(--serif); font-size: 1rem; }
   .hero-flow span { color: var(--slate); font-size: .82rem; }
   .hero-flow i { color: var(--color-notion-blue-strong); font-size: .68rem; font-style: normal; font-weight: 700; }
+
+  .ecosystem-rail { border-block: 1px solid var(--line); background: white; }
+  .ecosystem-rail__inner { display: grid; grid-template-columns: .72fr 1.28fr; align-items: start; gap: clamp(40px, 8vw, 120px); padding-block: clamp(62px, 7vw, 92px); }
+  .ecosystem-rail__intro .editorial { margin-top: 16px; font-size: 1rem; }
+  .ecosystem-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .ecosystem-card { min-width: 0; padding: 20px 16px 22px; }
+  .ecosystem-card + .ecosystem-card { border-left: 1px solid var(--line); }
+  .ecosystem-card > div { display: grid; gap: 10px; }
+  .ecosystem-card h3 { margin: 0; font-size: 1.05rem; letter-spacing: -.025em; }
+  .ecosystem-status { width: fit-content; border-radius: 999px; padding: 5px 8px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .64rem; font-weight: 750; }
+  .ecosystem-status[data-state="Por proyecto"], .ecosystem-status[data-state="Per project"] { color: #855600; background: #fff2c9; }
+  .ecosystem-card p { margin: 16px 0 12px; color: var(--slate); font-family: var(--serif); font-size: .88rem; line-height: 1.48; }
+  .ecosystem-card small { color: var(--slate); font-size: .66rem; }
 
   .section { padding-block: clamp(82px, 9vw, 126px); }
   .section-intro { max-width: 920px; }
@@ -371,7 +446,7 @@ const navItems = [
   input:hover, select:hover, textarea:hover { border-color: rgb(0 0 0 / 28%); }
   .privacy-check { display: flex; align-items: flex-start; gap: 10px; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-weight: 500; line-height: 1.35; }
   .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
-  .privacy-check a { display: inline-flex; min-height: 44px; align-items: center; }
+  .privacy-check a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; }
 
   .faq-section { display: grid; grid-template-columns: .78fr 1.22fr; gap: clamp(40px, 8vw, 120px); }
   .faq-list { border-top: 1px solid var(--line); }
@@ -426,6 +501,7 @@ const navItems = [
     .human-steps { grid-template-columns: 1fr; }
     .human-steps article { min-height: 0; }
     .human-steps article + article { border-top: 1px solid rgb(255 255 255 / 20%); border-left: 0; }
+    .ecosystem-rail__inner { grid-template-columns: 1fr; gap: 34px; }
   }
   @media (min-width: 720px) and (max-width: 860px) {
     .path-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -447,6 +523,10 @@ const navItems = [
     .hero-primary { width: 100%; justify-content: space-between; }
     .hero-secondary { align-self: flex-start; }
     .hero-support { align-items: flex-start; }
+    .hero-capture { padding: 14px; }
+    .hero-capture__fields { grid-template-columns: 1fr; }
+    .hero-capture__fields label:last-child { grid-column: auto; }
+    .hero-capture__submit { width: 100%; }
     .product-proof__screen { aspect-ratio: 1 / .9; }
     .product-proof__screen img { object-position: center 8%; }
     .product-proof figcaption { grid-template-columns: 1fr; gap: 10px; padding: 16px; }
@@ -482,6 +562,10 @@ const navItems = [
     .demo-card:not(:first-child) .badge { vertical-align: 4px; }
     .demo-card:not(:first-child) h4 { margin-top: 8px; }
     .demo-card:not(:first-child) .demo-card__actions { margin-top: 10px; }
+    .hero-portfolio__heading { align-items: flex-start; flex-direction: column; gap: 2px; }
+    .portfolio-card > span { align-items: flex-start; flex-direction: column; gap: 2px; }
+    .ecosystem-grid { grid-template-columns: 1fr; }
+    .ecosystem-card + .ecosystem-card { border-top: 1px solid var(--line); border-left: 0; }
     .faq-section, .contact-section { gap: 28px; }
     .faq-list summary { padding-block: 18px; font-size: 1rem; }
     .faq-list p { padding: 0 24px 20px 0; }

@@ -130,6 +130,32 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.getByRole('heading', { level: 2, name: 'Your operation sets the rules. Logic2B designs the fit.' })).toBeVisible();
   });
 
+  test('F21: shell, hero, captación breve y ecosistema orientan hacia el producto', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    const header = page.getByRole('banner');
+    const mainNav = header.locator('.main-nav');
+    await expect(mainNav.getByRole('link', { name: 'Webs' })).toHaveAttribute('href', '#portfolio');
+    await expect(mainNav.getByRole('link', { name: 'Gestor' })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(mainNav.getByRole('link', { name: 'Planes' })).toHaveAttribute('href', '/planes/');
+    await expect(header.locator('.nav-cta')).toHaveAttribute('href', '#contacto');
+    await expect(page.getByRole('link', { name: 'Abrir la demo · 2 min' })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(page.getByRole('link', { name: 'Ver web demo' })).toHaveAttribute('href', '/demos/brasca/');
+    await expect(page.getByRole('link', { name: 'Ver recorrido guiado' })).toHaveAttribute('href', '/demos/vedra/gestion/?vista=plano');
+    await expect(page.locator('[data-lead-form]')).toHaveCount(2);
+    await expect(page.locator('#portfolio .portfolio-card')).toHaveCount(3);
+    await expect(page.locator('#ecosistema .ecosystem-card')).toHaveCount(3);
+    await page.locator('#hero-lead-form button[type="submit"]').click();
+    await expect(page.locator('#hero-lead-form [data-lead-status]')).toContainText('Revisa los campos obligatorios');
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    const englishNav = page.getByRole('banner').locator('.main-nav');
+    await expect(englishNav.getByRole('link', { name: 'Websites' })).toBeVisible();
+    await expect(englishNav.getByRole('link', { name: 'Manager' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'View web demo' })).toBeVisible();
+    await expect(page.getByRole('link', { name: 'See guided journey' })).toBeVisible();
+    await expect(page.locator('#ecosistema .ecosystem-card')).toHaveCount(3);
+  });
+
   test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {
     for (const path of ['/', '/planes/', '/en/', '/en/planes/']) {
       await page.goto(path, { waitUntil: 'networkidle' });
@@ -148,11 +174,12 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     await page.locator('.mobile-menu > summary').click();
     const menu = page.locator('.mobile-menu nav');
-    await expect(menu.getByRole('link', { name: 'Cómo funciona' })).toBeVisible();
-    await expect(menu.getByRole('link', { name: 'Grupos y eventos' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Webs' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Gestor' })).toBeVisible();
+    await expect(menu.getByRole('link', { name: 'Planes' })).toBeVisible();
     await expect(menu.getByRole('link', { name: 'Solicitar demo' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'EN', exact: true })).toBeVisible();
-    await menu.getByRole('link', { name: 'Cómo funciona' }).click();
+    await menu.getByRole('link', { name: 'Webs' }).click();
     await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   });
@@ -309,7 +336,7 @@ test.describe('landing comercial Logic Reserva', () => {
       website: '',
       lang: 'es',
     });
-    await expect(page.locator('[data-lead-status]')).toContainText('No se ha enviado ni guardado ningún dato');
+    await expect(page.locator('#lead-form [data-lead-status]')).toContainText('No se ha enviado ni guardado ningún dato');
   });
 
   test('el consentimiento no activa analítica y se recuerda localmente', async ({ page }) => {
