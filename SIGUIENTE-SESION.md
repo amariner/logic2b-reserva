@@ -1,18 +1,22 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F22 completas localmente ✅ · F0–F19, M1 y producción publicadas ✅ · F20–F22 pendientes de publicación externa · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** mantener los contratos locales y priorizar el siguiente bloque de producto sin activar transporte externo
+**Fase actual:** F0–F19 y el contrato F20 de paridad auditados ✅ · M1–M4 completos localmente ✅ · F0–F19 y M1 publicados ✅ · F21–F27 pendientes de producto/publicación · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** F21 · shell comercial y hero con prueba múltiple, dentro de la paridad estructural con Logic2B Campings
 
 ## Siguiente paso concreto
 
-1. Revisar el diff de F20–F22; si se autoriza publicación, repetir `pnpm check && pnpm e2e && pnpm fotos` y seguir el runbook sin enviar leads.
-2. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
-3. Preservar los gates de F19 y F21: referencia opaca, fallo seguro, cero datos de contacto, cero mutaciones colaterales y sincronización solo local.
+1. Implementar F21 sobre `docs/PARIDAD-CAMP.md`: cabecera, hero con prueba múltiple, captación breve y rail de ecosistema.
+2. Mantener la estética aprobada de Reserva; la referencia de Camp fija estructura y profundidad, no una copia visual.
+3. Preservar M2–M4: componentes desde `ui.logic2b.com`, sincronización solo local y CSV rotulado como muestra ficticia no contable.
+4. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
+5. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
 
 ## Bloqueos / avisos
 
-- F20 integra `ui.logic2b.com` como contrato versionado en `packages/ui/components.json` (`1.0.0-rc.16`). Nuevos componentes deben entrar por la CLI en `packages/ui`, conservar `.logic2b/base`, adaptarse a los tokens locales y pasar `pnpm verify:ui`; no actualizar la versión de forma implícita.
-- Gates locales de F20: `pnpm check` 28/28 con 140 tests y `pnpm e2e` 51/51. Vedra y Solane renderizan `Button`/`Badge` con `data-slot`, controles de 44 px, cero overflow y cero errores de consola. El cambio aún no está publicado.
+- F20 de paridad es una auditoría y un contrato de producto; no significa que la implementación pública ya tenga paridad completa.
+- Dirección de producto de 2026-09-02: Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`. El contrato, el mapa de equivalencias y los criterios globales están en `docs/PARIDAD-CAMP.md`; las fases F21–F27 son el trabajo pendiente.
+- La paridad no incluye copiar el dashboard de Camp. Reserva conserva Servicio, Plano de sala, Reservas/Espera, Grupos/Eventos, Informes e Inteligente como puertas de entrada propias del sector.
+- Objetivo de portfolio: doce direcciones web, tres recorridos profundos (Brasca/Vedra/Solane) y dos niveles de gestor. No construir doce backends ni presentar integraciones previstas como activas.
 - Auditoría D1 de 2026-08-25: `logic-reserva` consume 0 filas D1, no declara base ni crons y ahora tiene un fusible local a cero en `apps/worker/d1-budget.json`. Publicar el código no migra ni reemplaza datos; no relajar el gate sin ADR, presupuesto medido y autorización explícita.
 - Release comercial de 2026-08-24: landing es/en, marca Logic2B, copy prudente, informes demo y capturas actualizados en `main` (`1a3a94c`) y producción (`417bcaac-0308-4a5d-a01d-e070e9bc88ee`). Gates: `pnpm check` 28/28, 132 tests, `pnpm e2e` 50/50, `pnpm fotos` reproducible 16/16 y dry-run con 143 assets; smoke público por GET verde sin enviar leads.
 - `pnpm fotos` se ejecuta deliberadamente en serie: paralelizar viewports puede variar el rasterizado AVIF de Chrome y rompe el contrato de hashes reproducibles.

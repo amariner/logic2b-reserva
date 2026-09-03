@@ -4,6 +4,14 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 41 · Actualización de GitHub y auditoría de paridad ✅
+
+- Se descargó `origin/main` y se integró el commit remoto `2168fb3` de 2026-09-02, que incorpora la auditoría y el contrato de paridad estructural con `camp.logic2b.com`.
+- La resolución conserva el producto local y normaliza el roadmap: F20–F27 quedan reservadas para la paridad Camp; UI, sincronización entre pestañas y exportación local pasan a M2–M4.
+- La comprobación inicial confirma que la paridad es todavía un objetivo documentado, no un estado alcanzado: faltan shell/hero, flujo completo, portfolio, catálogo de paneles, guías y cierre comercial equivalentes.
+
+---
+
 ## 2026-09-03 · Sesión 40 · Sincronización local y exportación de informes ✅
 
 - F21 implementa `subscribeToStorageKey` como punto común para que Vedra, Solane, sus widgets, ticketing y confirmación reaccionen a cambios de otra pestaña sin abandonar la frontera local.
@@ -21,6 +29,17 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 - `theme.css` implementa los tokens semánticos de Logic2B UI sobre la piel de Reserva: papel cálido, azul de acción, acentos planos, estados operativos, foco visible y mínimo táctil de 44 px.
 - Nuevo `pnpm verify:ui`, incluido en `pnpm check`, protege schema, registro, versión, snapshots, tokens y consumo real. El flujo de incorporación queda fijado en `docs/DESIGN.md`, ADR-017, `CLAUDE.md`, README y F20 del roadmap.
 - QA: `pnpm check` 28/28 con 140 tests; `pnpm e2e` 51/51. La aserción E2E nueva confirma `data-slot` renderizado y volvió a pasar de forma aislada. Revisión local de Vedra y Solane: primitivas a 44 px, sin overflow ni errores de consola. No se desplegó ni se modificó ningún servicio externo.
+
+---
+
+## 2026-09-02 · Sesión 39 · Paridad estructural Camp → Reserva definida ✅
+
+- F20 cerrada tras auditar `camp.logic2b.com`: home completo y superficies de precios, temas, paneles y guías; la comparación se hizo también contra la landing pública y el repositorio actual de Reserva.
+- El diagnóstico separa la profundidad del producto de su empaquetado: Reserva ya tiene gestores y recorridos sectoriales sólidos, pero necesita exponer mejor flujo, módulos, integraciones, oferta, portfolio, paneles, implantación, guías y cierre.
+- `docs/PARIDAD-CAMP.md` fija el contrato de 14 bloques del home, el mapa Camp → restauración, las reglas de honestidad y el objetivo de doce direcciones web, tres recorridos profundos y dos niveles de gestor.
+- `docs/ROADMAP.md` incorpora F21–F27: shell/hero, flujo y cinco momentos, portfolio, catálogo de paneles, precios/guías, home completo y lanzamiento verificado.
+- El dashboard queda fuera de la copia visual: conserva Servicio, Plano, Reservas/Espera, Grupos/Eventos, Informes e Inteligente. También se preservan la estética cálida de Reserva, los tres planes vigentes y las fronteras demo/real.
+- `SIGUIENTE-SESION.md` apunta a F21 como siguiente hito. Cambio exclusivamente documental; `git diff --check` verde, sin ejecutar build, E2E, deploy ni llamadas de escritura externas.
 
 ## 2026-08-26 · Sesión 38 · Confirmación de asistencia local completada ✅
 

@@ -2,6 +2,12 @@
 
 Cada fase cabe en una sesión de trabajo y tiene criterio de hecho **verificable**. El estado vivo (fase actual + siguiente paso) está en `../SIGUIENTE-SESION.md`; este documento es el mapa completo. Al terminar una fase: marcar sus checkboxes aquí, entrada en `PROGRESS.md`, actualizar `SIGUIENTE-SESION.md`.
 
+## Norte de producto desde F20
+
+Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`: misma profundidad pública, tipos de bloques, rutas de producto y relación entre web, reserva, operativa, integraciones, planes, portfolio, guías y captación, traducidos al sector de restauración.
+
+No se copiará la estética de Camp ni su dashboard. Reserva conserva el contrato visual de `DESIGN.md` y sus gestores específicos de sala, grupos y eventos. La auditoría, el mapa de equivalencias y el contrato de 14 bloques del home viven en [`PARIDAD-CAMP.md`](PARIDAD-CAMP.md).
+
 Arquitectura comercial vigente: **Básico → Gestión → Inteligente**. Brasca demuestra la web Básica; Vedra, el backend de Gestión; Solane, ese backend ampliado con IA y automatizaciones demostrativas. Decisión completa en `adr/ADR-010-tres-planes-y-backends-demostrativos.md`.
 
 Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validado contra la competencia en `COMPETENCIA.md`):
@@ -339,19 +345,137 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F20 · Logic2B UI como contrato visual ✅
+## F20 · Contrato de paridad Camp → Reserva ✅
 
-**Objetivo:** convertir `ui.logic2b.com` en una dependencia de diseño explícita, versionada y comprobable, sin borrar la identidad cálida ni reescribir los recorridos ya validados.
-**Dependencias:** F11, F16.
+**Objetivo:** convertir la referencia de Camp en una arquitectura explícita para restauración antes de tocar el home.
+**Dependencias:** F13, F18, F19.
 
-- [x] Registro oficial y versión fijados en `packages/ui/components.json`
-- [x] `Button` y `Badge` incorporados desde el registro con snapshots de base auditables y exports del paquete UI
-- [x] Tokens semánticos de Logic2B UI adaptados a papel cálido, azul de acción, estados operativos y objetivos táctiles de 44 px
-- [x] Consumo real de ambas primitivas en el gestor Vedra/Solane, incluida la lista de espera compartida
-- [x] Gate local `pnpm verify:ui`, integrado en `pnpm check`, para proteger registro, versión, snapshots, tokens y consumo
-- [x] Contrato, flujo de incorporación y decisión arquitectónica documentados en `docs/DESIGN.md` y ADR-017
+- [x] Auditoría del home de Camp: hero, ecosistema, flujo, módulos, integraciones, planes, portfolio, paneles, implantación, guías, FAQ, cierre y footer
+- [x] Auditoría de las superficies `/precios/`, `/temas/`, `/paneles/` y `/docs/`
+- [x] Comparativa contra el home, rutas, demos y gestores actuales de Reserva
+- [x] Contrato de paridad estructural y traducción sectorial documentado en `PARIDAD-CAMP.md`
+- [x] Excepción explícita del dashboard: se conserva el dominio y el diseño propio de restauración
+- [x] Separación objetivo entre doce direcciones web, tres recorridos profundos y dos niveles de gestor
 
-**Hecho cuando:** el vínculo con `ui.logic2b.com` se puede demostrar desde configuración, código, snapshots, uso renderizado y un gate verde.
+**Hecho cuando:** el equipo puede decidir si un bloque o ruta pertenece al modelo común de la familia Logic2B o al dominio específico de Reserva sin reinterpretar la referencia.
+
+---
+
+## F21 · Shell comercial + hero con prueba múltiple
+
+**Objetivo:** dar a Reserva una primera pantalla con la misma capacidad de orientar, captar y demostrar variedad que Camp, conservando su estética actual.
+**Dependencias:** F20.
+
+- [ ] Cabecera compacta con cuatro accesos primarios: Webs, Gestor, Precios y Contactar/recorrido; navegación móvil equivalente
+- [ ] Hero editorial de Reserva con promesa sectorial, captación breve y tres accesos verificables: web demo, recorrido guiado y gestor
+- [ ] Portfolio visual vivo en el hero con varias identidades de restaurante, sin sustituir la evidencia real de Solane
+- [ ] Rail de ecosistema previsto inmediatamente después del hero, con estado de madurez accesible para cada marca
+- [ ] Captación breve y formulario completo comparten validación, consentimiento, idempotencia y el único endpoint real ya autorizado
+- [ ] Copy es/en, foco, movimiento reducido, cookie banner sin tapar acciones y responsive 320/375/430/1366 px
+
+**Hecho cuando:** en una sola pantalla se entiende qué es Reserva, se puede ver una web, recorrer el producto, abrir el gestor o iniciar contacto, sin perder la identidad visual vigente.
+
+---
+
+## F22 · Flujo de producto + cinco momentos + conexiones
+
+**Objetivo:** explicar la plataforma completa antes de presentar planes o demos aisladas.
+**Dependencias:** F21.
+
+- [ ] Flujo de siete pasos: web → disponibilidad → reserva → servicio → garantía/cobro → comunicación → decisión
+- [ ] Carrusel accesible en móvil y secuencia completa legible sin interacción obligatoria en escritorio
+- [ ] Cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, Operativa
+- [ ] Cada momento incluye un resultado, tres capacidades, un límite honesto y una captura o mockup derivado del producto real
+- [ ] Bloque de conexiones en tres familias: herramientas, pagos y asistentes con contexto
+- [ ] Estado visible `demostrativo|previsto|por proyecto|conectado`; ninguna marca externa amplía por sí sola la promesa funcional
+- [ ] E2E de pestañas, carrusel, teclado, reduced-motion y ausencia de contenido inaccesible sin JavaScript
+
+**Hecho cuando:** una persona ajena al proyecto puede narrar el recorrido entero y distinguir qué está demostrado de qué requeriría una implantación.
+
+---
+
+## F23 · Doce direcciones web para restauración
+
+**Objetivo:** demostrar que la web y el motor pueden adoptar identidades de restaurante muy distintas sobre una misma base de producto.
+**Dependencias:** F20, F21.
+
+- [ ] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
+- [ ] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
+- [ ] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
+- [ ] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
+- [ ] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
+- [ ] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
+- [ ] QA visual y E2E de las doce rutas a 375 y 1366 px
+
+**Hecho cuando:** el portfolio iguala la amplitud demostrativa de Camp sin fingir doce gestores ni degradar las tres demos de producto actuales.
+
+---
+
+## F24 · Catálogo sectorial de paneles
+
+**Objetivo:** empaquetar comercialmente la profundidad ya existente del gestor de Reserva sin copiar la interfaz de Camp.
+**Dependencias:** F10, F14–F19, F20.
+
+- [ ] `/paneles/` es/en con seis vistas: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes, Inteligente
+- [ ] Cada ficha explica usuario, decisión, evidencia, nivel y límites; enlaza a un estado reproducible del gestor
+- [ ] Filtros Gestión/Inteligente y búsqueda accesible
+- [ ] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
+- [ ] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
+- [ ] Los recorridos, permisos y persistencia F5–F19 quedan intactos
+
+**Hecho cuando:** el gestor puede explorarse como producto desde fuera y cada panel conduce a una demo sectorial verificable.
+
+---
+
+## F25 · Precios, implantación y guías públicas
+
+**Objetivo:** ofrecer la misma claridad de compra y confianza operativa que Camp alrededor del producto.
+**Dependencias:** F20.
+
+- [ ] Evolucionar `/planes/` como página canónica o añadir `/precios/` con redirección coherente; una sola fuente de verdad para SEO y navegación
+- [ ] Mantener tres ofertas comerciales en home y explicar en la página dedicada una escalera funcional más granular cuando aporte claridad
+- [ ] Cualquier cambio a los tres planes vigentes requiere ADR que sustituya explícitamente ADR-010; la paridad no lo cambia de forma implícita
+- [ ] Bloques de mantenimiento, desarrollo/mejoras y servicios de lanzamiento, sin publicar importes no aprobados
+- [ ] `/docs/` es/en con cinco guías: Sala, Gestión, Dirección, Propietario y Técnica
+- [ ] Contenido mínimo de migración, datos, dominio/DNS, cobros, RGPD, salida, soporte y responsabilidades por rol
+- [ ] Enlaces cruzados entre precios, demos, paneles, guías y contacto sin callejones sin salida
+
+**Hecho cuando:** un propietario entiende cómo empezar, qué cambia al crecer, qué aporta Logic2B, qué debe aportar el restaurante y qué sigue pendiente de propuesta.
+
+---
+
+## F26 · Home completo con oferta, portfolio, paneles y confianza
+
+**Objetivo:** cerrar la paridad de los 14 bloques del home sin alterar el gestor.
+**Dependencias:** F22–F25.
+
+- [ ] Tres ofertas comerciales comparables en home, cada una asociada a una web y a su nivel de gestión
+- [ ] Teaser del portfolio de doce restaurantes con acceso a `/temas/`
+- [ ] Teaser de seis paneles específicos de restauración con acceso a `/paneles/`
+- [ ] Implantación guiada con entradas, configuración, validación, publicación, mantenimiento y límites
+- [ ] Teaser de cinco guías públicas por rol con acceso a `/docs/`
+- [ ] FAQ ampliada y cierre visual con vistas reales de escritorio y móvil
+- [ ] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
+- [ ] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
+
+**Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva.
+
+---
+
+## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura
+
+**Objetivo:** verificar y publicar la paridad completa sin romper las fronteras de la demo ni el producto existente.
+**Dependencias:** F23–F26.
+
+- [ ] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
+- [ ] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
+- [ ] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
+- [ ] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
+- [ ] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
+- [ ] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
+- [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
+
+**Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales.
 
 ---
 
@@ -370,10 +494,26 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F21 · Sincronización local entre pestañas ✅
+## M2 · Logic2B UI como contrato visual ✅
+
+**Objetivo:** convertir `ui.logic2b.com` en una dependencia de diseño explícita, versionada y comprobable, sin borrar la identidad cálida ni reescribir los recorridos ya validados.
+**Dependencias:** F11, F16.
+
+- [x] Registro oficial y versión fijados en `packages/ui/components.json`
+- [x] `Button` y `Badge` incorporados desde el registro con snapshots de base auditables y exports del paquete UI
+- [x] Tokens semánticos de Logic2B UI adaptados a papel cálido, azul de acción, estados operativos y objetivos táctiles de 44 px
+- [x] Consumo real de ambas primitivas en el gestor Vedra/Solane, incluida la lista de espera compartida
+- [x] Gate local `pnpm verify:ui`, integrado en `pnpm check`, para proteger registro, versión, snapshots, tokens y consumo
+- [x] Contrato, flujo de incorporación y decisión arquitectónica documentados en `docs/DESIGN.md` y ADR-017
+
+**Hecho cuando:** el vínculo con `ui.logic2b.com` se puede demostrar desde configuración, código, snapshots, uso renderizado y un gate verde.
+
+---
+
+## M3 · Sincronización local entre pestañas ✅
 
 **Objetivo:** hacer visible el inventario compartido en una sesión local abierta en más de una pestaña, sin convertir la demo en un backend multiusuario.
-**Dependencias:** F7, F14, F15, F19, F20.
+**Dependencias:** F7, F14, F15, F19, M2.
 
 - [x] Suscripción común a `storage` con allowlist por clave y tratamiento seguro de `localStorage.clear()`
 - [x] Gestor Vedra/Solane y widgets de reservas actualizan su estado al cambiar otra pestaña
@@ -386,10 +526,10 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F22 · Exportación local de informes derivados ✅
+## M4 · Exportación local de informes derivados ✅
 
 **Objetivo:** permitir que el recorrido comercial saque la muestra agregada del gestor en un formato legible, sin presentarla como contabilidad ni enviarla a terceros.
-**Dependencias:** F10, F17, F20, F21.
+**Dependencias:** F10, F17, M2, M3.
 
 - [x] Serializador CSV estable para ocupación, fuentes y escenarios hipotéticos
 - [x] Escape de celdas y neutralización de prefijos de fórmula reutilizando la protección del CRM
