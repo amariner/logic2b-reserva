@@ -370,6 +370,37 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## F21 · Sincronización local entre pestañas ✅
+
+**Objetivo:** hacer visible el inventario compartido en una sesión local abierta en más de una pestaña, sin convertir la demo en un backend multiusuario.
+**Dependencias:** F7, F14, F15, F19, F20.
+
+- [x] Suscripción común a `storage` con allowlist por clave y tratamiento seguro de `localStorage.clear()`
+- [x] Gestor Vedra/Solane y widgets de reservas actualizan su estado al cambiar otra pestaña
+- [x] Ticketing, confirmación de asistencia y superficies que dependen del inventario conservan parser defensivo y estados terminales
+- [x] La pestaña escritora mantiene actualización inmediata, sin esperar al evento que el navegador no emite en el documento origen
+- [x] La frontera permanece local: cero HTTP, proveedores, DB, jobs, credenciales o promesa de concurrencia entre usuarios
+- [x] ADR-018 y E2E verifican que un evento publicado retira mesas del widget y aparece en el gestor ya abierto
+
+**Hecho cuando:** una acción local en una pestaña se refleja en las superficies relacionadas abiertas en la misma sesión, con `pnpm check && pnpm e2e` verdes.
+
+---
+
+## F22 · Exportación local de informes derivados ✅
+
+**Objetivo:** permitir que el recorrido comercial saque la muestra agregada del gestor en un formato legible, sin presentarla como contabilidad ni enviarla a terceros.
+**Dependencias:** F10, F17, F20, F21.
+
+- [x] Serializador CSV estable para ocupación, fuentes y escenarios hipotéticos
+- [x] Escape de celdas y neutralización de prefijos de fórmula reutilizando la protección del CRM
+- [x] Acción bilingüe en Informes de Vedra y Solane con descarga directa y nombre determinista
+- [x] Copia visible que conserva `demo`, muestra ficticia y ausencia de contabilidad real
+- [x] E2E y test unitario verifican contenido, descarga local y ausencia de red
+
+**Hecho cuando:** el informe visible puede descargarse como CSV local sin cambiar el estado ni activar una integración; `pnpm check && pnpm e2e` verdes.
+
+---
+
 ## Después (backlog, no fases)
 
 Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

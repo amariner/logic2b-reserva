@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F19 completas y publicadas en producción ✅ · F20 Logic2B UI completa localmente ✅ · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** revisar/publicar F20 o priorizar el siguiente bloque de producto sin activar transporte externo
+**Fase actual:** F0–F22 completas localmente ✅ · F0–F19, M1 y producción publicadas ✅ · F20–F22 pendientes de publicación externa · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** mantener los contratos locales y priorizar el siguiente bloque de producto sin activar transporte externo
 
 ## Siguiente paso concreto
 
-1. Revisar el diff de F20 y, si se autoriza publicación, repetir gates y seguir el runbook de deploy sin enviar leads.
+1. Revisar el diff de F20–F22; si se autoriza publicación, repetir `pnpm check && pnpm e2e && pnpm fotos` y seguir el runbook sin enviar leads.
 2. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
-3. Preservar los gates de F19: referencia opaca, fallo seguro, cero datos de contacto y cero mutaciones colaterales.
+3. Preservar los gates de F19 y F21: referencia opaca, fallo seguro, cero datos de contacto, cero mutaciones colaterales y sincronización solo local.
 
 ## Bloqueos / avisos
 

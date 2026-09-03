@@ -14,6 +14,7 @@ import {
   upsertVedraBooking,
 } from '@logic-reserva/dashboard/state';
 import type { Locale } from '@logic-reserva/config';
+import { subscribeToStorageKey } from '@logic-reserva/dashboard/storage-sync';
 import { DEMO_DATE, VEDRA_PAGE_COPY, localized } from '../data';
 
 interface BookingWidgetProps {
@@ -41,11 +42,15 @@ export default function BookingWidget({ restaurant, initialBookings, locale = 'e
   const [confirmed, setConfirmed] = useState<TableBooking | null>(null);
 
   useEffect(() => {
-    try {
-      setBookings(parseVedraStored(localStorage.getItem(VEDRA_STORAGE_KEY), initialBookings).bookings);
-    } catch {
-      setBookings(initialBookings);
-    }
+    const load = (value: string | null = localStorage.getItem(VEDRA_STORAGE_KEY)) => {
+      try {
+        setBookings(parseVedraStored(value, initialBookings).bookings);
+      } catch {
+        setBookings(initialBookings);
+      }
+    };
+    load();
+    return subscribeToStorageKey(VEDRA_STORAGE_KEY, (value) => load(value));
   }, [initialBookings]);
 
   const durationMin = estimateDurationMin(partySize);

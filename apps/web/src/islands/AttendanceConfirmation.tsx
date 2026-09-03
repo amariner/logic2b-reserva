@@ -7,6 +7,7 @@ import {
   respondSolaneAttendanceConfirmation,
   serializeSolaneState,
 } from '@logic-reserva/dashboard/solane-state';
+import { subscribeToStorageKey } from '@logic-reserva/dashboard/storage-sync';
 
 interface AttendanceConfirmationProps {
   locale: 'es' | 'en';
@@ -37,25 +38,29 @@ export default function AttendanceConfirmation({ locale, restaurantName, initial
 
   useEffect(() => {
     const reference = new URL(window.location.href).searchParams.get('ref') ?? '';
-    const state = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
-    const confirmation = state.attendanceConfirmations.find((candidate) => candidate.reference === reference);
-    if (confirmation === undefined || confirmation.status !== 'prepared') {
-      setView({ kind: 'invalid' });
-      return;
-    }
-    const booking = state.bookings.find((candidate) => candidate.id === confirmation.bookingId);
-    if (booking === undefined || !['pending', 'confirmed'].includes(booking.status)) {
-      setView({ kind: 'invalid' });
-      return;
-    }
-    const now = new Date().toISOString();
-    if (Date.parse(now) >= Date.parse(confirmation.expiresAt)) {
-      const expired = respondSolaneAttendanceConfirmation(state, reference, 'expired', now);
-      if (expired !== state) localStorage.setItem(SOLANE_STORAGE_KEY, serializeSolaneState(expired));
-      setView({ kind: 'invalid' });
-      return;
-    }
-    setView({ kind: 'ready', booking, reference });
+    const load = (value: string | null = localStorage.getItem(SOLANE_STORAGE_KEY)) => {
+      const state = parseSolaneStored(value, initialBookings, initialEvents, initialPrivateHires);
+      const confirmation = state.attendanceConfirmations.find((candidate) => candidate.reference === reference);
+      if (confirmation === undefined || confirmation.status !== 'prepared') {
+        setView({ kind: 'invalid' });
+        return;
+      }
+      const booking = state.bookings.find((candidate) => candidate.id === confirmation.bookingId);
+      if (booking === undefined || !['pending', 'confirmed'].includes(booking.status)) {
+        setView({ kind: 'invalid' });
+        return;
+      }
+      const now = new Date().toISOString();
+      if (Date.parse(now) >= Date.parse(confirmation.expiresAt)) {
+        const expired = respondSolaneAttendanceConfirmation(state, reference, 'expired', now);
+        if (expired !== state) localStorage.setItem(SOLANE_STORAGE_KEY, serializeSolaneState(expired));
+        setView({ kind: 'invalid' });
+        return;
+      }
+      setView({ kind: 'ready', booking, reference });
+    };
+    load();
+    return subscribeToStorageKey(SOLANE_STORAGE_KEY, load);
   }, [initialBookings, initialEvents, initialPrivateHires]);
 
   const answer = (response: Exclude<AttendanceConfirmationResponse, 'expired'>) => {

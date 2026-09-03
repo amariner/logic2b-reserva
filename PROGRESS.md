@@ -4,6 +4,16 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 40 · Sincronización local y exportación de informes ✅
+
+- F21 implementa `subscribeToStorageKey` como punto común para que Vedra, Solane, sus widgets, ticketing y confirmación reaccionen a cambios de otra pestaña sin abandonar la frontera local.
+- La nueva ADR-018 aclara el alcance: parser defensivo, `clear()` seguro, actualización inmediata del documento escritor y ausencia de consistencia multiusuario.
+- E2E añadido para publicar un evento desde un gestor y comprobar, sin recargar, que el widget pierde SS7/SS8 y otro gestor ve el evento.
+- F22 añade exportación CSV local desde Informes para ocupación, orígenes y escenarios hipotéticos, con escape de fórmulas, nombre estable y copy de muestra no contable.
+- QA: `pnpm check` 28/28 con 141 tests, `pnpm e2e` 52/52 y `pnpm fotos` 16/16 reproducible; no se generan peticiones externas desde ninguna demo.
+
+---
+
 ## 2026-08-31 · Sesión 39 · Logic2B UI convertido en contrato verificable ✅
 
 - `https://ui.logic2b.com` deja de ser una referencia informal: `packages/ui/components.json` fija el registro y la versión `1.0.0-rc.16`; las bases originales de `Button`, `Badge` y `cn()` quedan conservadas bajo `.logic2b/base/`.

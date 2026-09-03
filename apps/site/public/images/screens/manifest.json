@@ -13,7 +13,7 @@
       "width": 1366,
       "height": 900,
       "file": "01-brasca-marca-desktop.png",
-      "sha256": "93a9ca99628715468c0284098eb62b0c389ea445e2cbf152676d2e0e37b58ad5"
+      "sha256": "bf5899b722bac4c514f6420541e85b7c9f03f4e1f2c6d691d409295a9ccdc935"
     },
     {
       "order": "01",
@@ -25,7 +25,7 @@
       "width": 375,
       "height": 812,
       "file": "01-brasca-marca-mobile.png",
-      "sha256": "37bb2ed5d7e4b0cb6294401d7851945d9cfc8c2c5d1e300efc92e9b4abc3e4af"
+      "sha256": "8caf45aba9507380553cc8ef5240af1fc8e176cd72f8be961473b5614f45da87"
     },
     {
       "order": "02",
@@ -37,7 +37,7 @@
       "width": 1366,
       "height": 900,
       "file": "02-brasca-solicitud-desktop.png",
-      "sha256": "b55f422c5a0e1902de238462a22e82ea903d868e87f7e72db57201ebd15802b1"
+      "sha256": "9438d34dd65a1b765056a143ab9ff513c72c780b611e3d8e02efe2f65dd11197"
     },
     {
       "order": "02",
@@ -49,7 +49,7 @@
       "width": 375,
       "height": 812,
       "file": "02-brasca-solicitud-mobile.png",
-      "sha256": "bd28e459bcfef14d2c9dfb7b0a84905e4336d59e93da39c206144973b05b8b9f"
+      "sha256": "33d763ecbe5e40fbc197ed98a11d0ac02d2735e8f747597810ef9acbef2dc9f3"
     },
     {
       "order": "03",
@@ -61,7 +61,7 @@
       "width": 1366,
       "height": 900,
       "file": "03-vedra-reserva-desktop.png",
-      "sha256": "62c73a19d10f920fdadeac71075b9aa80671735b71036bf61ff2de0bc8fcf035"
+      "sha256": "3089da8a9308af272ba9d7c6c5e398e971b114bb45437d1cb92a5e12b5f247ee"
     },
     {
       "order": "03",
@@ -73,7 +73,7 @@
       "width": 375,
       "height": 812,
       "file": "03-vedra-reserva-mobile.png",
-      "sha256": "4131787d8fd47d1f97e2181c9f0821ecb10e1978419436457f40a844affe3291"
+      "sha256": "3b20120a2fb6de552d550755fa1653a39e33ec3a9b3c939a4c707707d352b204"
     },
     {
       "order": "04",
@@ -85,7 +85,7 @@
       "width": 1366,
       "height": 900,
       "file": "04-vedra-grupo-desktop.png",
-      "sha256": "a12b36db0690e709eb4be3961ef5df078de9ad3911335393fb8cd3142f9cf126"
+      "sha256": "7f36f55199e3a82749a9a0cd8700003eb0214f615b81e35aa96124622c9b22be"
     },
     {
       "order": "04",
@@ -97,7 +97,7 @@
       "width": 375,
       "height": 812,
       "file": "04-vedra-grupo-mobile.png",
-      "sha256": "d893a5d8ad408e835a17938e580d21f08b2a90582f9d1fdc2cc085e215d43a02"
+      "sha256": "2da7b6bf04408fde61c039421aa6e5e8f6104b314459b29d01ba40a1dc33abfb"
     },
     {
       "order": "05",
@@ -109,7 +109,7 @@
       "width": 1366,
       "height": 900,
       "file": "05-solane-inventario-desktop.png",
-      "sha256": "90cd35df69bcb8fe1aa2c119464d1b45c845513a792f0dd2bfe517cb2f0db411"
+      "sha256": "8ba42343ce9cb7c30dfca6a12935229c34ed37939388a137694266cc6af38fc9"
     },
     {
       "order": "05",
@@ -121,7 +121,7 @@
       "width": 375,
       "height": 812,
       "file": "05-solane-inventario-mobile.png",
-      "sha256": "7007910d40c1093c39f49a259da89982a9dcbb340915ceb74bc106f4015d2700"
+      "sha256": "92dfd4ba76b437a8d38d29cb04e16ba0a585759313f7bf3e51a6559540cc55ea"
     },
     {
       "order": "06",
@@ -133,7 +133,7 @@
       "width": 1366,
       "height": 900,
       "file": "06-solane-deposito-desktop.png",
-      "sha256": "302b81a628eba3e076e5b4dc8a61516f3675ed110a05095cd876438563c3924e"
+      "sha256": "74cfa76e613c05659786b7e6c2b3e10001d9af515c23da32a5853bd29452ce83"
     },
     {
       "order": "06",
@@ -145,7 +145,7 @@
       "width": 375,
       "height": 812,
       "file": "06-solane-deposito-mobile.png",
-      "sha256": "a06216ca452d824f1f5d987122ec37e4a6bbc8fb6726fe801423e60aa5dc2373"
+      "sha256": "808a038060bcc6cafa8691eabd742fa41217cbd898b074857c6fccd30f5d2e42"
     },
     {
       "order": "07",
@@ -157,7 +157,7 @@
       "width": 1366,
       "height": 900,
       "file": "07-solane-privatizacion-desktop.png",
-      "sha256": "a8ecde89cd6409fe5fa3e19edea2bc539976f5c1f8b8dd4514230552e4cebd89"
+      "sha256": "6979bca8a9c57a3a953bf953008a6db2596083e4b5136b08c4db9119c4f4c00e"
     },
     {
       "order": "07",
@@ -169,7 +169,7 @@
       "width": 375,
       "height": 812,
       "file": "07-solane-privatizacion-mobile.png",
-      "sha256": "9850c2a7cc6a99dd0a618d1df68835991b466bb4ab34a78f3004a59950476e2c"
+      "sha256": "8a8ce03ff1caef1f01d07cfaaac0a0abe520fad6739d1756647902708e4be4c1"
     },
     {
       "order": "08",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "8fe1dac4fa995f959c9409ba2548dcc17a1e85265e98facc1a152296cb44fe9e"
+      "sha256": "3abb26354d5732ec6170419cad524107f971f8466b95ee3d8c705e7f6182809a"
     },
     {
       "order": "08",
@@ -193,7 +193,7 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "67a01e388edd3a16712097e798b68b3822699cc06d30a32c51c4a18f1891565a"
+      "sha256": "e957aa3c15ecd0755d6a11f2e6769b35a7961d4d350069742f4ce5494838dedf"
     }
   ]
 }

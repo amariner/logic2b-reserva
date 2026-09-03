@@ -1013,6 +1013,16 @@ test.describe('demo Solane · nivel Inteligente', () => {
     await expect(page.locator('[data-ai-decision-support]')).toContainText('IA demostrativa · cálculo local, sin modelo conectado');
     await expect(page.locator('[data-ai-decision-support] [data-decision]')).toHaveCount(3);
     await expect(page.locator('[data-automation-center]')).toContainText('Evento publicado → mesas fuera del widget');
+    const reportDownloadPromise = page.waitForEvent('download');
+    await page.locator('[data-export-report]').click();
+    const reportDownload = await reportDownloadPromise;
+    expect(reportDownload.suggestedFilename()).toBe('solane-informe-demo.csv');
+    const reportPath = await reportDownload.path();
+    expect(reportPath).not.toBeNull();
+    const reportCsv = await readFile(reportPath!, 'utf8');
+    expect(reportCsv).toContain('"section","metric","value","detail"');
+    expect(reportCsv).toContain('"scenario","hypothetical_marketplace_monthly_eur"');
+    expect(reportCsv).toContain('Same fictional sample multiplied by 12');
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
 
     await page.goto('/demos/vedra/gestion/?vista=informes', { waitUntil: 'networkidle' });
@@ -1218,5 +1228,40 @@ test.describe('demo Solane · nivel Inteligente', () => {
     const stored = await page.evaluate((key) => JSON.parse(localStorage.getItem(key) ?? '{}') as { events?: { name?: string; soldSeats?: number; status?: string }[]; sales?: { seats?: number }[] }, storageKey);
     expect(stored.events).toEqual(expect.arrayContaining([expect.objectContaining({ name: eventName, soldSeats: 2, status: 'published' })]));
     expect(stored.sales).toEqual(expect.arrayContaining([expect.objectContaining({ seats: 2 })]));
+  });
+
+  test('el inventario local sincroniza gestor y web abiertas en pestañas distintas', async ({ page, context }) => {
+    const storageKey = 'logic-reserva-demo-solane-v1';
+    const eventName = 'Sincronización entre pestañas';
+    const observer = await context.newPage();
+    try {
+      await page.goto('/demos/solane/', { waitUntil: 'networkidle' });
+      await page.evaluate((key) => localStorage.removeItem(key), storageKey);
+      await page.reload({ waitUntil: 'networkidle' });
+      await observer.goto('/demos/solane/gestion/?vista=servicio', { waitUntil: 'networkidle' });
+      const manager = await context.newPage();
+      try {
+        await manager.goto('/demos/solane/gestion/?vista=eventos', { waitUntil: 'networkidle' });
+        await page.getByRole('button', { name: 'Continuar' }).click();
+        const slot = page.locator('[data-time="21:00"]');
+        await expect(slot).toHaveAttribute('data-available-tables', /ss7/);
+        await expect(slot).toHaveAttribute('data-available-tables', /ss8/);
+
+        await manager.locator('input[name="event-name"]').fill(eventName);
+        await manager.locator('[data-event-table-id="ss7"]').check();
+        await manager.locator('[data-event-table-id="ss8"]').check();
+        await manager.locator('[data-create-event]').click();
+        const created = manager.locator('[data-manager-event-id]').filter({ hasText: eventName });
+        await created.locator('[data-publish-event]').click();
+        await expect(created).toHaveAttribute('data-manager-event-status', 'published');
+
+        await expect.poll(async () => slot.getAttribute('data-available-tables')).not.toMatch(/ss7|ss8/);
+        await expect.poll(async () => observer.locator('[data-inventory-kind="event"]').filter({ hasText: eventName }).count()).toBe(1);
+      } finally {
+        await manager.close();
+      }
+    } finally {
+      await observer.close();
+    }
   });
 });

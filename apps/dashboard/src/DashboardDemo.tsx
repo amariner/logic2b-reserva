@@ -54,6 +54,7 @@ import SolaneDashboard from './SolaneDashboard';
 import ReportsView from './views/ReportsView';
 import WaitlistView from './views/WaitlistView';
 import MobileDashboardNav from './MobileDashboardNav';
+import { subscribeToStorageKey } from './storage-sync';
 
 interface VedraDashboardProps {
   slug: 'vedra';
@@ -120,7 +121,13 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
     }
     const syncView = () => setCurrentView(dashboardView(new URL(window.location.href).searchParams.get('vista')));
     window.addEventListener('popstate', syncView);
-    return () => window.removeEventListener('popstate', syncView);
+    const unsubscribeStorage = subscribeToStorageKey(VEDRA_STORAGE_KEY, (value) => {
+      setState(parseVedraStored(value, initialBookings));
+    });
+    return () => {
+      window.removeEventListener('popstate', syncView);
+      unsubscribeStorage();
+    };
   }, [initialBookings]);
 
   useEffect(() => {

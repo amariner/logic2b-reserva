@@ -9,6 +9,7 @@ import {
   type SolaneDemoState,
 } from '@logic-reserva/dashboard/solane-state';
 import type { Locale } from '@logic-reserva/config';
+import { subscribeToStorageKey } from '@logic-reserva/dashboard/storage-sync';
 import { SOLANE_PAGE_COPY, localized } from '../data';
 
 interface EventTicketsProps {
@@ -28,8 +29,7 @@ export default function EventTickets({ initialBookings, initialEvents, locale = 
   useEffect(() => {
     const load = () => setState(parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents));
     load();
-    window.addEventListener('storage', load);
-    return () => window.removeEventListener('storage', load);
+    return subscribeToStorageKey(SOLANE_STORAGE_KEY, () => load());
   }, [initialBookings, initialEvents]);
 
   const buy = (eventId: string) => {
