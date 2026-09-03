@@ -416,14 +416,14 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** empaquetar comercialmente la profundidad ya existente del gestor de Reserva sin copiar la interfaz de Camp.
 **Dependencias:** F10, F14–F19, F20.
 
-- [ ] `/paneles/` es/en con seis vistas: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes, Inteligente
-- [ ] Cada ficha explica usuario, decisión, evidencia, nivel y límites; enlaza a un estado reproducible del gestor
-- [ ] Filtros Gestión/Inteligente y búsqueda accesible
-- [ ] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
-- [ ] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
-- [ ] Los recorridos, permisos y persistencia F5–F19 quedan intactos
+- [x] `/paneles/` es/en con seis vistas: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes, Inteligente
+- [x] Cada ficha explica usuario, decisión, evidencia, nivel y límites; enlaza a un estado reproducible del gestor
+- [x] Filtros Gestión/Inteligente y búsqueda accesible
+- [x] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
+- [x] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
+- [x] Los recorridos, permisos y persistencia F5–F19 quedan intactos
 
-**Hecho cuando:** el gestor puede explorarse como producto desde fuera y cada panel conduce a una demo sectorial verificable.
+**Hecho cuando:** el gestor puede explorarse como producto desde fuera y cada panel conduce a una demo sectorial verificable. Cumplido con catálogo compartido, rutas es/en, capturas reales, estados reproducibles y E2E 56/56.
 
 ---
 

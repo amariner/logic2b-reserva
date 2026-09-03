@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 const pages = [
   '/',
   '/temas/',
+  '/paneles/',
   '/planes/',
   '/soluciones/restaurantes/',
   '/soluciones/grupos-y-eventos/',
@@ -12,6 +13,7 @@ const pages = [
   '/cookies/',
   '/en/',
   '/en/temas/',
+  '/en/paneles/',
   '/en/planes/',
   '/en/soluciones/restaurantes/',
   '/en/soluciones/grupos-y-eventos/',
@@ -213,6 +215,45 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.goto('/en/demos/temas/olivar/', { waitUntil: 'networkidle' });
     await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
     await expect(page.getByText("L'Olivar", { exact: true }).first()).toBeVisible();
+  });
+
+  test('F24: el catálogo sectorial explica seis paneles y conduce a estados reales del gestor', async ({ page, request }) => {
+    await page.goto('/paneles/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Seis puertas a la operativa del restaurante.' })).toBeVisible();
+    await expect(page.locator('[data-panel-card]')).toHaveCount(6);
+    await expect(page.locator('[data-panel-card] img')).toHaveCount(6);
+    await expect(page.locator('#panel-servicio')).toContainText('Servicio del día');
+    await expect(page.locator('#panel-plano')).toContainText('Evidencia');
+    await expect(page.locator('#panel-grupos-eventos')).toContainText('La señal no cobra');
+    await expect(page.locator('#panel-informes')).toContainText('Los datos y costes son una muestra ficticia');
+    await expect(page.locator('#panel-servicio .panel-card__action')).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
+    await expect(page.locator('#panel-plano .panel-card__action')).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(page.locator('#panel-reservas-espera .panel-card__action')).toHaveAttribute('href', '/demos/vedra/gestion/?vista=reservas');
+    await expect(page.locator('#panel-grupos-eventos .panel-card__action')).toHaveAttribute('href', '/demos/solane/gestion/?vista=privatizaciones');
+    await page.locator('[data-panel-filter]').selectOption('inteligente');
+    await expect(page.locator('[data-panel-card]:not([hidden])')).toHaveCount(3);
+    await page.locator('[data-panel-filter]').selectOption('all');
+    await page.locator('[data-panel-search]').fill('informes');
+    await expect(page.locator('[data-panel-card]:not([hidden])')).toHaveCount(1);
+
+    const panelRoutes = [
+      '/demos/vedra/gestion/?vista=servicio',
+      '/demos/solane/gestion/?vista=plano',
+      '/demos/vedra/gestion/?vista=reservas',
+      '/demos/solane/gestion/?vista=privatizaciones',
+      '/demos/solane/gestion/?vista=informes',
+    ];
+    for (const route of panelRoutes) {
+      for (const path of [route, `/en${route}`]) {
+        const response = await request.get(path);
+        expect(response.status(), path).toBe(200);
+      }
+    }
+    await page.goto('/en/paneles/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Six doors into restaurant operations.' })).toBeVisible();
+    await expect(page.locator('[data-panel-card]')).toHaveCount(6);
+    await expect(page.locator('#panel-inteligente')).toContainText('Intelligent view');
+    await expect(page.locator('#panel-informes .panel-card__action')).toHaveAttribute('href', '/en/demos/solane/gestion/?vista=informes');
   });
 
   test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {

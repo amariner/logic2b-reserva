@@ -4,6 +4,7 @@ import { PRODUCT } from '@logic-reserva/config';
 const paths = [
   { es: '/', en: '/en/', priority: '1.0', changefreq: 'weekly' },
   { es: '/temas/', en: '/en/temas/', priority: '0.8', changefreq: 'monthly' },
+  { es: '/paneles/', en: '/en/paneles/', priority: '0.8', changefreq: 'monthly' },
   { es: '/planes/', en: '/en/planes/', priority: '0.8', changefreq: 'monthly' },
   { es: '/soluciones/restaurantes/', en: '/en/soluciones/restaurantes/', priority: '0.9', changefreq: 'monthly' },
   { es: '/soluciones/grupos-y-eventos/', en: '/en/soluciones/grupos-y-eventos/', priority: '0.9', changefreq: 'monthly' },

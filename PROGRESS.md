@@ -4,6 +4,16 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 45 · F24: catálogo sectorial de paneles ✅
+
+- F24 completada con `PANEL_CATALOG` compartido en `@logic-reserva/config`: seis puertas de entrada —Servicio del día, Plano de sala, Reservas y espera, Grupos y eventos, Informes operativos y Vista inteligente— con usuario, decisión, evidencia, nivel y límite honesto.
+- `/paneles/` y `/en/paneles/` ofrecen fichas indexables con capturas reales del catálogo F18, filtros Gestión/Inteligente, búsqueda accesible y fallback completo sin JavaScript.
+- Cada ficha conduce a un estado reproducible de Vedra o Solane; las rutas existentes, permisos, persistencia local y fronteras de demo no se modifican.
+- QA: build estático de 18 páginas comerciales y 34 demos; `pnpm e2e` 56/56 con SEO, responsive 320/375/430/1366 px, contraste, touch targets y recorridos F5–F19 verdes; `pnpm check` 28/28.
+- La paridad total con Camp aún no está cerrada: F25–F27 mantienen pendientes precios, guías, home completo y lanzamiento verificado.
+
+---
+
 ## 2026-09-03 · Sesión 44 · F23: doce direcciones web para restauración ✅
 
 - F23 completada con `THEME_CATALOG` compartido en `@logic-reserva/config`: doce identidades con formato, tono, promesa, nivel y tratamiento visual propios; Brasca, Vedra y Solane conservan sus tres recorridos profundos.
