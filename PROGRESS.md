@@ -4,6 +4,26 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 44 · F23: doce direcciones web para restauración ✅
+
+- F23 completada con `THEME_CATALOG` compartido en `@logic-reserva/config`: doce identidades con formato, tono, promesa, nivel y tratamiento visual propios; Brasca, Vedra y Solane conservan sus tres recorridos profundos.
+- `/temas/` y `/en/temas/` ofrecen catálogo indexable con búsqueda, filtro por nivel, fichas accesibles y fallback completo sin JavaScript. Las nueve nuevas direcciones se generan con una sola `ThemePage` y quedan disponibles en es/en bajo `/demos/temas/`.
+- Las previews son honestas y no convierten una identidad visual en gestor: todas llevan noindex triple, datos ficticios y enlaces claros de vuelta al catálogo o a las tres demos funcionales.
+- QA dirigido: build estático de 16 páginas comerciales y 34 demos, incluyendo las nueve rutas nuevas en ambos idiomas; la suite completa queda en `pnpm e2e` 55/55 y verifica 12 fichas, filtrado y 18 rutas nuevas con 200.
+- La paridad total con Camp aún no está cerrada: F24–F27 mantienen pendientes paneles, guías, home completo y lanzamiento verificado.
+
+---
+
+## 2026-09-03 · Sesión 43 · F22: flujo, momentos y conexiones ✅
+
+- F22 completada con un flujo editorial de siete momentos —web, disponibilidad, reserva, servicio, garantía/cobro, comunicación y decisión— que conserva la secuencia completa en escritorio y permite desplazamiento accesible en móvil.
+- La landing incorpora cinco pestañas de producto: Web, Reservas, Sala, Grupos y eventos, y Operativa. Cada una enlaza evidencia real, tres capacidades y un límite honesto; teclado, estados ARIA y fallback sin JavaScript quedan cubiertos.
+- El nuevo bloque de conexiones separa herramientas, pagos y asistentes, mostrando `demostrativo` o `por proyecto` sin ampliar la promesa de integraciones ni tocar la frontera `DEMO_MODE`.
+- QA: `pnpm check` 28/28, `pnpm e2e` 55/55 y barridos de contraste, táctiles y responsive verdes; no se hacen llamadas externas desde ninguna demo.
+- La paridad total con Camp aún no está cerrada: F23–F27 mantienen pendientes doce temas, paneles, guías, home completo y lanzamiento verificado.
+
+---
+
 ## 2026-09-03 · Sesión 42 · F21: shell comercial y prueba múltiple ✅
 
 - F21 completada sobre el contrato de paridad: la cabecera expone Webs, Gestor, Planes y contacto; el hero ofrece web demo, recorrido guiado y gestor tanto en es/en como en móvil.

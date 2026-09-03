@@ -3,6 +3,7 @@ import { readFile } from 'node:fs/promises';
 
 const pages = [
   '/',
+  '/temas/',
   '/planes/',
   '/soluciones/restaurantes/',
   '/soluciones/grupos-y-eventos/',
@@ -10,6 +11,7 @@ const pages = [
   '/privacidad/',
   '/cookies/',
   '/en/',
+  '/en/temas/',
   '/en/planes/',
   '/en/soluciones/restaurantes/',
   '/en/soluciones/grupos-y-eventos/',
@@ -134,7 +136,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const header = page.getByRole('banner');
     const mainNav = header.locator('.main-nav');
-    await expect(mainNav.getByRole('link', { name: 'Webs' })).toHaveAttribute('href', '#portfolio');
+    await expect(mainNav.getByRole('link', { name: 'Webs' })).toHaveAttribute('href', '/temas/');
     await expect(mainNav.getByRole('link', { name: 'Gestor' })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
     await expect(mainNav.getByRole('link', { name: 'Planes' })).toHaveAttribute('href', '/planes/');
     await expect(header.locator('.nav-cta')).toHaveAttribute('href', '#contacto');
@@ -154,6 +156,63 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.getByRole('link', { name: 'View web demo' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'See guided journey' })).toBeVisible();
     await expect(page.locator('#ecosistema .ecosystem-card')).toHaveCount(3);
+  });
+
+  test('F22: el flujo, los cinco momentos y las conexiones tienen evidencia y límites', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-step')).toHaveCount(7);
+    await expect(page.getByRole('heading', { level: 2, name: 'Siete momentos, una misma disponibilidad.' })).toBeVisible();
+    await expect(page.getByRole('tab')).toHaveCount(5);
+    await expect(page.getByRole('tab', { name: 'Web' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#panel-web')).toBeVisible();
+    await page.getByRole('tab', { name: 'Grupos y eventos' }).click();
+    await expect(page.getByRole('tab', { name: 'Grupos y eventos' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#panel-grupos')).toBeVisible();
+    await expect(page.locator('#panel-web')).toBeHidden();
+    await expect(page.locator('#panel-grupos .moment-panel__limit')).toContainText('Las señales y depósitos se simulan');
+    await page.getByRole('tab', { name: 'Grupos y eventos' }).press('End');
+    await expect(page.getByRole('tab', { name: 'Operativa' })).toBeFocused();
+    await expect(page.getByRole('tab', { name: 'Operativa' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#conexiones .connection-card')).toHaveCount(3);
+    await expect(page.getByRole('heading', { level: 2, name: 'La plataforma no promete lo que aún no está conectado.' })).toBeVisible();
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await expect(page.locator('.journey-step')).toHaveCount(7);
+    await expect(page.getByRole('tab', { name: 'Website' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Groups and events' })).toBeVisible();
+    await expect(page.locator('#conexiones .connection-card')).toHaveCount(3);
+  });
+
+  test('F23: el catálogo ofrece doce direcciones y nueve previews web reutilizables', async ({ page, request }) => {
+    await page.goto('/temas/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Doce identidades de restaurante. Una misma forma de operar.' })).toBeVisible();
+    await expect(page.locator('[data-theme-card]')).toHaveCount(12);
+    await expect(page.locator('[data-theme-card] a[aria-label*="Brasca"]')).toHaveAttribute('href', '/demos/brasca/');
+    await expect(page.locator('[data-theme-card] a[aria-label*="L\'Olivar"]')).toHaveAttribute('href', '/demos/temas/olivar/');
+    await page.locator('[data-theme-search]').fill("L'Olivar");
+    await expect(page.locator('[data-theme-card]:not([hidden])')).toHaveCount(1);
+    await page.locator('[data-theme-search]').fill('');
+    await page.locator('[data-theme-filter]').selectOption('basico');
+    await expect(page.locator('[data-theme-card]:not([hidden])')).toHaveCount(4);
+
+    await page.goto('/en/temas/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Twelve restaurant identities. One operating idea.' })).toBeVisible();
+    await expect(page.locator('[data-theme-card]')).toHaveCount(12);
+
+    const newThemeSlugs = ['olivar', 'mar-de-fondo', 'riu-clar', 'la-duna', 'el-delta', 'serralta', 'entre-vinyes', 'la-ballena', 'sol-hivern'];
+    for (const slug of newThemeSlugs) {
+      for (const path of [`/demos/temas/${slug}/`, `/en/demos/temas/${slug}/`]) {
+        const response = await request.get(path);
+        expect(response.status(), path).toBe(200);
+      }
+    }
+    await page.goto('/demos/temas/olivar/', { waitUntil: 'networkidle' });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    await expect(page.getByRole('heading', { level: 1, name: 'Una dirección web con un punto de vista claro.' })).toBeVisible();
+    await expect(page.getByText("L'Olivar", { exact: true }).first()).toBeVisible();
+    await page.goto('/en/demos/temas/olivar/', { waitUntil: 'networkidle' });
+    await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
+    await expect(page.getByText("L'Olivar", { exact: true }).first()).toBeVisible();
   });
 
   test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {
@@ -180,7 +239,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(menu.getByRole('link', { name: 'Solicitar demo' })).toBeVisible();
     await expect(page.getByRole('link', { name: 'EN', exact: true })).toBeVisible();
     await menu.getByRole('link', { name: 'Webs' }).click();
-    await expect(page.locator('.mobile-menu')).not.toHaveAttribute('open', '');
+    await expect(page).toHaveURL('/temas/');
     expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
   });
 

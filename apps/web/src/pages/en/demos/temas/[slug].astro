@@ -1,0 +1,9 @@
+---
+import { THEME_CATALOG, type ThemeCatalogEntry } from '@logic-reserva/config/themes';
+import ThemePage from '../../../../components/ThemePage.astro';
+
+export const getStaticPaths = () => THEME_CATALOG.filter((theme) => !theme.deepDemo).map((theme) => ({ params: { slug: theme.slug }, props: { theme } }));
+const { theme } = Astro.props as { theme: ThemeCatalogEntry };
+---
+
+<ThemePage theme={theme} locale="en" />

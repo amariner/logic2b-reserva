@@ -6,7 +6,7 @@ import '../styles/demos.css';
 import type { DemoSlug, Locale } from '@logic-reserva/config';
 
 interface Props {
-  slug: DemoSlug;
+  slug: DemoSlug | 'theme';
   locale?: Locale;
   title: string;
 }

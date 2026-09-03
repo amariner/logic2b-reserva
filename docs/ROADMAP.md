@@ -377,37 +377,37 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F22 · Flujo de producto + cinco momentos + conexiones
+## F22 · Flujo de producto + cinco momentos + conexiones ✅
 
 **Objetivo:** explicar la plataforma completa antes de presentar planes o demos aisladas.
 **Dependencias:** F21.
 
-- [ ] Flujo de siete pasos: web → disponibilidad → reserva → servicio → garantía/cobro → comunicación → decisión
-- [ ] Carrusel accesible en móvil y secuencia completa legible sin interacción obligatoria en escritorio
-- [ ] Cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, Operativa
-- [ ] Cada momento incluye un resultado, tres capacidades, un límite honesto y una captura o mockup derivado del producto real
-- [ ] Bloque de conexiones en tres familias: herramientas, pagos y asistentes con contexto
-- [ ] Estado visible `demostrativo|previsto|por proyecto|conectado`; ninguna marca externa amplía por sí sola la promesa funcional
-- [ ] E2E de pestañas, carrusel, teclado, reduced-motion y ausencia de contenido inaccesible sin JavaScript
+- [x] Flujo de siete pasos: web → disponibilidad → reserva → servicio → garantía/cobro → comunicación → decisión
+- [x] Carrusel accesible en móvil y secuencia completa legible sin interacción obligatoria en escritorio
+- [x] Cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, Operativa
+- [x] Cada momento incluye un resultado, tres capacidades, un límite honesto y una captura o mockup derivado del producto real
+- [x] Bloque de conexiones en tres familias: herramientas, pagos y asistentes con contexto
+- [x] Estado visible `demostrativo|previsto|por proyecto|conectado`; ninguna marca externa amplía por sí sola la promesa funcional
+- [x] E2E de pestañas, carrusel, teclado, reduced-motion y ausencia de contenido inaccesible sin JavaScript
 
-**Hecho cuando:** una persona ajena al proyecto puede narrar el recorrido entero y distinguir qué está demostrado de qué requeriría una implantación.
+**Hecho cuando:** una persona ajena al proyecto puede narrar el recorrido entero y distinguir qué está demostrado de qué requeriría una implantación. Cumplido con cobertura F22 en la suite E2E, 55/55 total y `pnpm check` verde.
 
 ---
 
-## F23 · Doce direcciones web para restauración
+## F23 · Doce direcciones web para restauración ✅
 
 **Objetivo:** demostrar que la web y el motor pueden adoptar identidades de restaurante muy distintas sobre una misma base de producto.
 **Dependencias:** F20, F21.
 
-- [ ] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
-- [ ] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
-- [ ] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
-- [ ] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
-- [ ] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
-- [ ] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
-- [ ] QA visual y E2E de las doce rutas a 375 y 1366 px
+- [x] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
+- [x] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
+- [x] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
+- [x] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
+- [x] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
+- [x] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
+- [x] QA visual y E2E de las doce rutas a 375 y 1366 px
 
-**Hecho cuando:** el portfolio iguala la amplitud demostrativa de Camp sin fingir doce gestores ni degradar las tres demos de producto actuales.
+**Hecho cuando:** el portfolio iguala la amplitud demostrativa de Camp sin fingir doce gestores ni degradar las tres demos de producto actuales. Cumplido con catálogo compartido, rutas es/en, noindex y suite E2E 55/55.
 
 ---
 
