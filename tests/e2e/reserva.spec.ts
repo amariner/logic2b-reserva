@@ -5,6 +5,7 @@ const pages = [
   '/',
   '/temas/',
   '/paneles/',
+  '/docs/',
   '/planes/',
   '/soluciones/restaurantes/',
   '/soluciones/grupos-y-eventos/',
@@ -14,6 +15,7 @@ const pages = [
   '/en/',
   '/en/temas/',
   '/en/paneles/',
+  '/en/docs/',
   '/en/planes/',
   '/en/soluciones/restaurantes/',
   '/en/soluciones/grupos-y-eventos/',
@@ -254,6 +256,77 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.locator('[data-panel-card]')).toHaveCount(6);
     await expect(page.locator('#panel-inteligente')).toContainText('Intelligent view');
     await expect(page.locator('#panel-informes .panel-card__action')).toHaveAttribute('href', '/en/demos/solane/gestion/?vista=informes');
+  });
+
+  test('F25: planes, servicios y cinco guías explican cómo empezar sin inventar precios', async ({ page, request }) => {
+    await page.goto('/planes/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Tres formas de avanzar sin comprar de más.' })).toBeVisible();
+    await expect(page.locator('.service-offerings article')).toHaveCount(3);
+    await expect(page.locator('.service-offerings')).toContainText('Mantenimiento');
+    await expect(page.locator('.service-offerings')).toContainText('Desarrollo y mejoras');
+    await expect(page.locator('.service-offerings')).toContainText('Servicios de lanzamiento');
+    await expect(page.locator('.service-offerings')).toContainText('Alcance a definir');
+    await expect(page.locator('.related-links a', { hasText: 'Explorar paneles' })).toHaveAttribute('href', '/paneles/');
+    await expect(page.locator('.related-links a', { hasText: 'Leer las guías' })).toHaveAttribute('href', '/docs/');
+
+    await page.goto('/docs/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Cinco guías antes de publicar.' })).toBeVisible();
+    await expect(page.locator('.guide-card')).toHaveCount(5);
+    await expect(page.locator('#guia-sala')).toContainText('Para sala y encargado');
+    await expect(page.locator('#guia-gestion')).toContainText('Datos iniciales y migración inventariados');
+    await expect(page.locator('#guia-direccion')).toContainText('Revisión humana antes de automatizar');
+    await expect(page.locator('#guia-propietario')).toContainText('Dominio, datos, cobros y responsabilidades');
+    await expect(page.locator('#guia-tecnica')).toContainText('Plan de migración, copia y salida acordado');
+    await expect(page.locator('#guia-sala .guide-card__action')).toHaveAttribute('href', '/paneles/#panel-servicio');
+    await expect(page.locator('#guia-propietario .guide-card__action')).toHaveAttribute('href', '/planes/');
+    await expect(page.locator('.guides-related a')).toHaveCount(2);
+
+    for (const path of ['/docs/', '/en/docs/']) {
+      const response = await request.get(path);
+      expect(response.status(), path).toBe(200);
+    }
+    await page.goto('/en/docs/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 1, name: 'Five guides before you publish.' })).toBeVisible();
+    await expect(page.locator('.guide-card')).toHaveCount(5);
+    await expect(page.locator('#guia-tecnica')).toContainText('Technical notes for a considered launch');
+  });
+
+  test('F26: la home conecta planes, portfolio, paneles e implantación guiada', async ({ page }) => {
+    await page.goto('/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 2, name: 'Doce identidades. Una misma forma de operar.' })).toBeVisible();
+    await expect(page.locator('[data-theme-card-home]')).toHaveCount(12);
+    const homeThemeHrefs = await page.locator('[data-theme-card-home]').evaluateAll((cards) => cards.map((card) => card.getAttribute('href')));
+    expect(new Set(homeThemeHrefs).size).toBe(12);
+    await expect(page.locator('[data-panel-card-home]')).toHaveCount(6);
+    await expect(page.locator('#paneles')).toContainText('Seis paneles para las decisiones del servicio.');
+    await expect(page.locator('[data-plan-card]')).toHaveCount(3);
+    await expect(page.locator('#planes-home')).toContainText('Básico');
+    await expect(page.locator('#planes-home')).toContainText('Gestión');
+    await expect(page.locator('#planes-home')).toContainText('Inteligente');
+    await expect(page.locator('[data-plan-card] a').nth(0)).toHaveAttribute('href', '/demos/brasca/');
+    await expect(page.locator('[data-plan-card] a').nth(1)).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
+    await expect(page.locator('[data-plan-card] a').nth(2)).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(page.locator('[data-guide-card-home]')).toHaveCount(5);
+    await expect(page.locator('#guias')).toContainText('Cinco guías para quienes lo hacen realidad.');
+    const homeGuideHrefs = await page.locator('[data-guide-card-home]').evaluateAll((cards) => cards.map((card) => card.getAttribute('href')));
+    expect(new Set(homeGuideHrefs).size).toBe(5);
+    await expect(page.locator('.human-steps article')).toHaveCount(6);
+    await expect(page.locator('.human-steps')).toContainText('Preparamos los datos');
+    await expect(page.locator('.human-steps')).toContainText('Acompañamos la operación');
+    await expect(page.locator('#preguntas details')).toHaveCount(6);
+    await expect(page.locator('.site-footer a')).toHaveCount(13);
+
+    await page.goto('/en/', { waitUntil: 'networkidle' });
+    await expect(page.getByRole('heading', { level: 2, name: 'Twelve identities. One operating idea.' })).toBeVisible();
+    await expect(page.locator('[data-theme-card-home]')).toHaveCount(12);
+    await expect(page.locator('[data-panel-card-home]')).toHaveCount(6);
+    await expect(page.locator('[data-plan-card]')).toHaveCount(3);
+    await expect(page.locator('[data-guide-card-home]')).toHaveCount(5);
+    await expect(page.locator('.human-steps article')).toHaveCount(6);
+    await expect(page.locator('#preguntas details')).toHaveCount(6);
+    await expect(page.locator('.site-footer a')).toHaveCount(13);
+    await expect(page.locator('.human-steps')).toContainText('Prepare the data');
+    await expect(page.locator('.human-steps')).toContainText('Support the operation');
   });
 
   test('el teclado puede saltar la navegación en las páginas públicas es/en', async ({ page }) => {

@@ -432,15 +432,15 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** ofrecer la misma claridad de compra y confianza operativa que Camp alrededor del producto.
 **Dependencias:** F20.
 
-- [ ] Evolucionar `/planes/` como página canónica o añadir `/precios/` con redirección coherente; una sola fuente de verdad para SEO y navegación
-- [ ] Mantener tres ofertas comerciales en home y explicar en la página dedicada una escalera funcional más granular cuando aporte claridad
-- [ ] Cualquier cambio a los tres planes vigentes requiere ADR que sustituya explícitamente ADR-010; la paridad no lo cambia de forma implícita
-- [ ] Bloques de mantenimiento, desarrollo/mejoras y servicios de lanzamiento, sin publicar importes no aprobados
-- [ ] `/docs/` es/en con cinco guías: Sala, Gestión, Dirección, Propietario y Técnica
-- [ ] Contenido mínimo de migración, datos, dominio/DNS, cobros, RGPD, salida, soporte y responsabilidades por rol
-- [ ] Enlaces cruzados entre precios, demos, paneles, guías y contacto sin callejones sin salida
+- [x] Evolucionar `/planes/` como página canónica o añadir `/precios/` con redirección coherente; una sola fuente de verdad para SEO y navegación
+- [x] Mantener tres ofertas comerciales en home y explicar en la página dedicada una escalera funcional más granular cuando aporte claridad
+- [x] Cualquier cambio a los tres planes vigentes requiere ADR que sustituya explícitamente ADR-010; la paridad no lo cambia de forma implícita
+- [x] Bloques de mantenimiento, desarrollo/mejoras y servicios de lanzamiento, sin publicar importes no aprobados
+- [x] `/docs/` es/en con cinco guías: Sala, Gestión, Dirección, Propietario y Técnica
+- [x] Contenido mínimo de migración, datos, dominio/DNS, cobros, RGPD, salida, soporte y responsabilidades por rol
+- [x] Enlaces cruzados entre precios, demos, paneles, guías y contacto sin callejones sin salida
 
-**Hecho cuando:** un propietario entiende cómo empezar, qué cambia al crecer, qué aporta Logic2B, qué debe aportar el restaurante y qué sigue pendiente de propuesta.
+**Hecho cuando:** un propietario entiende cómo empezar, qué cambia al crecer, qué aporta Logic2B, qué debe aportar el restaurante y qué sigue pendiente de propuesta. Cumplido con `/planes/`, servicios sin importes, cinco guías es/en y enlaces cruzados.
 
 ---
 
@@ -449,16 +449,16 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Objetivo:** cerrar la paridad de los 14 bloques del home sin alterar el gestor.
 **Dependencias:** F22–F25.
 
-- [ ] Tres ofertas comerciales comparables en home, cada una asociada a una web y a su nivel de gestión
-- [ ] Teaser del portfolio de doce restaurantes con acceso a `/temas/`
-- [ ] Teaser de seis paneles específicos de restauración con acceso a `/paneles/`
-- [ ] Implantación guiada con entradas, configuración, validación, publicación, mantenimiento y límites
-- [ ] Teaser de cinco guías públicas por rol con acceso a `/docs/`
-- [ ] FAQ ampliada y cierre visual con vistas reales de escritorio y móvil
-- [ ] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
-- [ ] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
+- [x] Tres ofertas comerciales comparables en home, cada una asociada a una web y a su nivel de gestión
+- [x] Teaser del portfolio de doce restaurantes con acceso a `/temas/`
+- [x] Teaser de seis paneles específicos de restauración con acceso a `/paneles/`
+- [x] Implantación guiada con entradas, configuración, validación, publicación, mantenimiento y límites
+- [x] Teaser de cinco guías públicas por rol con acceso a `/docs/`
+- [x] FAQ ampliada y cierre visual con vistas reales de escritorio y móvil
+- [x] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
+- [x] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
 
-**Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva.
+**Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva. Cumplido en es/en con catálogos compartidos, seis paneles, cinco guías, FAQ de seis preguntas, footer completo y E2E F26 dirigido 1/1.
 
 ---
 

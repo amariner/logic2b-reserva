@@ -1,6 +1,10 @@
 ---
 import type { Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
+import { GUIDE_CATALOG } from '@logic-reserva/config/guides';
+import { PANEL_CATALOG } from '@logic-reserva/config/panels';
+import { PLAN_CATALOG } from '@logic-reserva/config/plans';
+import { THEME_CATALOG } from '@logic-reserva/config/themes';
 import { SITE_CONTENT } from '../content';
 import BrandLockup from './BrandLockup.astro';
 
@@ -30,6 +34,11 @@ const navItems = [
   { href: `${prefix}/demos/solane/gestion/?vista=plano`, label: ui.manager },
   { href: pageHref('/planes/'), label: c.nav.plans },
 ];
+const localize = (value: { es: string; en: string }): string => value[locale];
+const themeHref = (theme: (typeof THEME_CATALOG)[number]) => theme.deepDemo ? `${prefix}/demos/${theme.deepDemo}/` : `${prefix}/temas/#theme-${theme.slug}`;
+const catalogUi = locale === 'en'
+  ? { portfolioEyebrow: 'The portfolio is open', portfolioTitle: 'Twelve identities. One operating idea.', portfolioIntro: 'From a neighbourhood bistro to a seasonal terrace, each direction starts from the same reservation and service foundation.', preview: 'Web preview', deep: 'Deep journey', panelsEyebrow: 'The manager has a point of view', panelsTitle: 'Six panels for the decisions behind service.', panelsIntro: 'Open the surface that matches the question your team asks before, during or after a shift.', panelAction: 'Open panel', plansEyebrow: 'Choose the next useful layer', plansTitle: 'Three ways to move forward.', plansIntro: 'Start with the bottleneck you recognise. The demo makes the boundary visible before any implementation scope is agreed.', planAction: 'Open starting point', planBoundary: 'Demo scope · implementation per project', guidesEyebrow: 'Confidence before launch', guidesTitle: 'Five guides for the people who make it real.', guidesIntro: 'Short notes for floor teams, operations, leadership, owners and technical partners.', guideAction: 'Read guide' }
+  : { portfolioEyebrow: 'El portfolio está abierto', portfolioTitle: 'Doce identidades. Una misma forma de operar.', portfolioIntro: 'De un bistró de barrio a una terraza estacional, cada dirección parte de la misma base de reservas y servicio.', preview: 'Preview web', deep: 'Recorrido profundo', panelsEyebrow: 'El gestor tiene un punto de vista', panelsTitle: 'Seis paneles para las decisiones del servicio.', panelsIntro: 'Abre la superficie que responde a la pregunta que tu equipo se hace antes, durante o después de un turno.', panelAction: 'Abrir panel', plansEyebrow: 'Elige la siguiente capa útil', plansTitle: 'Tres formas de avanzar.', plansIntro: 'Empieza por el cuello de botella que reconoces. La demo deja visible el límite antes de acordar cualquier alcance de implantación.', planAction: 'Abrir punto de partida', planBoundary: 'Alcance demo · implantación por proyecto', guidesEyebrow: 'Confianza antes de publicar', guidesTitle: 'Cinco guías para quienes lo hacen realidad.', guidesIntro: 'Notas breves para sala, gestión, dirección, propietarios y equipos técnicos.', guideAction: 'Leer guía' };
 ---
 
 <div class="landing">
@@ -208,6 +217,87 @@ const navItems = [
       </div>
     </section>
 
+    <section id="identidades" class="section shell catalog-section" aria-labelledby="identities-title">
+      <div class="section-intro">
+        <p class="eyebrow">{catalogUi.portfolioEyebrow}</p>
+        <h2 id="identities-title" class="heading">{catalogUi.portfolioTitle}</h2>
+        <p class="editorial">{catalogUi.portfolioIntro}</p>
+      </div>
+      <div class="catalog-theme-grid">
+        {THEME_CATALOG.map((theme) => (
+          <a class="catalog-theme-card" data-theme-card-home href={themeHref(theme)} style={`--theme-accent: ${theme.accent}; --theme-surface: ${theme.surface};`}>
+            <span class="catalog-theme-card__mark" aria-hidden="true">{theme.mark}</span>
+            <span class="catalog-theme-card__meta">{localize(theme.format)}<i>{theme.deepDemo ? catalogUi.deep : catalogUi.preview}</i></span>
+            <strong>{localize(theme.name)}</strong>
+            <span class="catalog-theme-card__promise">{localize(theme.promise)}</span>
+          </a>
+        ))}
+      </div>
+      <a class="catalog-more-link" href={pageHref('/temas/')}>{c.nav.demos}<span aria-hidden="true"> ↗</span></a>
+    </section>
+
+    <section id="paneles" class="section panel-catalog-section" aria-labelledby="panels-title">
+      <div class="shell">
+        <div class="section-intro">
+          <p class="eyebrow">{catalogUi.panelsEyebrow}</p>
+          <h2 id="panels-title" class="heading">{catalogUi.panelsTitle}</h2>
+          <p class="editorial">{catalogUi.panelsIntro}</p>
+        </div>
+        <div class="home-panel-grid">
+          {PANEL_CATALOG.map((panel) => (
+            <a class="home-panel-card" data-panel-card-home href={pageHref(panel.route)} style={`--panel-accent: ${panel.accent}; --panel-surface: ${panel.surface};`}>
+              <div class="home-panel-card__top"><span>{panel.mark}</span><small>{panel.tier === 'gestion' ? c.nav.plans : 'Inteligente'}</small></div>
+              <h3>{localize(panel.name)}</h3>
+              <p>{localize(panel.strapline)}</p>
+              <span class="home-panel-card__decision">{localize(panel.decision)}</span>
+              <span class="home-panel-card__action">{catalogUi.panelAction}<b aria-hidden="true">↗</b></span>
+            </a>
+          ))}
+        </div>
+        <a class="catalog-more-link" href={pageHref('/paneles/')}>{catalogUi.panelAction}<span aria-hidden="true"> ↗</span></a>
+      </div>
+    </section>
+
+    <section id="planes-home" class="section shell plan-catalog-section" aria-labelledby="plans-home-title">
+      <div class="section-intro">
+        <p class="eyebrow">{catalogUi.plansEyebrow}</p>
+        <h2 id="plans-home-title" class="heading">{catalogUi.plansTitle}</h2>
+        <p class="editorial">{catalogUi.plansIntro}</p>
+      </div>
+      <div class="home-plan-grid">
+        {PLAN_CATALOG.map((plan) => (
+          <article class="home-plan-card" data-plan-card style={`--plan-accent: ${plan.accent}; --plan-surface: ${plan.surface};`}>
+            <div class="home-plan-card__top"><span>{localize(plan.level)}</span><strong>{localize(plan.name)}</strong></div>
+            <h3>{localize(plan.strapline)}</h3>
+            <p>{localize(plan.body)}</p>
+            <ul>{plan.features.map((feature) => <li>{localize(feature)}</li>)}</ul>
+            <a href={pageHref(plan.demoRoute)}>{catalogUi.planAction}<span aria-hidden="true"> ↗</span></a>
+            <small>{catalogUi.planBoundary}</small>
+          </article>
+        ))}
+      </div>
+      <a class="catalog-more-link" href={pageHref('/planes/')}>{c.nav.plans}<span aria-hidden="true"> ↗</span></a>
+    </section>
+
+    <section id="guias" class="section shell guide-catalog-section" aria-labelledby="guides-title">
+      <div class="section-intro">
+        <p class="eyebrow">{catalogUi.guidesEyebrow}</p>
+        <h2 id="guides-title" class="heading">{catalogUi.guidesTitle}</h2>
+        <p class="editorial">{catalogUi.guidesIntro}</p>
+      </div>
+      <div class="home-guide-grid">
+        {GUIDE_CATALOG.map((guide) => (
+          <a class="home-guide-card" data-guide-card-home href={pageHref(guide.route)}>
+            <span>{localize(guide.role)}</span>
+            <h3>{localize(guide.title)}</h3>
+            <p>{localize(guide.intro)}</p>
+            <strong>{catalogUi.guideAction}<i aria-hidden="true">↗</i></strong>
+          </a>
+        ))}
+      </div>
+      <a class="catalog-more-link" href={pageHref('/docs/')}>{catalogUi.guideAction}<span aria-hidden="true"> ↗</span></a>
+    </section>
+
     <section id="acompanamiento" class="section human-section" aria-labelledby="human-title">
       <div class="shell">
         <div class="human-intro">
@@ -254,7 +344,7 @@ const navItems = [
   </main>
 
   <footer class="site-footer">
-    <div class="shell footer-grid"><div><BrandLockup locale={locale} homeHref={pageHref('/')} /><p>{c.footer.line}</p></div><nav aria-label={ui.productLinks}><a href={pageHref('/planes/')}>{c.footer.plans}</a><a href={pageHref('/soluciones/restaurantes/')}>{c.footer.restaurants}</a><a href={pageHref('/soluciones/grupos-y-eventos/')}>{c.footer.groups}</a></nav><nav aria-label={ui.legalLinks}><a href={pageHref('/legal/')}>{c.footer.legal}</a><a href={pageHref('/privacidad/')}>{c.footer.privacy}</a><a href={pageHref('/cookies/')}>{c.footer.cookies}</a></nav></div>
+    <div class="shell footer-grid"><div><BrandLockup locale={locale} homeHref={pageHref('/')} /><p>{c.footer.line}</p></div><nav aria-label={ui.productLinks}><a href={pageHref('/planes/')}>{c.footer.plans}</a><a href={pageHref('/temas/')}>{c.nav.demos}</a><a href={pageHref('/paneles/')}>{locale === 'en' ? 'Panels' : 'Paneles'}</a><a href={pageHref('/docs/')}>{locale === 'en' ? 'Guides' : 'Guías'}</a><a href={pageHref('/demos/solane/gestion/?vista=plano')}>{ui.manager}</a></nav><nav aria-label={ui.legalLinks}><a href={pageHref('/soluciones/restaurantes/')}>{c.footer.restaurants}</a><a href={pageHref('/soluciones/grupos-y-eventos/')}>{c.footer.groups}</a><a href={pageHref('/#contacto')}>{c.nav.contact}</a><a href={pageHref('/legal/')}>{c.footer.legal}</a><a href={pageHref('/privacidad/')}>{c.footer.privacy}</a><a href={pageHref('/cookies/')}>{c.footer.cookies}</a></nav></div>
     <div class="shell footer-bottom"><span>© 2026 Logic2B</span><span>{c.footer.demo}</span></div>
   </footer>
 
@@ -519,6 +609,58 @@ const navItems = [
   .demo-card a:hover, .whatsapp-link:hover { color: var(--color-notion-blue-strong); }
   .demo-card .demo-card__manager { color: var(--color-notion-blue-strong); }
 
+  .catalog-section { border-top: 1px solid var(--line); }
+  .catalog-theme-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 54px; }
+  .catalog-theme-card { position: relative; display: grid; min-height: 196px; align-content: end; min-width: 0; overflow: hidden; border: 1px solid var(--line); border-radius: 10px; padding: 18px; color: var(--ink); background: var(--theme-surface); text-decoration: none; transition: transform 180ms ease, box-shadow 180ms ease; }
+  .catalog-theme-card::before, .catalog-theme-card::after { position: absolute; border: 1px solid color-mix(in srgb, var(--theme-accent) 30%, transparent); border-radius: 50%; content: ''; }
+  .catalog-theme-card::before { width: 170px; height: 170px; top: -80px; right: -50px; }
+  .catalog-theme-card::after { width: 110px; height: 110px; right: 34px; bottom: -64px; }
+  .catalog-theme-card:hover { box-shadow: var(--shadow-artifact); transform: translateY(-2px); }
+  .catalog-theme-card__mark { position: relative; z-index: 1; display: grid; width: 40px; height: 40px; place-items: center; border: 1px solid var(--theme-accent); border-radius: 50%; color: var(--theme-accent); font-family: var(--serif); font-size: 1.1rem; font-weight: 750; }
+  .catalog-theme-card__meta { position: relative; z-index: 1; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 18px; color: color-mix(in srgb, var(--theme-accent) 82%, var(--ink)); font-size: .68rem; font-weight: 700; line-height: 1.3; }
+  .catalog-theme-card__meta i { color: var(--slate); font-size: .58rem; font-style: normal; font-weight: 650; white-space: nowrap; }
+  .catalog-theme-card strong { position: relative; z-index: 1; margin-top: 8px; font-size: 1.2rem; letter-spacing: -.035em; }
+  .catalog-theme-card__promise { position: relative; z-index: 1; margin-top: 5px; color: color-mix(in srgb, var(--theme-accent) 72%, var(--slate)); font-family: var(--serif); font-size: .82rem; line-height: 1.35; }
+  .catalog-more-link { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: 22px; color: var(--color-notion-blue-strong); font-size: .82rem; font-weight: 700; text-decoration: none; }
+  .catalog-more-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .panel-catalog-section { color: white; background: var(--color-midnight-ink); }
+  .panel-catalog-section .heading { color: white; }
+  .panel-catalog-section .editorial { color: rgb(255 255 255 / 70%); }
+  .home-panel-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 54px; }
+  .home-panel-card { display: flex; min-width: 0; min-height: 278px; flex-direction: column; border: 1px solid rgb(255 255 255 / 18%); border-top: 3px solid var(--panel-accent); border-radius: 10px; padding: 22px; color: white; background: color-mix(in srgb, var(--panel-surface) 16%, var(--color-midnight-ink)); text-decoration: none; transition: background-color 180ms ease, transform 180ms ease; }
+  .home-panel-card:hover { background: color-mix(in srgb, var(--panel-surface) 28%, var(--color-midnight-ink)); transform: translateY(-2px); }
+  .home-panel-card__top { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: var(--panel-accent); }
+  .home-panel-card__top > span { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: .7rem; font-weight: 800; }
+  .home-panel-card__top small { color: rgb(255 255 255 / 60%); font-size: .64rem; font-weight: 700; }
+  .home-panel-card h3 { margin: 28px 0 0; font-size: 1.35rem; letter-spacing: -.035em; }
+  .home-panel-card > p { margin: 7px 0 0; color: var(--color-marigold); font-family: var(--serif); font-size: 1rem; }
+  .home-panel-card__decision { margin-top: 18px; color: rgb(255 255 255 / 70%); font-family: var(--serif); font-size: .86rem; line-height: 1.45; }
+  .home-panel-card__action { display: inline-flex; min-height: 44px; align-items: center; gap: 7px; margin-top: auto; color: white; font-size: .76rem; font-weight: 700; }
+  .home-panel-card__action b { color: var(--color-marigold); font-size: 1rem; }
+  .panel-catalog-section .catalog-more-link { color: var(--color-marigold); }
+  .plan-catalog-section { border-bottom: 1px solid var(--line); }
+  .home-plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 54px; }
+  .home-plan-card { display: flex; min-width: 0; min-height: 430px; flex-direction: column; border: 1px solid var(--line); border-top: 4px solid var(--plan-accent); border-radius: 12px; padding: clamp(22px, 3vw, 32px); background: var(--plan-surface); }
+  .home-plan-card__top { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--slate); font-size: .68rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+  .home-plan-card__top strong { color: var(--plan-accent); font-size: 1.05rem; letter-spacing: -.02em; }
+  .home-plan-card h3 { margin: 46px 0 0; font-size: clamp(1.55rem, 2.5vw, 2.25rem); letter-spacing: -.045em; line-height: 1; }
+  .home-plan-card > p { margin: 14px 0 0; color: var(--slate); font-family: var(--serif); font-size: .98rem; line-height: 1.5; }
+  .home-plan-card ul { margin: 26px 0 12px; padding: 0; border-top: 1px solid color-mix(in srgb, var(--plan-accent) 30%, var(--line)); list-style: none; }
+  .home-plan-card li { display: flex; min-height: 42px; align-items: center; gap: 8px; border-bottom: 1px solid color-mix(in srgb, var(--plan-accent) 20%, var(--line)); font-size: .78rem; line-height: 1.3; }
+  .home-plan-card li::before { color: var(--plan-accent); content: '↳'; font-weight: 800; }
+  .home-plan-card a { display: inline-flex; min-height: 44px; align-items: center; gap: 6px; margin-top: auto; color: var(--plan-accent); font-size: .8rem; font-weight: 750; text-decoration: none; }
+  .home-plan-card a:hover { text-decoration: underline; text-underline-offset: 4px; }
+  .home-plan-card > small { margin-top: 10px; color: var(--slate); font-size: .65rem; line-height: 1.35; }
+  .guide-catalog-section { background: var(--color-sky-tint); }
+  .home-guide-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; margin-top: 54px; }
+  .home-guide-card { display: flex; min-width: 0; min-height: 290px; flex-direction: column; border-top: 2px solid var(--color-notion-blue); padding: 20px 16px 16px; color: var(--ink); background: white; text-decoration: none; transition: box-shadow 180ms ease, transform 180ms ease; }
+  .home-guide-card:hover { box-shadow: var(--shadow-artifact); transform: translateY(-2px); }
+  .home-guide-card > span { color: var(--slate); font-size: .65rem; font-weight: 750; letter-spacing: .06em; text-transform: uppercase; }
+  .home-guide-card h3 { margin: 34px 0 0; font-size: 1.25rem; letter-spacing: -.035em; line-height: 1.05; }
+  .home-guide-card p { margin: 12px 0 0; color: var(--slate); font-family: var(--serif); font-size: .86rem; line-height: 1.45; }
+  .home-guide-card > strong { display: inline-flex; min-height: 44px; align-items: center; gap: 7px; margin-top: auto; color: var(--color-notion-blue-strong); font-size: .75rem; }
+  .home-guide-card > strong i { font-style: normal; }
+
   .human-section { padding-block: clamp(76px, 7vw, 98px); color: white; background: var(--color-midnight-ink); }
   .human-section .eyebrow { color: var(--color-marigold); }
   .human-intro { display: grid; grid-template-columns: 1.16fr .84fr; align-items: end; gap: clamp(42px, 8vw, 120px); }
@@ -527,6 +669,7 @@ const navItems = [
   .human-steps { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: clamp(42px, 6vw, 64px); border-top: 1px solid rgb(255 255 255 / 20%); border-bottom: 1px solid rgb(255 255 255 / 20%); }
   .human-steps article { min-height: 0; padding: 28px 28px 30px; }
   .human-steps article + article { border-left: 1px solid rgb(255 255 255 / 20%); }
+  .human-steps article:nth-child(3n + 1) { border-left: 0; }
   .human-steps article > span { font-size: .72rem; font-weight: 750; letter-spacing: .08em; opacity: .58; }
   .human-steps h3 { max-width: 14ch; margin: 30px 0 12px; font-size: clamp(1.35rem, 2vw, 1.8rem); letter-spacing: -.035em; line-height: 1; }
   .human-steps p { margin: 0; color: rgb(255 255 255 / 67%); font-family: var(--serif); line-height: 1.58; }
@@ -588,6 +731,9 @@ const navItems = [
     .hero-flow strong { grid-column: 1 / -1; min-height: 48px; border-bottom: 1px solid var(--line); }
     .hero-flow span:first-of-type { border-left: 0; }
     .journey-track { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .catalog-theme-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .home-panel-grid, .home-plan-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .home-guide-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .moment-panel { grid-template-columns: 1fr; gap: 24px; }
     .path-grid { grid-template-columns: 1fr; }
     .demo-grid { grid-template-columns: 1fr; grid-template-rows: auto; }
@@ -667,6 +813,15 @@ const navItems = [
     .demo-card:not(:first-child) .demo-card__actions { margin-top: 10px; }
     .hero-portfolio__heading { align-items: flex-start; flex-direction: column; gap: 2px; }
     .portfolio-card > span { align-items: flex-start; flex-direction: column; gap: 2px; }
+    .catalog-theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 34px; }
+    .catalog-theme-card { min-height: 174px; padding: 14px; }
+    .catalog-theme-card__meta { align-items: flex-start; flex-direction: column; gap: 3px; margin-top: 14px; }
+    .catalog-theme-card strong { font-size: 1.05rem; }
+    .home-panel-grid, .home-plan-grid { grid-template-columns: 1fr; margin-top: 34px; }
+    .home-panel-card { min-height: 230px; }
+    .home-plan-card { min-height: 0; }
+    .home-guide-grid { grid-template-columns: 1fr; margin-top: 34px; }
+    .home-guide-card { min-height: 0; }
     .ecosystem-grid { grid-template-columns: 1fr; }
     .ecosystem-card + .ecosystem-card { border-top: 1px solid var(--line); border-left: 0; }
     .faq-section, .contact-section { gap: 28px; }
@@ -686,6 +841,7 @@ const navItems = [
     .cookie-banner { right: 12px; bottom: 12px; width: calc(100% - 24px); }
     .cookie-banner div { display: grid; grid-template-columns: .95fr 1.25fr; }
     .cookie-banner .pill { width: 100%; }
+    .catalog-theme-grid { grid-template-columns: 1fr; }
   }
   @media (max-width: 350px) {
     .field-row { grid-template-columns: 1fr; }

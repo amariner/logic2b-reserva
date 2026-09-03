@@ -46,7 +46,7 @@ const structuredData: Array<Record<string, unknown>> = [
     </div>
     <div class="theme-grid" data-theme-grid>
       {themes.map((theme) => (
-        <article class="theme-card" data-theme-card data-theme-level={theme.level} data-theme-searchable={`${theme.name.es} ${theme.name.en} ${theme.format.es} ${theme.format.en} ${theme.tone.es} ${theme.tone.en}`}>
+        <article id={`theme-${theme.slug}`} class="theme-card" data-theme-card data-theme-level={theme.level} data-theme-searchable={`${theme.name.es} ${theme.name.en} ${theme.format.es} ${theme.format.en} ${theme.tone.es} ${theme.tone.en}`}>
           <a href={themeHref(theme)} aria-label={`${ui.open}: ${localize(theme.name)}`}>
             <div class="theme-card__visual" style={`--theme-accent: ${theme.accent}; --theme-surface: ${theme.surface};`}><span class="theme-card__mark" aria-hidden="true">{theme.mark}</span><span class="theme-card__format">{localize(theme.format)}</span><i aria-hidden="true"></i></div>
             <div class="theme-card__copy"><div class="theme-card__meta"><span>{tierLabels[theme.level]}</span>{theme.deepDemo && <strong>{ui.demo}</strong>}</div><h2>{localize(theme.name)}</h2><p>{localize(theme.promise)}</p><small>{localize(theme.tone)}</small></div>

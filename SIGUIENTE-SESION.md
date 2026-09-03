@@ -1,13 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F24 de paridad completados ✅ · M1–M4 completos localmente ✅ · F0–F19 y M1 publicados ✅ · F25–F27 pendientes de producto/publicación · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** F25 · precios, implantación y guías públicas, dentro de la paridad estructural con Logic2B Campings
+**Fase actual:** F0–F26 de paridad completados ✅ · M1–M4 completos localmente ✅ · F0–F19 y M1 publicados ✅ · F27 pendiente de verificación/publicación · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** F27 · integración, SEO, capturas y lanzamiento verificado, dentro de la paridad estructural con Logic2B Campings
 
 ## Siguiente paso concreto
 
-1. Implementar F25 sobre `docs/PARIDAD-CAMP.md`: precios, alcance de implantación y cinco guías públicas en `/docs/` es/en.
+1. Ejecutar F27 sobre `docs/PARIDAD-CAMP.md`: auditoría SEO, capturas ampliadas, E2E de los 14 bloques y validación pública por GET/HEAD.
 2. Mantener la estética aprobada de Reserva; la referencia de Camp fija estructura y profundidad, no una copia visual.
-3. Preservar F21–F24: shell de cuatro accesos, portfolio de evidencia, flujo de siete pasos, pestañas, límites honestos, doce webs y seis paneles.
+3. Preservar F21–F26: shell de cuatro accesos, flujo de siete pasos, pestañas, límites honestos, doce webs, seis paneles, cinco guías, tres planes y footer completo.
 4. Mantener la regla de portfolio: doce webs, solo Brasca/Vedra/Solane con recorridos profundos; no construir doce backends.
 5. Preservar M2–M4: componentes desde `ui.logic2b.com`, sincronización solo local y CSV rotulado como muestra ficticia no contable.
 6. Mantener WhatsApp/correo transaccional en backlog hasta definir proveedor, consentimiento, permisos y observabilidad reales.
@@ -15,8 +15,8 @@
 
 ## Bloqueos / avisos
 
-- F20 de paridad fue la auditoría y el contrato de producto; F21–F24 implementan los primeros bloques públicos, pero la paridad completa sigue pendiente hasta F27.
-- Dirección de producto de 2026-09-02: Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`. El contrato, el mapa de equivalencias y los criterios globales están en `docs/PARIDAD-CAMP.md`; F21–F24 están completadas y F25–F27 son el trabajo pendiente.
+- F20 de paridad fue la auditoría y el contrato de producto; F21–F26 implementan los bloques públicos, pero la paridad completa sigue pendiente hasta F27.
+- Dirección de producto de 2026-09-02: Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`. El contrato, el mapa de equivalencias y los criterios globales están en `docs/PARIDAD-CAMP.md`; F21–F26 están completadas y F27 queda para el cierre verificado.
 - La paridad no incluye copiar el dashboard de Camp. Reserva conserva Servicio, Plano de sala, Reservas/Espera, Grupos/Eventos, Informes e Inteligente como puertas de entrada propias del sector.
 - Objetivo de portfolio: doce direcciones web, tres recorridos profundos (Brasca/Vedra/Solane) y dos niveles de gestor. No construir doce backends ni presentar integraciones previstas como activas.
 - Auditoría D1 de 2026-08-25: `logic-reserva` consume 0 filas D1, no declara base ni crons y ahora tiene un fusible local a cero en `apps/worker/d1-budget.json`. Publicar el código no migra ni reemplaza datos; no relajar el gate sin ADR, presupuesto medido y autorización explícita.

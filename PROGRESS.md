@@ -4,6 +4,26 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
+## 2026-09-03 · Sesión 47 · F26: home completo con oferta, portfolio, paneles y confianza ✅
+
+- F26 completada sobre el contrato de `docs/PARIDAD-CAMP.md`: la home es/en conecta tres planes con sus recorridos, las doce identidades, seis paneles, cinco guías, seis fases de implantación y una FAQ ampliada antes del contacto.
+- Los bloques comerciales reutilizan `PLAN_CATALOG`, `THEME_CATALOG`, `PANEL_CATALOG` y `GUIDE_CATALOG`; no hay una segunda lista de ofertas, identidades, módulos o guías en la landing.
+- El footer es ahora una puerta de producto completa: planes, temas, gestor, paneles, guías, soluciones, contacto, idioma y legales. Las anclas de las nueve previews sin recorrido profundo quedan resolubles desde `/temas/`.
+- QA: `pnpm check` 28/28, `pnpm build` 14/14 tareas y F26 dirigido 1/1 en es/en; la suite larga posterior sigue limitada por el cierre interno de Wrangler/Miniflare que deja `127.0.0.1:8791` en `ERR_CONNECTION_REFUSED`.
+- La paridad estructural aún no se declara completa: F27 mantiene pendiente el paquete final de capturas, auditoría, E2E completo y validación pública; no se hizo push ni deploy.
+
+---
+
+## 2026-09-03 · Sesión 46 · F25: planes, implantación y guías públicas ✅
+
+- F25 completada con `/planes/` y `/en/planes/` como superficie canónica: se conservan exactamente Básico, Gestión e Inteligente y se añaden mantenimiento, desarrollo/mejoras y lanzamiento como servicios con `Alcance a definir`.
+- `/docs/` y `/en/docs/` publican cinco guías por rol —Sala, Gestión, Dirección, Propietario y Técnica— con datos, migración, dominio/DNS, RGPD, cobros, salida, soporte y responsabilidades visibles.
+- Precios, paneles, guías, soluciones y contacto quedan enlazados entre sí sin inventar importes ni activar proveedores; la captura comercial sigue siendo la única excepción real.
+- QA dirigido F25: 1/1; build posterior: site 20 páginas y web 34 páginas; `pnpm check` 28/28.
+- F26 pasa a ser el siguiente hito; la paridad total con Camp aún no está cerrada.
+
+---
+
 ## 2026-09-03 · Sesión 45 · F24: catálogo sectorial de paneles ✅
 
 - F24 completada con `PANEL_CATALOG` compartido en `@logic-reserva/config`: seis puertas de entrada —Servicio del día, Plano de sala, Reservas y espera, Grupos y eventos, Informes operativos y Vista inteligente— con usuario, decisión, evidencia, nivel y límite honesto.
