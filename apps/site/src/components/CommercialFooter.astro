@@ -1,0 +1,59 @@
+---
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
+import { SITE_CONTENT } from '../content';
+import BrandLockup from './BrandLockup.astro';
+
+interface Props { locale?: Locale; home?: boolean; languageHref?: string }
+
+const { locale = 'es', home = false, languageHref: requestedLanguageHref } = Astro.props;
+const c = SITE_CONTENT[locale];
+const prefix = locale === 'en' ? '/en' : '';
+const languageHref = requestedLanguageHref ?? (locale === 'en' ? '/' : '/en/');
+const contactHref = home ? '#contacto' : `${prefix}/#contacto`;
+const directContact = logic2bContact(locale, 'commercial');
+const ui = locale === 'en' ? {
+  legal: 'Legal links', explore: 'Explore', demos: 'Working demos', company: 'Logic Reserva', portfolio: '12 website directions', panels: '6 product views', guides: '5 role guides', basic: 'Brasca · Basic', management: 'Vedra · Management', intelligent: 'Solane · Intelligent', language: 'Español', home: 'Home', contact: 'Contact', talk: 'Let’s talk', email: 'Email Logic2B', preferences: 'Cookie preferences',
+} : {
+  legal: 'Enlaces legales', explore: 'Explorar', demos: 'Demos navegables', company: 'Logic Reserva', portfolio: '12 direcciones web', panels: '6 vistas de producto', guides: '5 guías por rol', basic: 'Brasca · Básico', management: 'Vedra · Gestión', intelligent: 'Solane · Inteligente', language: 'English', home: 'Inicio', contact: 'Contacto', talk: 'Hablemos', email: 'Escribir a Logic2B', preferences: 'Configurar cookies',
+};
+---
+
+<footer class="site-footer" data-home-block={home ? 'footer' : undefined}>
+  <div class="shell footer-grid">
+    <div class="footer-brand">
+      <BrandLockup locale={locale} homeHref={`${prefix}/`} />
+      <p>{c.footer.line}</p>
+      <div class="footer-direct" aria-label={ui.talk}>
+        <strong>{ui.talk}</strong>
+        <a href={directContact.href} target="_blank" rel="noreferrer">{directContact.label}<span aria-hidden="true">↗</span></a>
+        <a href={`mailto:${PRODUCT.email}`}>{ui.email}<span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+    <nav aria-label={ui.company}><strong>{ui.company}</strong><a href={`${prefix}/`}>{ui.home}</a><a href={`${prefix}/planes/`}>{c.footer.plans}</a><a href={`${prefix}/soluciones/restaurantes/`}>{c.footer.restaurants}</a><a href={`${prefix}/soluciones/grupos-y-eventos/`}>{c.footer.groups}</a><a href={contactHref}>{ui.contact}</a></nav>
+    <nav aria-label={ui.explore}><strong>{ui.explore}</strong><a href={`${prefix}/temas/`}>{ui.portfolio}</a><a href={`${prefix}/paneles/`}>{ui.panels}</a><a href={`${prefix}/docs/`}>{ui.guides}</a></nav>
+    <nav aria-label={ui.demos}><strong>{ui.demos}</strong><a href={`${prefix}/demos/brasca/`}>{ui.basic}</a><a href={`${prefix}/demos/vedra/gestion/?vista=servicio`}>{ui.management}</a><a href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.intelligent}</a></nav>
+    <nav aria-label={ui.legal}><strong>{ui.legal}</strong><a href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a><a href={`${prefix}/legal/`}>{c.footer.legal}</a><a href={`${prefix}/privacidad/`}>{c.footer.privacy}</a><a href={`${prefix}/cookies/`}>{c.footer.cookies}</a><button type="button" data-cookie-preferences>{ui.preferences}</button></nav>
+  </div>
+  <div class="shell footer-bottom"><span>© 2026 Logic2B</span><span>{c.footer.demo}</span></div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--line); padding: 64px 0 28px; background: white; }
+  .footer-grid { display: grid; grid-template-columns: 1.55fr repeat(4, minmax(0, 1fr)); gap: clamp(24px, 4vw, 54px); }
+  .footer-grid p { color: var(--slate); }
+  .footer-direct { display: grid; justify-items: start; gap: 2px; margin-top: 26px; }
+  .footer-direct strong { margin-bottom: 6px; color: var(--ink); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+  .footer-direct a { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--ink); font-size: .84rem; font-weight: 700; text-decoration: none; }
+  .footer-direct a:hover { color: var(--color-notion-blue-strong); }
+  .footer-grid nav { display: grid; align-content: start; gap: 12px; }
+  .footer-grid nav strong { min-height: 30px; color: var(--ink); font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
+  .footer-grid nav a, .footer-grid nav button { min-height: 44px; align-items: center; color: var(--slate); font: inherit; font-size: .86rem; text-decoration: none; }
+  .footer-grid nav a { display: inline-flex; }
+  .footer-grid nav button { width: fit-content; border: 0; padding: 0; background: transparent; cursor: pointer; text-align: left; }
+  .footer-grid nav a:hover, .footer-grid nav button:hover { color: var(--ink); }
+  .footer-bottom { display: flex; justify-content: space-between; gap: 20px; margin-top: 50px; padding-top: 22px; border-top: 1px solid var(--line); color: var(--slate); font-size: .72rem; }
+  @media (max-width: 640px) { .footer-grid { grid-template-columns: repeat(2, 1fr); }.footer-brand { grid-column: 1 / -1; }.footer-bottom { align-items: flex-start; flex-direction: column; } }
+  @media (max-width: 420px) { .site-footer { padding-top: 48px; }.footer-grid { gap: 24px; }.footer-grid nav { border-top: 1px solid var(--line); padding-top: 18px; }.footer-bottom { margin-top: 30px; } }
+  @media (max-width: 350px) { .footer-grid { grid-template-columns: 1fr; }.footer-brand { grid-column: auto; } }
+</style>

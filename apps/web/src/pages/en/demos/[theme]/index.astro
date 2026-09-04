@@ -1,0 +1,14 @@
+---
+import { WEB_ONLY_THEMES, type ThemeEntry } from '@logic-reserva/config/themes';
+import ThemeWebPage from '../../../../components/ThemeWebPage.astro';
+import ThemeDemoLayout from '../../../../layouts/ThemeDemoLayout.astro';
+
+export function getStaticPaths() {
+  return WEB_ONLY_THEMES.map((theme) => ({ params: { theme: theme.slug }, props: { theme } }));
+}
+
+const { theme } = Astro.props as { theme: ThemeEntry };
+---
+<ThemeDemoLayout theme={theme} locale="en" title={`${theme.name} — ${theme.format.en} (fictional demo)`}>
+  <ThemeWebPage theme={theme} locale="en" />
+</ThemeDemoLayout>

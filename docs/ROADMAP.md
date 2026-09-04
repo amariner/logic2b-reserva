@@ -361,118 +361,130 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F21 · Shell comercial + hero con prueba múltiple
+## F21 · Shell comercial + hero con prueba múltiple ✅
 
 **Objetivo:** dar a Reserva una primera pantalla con la misma capacidad de orientar, captar y demostrar variedad que Camp, conservando su estética actual.
 **Dependencias:** F20.
 
-- [ ] Cabecera compacta con cuatro accesos primarios: Webs, Gestor, Precios y Contactar/recorrido; navegación móvil equivalente
-- [ ] Hero editorial de Reserva con promesa sectorial, captación breve y tres accesos verificables: web demo, recorrido guiado y gestor
-- [ ] Portfolio visual vivo en el hero con varias identidades de restaurante, sin sustituir la evidencia real de Solane
-- [ ] Rail de ecosistema previsto inmediatamente después del hero, con estado de madurez accesible para cada marca
-- [ ] Captación breve y formulario completo comparten validación, consentimiento, idempotencia y el único endpoint real ya autorizado
-- [ ] Copy es/en, foco, movimiento reducido, cookie banner sin tapar acciones y responsive 320/375/430/1366 px
+- [x] Cabecera compacta con cuatro accesos primarios: Webs, Gestor, Precios y Contactar/recorrido; navegación móvil equivalente
+- [x] Hero editorial de Reserva con promesa sectorial, captación breve y tres accesos verificables: web demo, recorrido guiado y gestor
+- [x] Portfolio visual vivo en el hero con varias identidades de restaurante, sin sustituir la evidencia real de Solane
+- [x] Rail de ecosistema previsto inmediatamente después del hero, con estado de madurez accesible para cada marca
+- [x] Captación breve y formulario completo comparten validación, consentimiento, idempotencia y el único endpoint real ya autorizado
+- [x] Copy es/en, foco, movimiento reducido, cookie banner sin tapar acciones y responsive 320/375/430/1366 px
 
 **Hecho cuando:** en una sola pantalla se entiende qué es Reserva, se puede ver una web, recorrer el producto, abrir el gestor o iniciar contacto, sin perder la identidad visual vigente.
 
 ---
 
-## F22 · Flujo de producto + cinco momentos + conexiones
+## F22 · Flujo de producto + cinco momentos + conexiones ✅
 
 **Objetivo:** explicar la plataforma completa antes de presentar planes o demos aisladas.
 **Dependencias:** F21.
 
-- [ ] Flujo de siete pasos: web → disponibilidad → reserva → servicio → garantía/cobro → comunicación → decisión
-- [ ] Carrusel accesible en móvil y secuencia completa legible sin interacción obligatoria en escritorio
-- [ ] Cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, Operativa
-- [ ] Cada momento incluye un resultado, tres capacidades, un límite honesto y una captura o mockup derivado del producto real
-- [ ] Bloque de conexiones en tres familias: herramientas, pagos y asistentes con contexto
-- [ ] Estado visible `demostrativo|previsto|por proyecto|conectado`; ninguna marca externa amplía por sí sola la promesa funcional
-- [ ] E2E de pestañas, carrusel, teclado, reduced-motion y ausencia de contenido inaccesible sin JavaScript
+- [x] Flujo de siete pasos: web → disponibilidad → reserva → servicio → garantía/cobro → comunicación → decisión
+- [x] Carrusel accesible en móvil y secuencia completa legible sin interacción obligatoria en escritorio
+- [x] Cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, Operativa
+- [x] Cada momento incluye un resultado, tres capacidades, un límite honesto y una captura o mockup derivado del producto real
+- [x] Bloque de conexiones en tres familias: herramientas, pagos y asistentes con contexto
+- [x] Estado visible `demostrativo|previsto|por proyecto|conectado`; ninguna marca externa amplía por sí sola la promesa funcional
+- [x] E2E de pestañas, carrusel, teclado, reduced-motion y ausencia de contenido inaccesible sin JavaScript
 
 **Hecho cuando:** una persona ajena al proyecto puede narrar el recorrido entero y distinguir qué está demostrado de qué requeriría una implantación.
 
 ---
 
-## F23 · Doce direcciones web para restauración
+## F23 · Doce direcciones web para restauración ✅
 
 **Objetivo:** demostrar que la web y el motor pueden adoptar identidades de restaurante muy distintas sobre una misma base de producto.
 **Dependencias:** F20, F21.
 
-- [ ] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
-- [ ] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
-- [ ] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
-- [ ] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
-- [ ] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
-- [ ] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
-- [ ] QA visual y E2E de las doce rutas a 375 y 1366 px
+- [x] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
+- [x] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
+- [x] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
+- [x] Veinticuatro fichas públicas indexables —doce es y doce en— con SEO propio, captura, dirección ficticia, alcance, contacto contextual, demo y temas relacionados
+- [x] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
+- [x] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
+- [x] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
+- [x] QA visual y E2E de las doce rutas a 375 y 1366 px
 
 **Hecho cuando:** el portfolio iguala la amplitud demostrativa de Camp sin fingir doce gestores ni degradar las tres demos de producto actuales.
 
 ---
 
-## F24 · Catálogo sectorial de paneles
+## F24 · Catálogo sectorial de paneles ✅
 
 **Objetivo:** empaquetar comercialmente la profundidad ya existente del gestor de Reserva sin copiar la interfaz de Camp.
 **Dependencias:** F10, F14–F19, F20.
 
-- [ ] `/paneles/` es/en con seis vistas: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes, Inteligente
-- [ ] Cada ficha explica usuario, decisión, evidencia, nivel y límites; enlaza a un estado reproducible del gestor
-- [ ] Filtros Gestión/Inteligente y búsqueda accesible
-- [ ] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
-- [ ] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
-- [ ] Los recorridos, permisos y persistencia F5–F19 quedan intactos
+- [x] `/paneles/` es/en con seis vistas: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes, Inteligente
+- [x] Cada ficha explica usuario, decisión, evidencia, nivel y límites; enlaza a un estado reproducible del gestor
+- [x] Filtros Gestión/Inteligente y búsqueda accesible
+- [x] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
+- [x] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
+- [x] Doce fichas públicas indexables —seis es y seis en— con SEO propio, alcance, prueba, límite, CTA contextual y enlace al estado reproducible
+- [x] Los recorridos, permisos y persistencia F5–F19 quedan intactos
 
 **Hecho cuando:** el gestor puede explorarse como producto desde fuera y cada panel conduce a una demo sectorial verificable.
 
 ---
 
-## F25 · Precios, implantación y guías públicas
+## F25 · Precios, implantación y guías públicas ✅
 
 **Objetivo:** ofrecer la misma claridad de compra y confianza operativa que Camp alrededor del producto.
 **Dependencias:** F20.
 
-- [ ] Evolucionar `/planes/` como página canónica o añadir `/precios/` con redirección coherente; una sola fuente de verdad para SEO y navegación
-- [ ] Mantener tres ofertas comerciales en home y explicar en la página dedicada una escalera funcional más granular cuando aporte claridad
-- [ ] Cualquier cambio a los tres planes vigentes requiere ADR que sustituya explícitamente ADR-010; la paridad no lo cambia de forma implícita
-- [ ] Bloques de mantenimiento, desarrollo/mejoras y servicios de lanzamiento, sin publicar importes no aprobados
-- [ ] `/docs/` es/en con cinco guías: Sala, Gestión, Dirección, Propietario y Técnica
-- [ ] Contenido mínimo de migración, datos, dominio/DNS, cobros, RGPD, salida, soporte y responsabilidades por rol
-- [ ] Enlaces cruzados entre precios, demos, paneles, guías y contacto sin callejones sin salida
+- [x] Evolucionar `/planes/` como página canónica o añadir `/precios/` con redirección coherente; una sola fuente de verdad para SEO y navegación
+- [x] Mantener tres ofertas comerciales en home y explicar en la página dedicada una escalera funcional más granular cuando aporte claridad
+- [x] Cualquier cambio a los tres planes vigentes requiere ADR que sustituya explícitamente ADR-010; la paridad no lo cambia de forma implícita
+- [x] Bloques de mantenimiento, desarrollo/mejoras y servicios de lanzamiento, sin publicar importes no aprobados
+- [x] `/docs/` es/en con cinco guías: Sala, Gestión, Dirección, Propietario y Técnica
+- [x] Contenido mínimo de migración, datos, dominio/DNS, cobros, RGPD, salida, soporte y responsabilidades por rol
+- [x] Enlaces cruzados entre precios, demos, paneles, guías y contacto sin callejones sin salida
 
 **Hecho cuando:** un propietario entiende cómo empezar, qué cambia al crecer, qué aporta Logic2B, qué debe aportar el restaurante y qué sigue pendiente de propuesta.
 
 ---
 
-## F26 · Home completo con oferta, portfolio, paneles y confianza
+## F26 · Home completo con oferta, portfolio, paneles y confianza ✅
 
 **Objetivo:** cerrar la paridad de los 14 bloques del home sin alterar el gestor.
 **Dependencias:** F22–F25.
 
-- [ ] Tres ofertas comerciales comparables en home, cada una asociada a una web y a su nivel de gestión
-- [ ] Teaser del portfolio de doce restaurantes con acceso a `/temas/`
-- [ ] Teaser de seis paneles específicos de restauración con acceso a `/paneles/`
-- [ ] Implantación guiada con entradas, configuración, validación, publicación, mantenimiento y límites
-- [ ] Teaser de cinco guías públicas por rol con acceso a `/docs/`
-- [ ] FAQ ampliada y cierre visual con vistas reales de escritorio y móvil
-- [ ] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
-- [ ] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
+- [x] Tres ofertas comerciales comparables en home, cada una asociada a una web y a su nivel de gestión
+- [x] Teaser del portfolio de doce restaurantes con acceso a `/temas/`
+- [x] Teaser de seis paneles específicos de restauración con acceso a `/paneles/`
+- [x] Implantación guiada con entradas, configuración, validación, publicación, mantenimiento y límites
+- [x] Teaser de cinco guías públicas por rol con acceso a `/docs/`
+- [x] FAQ ampliada y cierre visual con vistas reales de escritorio y móvil
+- [x] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
+- [x] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
 
 **Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva.
 
 ---
 
-## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura
+## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura · cierre local ✅ / publicación pendiente
 
 **Objetivo:** verificar y publicar la paridad completa sin romper las fronteras de la demo ni el producto existente.
 **Dependencias:** F23–F26.
 
-- [ ] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
-- [ ] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
-- [ ] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
-- [ ] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
-- [ ] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
-- [ ] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
+- [x] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
+- [x] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
+- [x] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
+- [x] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
+- [x] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
+- [x] Preferencias de cookies globales y reversibles desde el footer de las sesenta y ocho páginas, sin cargar analítica ni publicidad
+- [x] Previews comerciales de doce webs y seis paneles con evidencia, límite, contacto y acceso profundo, bilingües y con fallback sin JavaScript
+- [x] CTA por plan en home y `/planes/` que conserva el punto de partida hasta el formulario, separado del acceso a evidencia
+- [x] Formulario de proyecto con teléfono y contexto opcionales, consentimiento obligatorio y política de datos bilingüe
+- [x] Continuidad de la web o panel elegido hasta el formulario y el lead mediante contexto canónico validado, con plan derivado y sin duplicar formularios
+- [x] Dirección ficticia y metadatos canónicos dentro de cada preview, bilingües y accesibles en escritorio de poca altura y móvil
+- [x] Fichas públicas bilingües para cada dirección web, con captura real, alcance honesto, contacto contextual y demo separada sin relajar `X-Frame-Options`
+- [x] Inicio comercial bilingüe en `/empezar/` que conserva plan, web o panel, reutiliza el único formulario real y separa la conversación comercial del cierre largo del home
+- [x] Recorrido comercial guiado bilingüe que enlaza oferta, web, producto e inicio en seis hitos, conserva contexto entre páginas y no realiza escrituras
+- [x] Captación breve del hero que conserva el correo hasta `/empezar/` sin enviarlo al servidor, limpia la URL y mantiene fallback sin JavaScript
+- [x] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
 - [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
 
 **Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales.

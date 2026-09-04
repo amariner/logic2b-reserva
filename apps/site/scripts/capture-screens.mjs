@@ -205,6 +205,85 @@ const scenes = [
       await board.scrollIntoViewIfNeeded();
     },
   },
+  ...[
+    ["09", "la-trece", "Bar de barrio"],
+    ["10", "salobre", "Arrocería"],
+    ["11", "trama", "Grupo pequeño"],
+    ["12", "umbral", "Restaurante de hotel"],
+    ["13", "nacre", "Alta cocina"],
+    ["14", "brisa-alta", "Terraza estacional"],
+    ["15", "nave-nueve", "Local de eventos"],
+    ["16", "miga-club", "Cadena casual"],
+    ["17", "mercat-33", "Espacio gastronómico"],
+  ].map(([order, slug, format]) => ({
+    order,
+    id: `${slug}-web`,
+    brand: slug,
+    route: `/demos/${slug}/`,
+    state: `Dirección web ficticia de ${format} en estado inicial`,
+    async prepare(page) {
+      await page.locator(".restaurant-hero h1").waitFor({ state: "visible" });
+      await page.evaluate(() => window.scrollTo(0, 0));
+    },
+  })),
+  {
+    order: "18",
+    id: "logic-reserva-home",
+    brand: "logic-reserva",
+    route: "/",
+    state: "Hero comercial con tres entradas al producto y evidencia real",
+    commercial: true,
+    async prepare(page) {
+      await dismissCookieBanner(page);
+      await page.locator("#hero-title").waitFor({ state: "visible" });
+      await page.evaluate(() => window.scrollTo(0, 0));
+    },
+  },
+  {
+    order: "19",
+    id: "logic-reserva-portfolio",
+    brand: "logic-reserva",
+    route: "/",
+    state: "Catálogo comercial de doce direcciones web ficticias",
+    commercial: true,
+    captureOffset: { desktop: 250, mobile: 190 },
+    async prepare(page) {
+      await dismissCookieBanner(page);
+      const title = page.locator("#portfolio-title");
+      await title.waitFor({ state: "visible" });
+      await title.scrollIntoViewIfNeeded();
+    },
+  },
+  {
+    order: "20",
+    id: "logic-reserva-paneles",
+    brand: "logic-reserva",
+    route: "/",
+    state: "Catálogo comercial de seis vistas del gestor con evidencia",
+    commercial: true,
+    captureOffset: { desktop: 250, mobile: 190 },
+    async prepare(page) {
+      await dismissCookieBanner(page);
+      const title = page.locator("#panels-title");
+      await title.waitFor({ state: "visible" });
+      await title.scrollIntoViewIfNeeded();
+    },
+  },
+  {
+    order: "21",
+    id: "logic-reserva-cierre",
+    brand: "logic-reserva",
+    route: "/",
+    state: "Cierre comercial con producto, siguiente paso y formulario vacío",
+    commercial: true,
+    captureOffset: { desktop: 250, mobile: 190 },
+    async prepare(page) {
+      await dismissCookieBanner(page);
+      const title = page.locator("#contact-title");
+      await title.waitFor({ state: "visible" });
+      await title.scrollIntoViewIfNeeded();
+    },
+  },
 ];
 
 const captureStyles = `
@@ -216,19 +295,20 @@ const captureStyles = `
   }
   html { scrollbar-width: none !important; }
   ::-webkit-scrollbar { display: none !important; }
-  .demo-notice {
+  .demo-notice, .theme-demo-notice {
     position: sticky !important;
     z-index: 999 !important;
     top: 0 !important;
   }
   .demo-notice + header { top: 34px !important; }
+  .theme-demo-notice + .restaurant-site .restaurant-nav { top: 31px !important; }
 `;
 
 await mkdir(outputParent, { recursive: true });
 const temporaryDir = await mkdtemp(join(outputParent, ".screens-next-"));
 const backupDir = join(outputParent, ".screens-previous");
 const manifest = {
-  version: 1,
+  version: 3,
   locale: "es-ES",
   fixedNow,
   captures: [],
@@ -252,9 +332,10 @@ try {
   ]
     .filter(Boolean)
     .find((candidate) => existsSync(candidate));
-  browser = await chromium.launch(
-    executablePath ? { executablePath } : undefined,
-  );
+  browser = await chromium.launch({
+    ...(executablePath ? { executablePath } : {}),
+    args: ["--disable-gpu"],
+  });
 
   const jobs = scenes.flatMap((scene) =>
     viewports.map((viewport) => ({ scene, viewport })),
@@ -345,8 +426,9 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
       const request = route.request();
       const method = request.method();
       const url = request.url();
+      const requestUrl = url.startsWith("http") ? new URL(url) : undefined;
       const requestOrigin = url.startsWith("http")
-        ? new URL(url).origin
+        ? requestUrl.origin
         : allowedOrigin;
       if (
         !["GET", "HEAD"].includes(method) ||
@@ -355,6 +437,21 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         violations.push(`petición prohibida: ${method} ${url}`);
         await route.abort("blockedbyclient");
         return;
+      }
+      if (
+        scene.commercial &&
+        method === "GET" &&
+        requestUrl?.pathname.startsWith("/images/screens/")
+      ) {
+        const file = requestUrl.pathname.split("/").at(-1);
+        const generatedAsset = file ? join(targetDir, file) : "";
+        if (file && existsSync(generatedAsset)) {
+          await route.fulfill({
+            body: await readFile(generatedAsset),
+            contentType: "image/png",
+          });
+          return;
+        }
       }
       await route.continue();
     });
@@ -407,8 +504,10 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
     await page.waitForTimeout(50);
 
     const checks = await page.evaluate(() => {
-      const notice = document.querySelector(".demo-notice");
+      const notice = document.querySelector(".demo-notice, .theme-demo-notice");
       const noticeBox = notice?.getBoundingClientRect();
+      const siteHeader = document.querySelector(".site-header");
+      const siteHeaderBox = siteHeader?.getBoundingClientRect();
       const visibleText = document.body.innerText;
       const emails =
         visibleText.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) ?? [];
@@ -426,6 +525,11 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
           noticeBox.top >= -1 &&
           noticeBox.bottom <= innerHeight + 1,
         ),
+        siteHeaderVisible: Boolean(
+          siteHeaderBox &&
+          siteHeaderBox.top >= -1 &&
+          siteHeaderBox.bottom <= innerHeight + 1,
+        ),
         forbiddenRecipient: visibleText.includes(
           "marinerandreu+logic@gmail.com",
         ),
@@ -437,6 +541,12 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         imagesReady: [...document.images].every(
           (image) => image.complete && image.naturalWidth > 0,
         ),
+        captureImagesReady: [...document.images]
+          .filter((image) => {
+            const box = image.getBoundingClientRect();
+            return box.bottom > 0 && box.top < innerHeight;
+          })
+          .every((image) => image.complete && image.naturalWidth > 0),
       };
     });
 
@@ -448,19 +558,31 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
       checks.overflow <= 1,
       `overflow horizontal de ${checks.overflow}px`,
     );
-    assert.match(checks.notice, /Demostración ficticia/);
-    assert.equal(
-      checks.noticeVisible,
-      true,
-      "la etiqueta ficticia no está visible",
-    );
+    if (scene.commercial) {
+      assert.equal(
+        checks.siteHeaderVisible,
+        true,
+        "la cabecera comercial no está visible",
+      );
+    } else {
+      assert.match(checks.notice, /Demostración ficticia|Dirección web ficticia/);
+      assert.equal(
+        checks.noticeVisible,
+        true,
+        "la etiqueta ficticia no está visible",
+      );
+    }
     assert.equal(checks.forbiddenRecipient, false, "destinatario real visible");
     assert.deepEqual(
       checks.unexpectedEmails,
       [],
       `correos fuera de allowlist: ${checks.unexpectedEmails.join(", ")}`,
     );
-    assert.equal(checks.imagesReady, true, "hay imágenes incompletas");
+    assert.equal(
+      scene.commercial ? checks.captureImagesReady : checks.imagesReady,
+      true,
+      "hay imágenes incompletas en el encuadre",
+    );
     assert.deepEqual(violations, []);
 
     const file = `${scene.order}-${scene.id}-${viewport.id}.png`;
@@ -521,18 +643,30 @@ async function navigate(page, route) {
   await settle(page);
 }
 
+async function dismissCookieBanner(page) {
+  const button = page.locator('[data-cookie-choice="necessary"]');
+  if (await button.isVisible()) await button.click();
+}
+
 async function settle(page) {
   await page.waitForLoadState("domcontentloaded");
   await page.evaluate(async () => {
     await document.fonts.ready;
     await Promise.all(
-      [...document.images].map((image) => {
-        if (image.complete) return undefined;
-        return new Promise((resolveImage) => {
-          image.addEventListener("load", resolveImage, { once: true });
-          image.addEventListener("error", resolveImage, { once: true });
-        });
-      }),
+      [...document.images]
+        .filter((image) => {
+          const box = image.getBoundingClientRect();
+          return image.loading !== "lazy" || (box.bottom > 0 && box.top < innerHeight);
+        })
+        .map(async (image) => {
+          if (!image.complete) {
+            await new Promise((resolveImage) => {
+              image.addEventListener("load", resolveImage, { once: true });
+              image.addEventListener("error", resolveImage, { once: true });
+            });
+          }
+          await image.decode().catch(() => undefined);
+        }),
     );
   });
   await page.waitForTimeout(80);
@@ -566,6 +700,8 @@ function startServer() {
       "8791",
       "--inspector-port",
       "9234",
+      "--var",
+      "LEADS_TRANSPORT:disabled",
     ],
     {
       cwd: join(repo, "apps/worker"),

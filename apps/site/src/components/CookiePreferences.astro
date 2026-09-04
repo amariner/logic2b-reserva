@@ -1,0 +1,168 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import { SITE_CONTENT } from '../content';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const c = SITE_CONTENT[locale];
+const prefix = locale === 'en' ? '/en' : '';
+const ui = locale === 'en'
+  ? {
+      label: 'Cookie preferences',
+      eyebrow: 'Privacy controls',
+      title: 'Choose what this browser may remember.',
+      body: 'Logic Reserva does not currently load analytics or advertising. We only save this choice locally so we can respect it on your next visit.',
+      necessary: 'Necessary local state',
+      necessaryBody: 'Always active. It stores this preference and supports the fictional, browser-only demo state.',
+      always: 'Always active',
+      analytics: 'Future analytics',
+      analyticsBody: 'No analytics is loaded today. Enabling this only records permission for optional measurement if it is implemented later.',
+      save: 'Save preferences',
+      necessaryOnly: 'Necessary only',
+      policy: 'Read the cookie policy',
+      close: 'Close cookie preferences',
+    }
+  : {
+      label: 'Preferencias de cookies',
+      eyebrow: 'Controles de privacidad',
+      title: 'Elige qué puede recordar este navegador.',
+      body: 'Logic Reserva no carga actualmente analítica ni publicidad. Solo guardamos esta elección en local para respetarla en tu próxima visita.',
+      necessary: 'Estado local necesario',
+      necessaryBody: 'Siempre activo. Guarda esta preferencia y permite el estado ficticio de las demos, limitado al navegador.',
+      always: 'Siempre activo',
+      analytics: 'Analítica futura',
+      analyticsBody: 'Hoy no se carga analítica. Activarla solo registra permiso para una medición opcional si se implementa más adelante.',
+      save: 'Guardar preferencias',
+      necessaryOnly: 'Solo necesarias',
+      policy: 'Leer la política de cookies',
+      close: 'Cerrar preferencias de cookies',
+    };
+---
+
+<aside class="cookie-banner" data-cookie-banner hidden aria-label={ui.label}>
+  <p>{c.cookies.text}</p>
+  <div>
+    <button type="button" class="cookie-button cookie-button--ghost" data-cookie-choice="necessary">{c.cookies.reject}</button>
+    <button type="button" class="cookie-button" data-cookie-choice="analytics">{c.cookies.accept}</button>
+  </div>
+</aside>
+
+<dialog class="cookie-preferences" data-cookie-dialog aria-labelledby={`cookie-preferences-title-${locale}`} aria-describedby={`cookie-preferences-body-${locale}`}>
+  <div class="cookie-preferences__frame">
+    <button class="cookie-preferences__close" type="button" data-cookie-close aria-label={ui.close}><span aria-hidden="true">×</span></button>
+    <p class="eyebrow">{ui.eyebrow}</p>
+    <h2 id={`cookie-preferences-title-${locale}`}>{ui.title}</h2>
+    <p id={`cookie-preferences-body-${locale}`} class="cookie-preferences__intro">{ui.body}</p>
+    <div class="cookie-preferences__settings">
+      <div class="cookie-setting">
+        <div><strong>{ui.necessary}</strong><p>{ui.necessaryBody}</p></div>
+        <span>{ui.always}</span>
+      </div>
+      <label class="cookie-setting cookie-setting--toggle">
+        <div><strong>{ui.analytics}</strong><p>{ui.analyticsBody}</p></div>
+        <input type="checkbox" data-cookie-analytics />
+      </label>
+    </div>
+    <div class="cookie-preferences__actions">
+      <button type="button" class="cookie-button cookie-button--ghost" data-cookie-necessary>{ui.necessaryOnly}</button>
+      <button type="button" class="cookie-button" data-cookie-save>{ui.save}</button>
+    </div>
+    <a class="cookie-preferences__policy" href={`${prefix}/cookies/`}>{ui.policy}<span aria-hidden="true">→</span></a>
+  </div>
+</dialog>
+
+<script>
+  const COOKIE_STORAGE_KEY = 'logic-reserva-consent-v1';
+  const cookieBanner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+  const cookieDialog = document.querySelector<HTMLDialogElement>('[data-cookie-dialog]');
+  const analyticsPreference = cookieDialog?.querySelector<HTMLInputElement>('[data-cookie-analytics]');
+  const cookieOpeners = [...document.querySelectorAll<HTMLButtonElement>('[data-cookie-preferences]')];
+
+  const readCookieChoice = () => {
+    try {
+      const value = localStorage.getItem(COOKIE_STORAGE_KEY);
+      return value === 'analytics' || value === 'necessary' ? value : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const saveCookieChoice = (choice: 'analytics' | 'necessary') => {
+    try {
+      localStorage.setItem(COOKIE_STORAGE_KEY, choice);
+    } catch {
+      // The interface still honours the choice for this page when storage is unavailable.
+    }
+    if (cookieBanner) cookieBanner.hidden = true;
+  };
+
+  if (cookieBanner && readCookieChoice() === null) cookieBanner.hidden = false;
+
+  document.querySelectorAll<HTMLButtonElement>('[data-cookie-choice]').forEach((button) => {
+    button.addEventListener('click', () => saveCookieChoice(button.dataset.cookieChoice === 'analytics' ? 'analytics' : 'necessary'));
+  });
+
+  if (cookieDialog && typeof cookieDialog.showModal === 'function' && cookieOpeners.length > 0) {
+    document.documentElement.classList.add('cookie-preferences-ready');
+    cookieOpeners.forEach((opener) => opener.addEventListener('click', () => {
+      if (analyticsPreference) analyticsPreference.checked = readCookieChoice() === 'analytics';
+      cookieDialog.showModal();
+    }));
+    cookieDialog.querySelector<HTMLButtonElement>('[data-cookie-close]')?.addEventListener('click', () => cookieDialog.close());
+    cookieDialog.querySelector<HTMLButtonElement>('[data-cookie-necessary]')?.addEventListener('click', () => {
+      if (analyticsPreference) analyticsPreference.checked = false;
+      saveCookieChoice('necessary');
+      cookieDialog.close();
+    });
+    cookieDialog.querySelector<HTMLButtonElement>('[data-cookie-save]')?.addEventListener('click', () => {
+      saveCookieChoice(analyticsPreference?.checked ? 'analytics' : 'necessary');
+      cookieDialog.close();
+    });
+    cookieDialog.addEventListener('click', (event) => {
+      if (event.target === cookieDialog) cookieDialog.close();
+    });
+  }
+</script>
+
+<style is:global>
+  [data-cookie-preferences] { display: none; }
+  .cookie-preferences-ready [data-cookie-preferences] { display: inline-flex; }
+  .cookie-banner { position: fixed; z-index: 60; right: 20px; bottom: 20px; width: min(400px, calc(100% - 40px)); border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: white; box-shadow: 0 20px 56px rgb(7 14 43 / 18%); }
+  .cookie-banner[hidden] { display: none; }
+  .cookie-banner p { margin: 0 0 14px; color: var(--slate); font-size: .84rem; line-height: 1.45; }
+  .cookie-banner > div, .cookie-preferences__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+  .cookie-button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; border: 1px solid var(--color-notion-blue); border-radius: 999px; padding: 9px 16px; color: white; background: var(--color-notion-blue); cursor: pointer; font: inherit; font-size: .78rem; font-weight: 750; }
+  .cookie-button--ghost { border-color: var(--line); color: var(--ink); background: white; }
+  .cookie-preferences { width: min(720px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); overflow: auto; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
+  .cookie-preferences::backdrop { background: rgb(7 14 43 / 72%); backdrop-filter: blur(5px); }
+  .cookie-preferences__frame { position: relative; padding: clamp(28px, 5vw, 52px); }
+  .cookie-preferences__close { position: absolute; top: 14px; right: 14px; display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--ink); background: white; cursor: pointer; font-size: 1.45rem; }
+  .cookie-preferences h2 { max-width: 600px; margin: 12px 54px 18px 0; font-size: clamp(2.1rem, 5vw, 4rem); letter-spacing: -.055em; line-height: .96; }
+  .cookie-preferences__intro { max-width: 62ch; margin: 0; color: var(--slate); font-family: var(--serif); line-height: 1.6; }
+  .cookie-preferences__settings { margin-top: 30px; border-top: 1px solid var(--line); }
+  .cookie-setting { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; min-height: 108px; border-bottom: 1px solid var(--line); padding: 18px 0; }
+  .cookie-setting strong { font-size: .95rem; }
+  .cookie-setting p { margin: 7px 0 0; color: var(--slate); font-size: .82rem; line-height: 1.48; }
+  .cookie-setting > span { color: var(--color-notion-blue-strong); font-size: .72rem; font-weight: 750; text-transform: uppercase; }
+  .cookie-setting input { width: 52px; height: 30px; accent-color: var(--color-notion-blue); cursor: pointer; }
+  .cookie-preferences__actions { margin-top: 28px; }
+  .cookie-preferences__policy { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; margin-top: 16px; color: var(--slate); font-size: .8rem; font-weight: 650; text-decoration: none; }
+  @media (max-width: 560px) {
+    .cookie-banner { right: 12px; bottom: 12px; width: calc(100% - 24px); }
+    .cookie-banner > div { display: grid; grid-template-columns: 1fr; }
+    .cookie-preferences__frame { padding: 26px 28px 30px; }
+    .cookie-preferences h2 { font-size: 2rem; }
+    .cookie-preferences__intro { line-height: 1.5; }
+    .cookie-preferences__settings { margin-top: 22px; }
+    .cookie-setting { min-height: 0; gap: 8px; padding: 14px 0; }
+    .cookie-preferences__actions { display: grid; grid-template-columns: 1fr 1fr; margin-top: 20px; }
+    .cookie-preferences__policy { margin-top: 8px; }
+    .cookie-button { width: 100%; }
+    .cookie-setting { align-items: start; grid-template-columns: 1fr; gap: 12px; }
+    .cookie-setting > span { min-height: 30px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cookie-preferences::backdrop { backdrop-filter: none; }
+  }
+</style>

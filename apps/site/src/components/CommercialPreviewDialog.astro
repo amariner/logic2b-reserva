@@ -1,0 +1,162 @@
+---
+import type { Locale } from '@logic-reserva/config';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const ui = locale === 'en'
+  ? { close: 'Close preview', eyebrow: 'Product preview', fallback: 'Open full experience', contact: 'Discuss this starting point', context: 'Preview context' }
+  : { close: 'Cerrar vista previa', eyebrow: 'Vista previa de producto', fallback: 'Abrir experiencia completa', contact: 'Hablar de este punto de partida', context: 'Contexto de la muestra' };
+---
+
+<dialog class="commercial-preview" data-commercial-preview aria-labelledby="commercial-preview-title" aria-describedby="commercial-preview-body">
+  <div class="commercial-preview__frame">
+    <button class="commercial-preview__close" type="button" data-commercial-preview-close aria-label={ui.close}><span aria-hidden="true">×</span></button>
+    <figure class="commercial-preview__visual">
+      <img data-commercial-preview-image alt="" width="1366" height="900" decoding="async" />
+      <figcaption data-commercial-preview-caption></figcaption>
+    </figure>
+    <div class="commercial-preview__copy">
+      <div class="commercial-preview__context">
+        <code data-commercial-preview-address></code>
+        <ul aria-label={ui.context}>
+          <li data-commercial-preview-tag-one></li>
+          <li data-commercial-preview-tag-two></li>
+          <li data-commercial-preview-tag-three></li>
+        </ul>
+      </div>
+      <p class="eyebrow" data-commercial-preview-kind>{ui.eyebrow}</p>
+      <h2 id="commercial-preview-title" data-commercial-preview-title></h2>
+      <p id="commercial-preview-body" data-commercial-preview-body></p>
+      <dl class="commercial-preview__facts">
+        <div><dt data-commercial-preview-detail-label></dt><dd data-commercial-preview-detail></dd></div>
+        <div><dt data-commercial-preview-evidence-label></dt><dd data-commercial-preview-evidence></dd></div>
+        <div class="commercial-preview__boundary"><dt data-commercial-preview-limit-label></dt><dd data-commercial-preview-limit></dd></div>
+      </dl>
+      <div class="commercial-preview__actions">
+        <a data-commercial-preview-contact href="#contacto"><span data-commercial-preview-contact-label>{ui.contact}</span><span aria-hidden="true">→</span></a>
+        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.fallback}</span><span aria-hidden="true">↗</span></a>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const preview = document.querySelector<HTMLDialogElement>('[data-commercial-preview]');
+  const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-commercial-preview-trigger]')];
+  if (preview && typeof preview.showModal === 'function' && triggers.length > 0) {
+    document.documentElement.classList.add('commercial-preview-ready');
+    const image = preview.querySelector<HTMLImageElement>('[data-commercial-preview-image]');
+    const caption = preview.querySelector<HTMLElement>('[data-commercial-preview-caption]');
+    const address = preview.querySelector<HTMLElement>('[data-commercial-preview-address]');
+    const tagOne = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-one]');
+    const tagTwo = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-two]');
+    const tagThree = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-three]');
+    const kind = preview.querySelector<HTMLElement>('[data-commercial-preview-kind]');
+    const title = preview.querySelector<HTMLElement>('[data-commercial-preview-title]');
+    const body = preview.querySelector<HTMLElement>('[data-commercial-preview-body]');
+    const detailLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-detail-label]');
+    const detail = preview.querySelector<HTMLElement>('[data-commercial-preview-detail]');
+    const evidenceLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-evidence-label]');
+    const evidence = preview.querySelector<HTMLElement>('[data-commercial-preview-evidence]');
+    const limitLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-limit-label]');
+    const limit = preview.querySelector<HTMLElement>('[data-commercial-preview-limit]');
+    const contact = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]');
+    const contactLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-contact-label]');
+    const link = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]');
+    const linkLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-link-label]');
+
+    for (const trigger of triggers) {
+      trigger.addEventListener('click', () => {
+        if (image) {
+          image.src = trigger.dataset.previewImage ?? '';
+          image.alt = trigger.dataset.previewAlt ?? '';
+        }
+        if (caption) caption.textContent = trigger.dataset.previewCaption ?? '';
+        if (address) address.textContent = trigger.dataset.previewAddress ?? '';
+        if (tagOne) tagOne.textContent = trigger.dataset.previewTagOne ?? '';
+        if (tagTwo) tagTwo.textContent = trigger.dataset.previewTagTwo ?? '';
+        if (tagThree) tagThree.textContent = trigger.dataset.previewTagThree ?? '';
+        if (kind) kind.textContent = trigger.dataset.previewKind ?? '';
+        if (title) title.textContent = trigger.dataset.previewTitle ?? '';
+        if (body) body.textContent = trigger.dataset.previewBody ?? '';
+        if (detailLabel) detailLabel.textContent = trigger.dataset.previewDetailLabel ?? '';
+        if (detail) detail.textContent = trigger.dataset.previewDetail ?? '';
+        if (evidenceLabel) evidenceLabel.textContent = trigger.dataset.previewEvidenceLabel ?? '';
+        if (evidence) evidence.textContent = trigger.dataset.previewEvidence ?? '';
+        if (limitLabel) limitLabel.textContent = trigger.dataset.previewLimitLabel ?? '';
+        if (limit) limit.textContent = trigger.dataset.previewLimit ?? '';
+        if (contact) contact.href = trigger.dataset.previewContactUrl ?? '#contacto';
+        if (contactLabel) contactLabel.textContent = trigger.dataset.previewContactAction ?? contactLabel.textContent ?? '';
+        if (link) {
+          link.href = trigger.dataset.previewUrl ?? '/';
+          if (linkLabel) linkLabel.textContent = trigger.dataset.previewAction ?? linkLabel.textContent ?? '';
+        }
+        preview.showModal();
+      });
+    }
+
+    preview.querySelector<HTMLButtonElement>('[data-commercial-preview-close]')?.addEventListener('click', () => preview.close());
+    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]')?.addEventListener('click', () => preview.close());
+    preview.addEventListener('click', (event) => {
+      if (event.target === preview) preview.close();
+    });
+  }
+</script>
+
+<style is:global>
+  [data-commercial-preview-trigger] { display: none; }
+  .commercial-preview-ready [data-commercial-preview-trigger] { display: inline-flex; }
+  .commercial-preview-ready .panel-teaser-card__actions { grid-template-columns: 1fr 1fr; }
+  .commercial-preview { width: min(1080px, calc(100% - 32px)); max-width: none; max-height: min(820px, calc(100dvh - 32px)); overflow: visible; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
+  .commercial-preview::backdrop { background: rgb(7 14 43 / 72%); backdrop-filter: blur(5px); }
+  .commercial-preview__frame { display: grid; height: min(720px, calc(100dvh - 32px)); min-height: 0; grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); overflow: hidden; border-radius: inherit; }
+  .commercial-preview__close { position: absolute; z-index: 3; top: -12px; right: -12px; display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid rgb(0 0 0 / 12%); border-radius: 50%; color: var(--ink); background: white; box-shadow: 0 10px 24px rgb(7 14 43 / 18%); cursor: pointer; font-size: 1.55rem; }
+  .commercial-preview__visual { display: grid; min-width: 0; margin: 0; grid-template-rows: minmax(0, 1fr) auto; background: #edf0f4; }
+  .commercial-preview__visual img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center top; }
+  .commercial-preview__visual figcaption { min-height: 46px; padding: 14px 18px; color: rgb(255 255 255 / 76%); background: var(--color-midnight-ink); font-size: .72rem; line-height: 1.35; }
+  .commercial-preview__copy { display: flex; min-width: 0; min-height: 0; flex-direction: column; justify-content: safe center; overflow-y: auto; padding: clamp(28px, 3.5vw, 48px); }
+  .commercial-preview__context { display: grid; gap: 10px; margin-bottom: 22px; }
+  .commercial-preview__context code { overflow: hidden; color: var(--slate); font-family: var(--sans); font-size: .69rem; font-weight: 650; letter-spacing: .01em; text-overflow: ellipsis; white-space: nowrap; }
+  .commercial-preview__context ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .commercial-preview__context li { border: 1px solid rgb(0 117 222 / 20%); border-radius: 999px; padding: 5px 8px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .65rem; font-weight: 700; line-height: 1.2; }
+  .commercial-preview__copy .eyebrow { color: var(--color-notion-blue-strong); }
+  .commercial-preview__copy h2 { margin: 12px 0 18px; font-size: clamp(2.35rem, 4.5vw, 4.7rem); letter-spacing: -.06em; line-height: .92; }
+  .commercial-preview__copy > p:not(.eyebrow) { margin: 0; color: var(--slate); font-family: var(--serif); font-size: 1.02rem; line-height: 1.58; }
+  .commercial-preview__facts { display: grid; margin: 24px 0 0; border-top: 1px solid var(--line); }
+  .commercial-preview__facts > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; border-bottom: 1px solid var(--line); padding: 12px 0; }
+  .commercial-preview__facts dt { color: var(--slate); font-size: .67rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
+  .commercial-preview__facts dd { margin: 0; font-size: .78rem; line-height: 1.45; }
+  .commercial-preview__boundary dd { color: var(--slate); }
+  .commercial-preview__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 24px; }
+  .commercial-preview__actions a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--ink); background: white; font-size: .75rem; font-weight: 750; text-decoration: none; }
+  .commercial-preview__actions a:first-child { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
+  @media (min-width: 761px) and (max-height: 780px) {
+    .commercial-preview__copy { justify-content: flex-start; padding: 28px 34px; }
+    .commercial-preview__context { margin-bottom: 14px; }
+    .commercial-preview__copy h2 { margin: 8px 0 12px; font-size: clamp(2.3rem, 4vw, 3.2rem); }
+    .commercial-preview__copy > p:not(.eyebrow) { line-height: 1.45; }
+    .commercial-preview__facts { margin-top: 16px; }
+    .commercial-preview__facts > div { padding: 8px 0; }
+    .commercial-preview__actions { margin-top: 16px; }
+  }
+  @media (max-width: 760px) {
+    .commercial-preview { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow: auto; }
+    .commercial-preview__frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
+    .commercial-preview__visual { min-height: 0; }
+    .commercial-preview__visual img { aspect-ratio: 16 / 9; }
+    .commercial-preview__copy { padding: 26px 22px 30px; }
+    .commercial-preview__copy h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
+    .commercial-preview__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
+    .commercial-preview__close { position: fixed; top: 18px; right: 18px; }
+  }
+  @media (max-width: 420px) {
+    .commercial-preview-ready .panel-teaser-card__actions { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 350px) {
+    .commercial-preview__facts > div { grid-template-columns: 1fr; gap: 5px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .commercial-preview::backdrop { backdrop-filter: none; }
+  }
+</style>

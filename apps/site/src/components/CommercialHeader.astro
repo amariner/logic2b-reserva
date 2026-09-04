@@ -1,0 +1,75 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import { SITE_CONTENT } from '../content';
+import BrandLockup from './BrandLockup.astro';
+
+interface Props { locale?: Locale; home?: boolean; languageHref?: string }
+
+const { locale = 'es', home = false, languageHref: requestedLanguageHref } = Astro.props;
+const c = SITE_CONTENT[locale];
+const prefix = locale === 'en' ? '/en' : '';
+const languageHref = requestedLanguageHref ?? (locale === 'en' ? '/' : '/en/');
+const contactHref = home ? '#contacto' : `${prefix}/#contacto`;
+const ui = locale === 'en' ? {
+  navigation: 'Main navigation', language: 'ES', menu: 'Menu', contact: 'Contact', product: 'How it works', groups: 'Groups and events',
+} : {
+  navigation: 'Navegación principal', language: 'EN', menu: 'Menú', contact: 'Contactar', product: 'Cómo funciona', groups: 'Grupos y eventos',
+};
+const navItems = [
+  { href: `${prefix}/temas/`, label: c.nav.webs },
+  { href: `${prefix}/paneles/`, label: c.nav.manager },
+  { href: `${prefix}/planes/`, label: c.nav.plans },
+];
+const mobileNavItems = [
+  ...navItems,
+  { href: home ? '#recorrido' : `${prefix}/#recorrido`, label: ui.product },
+  { href: `${prefix}/soluciones/grupos-y-eventos/`, label: ui.groups },
+];
+---
+
+<header class:list={['site-header', home && 'site-header--home']} data-home-block={home ? 'header' : undefined}>
+  <div class="shell nav-shell">
+    <BrandLockup locale={locale} homeHref={`${prefix}/`} />
+    <nav class="main-nav" aria-label={ui.navigation}>
+      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+    <div class="nav-actions">
+      <a class="language-link" href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a>
+      <a class="nav-contact" href={contactHref}>{ui.contact}</a>
+      <a class="pill nav-cta" href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{c.nav.route}<span aria-hidden="true">→</span></a>
+      <details class="mobile-menu">
+        <summary>{ui.menu}<span aria-hidden="true">+</span></summary>
+        <nav aria-label={ui.navigation}>{mobileNavItems.map((item) => <a href={item.href}>{item.label}</a>)}<a href={contactHref}>{c.nav.contact}</a><a href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{c.nav.route}</a></nav>
+      </details>
+    </div>
+  </div>
+</header>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('.mobile-menu').forEach((menu) => {
+    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { menu.open = false; }));
+  });
+</script>
+
+<style>
+  .site-header { position: sticky; z-index: 50; top: 0; right: 0; left: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
+  .site-header--home { position: fixed; }
+  .nav-shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
+  .main-nav { display: flex; align-items: center; gap: 2px; }
+  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 11px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
+  .main-nav a:hover, .language-link:hover { color: var(--ink); background: rgb(0 0 0 / 4%); }
+  .nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
+  .nav-contact { display: inline-flex; min-height: 44px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; color: var(--slate); font-size: .78rem; font-weight: 600; text-decoration: none; }
+  .nav-contact:hover { color: var(--ink); border-color: rgb(0 0 0 / 20%); background: white; }
+  .nav-cta { min-height: 44px; border-radius: 999px; padding-inline: 17px; }
+  .mobile-menu { position: relative; display: none; width: max-content; flex: 0 0 auto; }
+  .mobile-menu summary { display: flex; min-height: 44px; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 10px; color: var(--slate); cursor: pointer; font-size: .8rem; font-weight: 600; list-style: none; }
+  .mobile-menu summary::-webkit-details-marker { display: none; }
+  .mobile-menu summary span { font-size: 1.1rem; transition: transform 180ms ease; }
+  .mobile-menu[open] summary span { transform: rotate(45deg); }
+  .mobile-menu nav { position: absolute; top: calc(100% + 8px); right: 0; display: grid; width: min(310px, calc(100vw - 28px)); overflow: hidden; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: white; box-shadow: var(--shadow-artifact); }
+  .mobile-menu nav a { display: flex; min-height: 46px; align-items: center; border-radius: 8px; padding: 10px 12px; color: var(--slate); font-size: .84rem; font-weight: 550; text-decoration: none; }
+  .mobile-menu nav a:hover { color: var(--ink); background: var(--color-sky-tint); }
+  @media (max-width: 1120px) { .main-nav { display: none; }.mobile-menu { display: inline-block; } }
+  @media (max-width: 640px) { .nav-contact, .nav-cta { display: none; }.site-header .shell { width: min(100% - 24px, var(--page-max-width)); } }
+</style>

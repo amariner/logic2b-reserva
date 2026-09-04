@@ -1,0 +1,103 @@
+---
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { GUIDE_CATALOG, guideUrl, localizedGuideText, type GuideText } from '@logic-reserva/config/guides';
+import Base from '../layouts/Base.astro';
+import CommercialChrome from './CommercialChrome.astro';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const prefix = locale === 'en' ? '/en' : '';
+const local = (value: GuideText) => localizedGuideText(value, locale);
+const ui = locale === 'en' ? {
+  metaTitle: 'Restaurant implementation guides | Logic Reserva',
+  description: 'Five public guides for restaurant floor, operations, management, ownership and technical teams preparing a Logic Reserva implementation.',
+  eyebrow: 'Public implementation handbook', title: 'Five roles. One implementation everyone can understand.',
+  intro: 'Use the guide closest to your responsibility, then share the others. Together they define migration, data, domain, payments, privacy, support and exit before a proposal is approved.',
+  back: 'Back to Logic Reserva', guide: 'Open guide', audience: 'For', outcome: 'After reading',
+  mapEyebrow: 'Common contract', mapTitle: 'Eight topics that must have an owner.', mapIntro: 'The guides add role-specific detail. This map makes the shared implementation questions visible first.',
+  topic: 'Topic', restaurant: 'Restaurant responsibility', logic: 'Logic2B responsibility', proposal: 'To agree in the proposal',
+  topics: [
+    ['Migration', 'Provide sources and validate the result', 'Assess, transform and document agreed data', 'Volume, cut-off, history and acceptance'],
+    ['Data', 'Define purpose, access and retention', 'Implement agreed controls and export', 'Fields, retention, backups and hosting'],
+    ['Domain / DNS', 'Confirm ownership and authorised access', 'Prepare records, validation and rollback', 'Change window and ongoing management'],
+    ['Payments', 'Approve provider, terms and exceptions', 'Connect and test only when contracted', 'Provider, fees, refunds and reconciliation'],
+    ['GDPR', 'Define lawful purpose and internal procedures', 'Apply the agreed technical and processor scope', 'Roles, retention, rights and incidents'],
+    ['Exit', 'Request export and confirm closure', 'Deliver, revoke and delete as agreed', 'Format, timing, assistance and verification'],
+    ['Support', 'Use the channel and provide incident context', 'Respond within the approved service scope', 'Hours, priority, SLA and maintenance'],
+    ['Roles', 'Name business, content and access owners', 'Name implementation and technical owners', 'Decision, escalation and acceptance matrix'],
+  ],
+  nextEyebrow: 'From reading to evidence', nextTitle: 'Review the offer and the working product before defining scope.',
+  plans: 'Compare the three plans', panels: 'Explore product views', websites: 'Compare websites', contact: 'Discuss my implementation',
+} : {
+  metaTitle: 'Guías para implantar reservas | Logic Reserva',
+  description: 'Cinco guías públicas para equipos de sala, gestión, dirección, propiedad y técnica que preparan una implantación de Logic Reserva.',
+  eyebrow: 'Manual público de implantación', title: 'Cinco roles. Una implantación que todos pueden entender.',
+  intro: 'Empieza por la guía más cercana a tu responsabilidad y comparte las demás. Juntas definen migración, datos, dominio, cobros, privacidad, soporte y salida antes de aprobar una propuesta.',
+  back: 'Volver a Logic Reserva', guide: 'Abrir guía', audience: 'Para', outcome: 'Al terminar',
+  mapEyebrow: 'Contrato común', mapTitle: 'Ocho temas que necesitan responsable.', mapIntro: 'Las guías añaden detalle por rol. Este mapa hace visibles primero las preguntas compartidas de implantación.',
+  topic: 'Tema', restaurant: 'Responsabilidad del restaurante', logic: 'Responsabilidad de Logic2B', proposal: 'A acordar en propuesta',
+  topics: [
+    ['Migración', 'Aportar fuentes y validar el resultado', 'Evaluar, transformar y documentar los datos acordados', 'Volumen, corte, histórico y aceptación'],
+    ['Datos', 'Definir finalidad, acceso y retención', 'Implantar controles y exportación acordados', 'Campos, retención, copias y alojamiento'],
+    ['Dominio / DNS', 'Confirmar titularidad y acceso autorizado', 'Preparar registros, validación y reversión', 'Ventana de cambio y gestión posterior'],
+    ['Cobros', 'Aprobar proveedor, condiciones y excepciones', 'Conectar y probar solo cuando se contrate', 'Proveedor, comisiones, devoluciones y conciliación'],
+    ['RGPD', 'Definir base y procedimientos internos', 'Aplicar alcance técnico y de encargado acordado', 'Roles, retención, derechos e incidentes'],
+    ['Salida', 'Solicitar exportación y confirmar el cierre', 'Entregar, revocar y borrar según acuerdo', 'Formato, plazo, apoyo y verificación'],
+    ['Soporte', 'Usar el canal y aportar contexto de incidencia', 'Responder dentro del servicio aprobado', 'Horario, prioridad, SLA y mantenimiento'],
+    ['Roles', 'Nombrar responsables de negocio, contenido y acceso', 'Nombrar responsables de implantación y técnica', 'Matriz de decisión, escalado y aceptación'],
+  ],
+  nextEyebrow: 'De la lectura a la evidencia', nextTitle: 'Revisa la oferta y el producto funcionando antes de definir alcance.',
+  plans: 'Comparar los tres planes', panels: 'Explorar vistas de producto', websites: 'Comparar webs', contact: 'Hablar de mi implantación',
+};
+const structuredData = [{
+  '@context': 'https://schema.org', '@type': 'CollectionPage', name: ui.title, description: ui.description,
+  url: new URL(`${prefix}/docs/`, PRODUCT.url).href,
+  mainEntity: { '@type': 'ItemList', numberOfItems: GUIDE_CATALOG.length, itemListElement: GUIDE_CATALOG.map((guide, index) => ({ '@type': 'ListItem', position: index + 1, name: local(guide.title), url: new URL(guideUrl(guide, locale), PRODUCT.url).href })) },
+}, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Logic Reserva', item: `${PRODUCT.url}${prefix}/` },
+    { '@type': 'ListItem', position: 2, name: ui.metaTitle, item: `${PRODUCT.url}${prefix}/docs/` },
+  ],
+}];
+---
+
+<Base locale={locale} title={ui.metaTitle} description={ui.description} structuredData={structuredData}>
+  <CommercialChrome locale={locale} languageHref={locale === 'en' ? '/docs/' : '/en/docs/'}>
+    <main id="contenido" class="guides-main" tabindex="-1">
+      <section class="shell guides-hero" aria-labelledby="guides-title">
+        <a class="back" href={`${prefix}/`}><span aria-hidden="true">←</span>{ui.back}</a>
+        <div class="guides-hero__grid"><div><p class="eyebrow">{ui.eyebrow}</p><h1 id="guides-title">{ui.title}</h1></div><p>{ui.intro}</p></div>
+      </section>
+
+      <section class="shell guide-grid" aria-label={ui.eyebrow}>
+        {GUIDE_CATALOG.map((guide, index) => <article class="guide-card">
+          <div class="guide-card__top"><span>0{index + 1}</span><span>{local(guide.eyebrow)}</span></div>
+          <h2>{local(guide.title)}</h2><p class="guide-summary">{local(guide.summary)}</p>
+          <dl><div><dt>{ui.audience}</dt><dd>{local(guide.audience)}</dd></div><div><dt>{ui.outcome}</dt><dd>{local(guide.outcome)}</dd></div></dl>
+          <a href={guideUrl(guide, locale)}><span>{ui.guide}</span><span aria-hidden="true">↗</span></a>
+        </article>)}
+      </section>
+
+      <section class="contract" aria-labelledby="contract-title"><div class="shell">
+        <div class="section-heading"><div><p class="eyebrow">{ui.mapEyebrow}</p><h2 id="contract-title">{ui.mapTitle}</h2></div><p>{ui.mapIntro}</p></div>
+        <div class="contract-table" role="table" aria-label={ui.mapTitle}>
+          <div class="contract-row contract-row--head" role="row"><span role="columnheader">{ui.topic}</span><span role="columnheader">{ui.restaurant}</span><span role="columnheader">{ui.logic}</span><span role="columnheader">{ui.proposal}</span></div>
+          {ui.topics.map((row) => <div class="contract-row" role="row"><strong role="cell">{row[0]}</strong><span role="cell" data-label={ui.restaurant}>{row[1]}</span><span role="cell" data-label={ui.logic}>{row[2]}</span><span role="cell" data-label={ui.proposal}>{row[3]}</span></div>)}
+        </div>
+      </div></section>
+
+      <section class="shell guide-next" aria-labelledby="guide-next-title"><div><p class="eyebrow">{ui.nextEyebrow}</p><h2 id="guide-next-title">{ui.nextTitle}</h2></div><nav><a href={`${prefix}/planes/`}>{ui.plans}<span>↗</span></a><a href={`${prefix}/paneles/`}>{ui.panels}<span>↗</span></a><a href={`${prefix}/temas/`}>{ui.websites}<span>↗</span></a><a href={`${prefix}/#contacto`}>{ui.contact}<span>→</span></a></nav></section>
+    </main>
+  </CommercialChrome>
+</Base>
+
+<style>
+  .guides-main { overflow: clip; padding-bottom: clamp(90px, 11vw, 160px); }.guides-hero { padding-top: 28px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
+  .guides-hero__grid, .section-heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); align-items: end; gap: clamp(40px, 8vw, 120px); padding: clamp(38px, 6vw, 78px) 0 clamp(44px, 6vw, 72px); }.guides-hero h1 { max-width: 950px; margin: 0; font-size: clamp(3.3rem, 7.2vw, 7.2rem); font-weight: 600; letter-spacing: -.067em; line-height: .89; }.guides-hero__grid > p, .section-heading > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.22rem); line-height: 1.58; }
+  .guide-grid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; }.guide-card { display: flex; min-width: 0; flex-direction: column; grid-column: span 2; border: 1px solid rgb(0 0 0 / 12%); border-radius: 12px; padding: clamp(20px, 3vw, 30px); background: white; }.guide-card:nth-child(4) { grid-column: 2 / span 2; }.guide-card__top { display: flex; min-height: 48px; align-items: flex-start; justify-content: space-between; gap: 18px; color: var(--slate); font-size: .68rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }.guide-card__top span:last-child { max-width: 190px; text-align: right; }.guide-card h2 { margin: 26px 0 12px; font-size: clamp(2rem, 3.2vw, 3.45rem); letter-spacing: -.055em; line-height: .94; }.guide-summary { min-height: 104px; margin: 0; color: var(--slate); font-family: var(--serif); line-height: 1.52; }.guide-card dl { margin: 22px 0; }.guide-card dl div { border-top: 1px solid var(--line); padding: 13px 0; }.guide-card dt { color: var(--slate); font-size: .7rem; font-weight: 700; text-transform: uppercase; }.guide-card dd { margin: 6px 0 0; font-size: .82rem; line-height: 1.42; }.guide-card > a { display: flex; min-height: 50px; align-items: center; justify-content: space-between; margin-top: auto; border-radius: 8px; padding: 10px 13px; color: white; background: var(--color-notion-blue); font-size: .82rem; font-weight: 700; text-decoration: none; }
+  .contract { margin-top: clamp(90px, 12vw, 170px); padding: clamp(70px, 9vw, 120px) 0; background: var(--color-sky-tint); }.contract .section-heading { padding-top: 0; }.section-heading h2, .guide-next h2 { max-width: 860px; margin: 0; font-size: clamp(2.5rem, 5vw, 5.2rem); letter-spacing: -.058em; line-height: .94; }.contract-table { border-top: 1px solid rgb(0 0 0 / 16%); }.contract-row { display: grid; grid-template-columns: .45fr 1fr 1fr 1fr; gap: 18px; border-bottom: 1px solid rgb(0 0 0 / 16%); padding: 18px 0; }.contract-row strong { color: var(--color-notion-blue-strong); }.contract-row span { font-family: var(--serif); font-size: .9rem; line-height: 1.45; }.contract-row--head { color: var(--slate); padding-block: 12px; font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }.contract-row--head span { font-family: var(--sans); font-size: inherit; }
+  .guide-next { display: grid; grid-template-columns: 1fr .85fr; gap: clamp(45px, 8vw, 120px); align-items: end; margin-top: clamp(90px, 12vw, 170px); border-radius: 12px; padding: clamp(28px, 5vw, 58px); color: white; background: var(--color-midnight-ink); }.guide-next .eyebrow { color: var(--color-marigold); }.guide-next nav { display: grid; border-top: 1px solid rgb(255 255 255 / 25%); }.guide-next a { display: flex; min-height: 52px; align-items: center; justify-content: space-between; border-bottom: 1px solid rgb(255 255 255 / 25%); color: white; text-decoration: none; }
+  @media (max-width: 980px) { .guides-hero__grid, .section-heading, .guide-next { grid-template-columns: 1fr; }.guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.guide-card, .guide-card:nth-child(4) { grid-column: auto; }.guide-card:last-child { grid-column: 1 / -1; }.guide-summary { min-height: 0; }.guide-next { gap: 38px; } }
+  @media (max-width: 720px) { .guides-hero { padding-top: 16px; }.guides-hero__grid { gap: 28px; }.guides-hero h1 { font-size: clamp(3.15rem, 15vw, 5rem); }.guide-grid { grid-template-columns: 1fr; }.guide-card:last-child { grid-column: auto; }.contract-row { grid-template-columns: 1fr; gap: 7px; padding: 20px 0; }.contract-row--head { display: none; }.contract-row span::before { display: block; margin: 10px 0 3px; color: var(--slate); content: attr(data-label); font-family: var(--sans); font-size: .65rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }.guide-next { margin-inline: 14px; } }
+</style>
