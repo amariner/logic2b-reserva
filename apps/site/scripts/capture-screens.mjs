@@ -64,6 +64,7 @@ const scenes = [
     async prepare(page) {
       const widget = page.locator("[data-booking-widget]");
       await widget.waitFor({ state: "visible" });
+      await waitForHydration(page, "[data-booking-widget]");
       await widget.locator('select[name="partySize"]').selectOption("8");
       await widget.getByRole("button", { name: "Continuar" }).click();
       await widget.locator(".vw-times button").first().click();
@@ -136,7 +137,13 @@ const scenes = [
     state: "Depósito proporcional revisado en pasarela simulada",
     async prepare(page) {
       const widget = page.locator("[data-solane-booking-widget]");
+      await widget.waitFor({ state: "visible" });
+      await waitForHydration(page, "[data-solane-booking-widget]");
       await widget.locator('select[name="partySize"]').selectOption("4");
+      assert.equal(
+        await widget.locator('select[name="partySize"]').inputValue(),
+        "4",
+      );
       await widget.getByRole("button", { name: "Continuar" }).click();
       await widget.locator('[data-time="21:00"]').click();
       await widget.getByRole("button", { name: "Continuar" }).click();
@@ -279,7 +286,7 @@ const scenes = [
     captureOffset: { desktop: 250, mobile: 190 },
     async prepare(page) {
       await dismissCookieBanner(page);
-      const title = page.locator("#contact-title");
+      const title = page.locator("#commercial-closing-title-es");
       await title.waitFor({ state: "visible" });
       await title.scrollIntoViewIfNeeded();
     },
@@ -484,7 +491,7 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
       localStorage.clear();
       sessionStorage.clear();
     });
-    await page.reload({ waitUntil: "networkidle" });
+    await page.reload({ waitUntil: "load" });
     await scene.prepare(page);
     await settle(page);
     await page.addStyleTag({ content: captureStyles });
@@ -501,6 +508,7 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         captureOffset,
       );
     }
+    await settle(page);
     await page.waitForTimeout(50);
 
     const checks = await page.evaluate(() => {
@@ -544,9 +552,26 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         captureImagesReady: [...document.images]
           .filter((image) => {
             const box = image.getBoundingClientRect();
-            return box.bottom > 0 && box.top < innerHeight;
+            return (
+              box.bottom > 0 &&
+              box.top < innerHeight &&
+              box.right > 0 &&
+              box.left < innerWidth
+            );
           })
           .every((image) => image.complete && image.naturalWidth > 0),
+        incompleteCaptureImages: [...document.images]
+          .filter((image) => {
+            const box = image.getBoundingClientRect();
+            return (
+              box.bottom > 0 &&
+              box.top < innerHeight &&
+              box.right > 0 &&
+              box.left < innerWidth &&
+              (!image.complete || image.naturalWidth === 0)
+            );
+          })
+          .map((image) => image.currentSrc || image.src),
       };
     });
 
@@ -581,7 +606,7 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
     assert.equal(
       scene.commercial ? checks.captureImagesReady : checks.imagesReady,
       true,
-      "hay imágenes incompletas en el encuadre",
+      `hay imágenes incompletas en el encuadre: ${checks.incompleteCaptureImages.join(", ")}`,
     );
     assert.deepEqual(violations, []);
 
@@ -639,7 +664,7 @@ async function mapConcurrent(items, limit, operation) {
 }
 
 async function navigate(page, route) {
-  await page.goto(`${origin}${route}`, { waitUntil: "networkidle" });
+  await page.goto(`${origin}${route}`, { waitUntil: "load" });
   await settle(page);
 }
 
@@ -648,26 +673,55 @@ async function dismissCookieBanner(page) {
   if (await button.isVisible()) await button.click();
 }
 
+async function waitForHydration(page, selector) {
+  await page.waitForFunction((targetSelector) => {
+    const target = document.querySelector(targetSelector);
+    const island = target?.closest("astro-island");
+    return Boolean(target) && (!island || !island.hasAttribute("ssr"));
+  }, selector);
+}
+
 async function settle(page) {
-  await page.waitForLoadState("domcontentloaded");
+  await page.waitForLoadState("load");
   await page.evaluate(async () => {
-    await document.fonts.ready;
-    await Promise.all(
-      [...document.images]
-        .filter((image) => {
-          const box = image.getBoundingClientRect();
-          return image.loading !== "lazy" || (box.bottom > 0 && box.top < innerHeight);
-        })
-        .map(async (image) => {
-          if (!image.complete) {
-            await new Promise((resolveImage) => {
-              image.addEventListener("load", resolveImage, { once: true });
-              image.addEventListener("error", resolveImage, { once: true });
-            });
-          }
-          await image.decode().catch(() => undefined);
-        }),
-    );
+    const delay = (milliseconds) =>
+      new Promise((resolveDelay) => setTimeout(resolveDelay, milliseconds));
+    await Promise.race([
+      (async () => {
+        await Promise.race([document.fonts.ready, delay(2_000)]);
+        await Promise.all(
+          [...document.images]
+            .filter((image) => {
+              const box = image.getBoundingClientRect();
+              return (
+                image.loading !== "lazy" ||
+                (box.bottom > 0 &&
+                  box.top < innerHeight &&
+                  box.right > 0 &&
+                  box.left < innerWidth)
+              );
+            })
+            .map(async (image) => {
+              if (!image.complete) {
+                await Promise.race([
+                  new Promise((resolveImage) => {
+                    image.addEventListener("load", resolveImage, { once: true });
+                    image.addEventListener("error", resolveImage, {
+                      once: true,
+                    });
+                  }),
+                  delay(10_000),
+                ]);
+              }
+              await Promise.race([
+                image.decode().catch(() => undefined),
+                delay(10_000),
+              ]);
+            }),
+        );
+      })(),
+      delay(20_000),
+    ]);
   });
   await page.waitForTimeout(80);
 }

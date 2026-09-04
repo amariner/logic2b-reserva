@@ -1,0 +1,176 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
+import { SITE_CONTENT } from '../content';
+import CommercialLeadForm from './CommercialLeadForm.astro';
+
+interface Props { locale?: Locale; home?: boolean }
+
+const { locale = 'es', home = false } = Astro.props;
+const c = SITE_CONTENT[locale];
+const prefix = locale === 'en' ? '/en' : '';
+const contact = logic2bContact(locale, 'commercial');
+const ui = locale === 'en' ? {
+  eyebrow: 'See the operation before defining scope',
+  title: 'Open a real product view. Then tell us what needs ordering.',
+  body: 'The screens use fictional data and local state, but the decisions are specific: service, floor, groups, events and explainable reports.',
+  action: 'Discuss my project', demo: 'Open the guided demo',
+  proofs: ['Website under your own brand', 'One view of service capacity', 'Implementation defined with Logic2B'],
+  desktop: 'Solane · shared inventory', mobile: 'Vedra · group journey',
+  visualAlt: 'Logic Reserva workspace for shared restaurant capacity',
+  dialogEyebrow: 'A first step, without commitment', dialogTitle: 'Tell us what you want to organise.',
+  dialogBody: 'Share the essentials. Logic2B will review your operation before defining scope, integrations or price.',
+  direct: 'Prefer WhatsApp?', close: 'Close project enquiry',
+} : {
+  eyebrow: 'Ver la operativa antes de definir alcance',
+  title: 'Abre una vista real de producto. Después, cuéntanos qué necesitas ordenar.',
+  body: 'Las pantallas usan datos ficticios y estado local, pero las decisiones son específicas: servicio, plano, grupos, eventos e informes explicables.',
+  action: 'Hablar de mi proyecto', demo: 'Abrir la demo guiada',
+  proofs: ['Web bajo tu propia marca', 'Una sola capacidad de servicio', 'Implantación definida con Logic2B'],
+  desktop: 'Solane · inventario compartido', mobile: 'Vedra · recorrido de grupo',
+  visualAlt: 'Espacio de trabajo de Logic Reserva para la capacidad compartida del restaurante',
+  dialogEyebrow: 'Un primer paso, sin compromiso', dialogTitle: 'Cuéntanos qué quieres ordenar.',
+  dialogBody: 'Comparte lo esencial. Logic2B revisará tu operativa antes de concretar alcance, integraciones o precio.',
+  direct: '¿Prefieres WhatsApp?', close: 'Cerrar solicitud de proyecto',
+};
+---
+
+<section
+  id={home ? 'contacto' : 'proyecto'}
+  class:list={['commercial-closing', home && 'commercial-closing--home']}
+  data-home-block={home ? 'closing' : undefined}
+  aria-labelledby={`commercial-closing-title-${locale}`}
+>
+  <div class="shell commercial-closing__panel">
+    <div class="commercial-closing__copy">
+      <p class="eyebrow">{ui.eyebrow}</p>
+      <h2 id={`commercial-closing-title-${locale}`}>{ui.title}</h2>
+      <p>{ui.body}</p>
+      <div class="commercial-closing__actions">
+        <a class="commercial-closing__primary" href={`${prefix}/empezar/`} data-project-request-open aria-haspopup="dialog">{ui.action}<span aria-hidden="true">→</span></a>
+        <a href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.demo}<span aria-hidden="true">↗</span></a>
+      </div>
+      <ul>{ui.proofs.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
+    </div>
+    <div class="commercial-closing__visual" aria-label={ui.visualAlt}>
+      <img class="commercial-closing__photo" src="/images/screens/08-solane-riesgo-desktop.png" alt="" width="1366" height="900" loading="lazy" decoding="async" />
+      <figure class="commercial-closing__desktop">
+        <div><span></span><span></span><span></span><small>Logic Reserva</small></div>
+        <img src="/images/screens/05-solane-inventario-desktop.png" alt={ui.visualAlt} width="1366" height="900" loading="lazy" decoding="async" />
+        <figcaption>{ui.desktop}</figcaption>
+      </figure>
+      <figure class="commercial-closing__mobile">
+        <img src="/images/screens/04-vedra-grupo-mobile.png" alt="" width="375" height="812" loading="lazy" decoding="async" />
+        <figcaption>{ui.mobile}</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<dialog id="project-request-dialog" class="project-request-dialog" data-project-request-dialog aria-labelledby={`project-request-title-${locale}`}>
+  <div class="project-request-dialog__frame">
+    <button class="project-request-dialog__close" type="button" data-project-request-close aria-label={ui.close}>×</button>
+    <aside>
+      <p class="eyebrow">{ui.dialogEyebrow}</p>
+      <h2 id={`project-request-title-${locale}`}>{ui.dialogTitle}</h2>
+      <p>{ui.dialogBody}</p>
+      <figure><img src="/images/screens/03-vedra-reserva-desktop.png" alt="" width="1366" height="900" loading="lazy" decoding="async" /></figure>
+      <a href={contact.href} target="_blank" rel="noreferrer">{ui.direct}<span>{c.lead.whatsapp} ↗</span></a>
+    </aside>
+    <div class="project-request-dialog__form">
+      <CommercialLeadForm locale={locale} id="project-request-form" variant="dialog" />
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const projectDialog = document.querySelector<HTMLDialogElement>('[data-project-request-dialog]');
+  if (projectDialog && typeof projectDialog.showModal === 'function') {
+    let projectDialogOpener: HTMLElement | null = null;
+    const openProjectDialog = (trigger: HTMLElement) => {
+      projectDialogOpener = trigger;
+      if (!projectDialog.open) projectDialog.showModal();
+      document.documentElement.setAttribute('data-project-dialog-open', '');
+      requestAnimationFrame(() => projectDialog.querySelector<HTMLInputElement>('input[name="name"]')?.focus());
+    };
+    const closeProjectDialog = () => projectDialog.close();
+    document.querySelectorAll<HTMLElement>('[data-project-request-open]').forEach((trigger) => {
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        openProjectDialog(trigger);
+      });
+    });
+    projectDialog.querySelectorAll<HTMLElement>('[data-project-request-close]').forEach((control) => control.addEventListener('click', closeProjectDialog));
+    projectDialog.addEventListener('click', (event) => { if (event.target === projectDialog) closeProjectDialog(); });
+    projectDialog.addEventListener('close', () => {
+      document.documentElement.removeAttribute('data-project-dialog-open');
+      projectDialogOpener?.focus();
+      projectDialogOpener = null;
+    });
+  }
+</script>
+
+<style>
+  .commercial-closing { position: relative; overflow: hidden; padding: clamp(52px, 7vw, 96px) 0; background: linear-gradient(115deg, #dfff68 0 18%, #b5ef75 58%, #8de8c8 100%); }
+  .commercial-closing::before { position: absolute; inset: 0; opacity: .23; background-image: radial-gradient(circle at 12% 18%, white 0 1px, transparent 1.5px); background-size: 18px 18px; content: ''; }
+  .commercial-closing__panel { position: relative; display: grid; min-height: 650px; grid-template-columns: minmax(0, .9fr) minmax(520px, 1.1fr); gap: clamp(35px, 6vw, 92px); overflow: hidden; border-radius: 28px; padding: clamp(34px, 6vw, 78px); background: white; box-shadow: 0 35px 100px rgb(3 29 49 / 15%); }
+  .commercial-closing__copy { position: relative; z-index: 2; display: flex; max-width: 670px; flex-direction: column; justify-content: center; }
+  .commercial-closing__copy .eyebrow { color: var(--color-notion-blue-strong); }
+  .commercial-closing__copy h2 { margin: 0; font-size: clamp(3.1rem, 6vw, 6.5rem); font-weight: 620; letter-spacing: -.068em; line-height: .88; text-wrap: balance; }
+  .commercial-closing__copy > p:not(.eyebrow) { max-width: 58ch; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1rem, 1.3vw, 1.15rem); line-height: 1.58; }
+  .commercial-closing__actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 30px; }
+  .commercial-closing__actions a { display: inline-flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--ink); background: white; font-size: .78rem; font-weight: 720; text-decoration: none; }
+  .commercial-closing__actions .commercial-closing__primary { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
+  .commercial-closing__copy ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 34px 0 0; padding: 0; list-style: none; }
+  .commercial-closing__copy li { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; border-radius: 999px; padding: 7px 10px; color: var(--slate); background: var(--color-sky-tint); font-size: .69rem; font-weight: 680; }
+  .commercial-closing__copy li span { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; color: white; background: var(--color-notion-blue); font-size: .57rem; }
+  .commercial-closing__visual { position: relative; min-height: 500px; align-self: stretch; }
+  .commercial-closing__photo { position: absolute; inset: 0 0 auto auto; width: 78%; height: 100%; border-radius: 24px; object-fit: cover; filter: saturate(.88); }
+  .commercial-closing__desktop { position: absolute; top: 20%; right: 9%; width: 84%; overflow: hidden; margin: 0; border: 7px solid var(--color-midnight-ink); border-radius: 15px; background: white; box-shadow: 0 28px 70px rgb(2 9 58 / 30%); transform: rotate(-2deg); }
+  .commercial-closing__desktop > div { display: flex; height: 30px; align-items: center; gap: 5px; padding: 0 10px; color: white; background: var(--color-midnight-ink); }
+  .commercial-closing__desktop > div span { width: 6px; height: 6px; border-radius: 50%; background: rgb(255 255 255 / 38%); }
+  .commercial-closing__desktop > div small { margin-left: auto; font-size: .55rem; }
+  .commercial-closing__desktop img { display: block; width: 100%; }
+  .commercial-closing__desktop figcaption, .commercial-closing__mobile figcaption { position: absolute; right: 8px; bottom: 8px; border-radius: 999px; padding: 5px 8px; color: white; background: rgb(2 9 58 / 74%); font-size: .55rem; font-weight: 700; }
+  .commercial-closing__mobile { position: absolute; z-index: 2; right: 0; bottom: 3%; width: 27%; overflow: hidden; margin: 0; border: 6px solid var(--color-midnight-ink); border-radius: 22px; background: white; box-shadow: 0 22px 55px rgb(2 9 58 / 30%); transform: rotate(3deg); }
+  .commercial-closing__mobile img { display: block; width: 100%; }
+  .project-request-dialog { width: min(1040px, calc(100vw - 28px)); max-width: none; max-height: min(850px, calc(100dvh - 28px)); overflow: visible; border: 0; border-radius: 22px; padding: 0; color: var(--ink); background: transparent; }
+  .project-request-dialog::backdrop { background: rgb(2 9 58 / 76%); backdrop-filter: blur(8px); }
+  .project-request-dialog__frame { position: relative; display: grid; max-height: min(850px, calc(100dvh - 28px)); grid-template-columns: minmax(300px, .72fr) minmax(480px, 1.28fr); overflow: auto; border-radius: 22px; background: white; box-shadow: 0 35px 110px rgb(0 0 0 / 38%); }
+  .project-request-dialog__close { position: absolute; z-index: 3; top: 14px; right: 14px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--slate); background: white; box-shadow: var(--shadow-nav); cursor: pointer; font-size: 1.35rem; }
+  .project-request-dialog aside { display: flex; min-height: 690px; flex-direction: column; padding: clamp(30px, 4vw, 52px); color: white; background: var(--color-midnight-ink); }
+  .project-request-dialog aside .eyebrow { color: var(--color-sky-wash); }
+  .project-request-dialog aside h2 { margin: 4px 0 0; font-size: clamp(2.5rem, 4.7vw, 4.8rem); letter-spacing: -.06em; line-height: .9; }
+  .project-request-dialog aside > p:not(.eyebrow) { margin: 24px 0 0; color: rgb(255 255 255 / 70%); font-family: var(--serif); line-height: 1.55; }
+  .project-request-dialog aside figure { overflow: hidden; margin: auto 0 22px; border-radius: 12px; }
+  .project-request-dialog aside img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+  .project-request-dialog aside > a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; border-top: 1px solid rgb(255 255 255 / 16%); padding-top: 12px; color: white; font-size: .74rem; font-weight: 700; text-decoration: none; }
+  .project-request-dialog aside > a span { color: var(--color-sky-wash); }
+  .project-request-dialog__form { overflow-y: auto; padding: clamp(30px, 5vw, 58px); }
+  @media (max-width: 1050px) {
+    .commercial-closing__panel { min-height: 0; grid-template-columns: 1fr; }
+    .commercial-closing__copy { max-width: 820px; }
+    .commercial-closing__visual { min-height: 560px; }
+  }
+  @media (max-width: 760px) {
+    .commercial-closing { padding-block: 24px; }
+    .commercial-closing .shell { width: min(100% - 20px, var(--page-max-width)); }
+    .commercial-closing__panel { gap: 34px; border-radius: 20px; padding: 30px 22px 22px; }
+    .commercial-closing__copy h2 { font-size: clamp(3.1rem, 15vw, 5rem); }
+    .commercial-closing__copy li:nth-child(3) { display: none; }
+    .commercial-closing__actions { display: grid; }
+    .commercial-closing__visual { min-height: 390px; }
+    .commercial-closing__photo { width: 87%; }
+    .commercial-closing__desktop { top: 16%; right: 5%; width: 91%; }
+    .commercial-closing__mobile { width: 28%; }
+    .project-request-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
+    .project-request-dialog__frame { max-height: calc(100dvh - 16px); grid-template-columns: 1fr; border-radius: 17px; }
+    .project-request-dialog aside { min-height: auto; padding: 30px 24px; }
+    .project-request-dialog aside h2 { max-width: 540px; padding-right: 40px; }
+    .project-request-dialog aside figure { display: none; }
+    .project-request-dialog aside > a { margin-top: 24px; }
+    .project-request-dialog__form { padding: 26px 20px 30px; }
+  }
+  @media (max-width: 460px) { .commercial-closing__visual { min-height: 320px; }.commercial-closing__mobile { border-width: 4px; }.commercial-closing__desktop { border-width: 5px; } }
+  @media (prefers-reduced-motion: reduce) { .project-request-dialog::backdrop { backdrop-filter: none; } }
+</style>

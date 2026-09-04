@@ -10,6 +10,8 @@ interface Props { locale?: Locale }
 const { locale = 'es' } = Astro.props;
 const prefix = locale === 'en' ? '/en' : '';
 const contact = logic2bContact(locale, 'commercial');
+const languagePath = locale === 'en' ? '/empezar/' : '/en/empezar/';
+const languageHref = `${languagePath}${Astro.url.search}`;
 const ui = locale === 'en' ? {
   metaTitle: 'Discuss your restaurant project | Logic Reserva',
   description: 'Tell Logic2B what your restaurant needs and keep the selected Logic Reserva plan, website or product view in one focused project enquiry.',
@@ -46,7 +48,7 @@ const structuredData = [{
 ---
 
 <Base locale={locale} title={ui.metaTitle} description={ui.description} structuredData={structuredData}>
-  <CommercialChrome locale={locale} languageHref={locale === 'en' ? '/empezar/' : '/en/empezar/'}>
+  <CommercialChrome locale={locale} languageHref={languageHref}>
     <main id="contenido" class="start-main" tabindex="-1">
       <section class="shell start-grid" aria-labelledby="start-title">
         <div class="start-copy">
@@ -57,7 +59,7 @@ const structuredData = [{
           <ul>{ui.proofs.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
           <aside><strong>{ui.direct}</strong><a href={contact.href} target="_blank" rel="noreferrer">{ui.whatsapp}<span aria-hidden="true">↗</span></a></aside>
         </div>
-        <div class="start-form">
+        <div id="solicitud" class="start-form">
           <div class="start-form__heading"><p class="eyebrow">{ui.formEyebrow}</p><h2>{ui.formTitle}</h2><p>{ui.formBody}</p></div>
           <CommercialLeadForm locale={locale} />
           <p class="start-boundary">{ui.boundary}</p>

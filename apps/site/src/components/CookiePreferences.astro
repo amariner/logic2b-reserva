@@ -105,6 +105,7 @@ const ui = locale === 'en'
 
   if (cookieDialog && typeof cookieDialog.showModal === 'function' && cookieOpeners.length > 0) {
     document.documentElement.classList.add('cookie-preferences-ready');
+    cookieOpeners.forEach((opener) => { opener.hidden = false; });
     cookieOpeners.forEach((opener) => opener.addEventListener('click', () => {
       if (analyticsPreference) analyticsPreference.checked = readCookieChoice() === 'analytics';
       cookieDialog.showModal();
@@ -126,8 +127,9 @@ const ui = locale === 'en'
 </script>
 
 <style is:global>
-  [data-cookie-preferences] { display: none; }
-  .cookie-preferences-ready [data-cookie-preferences] { display: inline-flex; }
+  [data-cookie-preferences], .footer-bottom button[data-cookie-preferences] { display: none; }
+  [data-cookie-preferences][hidden] { display: none !important; }
+  .cookie-preferences-ready [data-cookie-preferences], .cookie-preferences-ready .footer-bottom button[data-cookie-preferences] { display: inline-flex; }
   .cookie-banner { position: fixed; z-index: 60; right: 20px; bottom: 20px; width: min(400px, calc(100% - 40px)); border: 1px solid var(--line); border-radius: 12px; padding: 18px; background: white; box-shadow: 0 20px 56px rgb(7 14 43 / 18%); }
   .cookie-banner[hidden] { display: none; }
   .cookie-banner p { margin: 0 0 14px; color: var(--slate); font-size: .84rem; line-height: 1.45; }

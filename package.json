@@ -4,7 +4,9 @@
   "type": "module",
   "version": "0.1.0",
   "packageManager": "pnpm@11.10.0",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "pnpm --filter @logic-reserva/worker dev",
     "build": "turbo run build",
@@ -34,6 +36,6 @@
     "typescript": "^5.8.0",
     "typescript-eslint": "^8.36.0",
     "vitest": "^3.2.7",
-    "wrangler": "^4.111.0"
+    "wrangler": "^4.128.0"
   }
 }

@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
 import { SITE_CONTENT } from '../content';
 import BrandLockup from './BrandLockup.astro';
 
@@ -9,11 +10,13 @@ const { locale = 'es', home = false, languageHref: requestedLanguageHref } = Ast
 const c = SITE_CONTENT[locale];
 const prefix = locale === 'en' ? '/en' : '';
 const languageHref = requestedLanguageHref ?? (locale === 'en' ? '/' : '/en/');
-const contactHref = home ? '#contacto' : `${prefix}/#contacto`;
+const contact = logic2bContact(locale, 'commercial');
 const ui = locale === 'en' ? {
-  navigation: 'Main navigation', language: 'ES', menu: 'Menu', contact: 'Contact', product: 'How it works', groups: 'Groups and events',
+  navigation: 'Main navigation', language: 'ES', menu: 'Open menu', closeMenu: 'Close menu',
+  contact: 'Contact', product: 'How it works', groups: 'Groups and events', menuLabel: 'Explore Logic Reserva',
 } : {
-  navigation: 'Navegación principal', language: 'EN', menu: 'Menú', contact: 'Contactar', product: 'Cómo funciona', groups: 'Grupos y eventos',
+  navigation: 'Navegación principal', language: 'EN', menu: 'Abrir menú', closeMenu: 'Cerrar menú',
+  contact: 'Contactar', product: 'Cómo funciona', groups: 'Grupos y eventos', menuLabel: 'Explorar Logic Reserva',
 };
 const navItems = [
   { href: `${prefix}/temas/`, label: c.nav.webs },
@@ -34,42 +37,119 @@ const mobileNavItems = [
       {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
     </nav>
     <div class="nav-actions">
-      <a class="language-link" href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a>
-      <a class="nav-contact" href={contactHref}>{ui.contact}</a>
-      <a class="pill nav-cta" href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{c.nav.route}<span aria-hidden="true">→</span></a>
-      <details class="mobile-menu">
-        <summary>{ui.menu}<span aria-hidden="true">+</span></summary>
-        <nav aria-label={ui.navigation}>{mobileNavItems.map((item) => <a href={item.href}>{item.label}</a>)}<a href={contactHref}>{c.nav.contact}</a><a href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{c.nav.route}</a></nav>
-      </details>
+      <a class="language-link" data-context-language-link href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a>
+      <a class="site-header-contact" href={contact.href} target="_blank" rel="noreferrer">{ui.contact}<span aria-hidden="true">↗</span></a>
+      <a class="pill site-header-start" href={`${prefix}/?recorrido=intro`} data-tour-trigger data-camp-tour-trigger aria-haspopup="dialog">{c.nav.route}<span aria-hidden="true">→</span></a>
+      <button
+        class="site-menu-toggle"
+        type="button"
+        aria-expanded="false"
+        aria-controls={`site-menu-${locale}`}
+        aria-label={ui.menu}
+        data-open-label={ui.menu}
+        data-close-label={ui.closeMenu}
+      >
+        <span aria-hidden="true"></span><span aria-hidden="true"></span>
+      </button>
+    </div>
+    <div id={`site-menu-${locale}`} class="site-menu" data-site-menu hidden>
+      <p>{ui.menuLabel}</p>
+      <nav aria-label={ui.navigation}>
+        {mobileNavItems.map((item, index) => <a href={item.href}><span>0{index + 1}</span>{item.label}<i aria-hidden="true">↗</i></a>)}
+      </nav>
+      <div class="site-menu__actions">
+        <a href={contact.href} target="_blank" rel="noreferrer">{ui.contact}<span aria-hidden="true">↗</span></a>
+        <a href={`${prefix}/?recorrido=intro`} data-tour-trigger data-camp-tour-trigger aria-haspopup="dialog">{c.nav.route}<span aria-hidden="true">→</span></a>
+        <a data-context-language-link href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a>
+      </div>
     </div>
   </div>
 </header>
 
 <script>
-  document.querySelectorAll<HTMLDetailsElement>('.mobile-menu').forEach((menu) => {
-    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => { menu.open = false; }));
+  document.querySelectorAll<HTMLElement>('.site-header').forEach((header) => {
+    const toggle = header.querySelector<HTMLButtonElement>('.site-menu-toggle');
+    const menu = header.querySelector<HTMLElement>('[data-site-menu]');
+    if (!toggle || !menu) return;
+
+    let cookieWasHidden = false;
+    const setCookieSuspended = (suspended: boolean) => {
+      const cookieBanner = document.querySelector<HTMLElement>('[data-cookie-banner]');
+      if (!cookieBanner) return;
+      if (suspended) {
+        cookieWasHidden = cookieBanner.hidden;
+        cookieBanner.dataset.suspendedByMenu = 'true';
+        cookieBanner.hidden = true;
+      } else if (cookieBanner.dataset.suspendedByMenu === 'true') {
+        cookieBanner.hidden = cookieWasHidden;
+        delete cookieBanner.dataset.suspendedByMenu;
+      }
+    };
+    const setOpen = (open: boolean) => {
+      toggle.setAttribute('aria-expanded', String(open));
+      toggle.setAttribute('aria-label', open ? toggle.dataset.closeLabel ?? '' : toggle.dataset.openLabel ?? '');
+      menu.hidden = !open;
+      header.toggleAttribute('data-menu-open', open);
+      document.documentElement.toggleAttribute('data-commercial-menu-open', open);
+      setCookieSuspended(open);
+    };
+    const isOpen = () => toggle.getAttribute('aria-expanded') === 'true';
+
+    toggle.addEventListener('click', () => setOpen(!isOpen()));
+    menu.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setOpen(false)));
+    document.addEventListener('click', (event) => {
+      if (isOpen() && event.target instanceof Node && !header.contains(event.target)) setOpen(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || !isOpen()) return;
+      setOpen(false);
+      toggle.focus();
+    });
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => { if (event.matches) setOpen(false); });
   });
 </script>
 
 <style>
-  .site-header { position: sticky; z-index: 50; top: 0; right: 0; left: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
+  .site-header { position: sticky; z-index: 70; top: 0; right: 0; left: 0; height: 72px; padding-top: 8px; pointer-events: none; }
   .site-header--home { position: fixed; }
-  .nav-shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
+  .nav-shell { position: relative; display: flex; height: 56px; align-items: center; justify-content: space-between; gap: 18px; border: 1px solid rgb(0 0 0 / 8%); border-radius: 999px; padding: 5px 7px 5px 18px; background: rgb(255 254 252 / 88%); box-shadow: 0 12px 40px rgb(10 24 54 / 8%), var(--shadow-nav); backdrop-filter: blur(18px); pointer-events: auto; }
   .main-nav { display: flex; align-items: center; gap: 2px; }
-  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 11px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
+  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 999px; padding: 9px 12px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 580; text-decoration: none; transition: color 180ms ease, background-color 180ms ease; }
   .main-nav a:hover, .language-link:hover { color: var(--ink); background: rgb(0 0 0 / 4%); }
-  .nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
-  .nav-contact { display: inline-flex; min-height: 44px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; color: var(--slate); font-size: .78rem; font-weight: 600; text-decoration: none; }
-  .nav-contact:hover { color: var(--ink); border-color: rgb(0 0 0 / 20%); background: white; }
-  .nav-cta { min-height: 44px; border-radius: 999px; padding-inline: 17px; }
-  .mobile-menu { position: relative; display: none; width: max-content; flex: 0 0 auto; }
-  .mobile-menu summary { display: flex; min-height: 44px; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 10px; color: var(--slate); cursor: pointer; font-size: .8rem; font-weight: 600; list-style: none; }
-  .mobile-menu summary::-webkit-details-marker { display: none; }
-  .mobile-menu summary span { font-size: 1.1rem; transition: transform 180ms ease; }
-  .mobile-menu[open] summary span { transform: rotate(45deg); }
-  .mobile-menu nav { position: absolute; top: calc(100% + 8px); right: 0; display: grid; width: min(310px, calc(100vw - 28px)); overflow: hidden; border: 1px solid var(--line); border-radius: 12px; padding: 8px; background: white; box-shadow: var(--shadow-artifact); }
-  .mobile-menu nav a { display: flex; min-height: 46px; align-items: center; border-radius: 8px; padding: 10px 12px; color: var(--slate); font-size: .84rem; font-weight: 550; text-decoration: none; }
-  .mobile-menu nav a:hover { color: var(--ink); background: var(--color-sky-tint); }
-  @media (max-width: 1120px) { .main-nav { display: none; }.mobile-menu { display: inline-block; } }
-  @media (max-width: 640px) { .nav-contact, .nav-cta { display: none; }.site-header .shell { width: min(100% - 24px, var(--page-max-width)); } }
+  .nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 3px; }
+  .site-header-contact, .site-header-start { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 10px; border-radius: 999px; padding: 8px 15px; font-size: .78rem; font-weight: 650; text-decoration: none; white-space: nowrap; }
+  .site-header-contact { border: 1px solid var(--line); color: var(--slate); background: rgb(255 255 255 / 72%); }
+  .site-header-contact:hover { color: var(--ink); border-color: rgb(0 0 0 / 18%); background: white; }
+  .site-header-start { padding-inline: 17px; }
+  .site-menu-toggle { position: relative; display: none; width: 44px; height: 44px; place-items: center; border: 0; border-radius: 50%; padding: 0; color: white; background: var(--color-midnight-ink); cursor: pointer; }
+  .site-menu-toggle span { position: absolute; width: 17px; height: 1.5px; border-radius: 2px; background: currentColor; transition: transform 180ms ease, translate 180ms ease; }
+  .site-menu-toggle span:first-child { translate: 0 -3px; }
+  .site-menu-toggle span:last-child { translate: 0 3px; }
+  [data-menu-open] .site-menu-toggle span:first-child { translate: 0; transform: rotate(45deg); }
+  [data-menu-open] .site-menu-toggle span:last-child { translate: 0; transform: rotate(-45deg); }
+  .site-menu { position: absolute; z-index: -1; top: 64px; right: 0; width: min(420px, calc(100vw - 48px)); overflow: hidden; border: 1px solid rgb(0 0 0 / 9%); border-radius: 20px; padding: 22px; color: white; background: var(--color-midnight-ink); box-shadow: 0 30px 80px rgb(2 9 58 / 30%); }
+  .site-menu[hidden] { display: none; }
+  .site-menu > p { margin: 0 0 14px; color: rgb(255 255 255 / 54%); font-size: .67rem; font-weight: 750; letter-spacing: .09em; text-transform: uppercase; }
+  .site-menu nav { display: grid; }
+  .site-menu nav a { display: grid; min-height: 55px; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; border-top: 1px solid rgb(255 255 255 / 12%); color: white; font-size: 1rem; font-weight: 620; text-decoration: none; }
+  .site-menu nav a > span { color: rgb(255 255 255 / 42%); font-size: .65rem; }
+  .site-menu nav a > i { color: var(--color-sky-wash); font-style: normal; }
+  .site-menu__actions { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; margin-top: 16px; }
+  .site-menu__actions a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; border-radius: 999px; padding: 9px 14px; color: var(--color-midnight-ink); background: white; font-size: .74rem; font-weight: 720; text-decoration: none; }
+  .site-menu__actions a:nth-child(2) { color: white; background: var(--color-notion-blue); }
+  .site-menu__actions a:last-child { justify-content: center; color: white; border: 1px solid rgb(255 255 255 / 20%); background: transparent; }
+  @media (max-width: 1279px) { .main-nav { display: none; }.site-menu-toggle { display: grid; } }
+  @media (max-width: 700px) {
+    .site-header { padding-top: 7px; }
+    .site-header .shell { width: min(100% - 20px, var(--page-max-width)); }
+    .nav-shell { height: 57px; padding-left: 14px; }
+    .site-menu { top: 65px; right: -1px; width: calc(100vw - 20px); max-height: calc(100dvh - 84px); overflow-y: auto; }
+  }
+  @media (max-width: 560px) { .language-link, .site-header-contact, .site-header-start { display: none; } }
+  @media (max-width: 430px) {
+    .site-menu { padding: 18px; border-radius: 17px; }
+    .site-menu__actions { grid-template-columns: 1fr 1fr; }
+    .site-menu__actions a:last-child { grid-column: 1 / -1; }
+  }
+  @media (prefers-reduced-motion: reduce) { .nav-shell { backdrop-filter: none; }.site-menu-toggle span { transition: none; } }
 </style>

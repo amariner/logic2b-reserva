@@ -72,7 +72,10 @@ const itemList = {
           <p class="eyebrow">{ui.eyebrow}</p>
           <h1 id="themes-title">{ui.title}</h1>
         </div>
-        <p>{ui.intro}</p>
+        <div class="themes-intro__aside">
+          <strong aria-hidden="true">{String(THEME_CATALOG.length).padStart(2, '0')}</strong>
+          <p>{ui.intro}</p>
+        </div>
       </div>
     </section>
 
@@ -110,16 +113,13 @@ const itemList = {
         {THEME_CATALOG.map((theme, index) => {
           const searchable = [theme.name, theme.format.es, theme.format.en, theme.location.es, theme.location.en, theme.tone.es, theme.tone.en].join(' ').toLocaleLowerCase();
           const visualStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${theme.palette.accent};--theme-paper:${theme.palette.paper};--theme-ink:${theme.palette.ink};--theme-muted:${theme.palette.muted};`;
-          const imageBase = 'imageBase' in theme ? theme.imageBase : undefined;
           return (
             <article class="theme-card" data-theme-card data-depth={theme.depth} data-format={theme.format.es} data-search={searchable} style={visualStyle}>
               <div class:list={['theme-visual', `theme-visual--${theme.layout}`, `theme-visual--${theme.type}`]} aria-hidden="true">
-                {imageBase ? (
-                  <picture>
-                    <source type="image/avif" srcset={`${imageBase}-640.avif 640w, ${imageBase}-1600.avif 1600w`} sizes="(max-width: 760px) calc(100vw - 28px), (max-width: 1100px) 50vw, 33vw" />
-                    <img src={`${imageBase}-640.avif`} alt="" width="640" height="480" loading={index === 0 ? 'eager' : 'lazy'} decoding="async" />
-                  </picture>
-                ) : <div class="theme-shape"></div>}
+                <picture>
+                  <source media="(max-width: 680px)" srcset={`/images/screens/${theme.screenshotBase}-mobile.png`} />
+                  <img src={`/images/screens/${theme.screenshotBase}-desktop.png`} alt="" width="1366" height="900" loading={index < 3 ? 'eager' : 'lazy'} decoding="async" />
+                </picture>
                 <span class="theme-index">{String(index + 1).padStart(2, '0')}</span>
                 <span class="theme-mark">{theme.mark}</span>
                 <strong>{theme.name}</strong>
@@ -184,15 +184,21 @@ const itemList = {
       if (status && label) status.textContent = `${visible} ${label.textContent}`;
     };
     form?.addEventListener('input', apply);
+    form?.addEventListener('submit', (event) => {
+      event.preventDefault();
+      apply();
+    });
     form?.addEventListener('reset', () => requestAnimationFrame(apply));
   }
 </script>
 
 <style>
   .themes-main { padding-bottom: clamp(80px, 10vw, 150px); }.themes-intro { padding-top: 34px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
-  .themes-intro__grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .55fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(42px, 7vw, 90px) 0 clamp(44px, 6vw, 72px); }
+  .themes-intro__grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(300px, .55fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(42px, 7vw, 90px) 0 clamp(44px, 6vw, 72px); }
   .themes-intro h1 { max-width: 980px; margin: 0; font-size: clamp(3.2rem, 7.4vw, 7.4rem); font-weight: 600; letter-spacing: -.064em; line-height: .9; }
-  .themes-intro__grid > p { margin: 0 0 4px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.55; }
+  .themes-intro__aside { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
+  .themes-intro__aside strong { color: var(--ink); font-size: clamp(4.5rem, 7vw, 7.25rem); font-weight: 520; letter-spacing: -.075em; line-height: .76; }
+  .themes-intro__aside p { margin: 0 0 4px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.55; }
   .catalogue { scroll-margin-top: 90px; }.theme-filters { display: grid; grid-template-columns: minmax(250px, 1.4fr) minmax(310px, 1fr) minmax(190px, .7fr) auto; gap: 12px; align-items: end; border-block: 1px solid var(--line); padding: 18px 0; }
   .theme-filters label, .theme-filters legend { display: block; margin: 0 0 8px; color: var(--slate); font-size: .72rem; font-weight: 650; letter-spacing: .035em; }
   .search-control span { position: relative; display: block; }.search-control svg { position: absolute; top: 50%; left: 14px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; transform: translateY(-50%); }
@@ -214,7 +220,7 @@ const itemList = {
   .theme-depth { display: grid; grid-template-columns: auto 1fr; gap: 9px; align-items: start; margin: 22px 0; border-top: 1px solid var(--line); padding-top: 16px; }.theme-depth > span { display: inline-flex; min-height: 26px; align-items: center; border-radius: 999px; padding: 4px 8px; color: #665000; background: #fff1b8; font-size: .67rem; font-weight: 700; }.theme-depth > span[data-depth='deep'] { color: #185c36; background: #dcf3e6; }.theme-depth p { margin: 2px 0 0; color: var(--slate); font-size: .73rem; line-height: 1.35; }
   .theme-card details { border-block: 1px solid var(--line); }.theme-card summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; color: var(--slate); font-size: .76rem; cursor: pointer; list-style: none; }.theme-card summary::-webkit-details-marker { display: none; }.theme-card summary span { font-size: 1.2rem; transition: transform 180ms ease; }.theme-card details[open] summary span { transform: rotate(45deg); }.theme-card dl { margin: 0 0 16px; }.theme-card dl div { display: grid; grid-template-columns: 105px 1fr; gap: 8px; padding: 6px 0; }.theme-card dt { color: var(--slate); font-size: .68rem; }.theme-card dd { margin: 0; font-size: .78rem; line-height: 1.35; }
   .theme-card__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }.theme-card__actions a { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; padding: 10px 13px; font-size: .78rem; font-weight: 700; text-decoration: none; }.theme-details { color: white; background: var(--theme-primary); }.theme-open { border: 1px solid color-mix(in srgb, var(--theme-primary) 30%, transparent); color: var(--theme-primary); background: white; }.theme-card__actions a:hover { color: white; background: var(--theme-ink); }.empty-state { margin: 0; border: 1px dashed var(--line); border-radius: 12px; padding: 60px 20px; color: var(--slate); text-align: center; }
-  @media (max-width: 1080px) { .theme-filters { grid-template-columns: 1fr 1fr; }.theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reset-control { justify-self: stretch; }.themes-intro__grid { grid-template-columns: 1fr; }.themes-intro__grid > p { max-width: 55ch; } }
-  @media (max-width: 680px) { .themes-intro { padding-top: 18px; }.themes-intro__grid { gap: 26px; padding-top: 32px; }.themes-intro h1 { font-size: clamp(3rem, 16vw, 4.7rem); }.theme-filters { grid-template-columns: 1fr; }.theme-grid { grid-template-columns: 1fr; }.theme-visual { min-height: 250px; }.theme-card__actions { grid-template-columns: 1fr; } }
+  @media (max-width: 1080px) { .theme-filters { grid-template-columns: 1fr 1fr; }.theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reset-control { justify-self: stretch; }.themes-intro__grid { grid-template-columns: 1fr; }.themes-intro__aside { max-width: 680px; } }
+  @media (max-width: 680px) { .themes-intro { padding-top: 18px; }.themes-intro__grid { gap: 26px; padding-top: 32px; }.themes-intro h1 { font-size: clamp(3rem, 16vw, 4.7rem); }.themes-intro__aside { grid-template-columns: 64px 1fr; gap: 16px; }.themes-intro__aside strong { font-size: 4rem; }.theme-filters { grid-template-columns: 1fr; }.theme-grid { grid-template-columns: 1fr; }.theme-visual { min-height: 250px; }.theme-card__actions { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { .theme-card summary span { transition: none; } }
 </style>

@@ -38,15 +38,11 @@ export const SITE_CONTENT = {
       note: 'Escenario navegable de Solane · Datos ficticios, sin cobros reales',
       capture: { title: '¿Por dónde empezar?', body: 'Déjanos un correo profesional y te enseñamos el recorrido que encaja mejor.', name: 'Tu nombre', email: 'Tu correo profesional', level: 'Punto de partida', privacy: 'Acepto que Logic2B use estos datos para responder.', submit: 'Ver mi punto de partida', restaurant: 'Captación breve desde Logic Reserva', message: 'Quiero conocer el punto de partida de Logic Reserva.' },
     },
-    ecosystem: {
-      eyebrow: 'Ecosistema con contexto',
-      title: 'Cada conexión tiene un estado.',
-      intro: 'La demo deja claro qué está disponible, qué se demuestra y qué necesitaría un proyecto real antes de activarse.',
-      items: [
-        { name: 'Web propia', state: 'Demostrado', body: 'Brasca, Vedra y Solane muestran recorridos con identidad de restaurante.' },
-        { name: 'Pagos y depósitos', state: 'Por proyecto', body: 'La regla de depósito se informa y simula; no se realiza ningún cobro.' },
-        { name: 'Asistentes y automatización', state: 'Demostrativo', body: 'Solane enseña decisiones deterministas sin IA conectada ni proveedor externo.' },
-      ],
+    parity: {
+      heroBefore: 'Gestiona', heroWords: ['reservas', 'grupos', 'la sala'], heroAfter: 'sin complicarte.', heroAria: 'Gestiona reservas, grupos y la sala sin complicarte.',
+      heroShortcutDemo: 'Ver una web real', heroShortcutTour: 'Ver cómo funciona', heroShortcutManager: 'Probarlo en recepción',
+      heroPause: 'Pausar escaparate de webs', heroResume: 'Reanudar escaparate de webs', sliderPrevious: 'Tarjetas anteriores', sliderNext: 'Tarjetas siguientes',
+      pricingMode: 'Punto de partida', pricingContinuity: 'Evolución', pricingLabel: 'Vista de los planes', themeSliderLabel: 'Controles del carrusel de webs', panelSliderLabel: 'Controles del carrusel de paneles',
     },
     journey: {
       eyebrow: 'Del primer clic a la decisión de sala',
@@ -74,16 +70,6 @@ export const SITE_CONTENT = {
         { id: 'sala', label: 'Sala', level: 'Gestión', result: 'El equipo decide con el plano delante.', capabilities: ['Plano por sala', 'Transiciones de servicio', 'Lista de espera local'], limit: 'Los roles de la demo orientan la experiencia, pero no sustituyen autenticación ni permisos de producción.', evidence: 'Evidencia: gestor de Vedra', action: 'Abrir evidencia de sala' },
         { id: 'grupos', label: 'Grupos y eventos', level: 'Inteligente', result: 'El evento consume la capacidad que realmente necesita.', capabilities: ['Aforo y mesas compartidos', 'Menú y condiciones trazables', 'Privatización guiada'], limit: 'Las señales y depósitos se simulan; proveedor, contrato y cobro se validan por proyecto.', evidence: 'Evidencia: eventos de Solane', action: 'Abrir evidencia de eventos' },
         { id: 'operativa', label: 'Operativa', level: 'Inteligente', result: 'Los informes convierten el servicio en una conversación.', capabilities: ['CRM y exportación local', 'Escenarios hipotéticos', 'Señales consultivas explicables'], limit: 'Los datos son ficticios y locales; no son contabilidad, predicción ni una decisión automática.', evidence: 'Evidencia: informes de Solane', action: 'Abrir evidencia operativa' },
-      ],
-    },
-    connections: {
-      eyebrow: 'Conexiones con contexto',
-      title: 'La plataforma no promete lo que aún no está conectado.',
-      intro: 'Herramientas, pagos y asistentes aparecen como decisiones de alcance, con su madurez visible y su límite explicado.',
-      items: [
-        { family: 'Herramientas', state: 'Por proyecto', title: 'Web, dominio y datos deben encajar.', body: 'La implantación define qué se conecta, quién mantiene cada sistema y qué ocurre si se cambia de proveedor.' },
-        { family: 'Pagos', state: 'Por proyecto', title: 'Cobrar exige una decisión aparte.', body: 'La demo muestra condiciones y depósitos ficticios. No hay tarjetas, cobros ni conciliación activa.' },
-        { family: 'Asistentes', state: 'Demostrativo', title: 'Automatizar no significa ocultar la decisión.', body: 'Solane presenta señales deterministas y revisables, sin modelo conectado, credenciales ni acciones externas.' },
       ],
     },
     ecosystem: {
@@ -203,8 +189,6 @@ export const SITE_CONTENT = {
         { question: '¿Cómo se migran y protegen los datos?', answer: 'Se acuerdan fuentes, formato, fecha de corte, validación, acceso, retención, exportación y salida. La demo no contiene datos reales ni sustituye la revisión de RGPD de cada proyecto.' },
         { question: '¿Cómo se plantean depósitos, pagos y no-shows?', answer: 'La demo muestra información previa, aceptación y desglose con datos ficticios. Proveedor, política, conciliación, devoluciones y cualquier cobro real se validan y documentan por proyecto.' },
         { question: '¿Tengo que cambiar toda mi operativa?', answer: 'No. La conversación empieza por el cuello de botella actual y por lo que tu equipo ya sabe hacer. El alcance comercial se acuerda antes de desarrollar o activar nada.' },
-        { question: '¿Qué se necesita para publicar?', answer: 'Dominio, datos, responsables, permisos, validación y un plan de salida. La guía técnica ayuda a ordenar esas decisiones; la demo no publica cambios por sí sola.' },
-        { question: '¿Tengo que cambiar el motor que ya uso?', answer: 'No necesariamente. Primero se identifica dónde se pierde contexto y qué debe conservarse. La convivencia o sustitución de un proveedor forma parte del alcance acordado.' },
       ],
     },
     lead: {
@@ -240,6 +224,12 @@ export const SITE_CONTENT = {
   en: {
     nav: { webs: 'Websites', manager: 'Manager', route: 'View journey', problem: 'The challenge', differences: 'Product', demos: 'Demos', plans: 'Plans', support: 'Implementation', faq: 'Questions', contact: 'Request a demo', language: 'ES' },
     hero: { eyebrow: 'Bookings, groups and events', beforeHighlight: 'The floor ', highlight: 'leads.', afterHighlight: ' Online too.', promise: 'One availability view for the whole service.', body: 'Tables, menus, groups and events move with the real floor in view. What is offered online is blocked in the right place, without rebuilding the day across tools.', support: 'Implementation is defined with Logic2B around your real operation.', primary: 'Open the demo · 2 min', secondary: 'Discuss my operation', webAction: 'View website demo', guidedAction: 'Guided journey', managerAction: 'Try the manager', proofLabel: 'Three ways in', portfolioLabel: 'Websites with their own identity', portfolioAction: 'Open website', briefTitle: 'Want to see it applied to your restaurant?', briefBody: 'Enter your email and complete the context in the next step.', briefEmail: 'Work email', briefPrivacy: 'I agree that Logic2B may use this email to reply to this request.', briefSubmit: 'Continue', briefBoundary: 'Your email is not sent to Logic2B at this step.', note: 'Navigable Solane scenario · Fictional data, no real charges' },
+    parity: {
+      heroBefore: 'Manage', heroWords: ['bookings', 'groups', 'the floor'], heroAfter: 'without the complexity.', heroAria: 'Manage bookings, groups and the floor without the complexity.',
+      heroShortcutDemo: 'See a live website', heroShortcutTour: 'See how it works', heroShortcutManager: 'Try it at the front desk',
+      heroPause: 'Pause website showcase', heroResume: 'Resume website showcase', sliderPrevious: 'Previous cards', sliderNext: 'Next cards',
+      pricingMode: 'Starting point', pricingContinuity: 'Evolution', pricingLabel: 'Plan view', themeSliderLabel: 'Website slider controls', panelSliderLabel: 'Product view slider controls',
+    },
     ecosystem: { eyebrow: 'Planned ecosystem', title: 'Connect service without turning every tool into another island.', body: 'Each brand shows its real status in this demonstration. Visible does not mean integrated, and every operational connection is validated per project.', label: 'Status of tools and connections', items: [{ name: 'Resend', detail: 'Commercial form', status: 'Connected', tone: 'connected' }, { name: 'Cloudflare', detail: 'Web delivery and security', status: 'Connected', tone: 'connected' }, { name: 'Stripe', detail: 'Fictional demo payment', status: 'Demonstrative', tone: 'demo' }, { name: 'WhatsApp', detail: 'Commercial contact', status: 'Visible', tone: 'visible' }, { name: 'Google Maps', detail: 'Location and context', status: 'Planned', tone: 'planned' }, { name: 'Zapier', detail: 'Automation per project', status: 'Planned', tone: 'planned' }] },
     productFlow: { eyebrow: 'From visit to decision', title: 'A booking does not end when it is confirmed.', intro: 'Seven steps share the same context, so the online promise reaches the floor intact and returns as a useful decision.', label: 'Complete seven-step product journey', previous: 'View previous step', next: 'View next step', steps: [
       { id: 'web', label: 'Website', title: 'Intent starts inside your brand.', body: 'Menu, occasion and the booking action live together in an owned experience.' },

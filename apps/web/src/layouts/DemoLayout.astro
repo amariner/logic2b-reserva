@@ -4,6 +4,7 @@ import '@fontsource-variable/source-serif-4';
 import '@logic-reserva/ui/theme.css';
 import '../styles/demos.css';
 import type { DemoSlug, Locale } from '@logic-reserva/config';
+import CommercialTourBridge from '../components/CommercialTourBridge.astro';
 
 interface Props {
   slug: DemoSlug | 'theme';
@@ -32,6 +33,7 @@ const skipLabel = locale === 'en' ? 'Skip to main content' : 'Saltar al contenid
     <a class="demo-skip-link" href="#contenido">{skipLabel}</a>
     <p class="demo-notice">{notice}</p>
     <slot />
+    {slug === 'vedra' && <CommercialTourBridge locale={locale} />}
   </body>
 </html>
 

@@ -1,79 +1,19 @@
 ---
 import type { Locale } from '@logic-reserva/config';
-import { THEME_CATALOG, type ThemeCatalogEntry, type ThemeTier } from '@logic-reserva/config/themes';
-import DemoLayout from '../layouts/DemoLayout.astro';
+import type { ThemeEntry } from '@logic-reserva/config/themes';
+import ThemeDemoLayout from '../layouts/ThemeDemoLayout.astro';
+import ThemeWebPage from './ThemeWebPage.astro';
 
-interface Props { theme: ThemeCatalogEntry; locale?: Locale }
+/** Compatibility adapter for the former `/demos/temas/:slug` routes. */
+interface Props { theme: ThemeEntry; locale?: Locale }
 
 const { theme, locale = 'es' } = Astro.props;
-const prefix = locale === 'en' ? '/en' : '';
-const themes: readonly ThemeCatalogEntry[] = THEME_CATALOG;
-const localize = (value: ThemeCatalogEntry['name']): string => value[locale];
-const tierLabels: Record<ThemeTier, string> = locale === 'en' ? { basico: 'Basic', gestion: 'Management', inteligente: 'Intelligent' } : { basico: 'Básico', gestion: 'Gestión', inteligente: 'Inteligente' };
-const ui = locale === 'en'
-  ? { back: 'Back to themes', language: 'Español', preview: 'Visual web preview', title: 'A web direction with a clear point of view.', body: 'This fictional identity shows how the same booking foundation can take on a different tone, format and promise.', scope: 'Visual preview only · No booking or data is real', next: 'Open the three deep product journeys', footer: 'Fictional web direction · Logic Reserva', featureTitle: 'A direction, ready to discuss', features: [{ title: 'Identity first', body: 'Typography, colour and rhythm are shaped around this restaurant.' }, { title: 'Context in the journey', body: 'Menu, availability and the next action stay close to the guest.' }, { title: 'Scope stays visible', body: 'A visual direction is not a production integration or a promise of operation.' }] }
-  : { back: 'Volver a temas', language: 'English', preview: 'Preview web visual', title: 'Una dirección web con un punto de vista claro.', body: 'Esta identidad ficticia muestra cómo la misma base de reservas puede adoptar otro tono, formato y promesa.', scope: 'Solo preview visual · No hay reservas ni datos reales', next: 'Abrir los tres recorridos profundos', footer: 'Dirección web ficticia · Logic Reserva', featureTitle: 'Una dirección lista para conversar', features: [{ title: 'Primero la identidad', body: 'Tipografía, color y ritmo se diseñan alrededor de este restaurante.' }, { title: 'Contexto en el recorrido', body: 'Carta, disponibilidad y siguiente acción permanecen cerca del cliente.' }, { title: 'El alcance sigue visible', body: 'Una dirección visual no es una integración de producción ni una promesa operativa.' }] };
-const languageHref = locale === 'en' ? `/demos/temas/${theme.slug}/` : `/en/demos/temas/${theme.slug}/`;
-const themeHref = (slug: string) => {
-  const candidate = themes.find((entry) => entry.slug === slug);
-  return candidate?.deepDemo ? `${prefix}/demos/${candidate.deepDemo}/` : `${prefix}/demos/temas/${slug}/`;
-};
+if (!theme.web) throw new Error(`Theme ${theme.slug} has no website copy`);
+const title = locale === 'en'
+  ? `${theme.name} — ${theme.format.en} (fictional demo)`
+  : `${theme.name} — ${theme.format.es} (demo ficticia)`;
 ---
 
-<DemoLayout slug="theme" locale={locale} title={`${localize(theme.name)} · ${ui.preview}`}>
-  <div class="theme-preview" style={`--theme-accent: ${theme.accent}; --theme-surface: ${theme.surface};`}>
-    <header class="theme-preview__nav"><div class="shell"><a class="theme-preview__brand" href={`${prefix}/demos/temas/${theme.slug}/`}><span>{theme.mark}</span><b>{localize(theme.name)}</b></a><nav><a href={`${prefix}/temas/`}>↗ {ui.back}</a><a href={languageHref}>{ui.language}</a></nav></div></header>
-    <main id="contenido" class="theme-preview__main shell" tabindex="-1">
-      <section class="theme-preview__hero" aria-labelledby="theme-preview-title">
-        <div><p class="theme-preview__eyebrow">{ui.preview} · {localize(theme.format)}</p><h1 id="theme-preview-title">{ui.title}</h1><p class="theme-preview__body">{ui.body}</p><p class="theme-preview__promise">“{localize(theme.promise)}”</p><div class="theme-preview__meta"><span>{tierLabels[theme.level]}</span><span>{localize(theme.tone)}</span></div></div>
-        <div class="theme-preview__visual" aria-label={`${localize(theme.name)} · ${localize(theme.format)}`}><span>{theme.mark}</span><small>{localize(theme.name)}</small><i aria-hidden="true"></i></div>
-      </section>
-      <section class="theme-preview__features" aria-labelledby="theme-features-title"><p class="theme-preview__eyebrow">{localize(theme.name)}</p><h2 id="theme-features-title">{ui.featureTitle}</h2><div>{ui.features.map((feature, index) => <article><span>0{index + 1}</span><h3>{feature.title}</h3><p>{feature.body}</p></article>)}</div></section>
-      <aside class="theme-preview__notice"><strong>{ui.scope}</strong><p>{locale === 'en' ? 'For the functional journey, open Brasca, Vedra or Solane from the portfolio.' : 'Para el recorrido funcional, abre Brasca, Vedra o Solane desde el portfolio.'}</p><a href={`${prefix}/temas/`}>{ui.next}<span aria-hidden="true"> ↗</span></a></aside>
-    </main>
-    <footer class="theme-preview__footer"><div class="shell"><span>{ui.footer}</span><a href={themeHref('brasca')}>{locale === 'en' ? 'Brasca' : 'Brasca'}</a><a href={themeHref('vedra')}>{locale === 'en' ? 'Vedra' : 'Vedra'}</a><a href={themeHref('solane')}>{locale === 'en' ? 'Solane' : 'Solane'}</a></div></footer>
-  </div>
-</DemoLayout>
-
-<style>
-  .theme-preview { --preview-ink: color-mix(in srgb, var(--theme-accent) 78%, #101010); color: var(--preview-ink); background: var(--theme-surface); }
-  .theme-preview__nav { border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 24%, transparent); background: color-mix(in srgb, var(--theme-surface) 88%, white); }
-  .theme-preview__nav .shell, .theme-preview__footer .shell { display: flex; min-height: 68px; align-items: center; justify-content: space-between; gap: 20px; }
-  .theme-preview__brand { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--preview-ink); text-decoration: none; }
-  .theme-preview__brand span { display: grid; width: 34px; height: 34px; place-items: center; border: 2px solid currentColor; border-radius: 50%; font-family: var(--serif); font-weight: 750; }
-  .theme-preview__nav nav { display: flex; flex-wrap: wrap; gap: 4px; }
-  .theme-preview__nav nav a, .theme-preview__footer a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 8px 10px; color: var(--preview-ink); font-size: .78rem; font-weight: 650; text-decoration: none; }
-  .theme-preview__main { padding-block: clamp(64px, 10vw, 140px); }
-  .theme-preview__hero { display: grid; grid-template-columns: .9fr 1.1fr; align-items: center; gap: clamp(42px, 9vw, 140px); min-height: 590px; }
-  .theme-preview__eyebrow { margin: 0 0 18px; color: var(--theme-accent); font-size: .72rem; font-weight: 750; letter-spacing: .12em; text-transform: uppercase; }
-  .theme-preview h1 { max-width: 700px; margin: 0; color: var(--preview-ink); font-family: var(--serif); font-size: clamp(3.2rem, 7vw, 7rem); font-weight: 500; letter-spacing: -.06em; line-height: .9; }
-  .theme-preview__body { max-width: 52ch; margin: 28px 0 0; color: color-mix(in srgb, var(--preview-ink) 70%, transparent); font-family: var(--serif); font-size: clamp(1.05rem, 1.6vw, 1.25rem); line-height: 1.58; }
-  .theme-preview__promise { max-width: 42ch; margin: 26px 0 0; color: var(--preview-ink); font-size: 1.05rem; font-weight: 700; }
-  .theme-preview__meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 32px; }
-  .theme-preview__meta span { border: 1px solid color-mix(in srgb, var(--theme-accent) 28%, transparent); border-radius: 999px; padding: 7px 10px; color: var(--preview-ink); font-size: .7rem; font-weight: 700; }
-  .theme-preview__visual { position: relative; display: grid; min-height: min(54vw, 580px); place-items: center; overflow: hidden; border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); background: color-mix(in srgb, var(--theme-surface) 65%, white); }
-  .theme-preview__visual::before, .theme-preview__visual::after { position: absolute; border: 1px solid color-mix(in srgb, var(--theme-accent) 35%, transparent); border-radius: 50%; content: ''; }
-  .theme-preview__visual::before { width: 64%; aspect-ratio: 1; top: -18%; right: -12%; }
-  .theme-preview__visual::after { width: 42%; aspect-ratio: 1; bottom: -14%; left: -6%; }
-  .theme-preview__visual span { position: relative; z-index: 1; display: grid; width: clamp(110px, 15vw, 180px); aspect-ratio: 1; place-items: center; border: 3px solid var(--theme-accent); border-radius: 50%; color: var(--theme-accent); font-family: var(--serif); font-size: clamp(3rem, 7vw, 7rem); font-weight: 600; }
-  .theme-preview__visual small { position: absolute; right: 24px; bottom: 22px; z-index: 1; color: var(--preview-ink); font-size: .72rem; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; }
-  .theme-preview__visual i { position: absolute; top: 30%; left: 12%; width: 76%; height: 1px; background: color-mix(in srgb, var(--theme-accent) 42%, transparent); transform: rotate(-13deg); }
-  .theme-preview__features { padding-top: clamp(90px, 13vw, 170px); }
-  .theme-preview h2 { max-width: 700px; margin: 0; color: var(--preview-ink); font-family: var(--serif); font-size: clamp(2.4rem, 5vw, 5rem); font-weight: 500; letter-spacing: -.06em; line-height: .95; }
-  .theme-preview__features > div { display: grid; grid-template-columns: repeat(3, 1fr); margin-top: 52px; border-top: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); border-bottom: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); }
-  .theme-preview__features article { min-height: 240px; padding: 22px 18px 26px; }
-  .theme-preview__features article + article { border-left: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); }
-  .theme-preview__features article > span { color: var(--theme-accent); font-size: .72rem; font-weight: 750; }
-  .theme-preview__features h3 { margin: 42px 0 10px; color: var(--preview-ink); font-size: 1.25rem; letter-spacing: -.03em; }
-  .theme-preview__features p { max-width: 28ch; margin: 0; color: color-mix(in srgb, var(--preview-ink) 72%, transparent); font-family: var(--serif); font-size: .92rem; line-height: 1.5; }
-  .theme-preview__notice { display: grid; grid-template-columns: 1fr 1fr auto; align-items: center; gap: 26px; margin-top: clamp(80px, 10vw, 130px); border: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); padding: 24px; background: color-mix(in srgb, var(--theme-surface) 55%, white); }
-  .theme-preview__notice strong { font-size: .82rem; }
-  .theme-preview__notice p { margin: 0; color: color-mix(in srgb, var(--preview-ink) 72%, transparent); font-family: var(--serif); font-size: .88rem; line-height: 1.45; }
-  .theme-preview__notice a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; color: var(--preview-ink); font-size: .78rem; font-weight: 750; text-decoration: none; }
-  .theme-preview__footer { border-top: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); background: color-mix(in srgb, var(--theme-surface) 75%, white); }
-  .theme-preview__footer .shell { justify-content: flex-start; flex-wrap: wrap; }
-  .theme-preview__footer span { margin-right: auto; color: color-mix(in srgb, var(--preview-ink) 72%, transparent); font-size: .72rem; }
-  @media (max-width: 820px) { .theme-preview__hero { grid-template-columns: 1fr; min-height: auto; }.theme-preview__visual { min-height: 460px; }.theme-preview__features > div, .theme-preview__notice { grid-template-columns: 1fr; }.theme-preview__features article + article { border-top: 1px solid color-mix(in srgb, var(--theme-accent) 25%, transparent); border-left: 0; }.theme-preview__notice a { justify-self: start; } }
-  @media (max-width: 480px) { .theme-preview__nav .shell { width: min(100% - 24px, var(--page-max-width)); }.theme-preview__nav nav a:first-child { display: none; }.theme-preview__main { padding-block: 52px 84px; }.theme-preview__visual { min-height: 330px; }.theme-preview__features article { min-height: 0; padding-block: 20px; }.theme-preview__features h3 { margin-top: 24px; }.theme-preview__footer .shell { align-items: flex-start; flex-direction: column; gap: 4px; }.theme-preview__footer span { margin: 0 0 6px; } }
-  @media (prefers-reduced-motion: reduce) { .theme-preview * { scroll-behavior: auto; } }
-</style>
+<ThemeDemoLayout theme={theme} locale={locale} title={title}>
+  <ThemeWebPage theme={theme} locale={locale} />
+</ThemeDemoLayout>

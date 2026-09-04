@@ -8,6 +8,8 @@ Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.co
 
 No se copiará la estética de Camp ni su dashboard. Reserva conserva el contrato visual de `DESIGN.md` y sus gestores específicos de sala, grupos y eventos. La auditoría, el mapa de equivalencias y el contrato de 14 bloques del home viven en [`PARIDAD-CAMP.md`](PARIDAD-CAMP.md).
 
+Entrega local del 2026-09-04: el contrato está aplicado sobre un home bilingüe de catorce bloques y una envolvente compartida con cabecera pill, hero, rails, formularios, sliders, previews, prefooter y footer. Los catálogos y fichas conservan doce temas y seis paneles; el recorrido guiado tiene nueve hitos entre site y demos. Todo el contenido y los recursos visuales proceden de Logic Reserva. Los builds generan 68 páginas de site y 52 de web; `pnpm check` pasa 28/28 con 161 tests y la regresión E2E integral pasa 85/85. El despliegue permanece pendiente de autorización explícita.
+
 Arquitectura comercial vigente: **Básico → Gestión → Inteligente**. Brasca demuestra la web Básica; Vedra, el backend de Gestión; Solane, ese backend ampliado con IA y automatizaciones demostrativas. Decisión completa en `adr/ADR-010-tres-planes-y-backends-demostrativos.md`.
 
 Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validado contra la competencia en `COMPETENCIA.md`):
@@ -460,7 +462,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Footer rico con todas las rutas de producto, exploración, contacto, idiomas y legales
 - [x] Auditoría de orden, ritmo y densidad frente al contrato de `PARIDAD-CAMP.md`, sin copiar la composición visual de Camp
 
-**Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva. Cumplido en es/en con catálogos compartidos, seis paneles, cinco guías, FAQ de seis preguntas, footer completo y E2E F26 dirigido 1/1.
+**Hecho cuando:** el home cumple los 14 bloques en orden, ofrece profundidad equivalente a Camp y mantiene papel cálido, azul único y lenguaje editorial de Reserva. Cumplido en es/en con catálogos compartidos, seis paneles, cinco guías, FAQ de ocho preguntas, footer completo y E2E F26 dirigido 1/1.
 
 ---
 
@@ -470,9 +472,11 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 **Dependencias:** F23–F26.
 
 - [x] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
-- [x] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
+- [x] Cabecera pill, navegación responsive, contacto/modal, prefooter visual y footer estructural compartidos por todas las superficies comerciales; enlaces antiguos conservados o redirigidos
 - [x] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
-- [x] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
+- [x] Dos pases visuales completos y reproducibles: 42/42 PNG con digest agregado `a6ab36c4db011f6601a4b21e96c70322c99d7b04ce2268150c593d12a30e6aaf`
+- [x] Pruebas dirigidas de los 14 bloques, shell, formularios, doce temas, seis paneles, previews y recorrido comercial; QA de navegador y responsive en escritorio y móvil
+- [x] Regresión E2E integral 85/85 sobre la reconstrucción CAMP-parity, completada en 9,5 minutos junto con `pnpm check` 28/28 y 161 tests
 - [x] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
 - [x] Preferencias de cookies globales y reversibles desde el footer de las sesenta y ocho páginas, sin cargar analítica ni publicidad
 - [x] Previews comerciales de doce webs y seis paneles con evidencia, límite, contacto y acceso profundo, bilingües y con fallback sin JavaScript
@@ -482,12 +486,14 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Dirección ficticia y metadatos canónicos dentro de cada preview, bilingües y accesibles en escritorio de poca altura y móvil
 - [x] Fichas públicas bilingües para cada dirección web, con captura real, alcance honesto, contacto contextual y demo separada sin relajar `X-Frame-Options`
 - [x] Inicio comercial bilingüe en `/empezar/` que conserva plan, web o panel, reutiliza el único formulario real y separa la conversación comercial del cierre largo del home
-- [x] Recorrido comercial guiado bilingüe que enlaza oferta, web, producto e inicio en seis hitos, conserva contexto entre páginas y no realiza escrituras
+- [x] Recorrido comercial guiado bilingüe de nueve hitos que cruza home, catálogo, web, reserva y gestor mediante un bridge site+demos; conserva estado en `sessionStorage`, permite pausar/reanudar/salir y no realiza escrituras
 - [x] Captación breve del hero que conserva el correo hasta `/empezar/` sin enviarlo al servidor, limpia la URL y mantiene fallback sin JavaScript
-- [x] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
+- [x] Home de catorce bloques con hero, rails, formularios, sliders y popups de doce temas y seis paneles, alimentado solo por catálogos, textos y recursos visuales del proyecto
+- [x] Builds estáticos verificados: 68 páginas de `apps/site` y 52 páginas de `apps/web`
+- [x] Auditoría visual de navegador y responsive a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos sobre los recorridos dirigidos
 - [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
 
-**Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales.
+**Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales. El cierre local está completado; la publicación sigue requiriendo autorización expresa y validación de preview.
 
 ---
 

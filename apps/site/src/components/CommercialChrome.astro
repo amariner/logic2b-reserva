@@ -1,5 +1,6 @@
 ---
 import type { Locale } from '@logic-reserva/config';
+import CommercialClosing from './CommercialClosing.astro';
 import CommercialFooter from './CommercialFooter.astro';
 import CommercialHeader from './CommercialHeader.astro';
 import CommercialTour from './CommercialTour.astro';
@@ -14,6 +15,7 @@ const { locale = 'es', languageHref } = Astro.props;
 
 <slot />
 
+<CommercialClosing locale={locale} />
 <CommercialFooter locale={locale} languageHref={languageHref} />
 <CookiePreferences locale={locale} />
 <CommercialTour locale={locale} />
