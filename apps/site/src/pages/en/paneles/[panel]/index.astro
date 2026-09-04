@@ -1,0 +1,9 @@
+---
+import { PANEL_CATALOG, type PanelSlug } from '@logic-reserva/config/panels';
+import PanelDetailPage from '../../../../components/PanelDetailPage.astro';
+
+export const getStaticPaths = () => PANEL_CATALOG.map(({ slug }) => ({ params: { panel: slug }, props: { slug } }));
+interface Props { slug: PanelSlug }
+const { slug } = Astro.props;
+---
+<PanelDetailPage locale="en" slug={slug} />

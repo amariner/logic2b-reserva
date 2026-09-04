@@ -23,8 +23,8 @@ const workerSource = readFileSync(resolve(repositoryRoot, 'apps/worker/src/index
 const demoModeSource = readFileSync(resolve(repositoryRoot, 'apps/worker/src/demo-mode.ts'), 'utf8');
 
 const leadEndpointUsages = landingSources.filter(({ source }) => source.includes("fetch('/api/leads'"));
-invariant(leadEndpointUsages.length === 1, 'debe existir una única llamada real a /api/leads en la landing');
-invariant(leadEndpointUsages[0]?.path.endsWith('/apps/site/src/components/Landing.astro'), 'la única llamada a /api/leads debe vivir en Landing.astro');
+invariant(leadEndpointUsages.length === 1, 'debe existir una única llamada real a /api/leads en la superficie comercial');
+invariant(leadEndpointUsages[0]?.path.endsWith('/apps/site/src/components/CommercialLeadForm.astro'), 'la única llamada a /api/leads debe vivir en el formulario comercial compartido');
 
 const forbiddenNetworkPatterns = [
   ['fetch', /\bfetch\s*\(/],

@@ -1,0 +1,92 @@
+---
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { GUIDE_CATALOG, getGuide, guideUrl, localizedGuideText, type GuideSlug, type GuideText } from '@logic-reserva/config/guides';
+import Base from '../layouts/Base.astro';
+import CommercialChrome from './CommercialChrome.astro';
+
+interface Props { locale?: Locale; slug: GuideSlug }
+const { locale = 'es', slug } = Astro.props;
+const guide = getGuide(slug);
+if (!guide) throw new Error(`Unknown public guide: ${slug}`);
+const prefix = locale === 'en' ? '/en' : '';
+const local = (value: GuideText) => localizedGuideText(value, locale);
+const index = GUIDE_CATALOG.findIndex((item) => item.slug === slug);
+const nextGuide = GUIDE_CATALOG[(index + 1) % GUIDE_CATALOG.length];
+const descriptions: Record<Locale, Record<GuideSlug, string>> = {
+  es: {
+    sala: 'Guía pública para preparar y operar el servicio de sala con reservas, mesas, incidencias, datos y responsabilidades claras en Logic Reserva.',
+    gestion: 'Guía pública de migración, configuración, datos, RGPD, validación y entrega para responsables de gestión que implantan Logic Reserva.',
+    direccion: 'Guía pública para gobernar reglas, cobros, datos, indicadores, soporte y continuidad desde dirección con límites operativos explícitos.',
+    propietario: 'Guía pública para comparar alcance, activos, dominio, soporte, crecimiento y salida antes de aprobar una implantación de Logic Reserva.',
+    tecnica: 'Guía pública de dominio, DNS, seguridad, datos, integraciones, cobros, soporte y salida técnica para una implantación de Logic Reserva.',
+  },
+  en: {
+    sala: 'Public guide to preparing and running floor service with bookings, tables, incidents, data and clear responsibilities in Logic Reserva.',
+    gestion: 'Public migration, configuration, data, GDPR, validation and handover guide for operations leads implementing Logic Reserva.',
+    direccion: 'Public guide to governing rules, payments, data, indicators, support and continuity with explicit operational boundaries.',
+    propietario: 'Public guide to comparing scope, assets, domain, support, growth and exit before approving a Logic Reserva implementation.',
+    tecnica: 'Public guide to domain, DNS, security, data, integrations, payments, support and technical exit for a Logic Reserva implementation.',
+  },
+};
+const ui = locale === 'en' ? {
+  metaSuffix: ' | Logic Reserva', back: 'All guides', audience: 'This guide is for', outcome: 'Expected outcome', chapters: 'In this guide',
+  responsibility: 'Working rule', responsibilityText: 'The restaurant owns business decisions and approvals. Logic2B owns only the implementation and service explicitly agreed in the proposal.',
+  proposal: 'Proposal-dependent', proposalText: 'Timeline, price, providers, integrations, service levels, migration volume and exit assistance are not implied by this guide.',
+  next: 'Next role guide', plans: 'Compare plans', panels: 'Explore product views', websites: 'Compare websites', contact: 'Discuss my implementation',
+} : {
+  metaSuffix: ' | Logic Reserva', back: 'Todas las guías', audience: 'Esta guía es para', outcome: 'Resultado esperado', chapters: 'En esta guía',
+  responsibility: 'Regla de trabajo', responsibilityText: 'El restaurante conserva las decisiones y aprobaciones de negocio. Logic2B responde solo de la implantación y servicio expresamente acordados en propuesta.',
+  proposal: 'Dependiente de propuesta', proposalText: 'Calendario, precio, proveedores, integraciones, nivel de servicio, volumen de migración y apoyo de salida no se presuponen en esta guía.',
+  next: 'Siguiente guía por rol', plans: 'Comparar planes', panels: 'Explorar vistas de producto', websites: 'Comparar webs', contact: 'Hablar de mi implantación',
+};
+const title = `${local(guide.title)}${ui.metaSuffix}`;
+const currentUrl = new URL(guideUrl(guide, locale), PRODUCT.url).href;
+const structuredData = [{
+  '@context': 'https://schema.org', '@type': 'Article', headline: local(guide.title), description: descriptions[locale][slug], url: currentUrl,
+  inLanguage: locale, articleSection: local(guide.eyebrow), audience: { '@type': 'Audience', audienceType: local(guide.audience) },
+  author: { '@id': 'https://logic2b.com/#organization' }, publisher: { '@id': 'https://logic2b.com/#organization' }, dateModified: '2026-09-04',
+}, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Logic Reserva', item: `${PRODUCT.url}${prefix}/` },
+    { '@type': 'ListItem', position: 2, name: locale === 'en' ? 'Guides' : 'Guías', item: `${PRODUCT.url}${prefix}/docs/` },
+    { '@type': 'ListItem', position: 3, name: local(guide.title), item: currentUrl },
+  ],
+}];
+---
+
+<Base locale={locale} title={title} description={descriptions[locale][slug]} structuredData={structuredData}>
+  <CommercialChrome locale={locale} languageHref={guideUrl(guide, locale === 'en' ? 'es' : 'en')}>
+    <main id="contenido" class="guide-main" tabindex="-1">
+      <article>
+        <header class="shell guide-hero">
+          <a class="back" href={`${prefix}/docs/`}><span aria-hidden="true">←</span>{ui.back}</a>
+          <div class="guide-hero__grid"><div><p class="eyebrow">{local(guide.eyebrow)}</p><h1>{local(guide.title)}</h1></div><div class="guide-summary"><p>{local(guide.summary)}</p><dl><div><dt>{ui.audience}</dt><dd>{local(guide.audience)}</dd></div><div><dt>{ui.outcome}</dt><dd>{local(guide.outcome)}</dd></div></dl></div></div>
+        </header>
+
+        <nav class="shell guide-toc" aria-label={ui.chapters}><span>{ui.chapters}</span>{guide.sections.map((section, sectionIndex) => <a href={`#chapter-${sectionIndex + 1}`}><i>0{sectionIndex + 1}</i>{local(section.title)}</a>)}</nav>
+
+        <div class="shell guide-body">
+          {guide.sections.map((section, sectionIndex) => <section id={`chapter-${sectionIndex + 1}`} aria-labelledby={`chapter-title-${sectionIndex + 1}`}><div class="chapter-heading"><span>0{sectionIndex + 1}</span><div><h2 id={`chapter-title-${sectionIndex + 1}`}>{local(section.title)}</h2><p>{local(section.intro)}</p></div></div><ol>{section.points.map((point, pointIndex) => <li><span>{sectionIndex + 1}.{pointIndex + 1}</span><p>{local(point)}</p></li>)}</ol></section>)}
+        </div>
+
+        <section class="guide-rules"><div class="shell"><article><p class="eyebrow">{ui.responsibility}</p><h2>{ui.responsibilityText}</h2></article><article><p class="eyebrow">{ui.proposal}</p><h2>{ui.proposalText}</h2></article></div></section>
+
+        <section class="shell guide-links" aria-label={ui.next}>
+          <a class="next-guide" href={guideUrl(nextGuide, locale)}><span>{ui.next}</span><strong>{local(nextGuide.title)}</strong><i aria-hidden="true">↗</i></a>
+          <nav><a href={`${prefix}/planes/`}>{ui.plans}<span>↗</span></a><a href={`${prefix}/paneles/`}>{ui.panels}<span>↗</span></a><a href={`${prefix}/temas/`}>{ui.websites}<span>↗</span></a><a href={`${prefix}/#contacto`}>{ui.contact}<span>→</span></a></nav>
+        </section>
+      </article>
+    </main>
+  </CommercialChrome>
+</Base>
+
+<style>
+  .guide-main { overflow: clip; padding-bottom: clamp(90px, 11vw, 160px); }.guide-hero { padding-top: 28px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
+  .guide-hero__grid { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr); align-items: end; gap: clamp(40px, 8vw, 120px); padding: clamp(42px, 7vw, 90px) 0 clamp(50px, 7vw, 84px); }.guide-hero h1 { max-width: 920px; margin: 0; font-size: clamp(3.5rem, 8vw, 8rem); font-weight: 600; letter-spacing: -.068em; line-height: .86; }.guide-summary > p { margin: 0 0 25px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.08rem, 1.55vw, 1.27rem); line-height: 1.55; }.guide-summary dl { margin: 0; }.guide-summary dl div { border-top: 1px solid var(--line); padding: 13px 0; }.guide-summary dt { color: var(--slate); font-size: .68rem; font-weight: 700; text-transform: uppercase; }.guide-summary dd { margin: 6px 0 0; font-size: .84rem; line-height: 1.42; }
+  .guide-toc { display: grid; grid-template-columns: .5fr repeat(4, 1fr); border-block: 1px solid var(--line); }.guide-toc > span, .guide-toc a { display: flex; min-height: 58px; align-items: center; padding: 8px 14px; }.guide-toc > span { padding-left: 0; color: var(--slate); font-size: .7rem; font-weight: 700; text-transform: uppercase; }.guide-toc a { gap: 10px; border-left: 1px solid var(--line); font-size: .78rem; font-weight: 650; text-decoration: none; }.guide-toc i { color: var(--color-notion-blue-strong); font-size: .66rem; font-style: normal; }
+  .guide-body { padding-top: clamp(70px, 9vw, 120px); }.guide-body section { display: grid; grid-template-columns: .9fr 1.1fr; gap: clamp(40px, 8vw, 120px); scroll-margin-top: 96px; border-top: 1px solid var(--line); padding: clamp(48px, 7vw, 86px) 0; }.chapter-heading { display: grid; grid-template-columns: 42px 1fr; gap: 10px; }.chapter-heading > span { padding-top: 8px; color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 700; }.chapter-heading h2 { max-width: 600px; margin: 0; font-size: clamp(2.4rem, 4.6vw, 4.8rem); letter-spacing: -.058em; line-height: .94; }.chapter-heading p { max-width: 52ch; margin: 20px 0 0; color: var(--slate); font-family: var(--serif); font-size: 1.03rem; line-height: 1.55; }.guide-body ol { margin: 0; padding: 0; list-style: none; }.guide-body li { display: grid; grid-template-columns: 55px 1fr; gap: 16px; border-top: 1px solid var(--line); padding: 22px 0; }.guide-body li:last-child { border-bottom: 1px solid var(--line); }.guide-body li span { color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 700; }.guide-body li p { margin: 0; font-family: var(--serif); font-size: 1.03rem; line-height: 1.55; }
+  .guide-rules { margin-top: clamp(50px, 7vw, 90px); padding: clamp(65px, 8vw, 105px) 0; color: white; background: var(--color-midnight-ink); }.guide-rules .shell { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }.guide-rules article { border: 1px solid rgb(255 255 255 / 20%); border-radius: 12px; padding: clamp(25px, 4vw, 45px); }.guide-rules .eyebrow { color: var(--color-marigold); }.guide-rules h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.35rem, 2.3vw, 2.2rem); font-weight: 500; letter-spacing: -.025em; line-height: 1.28; }
+  .guide-links { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: clamp(75px, 10vw, 140px); }.next-guide { display: grid; min-height: 230px; grid-template-columns: 1fr auto; align-content: space-between; border-radius: 12px; padding: clamp(24px, 4vw, 42px); color: white; background: var(--color-notion-blue); text-decoration: none; }.next-guide > span { grid-column: 1 / -1; font-size: .72rem; font-weight: 700; text-transform: uppercase; }.next-guide strong { align-self: end; font-size: clamp(2rem, 4vw, 4rem); letter-spacing: -.055em; line-height: .92; }.next-guide i { align-self: end; font-size: 1.5rem; font-style: normal; }.guide-links nav { display: grid; align-content: center; border-block: 1px solid var(--line); }.guide-links nav a { display: flex; min-height: 54px; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--line); text-decoration: none; }.guide-links nav a:last-child { border: 0; }
+  @media (max-width: 980px) { .guide-hero__grid, .guide-body section, .guide-links { grid-template-columns: 1fr; }.guide-toc { grid-template-columns: repeat(2, 1fr); }.guide-toc > span { grid-column: 1 / -1; }.guide-toc a:nth-of-type(odd) { border-left: 0; }.guide-body section { gap: 36px; } }
+  @media (max-width: 680px) { .guide-hero { padding-top: 16px; }.guide-hero__grid { gap: 30px; }.guide-hero h1 { font-size: clamp(3.3rem, 17vw, 5.4rem); }.guide-toc { grid-template-columns: 1fr; }.guide-toc a { border-top: 1px solid var(--line); border-left: 0; }.guide-rules .shell { grid-template-columns: 1fr; }.guide-body li { grid-template-columns: 42px 1fr; }.guide-links { margin-inline: 14px; } }
+</style>

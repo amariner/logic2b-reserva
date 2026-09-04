@@ -1,0 +1,40 @@
+---
+import '@fontsource-variable/inter';
+import '@fontsource-variable/source-serif-4';
+import '@logic-reserva/ui/theme.css';
+import '../styles/theme-webs.css';
+import type { Locale } from '@logic-reserva/config';
+import type { ThemeEntry } from '@logic-reserva/config/themes';
+
+interface Props { theme: ThemeEntry; locale?: Locale; title: string }
+
+const { theme, locale = 'es', title } = Astro.props;
+const notice = locale === 'en'
+  ? 'Fictional website direction by Logic Reserva · No real restaurant, booking or charge'
+  : 'Dirección web ficticia de Logic Reserva · Sin restaurante, reserva ni cobro real';
+const skip = locale === 'en' ? 'Skip to main content' : 'Saltar al contenido principal';
+const themeStyle = `--restaurant-primary:${theme.palette.primary};--restaurant-accent:${theme.palette.accent};--restaurant-paper:${theme.palette.paper};--restaurant-ink:${theme.palette.ink};--restaurant-muted:${theme.palette.muted};`;
+---
+
+<!doctype html>
+<html lang={locale} style={themeStyle} data-layout={theme.layout} data-type={theme.type}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="theme-color" content={theme.palette.paper} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <title>{title}</title>
+  </head>
+  <body class="theme-demo-body">
+    <a class="theme-skip-link" href="#contenido">{skip}</a>
+    <p class="theme-demo-notice">{notice}</p>
+    <slot />
+  </body>
+</html>
+
+<style>
+  .theme-skip-link { position: fixed; z-index: 1000; top: 12px; left: 12px; padding: 12px 16px; border: 2px solid var(--restaurant-primary); border-radius: 4px; color: var(--restaurant-ink); background: var(--restaurant-paper); font-weight: 700; text-decoration: none; transform: translateY(calc(-100% - 20px)); transition: transform 160ms ease; }
+  .theme-skip-link:focus { transform: translateY(0); }.theme-demo-notice { margin: 0; padding: 8px 16px; color: var(--restaurant-paper); background: var(--restaurant-ink); font-size: .72rem; text-align: center; }
+  @media (prefers-reduced-motion: reduce) { .theme-skip-link { transition: none; } }
+</style>

@@ -19,17 +19,39 @@ const emailConfigurationSchema = z.object({
 
 type EmailConfiguration = z.output<typeof emailConfigurationSchema>;
 
-export const leadSchema = z.object({
+const leadInterestSchema = z.object({
+  kind: z.enum(['theme', 'panel']),
+  slug: z.string().regex(/^[a-z0-9-]+$/).max(80),
+  name: z.string().trim().min(1).max(160),
+});
+
+const fullLeadSchema = z.object({
+  source: z.literal('full'),
   name: z.string().trim().min(1).max(120),
   restaurant: z.string().trim().min(1).max(160),
   email: z.string().trim().email().max(200),
   phone: z.string().trim().max(60).optional(),
   level: z.enum(['basico', 'gestion', 'inteligente']),
-  message: z.string().trim().min(1).max(2_000),
+  message: z.string().trim().max(2_000).default(''),
+  interest: leadInterestSchema.optional(),
   lang: z.enum(['es', 'en']).default('es'),
   accept: z.literal(true),
   website: z.string().trim().max(200).optional(),
-}).transform((lead) => ({ ...lead, email: lead.email.toLowerCase() }));
+});
+
+const briefLeadSchema = z.object({
+  source: z.literal('brief'),
+  email: z.string().trim().email().max(200),
+  lang: z.enum(['es', 'en']).default('es'),
+  accept: z.literal(true),
+  website: z.string().trim().max(200).optional(),
+});
+
+export const leadSchema = z.preprocess((candidate) => {
+  if (!candidate || typeof candidate !== 'object' || Array.isArray(candidate) || 'source' in candidate) return candidate;
+  return { ...candidate, source: 'full' };
+}, z.discriminatedUnion('source', [fullLeadSchema, briefLeadSchema]))
+  .transform((lead) => ({ ...lead, email: lead.email.toLowerCase() }));
 
 export type Lead = z.output<typeof leadSchema>;
 
@@ -76,13 +98,21 @@ export async function deliverLead(lead: Lead, env: LeadEnv, ref: string): Promis
   if (!commercialLeadsEnabled(env)) return demoBlockedResponse('commercial_email_provider');
   const configuration = parseEmailConfiguration(env);
   if ((env.LEADS_TRANSPORT ?? 'disabled') !== 'resend' || !configuration) return json({ ok: false, outcome: 'disabled', error: 'lead_delivery_disabled' }, 503);
-  const rows: [string, string][] = [
-    ['Restaurante', lead.restaurant], ['Nombre', lead.name], ['Email', lead.email], ['Teléfono', lead.phone || '—'],
-    ['Nivel de interés', lead.level], ['Idioma', lead.lang], ['Privacidad', 'Aceptada para responder'],
+  const isBrief = lead.source === 'brief';
+  const rows: [string, string][] = isBrief ? [
+    ['Tipo', 'Captación breve'], ['Email', lead.email], ['Idioma', lead.lang], ['Privacidad', 'Aceptada para responder'],
+  ] : [
+    ['Tipo', 'Solicitud completa'], ['Restaurante', lead.restaurant], ['Nombre', lead.name], ['Email', lead.email], ['Teléfono', lead.phone || '—'],
+    ['Nivel de interés', lead.level],
+    ['Interés seleccionado', lead.interest ? `${lead.interest.kind === 'theme' ? (lead.lang === 'en' ? 'Website' : 'Web') : (lead.lang === 'en' ? 'Product view' : 'Vista de producto')} · ${lead.interest.name}` : '—'],
+    ['Idioma', lead.lang], ['Privacidad', 'Aceptada para responder'],
   ];
-  const subject = `${lead.restaurant} · solicitud Logic Reserva`;
-  const text = `Nueva solicitud — Logic Reserva\n\n${rows.map(([key, value]) => `${key}: ${value}`).join('\n')}\n\nQué quiere resolver:\n${lead.message}\n\nReferencia: ${ref}`;
-  const html = `<h2>Nueva solicitud — Logic Reserva</h2><table>${rows.map(([key, value]) => `<tr><td><strong>${escapeHtml(key)}</strong></td><td>${escapeHtml(value)}</td></tr>`).join('')}</table><p><strong>Qué quiere resolver</strong><br>${escapeHtml(lead.message)}</p><p>Referencia: ${escapeHtml(ref)}</p>`;
+  const subject = isBrief ? `${lead.email} · interés inicial Logic Reserva` : `${lead.restaurant} · solicitud Logic Reserva`;
+  const detail = isBrief
+    ? 'Solicita información inicial desde el hero comercial.'
+    : lead.message || (lead.lang === 'en' ? 'No additional message.' : 'Sin mensaje adicional.');
+  const text = `Nueva solicitud — Logic Reserva\n\n${rows.map(([key, value]) => `${key}: ${value}`).join('\n')}\n\nQué quiere resolver:\n${detail}\n\nReferencia: ${ref}`;
+  const html = `<h2>Nueva solicitud — Logic Reserva</h2><table>${rows.map(([key, value]) => `<tr><td><strong>${escapeHtml(key)}</strong></td><td>${escapeHtml(value)}</td></tr>`).join('')}</table><p><strong>Qué quiere resolver</strong><br>${escapeHtml(detail)}</p><p>Referencia: ${escapeHtml(ref)}</p>`;
   const delivered = await resend(configuration.apiKey, `reserva-lead/${ref}/internal`, {
     from: `Logic Reserva <${configuration.fromEmail}>`,
     to: [configuration.internalRecipient],

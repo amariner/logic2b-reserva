@@ -13,19 +13,22 @@ const securityHeaders = {
   'referrer-policy': 'strict-origin-when-cross-origin',
   'permissions-policy': 'camera=(), microphone=(), geolocation=()',
 };
+const panelSlugs = ['servicio', 'plano', 'reservas-espera', 'grupos-eventos', 'informes', 'inteligente'];
+const themeSlugs = ['brasca', 'vedra', 'solane', 'la-trece', 'salobre', 'trama', 'umbral', 'nacre', 'brisa-alta', 'nave-nueve', 'miga-club', 'mercat-33'];
 
 const invariant = (condition, message) => {
   if (!condition) throw new Error(`[public-smoke] ${message}`);
 };
 
-const request = async (pathname) => {
+const request = async (pathname, method = 'GET') => {
   const url = new URL(pathname, baseUrl);
   const response = await fetch(url, {
+    method,
     headers: { accept: '*/*', 'cache-control': 'no-cache' },
     redirect: 'follow',
     signal: AbortSignal.timeout(10_000),
   });
-  const body = await response.text();
+  const body = method === 'HEAD' ? '' : await response.text();
   return { body, response, url };
 };
 
@@ -46,12 +49,29 @@ const verifyPage = async (pathname, { contentType, noindex = false } = {}) => {
   } else {
     invariant(!result.response.headers.has('x-robots-tag'), `${pathname} indexable no debe enviar x-robots-tag`);
   }
+  const head = await request(pathname, 'HEAD');
+  invariant(head.response.status === 200, `HEAD ${pathname} debe responder 200, recibido ${head.response.status}`);
+  invariant(head.response.headers.get('content-type')?.includes(contentType), `HEAD ${pathname} debe responder ${contentType}`);
+  verifySecurityHeaders(head);
+  if (noindex) {
+    invariant(head.response.headers.get('x-robots-tag') === 'noindex, nofollow', `HEAD ${pathname} debe enviar x-robots-tag`);
+  } else {
+    invariant(!head.response.headers.has('x-robots-tag'), `HEAD ${pathname} indexable no debe enviar x-robots-tag`);
+  }
   return result;
 };
 
 const verifyOnce = async () => {
-  await verifyPage('/', { contentType: 'text/html' });
-  await verifyPage('/en/', { contentType: 'text/html' });
+  for (const pathname of [
+    '/', '/empezar/', '/temas/', '/paneles/', '/planes/', '/docs/', '/docs/tecnica/',
+    '/en/', '/en/empezar/', '/en/temas/', '/en/paneles/', '/en/planes/', '/en/docs/', '/en/docs/tecnica/',
+    ...panelSlugs.map((slug) => `/paneles/${slug}/`),
+    ...panelSlugs.map((slug) => `/en/paneles/${slug}/`),
+    ...themeSlugs.map((slug) => `/temas/${slug}/`),
+    ...themeSlugs.map((slug) => `/en/temas/${slug}/`),
+  ]) {
+    await verifyPage(pathname, { contentType: 'text/html' });
+  }
   await verifyPage('/demos/solane/', { contentType: 'text/html', noindex: true });
   await verifyPage('/en/demos/solane/', { contentType: 'text/html', noindex: true });
 
@@ -63,6 +83,12 @@ const verifyOnce = async () => {
   invariant(!sitemap.body.includes('/demos/'), 'sitemap.xml no debe incluir demos');
   invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/</loc>`), 'sitemap.xml debe usar la URL canónica de producción');
   invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/en/</loc>`), 'sitemap.xml debe incluir la landing inglesa canónica');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/empezar/</loc>`), 'sitemap.xml debe incluir el inicio comercial');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/en/empezar/</loc>`), 'sitemap.xml debe incluir el inicio comercial inglés');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/paneles/servicio/</loc>`), 'sitemap.xml debe incluir las fichas de panel');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/en/paneles/inteligente/</loc>`), 'sitemap.xml debe incluir las fichas inglesas de panel');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/temas/brasca/</loc>`), 'sitemap.xml debe incluir las fichas de dirección web');
+  invariant(sitemap.body.includes(`<loc>${canonicalOrigin}/en/temas/mercat-33/</loc>`), 'sitemap.xml debe incluir las fichas inglesas de dirección web');
 
   const leads = await request('/api/leads');
   invariant(leads.response.status === 405, `/api/leads por GET debe responder 405, recibido ${leads.response.status}`);
@@ -81,7 +107,7 @@ let lastError;
 for (let attempt = 1; attempt <= attempts; attempt += 1) {
   try {
     await verifyOnce();
-    console.log(`[public-smoke] ${baseUrl.origin} verificado con peticiones GET`);
+    console.log(`[public-smoke] ${baseUrl.origin} verificado con peticiones GET/HEAD`);
     lastError = undefined;
     break;
   } catch (error) {

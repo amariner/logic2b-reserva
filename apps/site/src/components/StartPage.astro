@@ -1,0 +1,99 @@
+---
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
+import Base from '../layouts/Base.astro';
+import CommercialChrome from './CommercialChrome.astro';
+import CommercialLeadForm from './CommercialLeadForm.astro';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const prefix = locale === 'en' ? '/en' : '';
+const contact = logic2bContact(locale, 'commercial');
+const ui = locale === 'en' ? {
+  metaTitle: 'Discuss your restaurant project | Logic Reserva',
+  description: 'Tell Logic2B what your restaurant needs and keep the selected Logic Reserva plan, website or product view in one focused project enquiry.',
+  back: 'Review plans and scope', eyebrow: 'A first step, without commitment',
+  title: 'Let’s understand what your restaurant needs.',
+  intro: 'Share the essentials. We will review the operation, the evidence you selected and the next useful step before defining scope or price.',
+  proofs: ['A personal response, not an automatic quote', 'Scope, boundaries and next steps stated clearly', 'No card, payment or commitment'],
+  formEyebrow: 'Project enquiry', formTitle: 'Tell us the essentials.',
+  formBody: 'The selected plan, website or product view remains attached to this enquiry. You can still change the operational priority before sending it.',
+  direct: 'Prefer to start with a conversation?', whatsapp: 'Write to Logic2B on WhatsApp',
+  boundary: 'Submitting this form requests a conversation. It does not approve a price, activate a service or create a restaurant account.',
+} : {
+  metaTitle: 'Habla de tu proyecto de restaurante | Logic Reserva',
+  description: 'Cuéntale a Logic2B qué necesita tu restaurante y conserva el plan, la web o la vista de Logic Reserva elegidos en una solicitud enfocada.',
+  back: 'Revisar planes y alcance', eyebrow: 'Un primer paso, sin compromiso',
+  title: 'Veamos qué necesita tu restaurante.',
+  intro: 'Comparte lo esencial. Revisaremos la operativa, la evidencia elegida y el siguiente paso útil antes de concretar alcance o precio.',
+  proofs: ['Respuesta personal, no una cotización automática', 'Alcance, límites y próximos pasos claros', 'Sin tarjeta, pago ni compromiso'],
+  formEyebrow: 'Solicitud de proyecto', formTitle: 'Cuéntanos lo esencial.',
+  formBody: 'El plan, la web o la vista de producto elegidos permanecen unidos a esta solicitud. Puedes cambiar la prioridad operativa antes de enviarla.',
+  direct: '¿Prefieres empezar conversando?', whatsapp: 'Escribir a Logic2B por WhatsApp',
+  boundary: 'Enviar este formulario solicita una conversación. No aprueba un precio, activa un servicio ni crea una cuenta de restaurante.',
+};
+const path = `${prefix}/empezar/`;
+const structuredData = [{
+  '@context': 'https://schema.org', '@type': 'WebPage', name: ui.metaTitle, description: ui.description,
+  url: new URL(path, PRODUCT.url).href,
+}, {
+  '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+    { '@type': 'ListItem', position: 1, name: 'Logic Reserva', item: `${PRODUCT.url}${prefix}/` },
+    { '@type': 'ListItem', position: 2, name: ui.formTitle, item: new URL(path, PRODUCT.url).href },
+  ],
+}];
+---
+
+<Base locale={locale} title={ui.metaTitle} description={ui.description} structuredData={structuredData}>
+  <CommercialChrome locale={locale} languageHref={locale === 'en' ? '/empezar/' : '/en/empezar/'}>
+    <main id="contenido" class="start-main" tabindex="-1">
+      <section class="shell start-grid" aria-labelledby="start-title">
+        <div class="start-copy">
+          <a class="back" href={`${prefix}/planes/`}><span aria-hidden="true">←</span>{ui.back}</a>
+          <p class="eyebrow">{ui.eyebrow}</p>
+          <h1 id="start-title">{ui.title}</h1>
+          <p class="start-intro">{ui.intro}</p>
+          <ul>{ui.proofs.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
+          <aside><strong>{ui.direct}</strong><a href={contact.href} target="_blank" rel="noreferrer">{ui.whatsapp}<span aria-hidden="true">↗</span></a></aside>
+        </div>
+        <div class="start-form">
+          <div class="start-form__heading"><p class="eyebrow">{ui.formEyebrow}</p><h2>{ui.formTitle}</h2><p>{ui.formBody}</p></div>
+          <CommercialLeadForm locale={locale} />
+          <p class="start-boundary">{ui.boundary}</p>
+        </div>
+      </section>
+    </main>
+  </CommercialChrome>
+</Base>
+
+<style>
+  .start-main { overflow: clip; padding-bottom: clamp(80px, 10vw, 140px); background: linear-gradient(90deg, var(--paper) 0 48%, var(--color-sky-tint) 48% 100%); }
+  .start-grid { display: grid; min-height: calc(100vh - 72px); grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: clamp(54px, 9vw, 140px); align-items: start; padding-top: clamp(46px, 7vw, 96px); }
+  .start-copy { position: sticky; top: 116px; padding-bottom: 70px; }
+  .back { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; color: var(--slate); font-size: .8rem; font-weight: 650; text-decoration: none; }
+  .start-copy > .eyebrow { margin-top: clamp(56px, 8vw, 104px); }
+  h1 { max-width: 690px; margin: 18px 0 0; font-size: clamp(3.4rem, 6.7vw, 7rem); font-weight: 600; letter-spacing: -.065em; line-height: .88; text-wrap: balance; }
+  .start-intro { max-width: 590px; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.2rem); line-height: 1.58; }
+  .start-copy ul { display: grid; gap: 11px; margin: 30px 0 0; padding: 0; list-style: none; }
+  .start-copy li { display: flex; align-items: center; gap: 11px; font-size: .82rem; font-weight: 680; line-height: 1.35; }
+  .start-copy li span { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--color-notion-blue); font-size: .7rem; }
+  .start-copy aside { display: grid; justify-items: start; gap: 4px; margin-top: 42px; border-top: 1px solid var(--line); padding-top: 20px; }
+  .start-copy aside strong { color: var(--slate); font-size: .72rem; letter-spacing: .035em; text-transform: uppercase; }
+  .start-copy aside a { display: inline-flex; min-height: 44px; align-items: center; gap: 14px; color: var(--ink); font-size: .86rem; font-weight: 700; text-decoration: none; }
+  .start-form { min-width: 0; padding-bottom: 70px; }
+  .start-form__heading { padding: clamp(30px, 5vw, 58px) clamp(22px, 4vw, 36px) 22px; }
+  .start-form__heading h2 { margin: 12px 0 0; font-size: clamp(2.4rem, 4.2vw, 4.5rem); letter-spacing: -.055em; line-height: .92; }
+  .start-form__heading > p:last-child { max-width: 620px; margin: 19px 0 0; color: var(--slate); font-family: var(--serif); line-height: 1.55; }
+  .start-form :global(.lead-form) { box-shadow: 0 24px 60px rgb(9 25 55 / 10%); }
+  .start-boundary { margin: 16px clamp(22px, 4vw, 36px) 0; color: var(--slate); font-family: var(--serif); font-size: .78rem; line-height: 1.5; }
+  @media (max-width: 900px) {
+    .start-main { background: var(--paper); }
+    .start-grid { min-height: 0; grid-template-columns: 1fr; gap: 20px; padding-top: 28px; }
+    .start-copy { position: static; padding-bottom: 16px; }
+    .start-copy > .eyebrow { margin-top: 42px; }
+    .start-form { margin-inline: -14px; padding: 8px 14px 50px; background: var(--color-sky-tint); }
+    .start-form__heading { padding-top: 44px; }
+  }
+  @media (max-width: 520px) { h1 { font-size: clamp(3.25rem, 15vw, 4.7rem); }.start-form :global(.lead-form) { border-radius: 10px; } }
+</style>

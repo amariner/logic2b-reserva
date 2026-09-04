@@ -1,0 +1,220 @@
+---
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { PANEL_CATALOG, localizedPanelText, panelDemoUrl, panelDetailUrl, type PanelEntry } from '@logic-reserva/config/panels';
+import { logic2bContact } from '@logic-reserva/config/contact';
+import Base from '../layouts/Base.astro';
+import CommercialChrome from './CommercialChrome.astro';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const prefix = locale === 'en' ? '/en' : '';
+const homeHref = `${prefix}/`;
+const languageHref = locale === 'en' ? '/paneles/' : '/en/paneles/';
+const contact = logic2bContact(locale, 'commercial');
+const local = (value: PanelEntry['title']) => localizedPanelText(value, locale);
+const ui = locale === 'en' ? {
+  metaTitle: 'Restaurant management views | Logic Reserva',
+  description: 'Explore six fictional restaurant management views with real product evidence, reproducible demo states and explicit implementation limits.',
+  eyebrow: 'Restaurant product catalogue',
+  title: 'Six views. One service to understand.',
+  intro: 'Choose the decision you need to make before opening the workspace. Every entry uses real screens and fictional fixture data from Logic Reserva.',
+  back: 'Back to Logic Reserva', language: 'ES', contact: 'Discuss my operation',
+  searchLabel: 'Search by view, user, decision or evidence', searchPlaceholder: 'Try “waitlist” or “management”',
+  levelLabel: 'Product level', all: 'All', management: 'Management', intelligent: 'Intelligent', reset: 'Clear filters',
+  count: 'views shown', oneCount: 'view shown', noResults: 'No view matches those filters.',
+  user: 'For whom', decision: 'Decision', evidence: 'Evidence in the demo', limit: 'Current limit', expand: 'Understand this view',
+  details: 'View product details', open: 'Open reproducible demo', screenshot: 'Real product capture', fictional: 'Fictional data', catalogue: 'Restaurant management views',
+  closingTitle: 'Start with the decision that is costing you most time.',
+  closingBody: 'Logic2B validates rules, data, integrations and launch scope with your team before any real implementation.',
+  closingAction: 'Discuss my operation', footer: 'Commercial exploration · No real bookings, messages or charges',
+} : {
+  metaTitle: 'Paneles para restaurantes | Logic Reserva',
+  description: 'Explora seis paneles ficticios para restauración con evidencia real del producto, estados de demo reproducibles y límites de implantación explícitos.',
+  eyebrow: 'Catálogo de producto para restauración',
+  title: 'Seis vistas. Un servicio que entender.',
+  intro: 'Elige la decisión que necesitas tomar antes de abrir el gestor. Cada entrada usa pantallas reales y datos fixture ficticios de Logic Reserva.',
+  back: 'Volver a Logic Reserva', language: 'EN', contact: 'Hablar de mi operativa',
+  searchLabel: 'Buscar por vista, usuario, decisión o evidencia', searchPlaceholder: 'Prueba “espera” o “dirección”',
+  levelLabel: 'Nivel de producto', all: 'Todos', management: 'Gestión', intelligent: 'Inteligente', reset: 'Limpiar filtros',
+  count: 'vistas visibles', oneCount: 'vista visible', noResults: 'Ninguna vista coincide con esos filtros.',
+  user: 'Para quién', decision: 'Decisión', evidence: 'Evidencia en la demo', limit: 'Límite actual', expand: 'Entender esta vista',
+  details: 'Ver ficha del panel', open: 'Abrir demo reproducible', screenshot: 'Captura real de producto', fictional: 'Datos ficticios', catalogue: 'Paneles para restauración',
+  closingTitle: 'Empieza por la decisión que más tiempo te está costando.',
+  closingBody: 'Logic2B valida reglas, datos, integraciones y alcance de lanzamiento con tu equipo antes de cualquier implantación real.',
+  closingAction: 'Hablar de mi operativa', footer: 'Exploración comercial · Sin reservas, mensajes ni cobros reales',
+};
+const itemList = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: ui.title,
+  description: ui.description,
+  url: new URL(`${prefix}/paneles/`, PRODUCT.url).href,
+  mainEntity: {
+    '@type': 'ItemList',
+    numberOfItems: PANEL_CATALOG.length,
+    itemListElement: PANEL_CATALOG.map((panel, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: local(panel.title),
+      url: new URL(panelDetailUrl(panel, locale), PRODUCT.url).href,
+    })),
+  },
+};
+---
+
+<Base
+  locale={locale}
+  title={ui.metaTitle}
+  description={ui.description}
+  image="/images/screens/05-solane-inventario-desktop.png"
+  imageAlt={local(PANEL_CATALOG[1].screenshot.alt)}
+  imageWidth={1366}
+  imageHeight={900}
+  structuredData={[itemList]}
+>
+  <CommercialChrome locale={locale} languageHref={languageHref}>
+
+  <main id="contenido" class="panels-main" tabindex="-1">
+    <section class="shell panels-intro" aria-labelledby="panels-title">
+      <a class="back" href={homeHref}><span aria-hidden="true">←</span>{ui.back}</a>
+      <div class="panels-intro__grid">
+        <div><p class="eyebrow">{ui.eyebrow}</p><h1 id="panels-title">{ui.title}</h1></div>
+        <p>{ui.intro}</p>
+      </div>
+    </section>
+
+    <section class="shell catalogue" aria-labelledby="catalogue-title" data-panel-catalogue>
+      <h2 id="catalogue-title" class="sr-only">{ui.catalogue}</h2>
+      <form class="panel-filters" data-panel-filters>
+        <div class="search-control">
+          <label for={`panel-search-${locale}`}>{ui.searchLabel}</label>
+          <span><svg aria-hidden="true" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="m16.5 16.5 4 4"></path></svg><input id={`panel-search-${locale}`} type="search" placeholder={ui.searchPlaceholder} autocomplete="off" data-panel-search /></span>
+        </div>
+        <fieldset class="level-control">
+          <legend>{ui.levelLabel}</legend>
+          <div>
+            <label><input type="radio" name="level" value="all" checked /><span>{ui.all}</span></label>
+            <label><input type="radio" name="level" value="management" /><span>{ui.management}</span></label>
+            <label><input type="radio" name="level" value="intelligent" /><span>{ui.intelligent}</span></label>
+          </div>
+        </fieldset>
+        <button class="reset-control" type="reset" data-panel-reset>{ui.reset}</button>
+      </form>
+
+      <div class="results-heading">
+        <p><strong data-panel-count>{PANEL_CATALOG.length}</strong> <span data-count-label data-one={ui.oneCount} data-many={ui.count}>{ui.count}</span></p>
+        <span aria-hidden="true">01—06</span>
+      </div>
+
+      <div class="panel-grid" data-panel-grid>
+        {PANEL_CATALOG.map((panel, index) => {
+          const searchable = [panel.title.es, panel.title.en, panel.eyebrow.es, panel.eyebrow.en, panel.summary.es, panel.summary.en, panel.user.es, panel.user.en, panel.decision.es, panel.decision.en, panel.evidence.es, panel.evidence.en, panel.level].join(' ').toLocaleLowerCase();
+          return (
+            <article id={panel.slug} class="panel-card" data-panel-card data-level={panel.level} data-search={searchable}>
+              <figure class="panel-shot">
+                <div class="panel-shot__bar"><span>{ui.screenshot}</span><span>{String(index + 1).padStart(2, '0')} / 06</span></div>
+                <picture>
+                  <source media="(max-width: 680px)" srcset={`/images/screens/${panel.screenshot.base}-mobile.png`} />
+                  <img src={`/images/screens/${panel.screenshot.base}-desktop.png`} width="1366" height="900" loading="eager" fetchpriority={index < 2 ? 'high' : 'auto'} decoding="async" alt={local(panel.screenshot.alt)} />
+                </picture>
+                <figcaption><span>{local(panel.screenshot.caption)}</span><span>{ui.fictional}</span></figcaption>
+              </figure>
+              <div class="panel-card__body">
+                <div class="panel-card__meta"><span>{String(index + 1).padStart(2, '0')}</span><span class="level-badge" data-level={panel.level}>{panel.level === 'management' ? ui.management : ui.intelligent}</span></div>
+                <p class="panel-eyebrow">{local(panel.eyebrow)}</p>
+                <h3>{local(panel.title)}</h3>
+                <p class="panel-summary">{local(panel.summary)}</p>
+                <details>
+                  <summary>{ui.expand}<span aria-hidden="true">+</span></summary>
+                  <dl>
+                    <div><dt>{ui.user}</dt><dd>{local(panel.user)}</dd></div>
+                    <div><dt>{ui.decision}</dt><dd>{local(panel.decision)}</dd></div>
+                    <div><dt>{ui.evidence}</dt><dd>{local(panel.evidence)}</dd></div>
+                    <div class="panel-limit"><dt>{ui.limit}</dt><dd>{local(panel.limit)}</dd></div>
+                  </dl>
+                </details>
+                <div class="panel-card__actions">
+                  <a class="panel-open" href={panelDetailUrl(panel, locale)}>{ui.details}<span aria-hidden="true">→</span></a>
+                  <a class="panel-demo" href={panelDemoUrl(panel, locale)}>{ui.open}<span aria-hidden="true">↗</span></a>
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+      <p class="empty-state" data-panel-empty hidden>{ui.noResults}</p>
+      <p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-panel-status></p>
+    </section>
+
+    <section class="shell closing" aria-labelledby="closing-title">
+      <div><p class="eyebrow">Logic2B + Logic Reserva</p><h2 id="closing-title">{ui.closingTitle}</h2></div>
+      <div><p>{ui.closingBody}</p><a class="pill" href={contact.href} target="_blank" rel="noreferrer">{ui.closingAction}<span aria-hidden="true">↗</span></a></div>
+    </section>
+  </main>
+
+  </CommercialChrome>
+</Base>
+
+<script>
+  const catalogue = document.querySelector<HTMLElement>('[data-panel-catalogue]');
+  if (catalogue) {
+    const form = catalogue.querySelector<HTMLFormElement>('[data-panel-filters]');
+    const search = catalogue.querySelector<HTMLInputElement>('[data-panel-search]');
+    const cards = [...catalogue.querySelectorAll<HTMLElement>('[data-panel-card]')];
+    const count = catalogue.querySelector<HTMLElement>('[data-panel-count]');
+    const label = catalogue.querySelector<HTMLElement>('[data-count-label]');
+    const empty = catalogue.querySelector<HTMLElement>('[data-panel-empty]');
+    const status = catalogue.querySelector<HTMLElement>('[data-panel-status]');
+    const normalise = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase().trim();
+    const apply = () => {
+      const query = normalise(search?.value ?? '');
+      const level = form?.querySelector<HTMLInputElement>('input[name="level"]:checked')?.value ?? 'all';
+      let visible = 0;
+      for (const card of cards) {
+        const matchesSearch = !query || normalise(card.dataset.search ?? '').includes(query);
+        const matchesLevel = level === 'all' || card.dataset.level === level;
+        card.hidden = !(matchesSearch && matchesLevel);
+        if (!card.hidden) visible += 1;
+      }
+      if (count) count.textContent = String(visible);
+      if (label) label.textContent = visible === 1 ? (label.dataset.one ?? '') : (label.dataset.many ?? '');
+      if (empty) empty.hidden = visible !== 0;
+      if (status && label) status.textContent = `${visible} ${label.textContent}`;
+    };
+    form?.addEventListener('input', apply);
+    form?.addEventListener('reset', () => requestAnimationFrame(apply));
+  }
+</script>
+
+<style>
+  .panels-main { overflow: clip; padding-bottom: clamp(80px, 10vw, 150px); }.panels-intro { padding-top: 34px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
+  .panels-intro__grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .55fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(38px, 6vw, 76px) 0 clamp(36px, 5vw, 60px); }
+  .panels-intro h1 { max-width: 900px; margin: 0; font-size: clamp(3.1rem, 7vw, 7rem); font-weight: 600; letter-spacing: -.064em; line-height: .9; }
+  .panels-intro__grid > p { margin: 0 0 4px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.55; }
+  .catalogue { scroll-margin-top: 90px; }.panel-filters { display: grid; grid-template-columns: minmax(260px, 1.25fr) minmax(310px, .8fr) auto; gap: 12px; align-items: end; border-block: 1px solid var(--line); padding: 18px 0; }
+  .panel-filters label, .panel-filters legend { display: block; margin: 0 0 8px; color: var(--slate); font-size: .75rem; font-weight: 650; letter-spacing: .035em; }
+  .search-control span { position: relative; display: block; }.search-control svg { position: absolute; top: 50%; left: 14px; width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; transform: translateY(-50%); }
+  .search-control input { width: 100%; min-height: 48px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 8px; padding: 10px 14px 10px 44px; color: var(--ink); background: white; }
+  .level-control { min-width: 0; margin: 0; border: 0; padding: 0; }.level-control > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; border-radius: 9px; padding: 4px; background: #e9e7e4; }
+  .level-control label { position: relative; margin: 0; }.level-control input { position: absolute; opacity: 0; }.level-control span { display: flex; min-height: 44px; align-items: center; justify-content: center; border-radius: 6px; padding: 7px 9px; color: var(--slate); font-size: .78rem; text-align: center; cursor: pointer; }
+  .level-control input:checked + span { color: var(--ink); background: white; box-shadow: 0 1px 3px rgb(0 0 0 / 10%); }.level-control input:focus-visible + span { outline: 3px solid var(--bordeaux); outline-offset: 2px; }
+  .reset-control { min-height: 48px; border: 1px solid rgb(0 0 0 / 14%); border-radius: 8px; padding: 8px 14px; color: var(--slate); background: transparent; cursor: pointer; }.reset-control:hover { color: var(--ink); background: white; }
+  .results-heading { display: flex; align-items: center; justify-content: space-between; padding: 26px 0 16px; color: var(--slate); font-size: .8rem; }.results-heading p { margin: 0; }.results-heading strong { color: var(--ink); font-size: 1.08rem; }
+  .panel-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }.panel-card { min-width: 0; overflow: hidden; scroll-margin-top: 92px; border: 1px solid rgb(0 0 0 / 11%); border-radius: 12px; background: white; }.panel-card[hidden] { display: none; }
+  .panel-shot { margin: 0; border-bottom: 1px solid var(--line); background: #f1f3f7; }.panel-shot__bar, .panel-shot figcaption { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 18px; padding: 9px 14px; color: var(--slate); background: white; font-size: .75rem; }
+  .panel-shot picture { display: block; aspect-ratio: 1366 / 900; overflow: hidden; }.panel-shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+  .panel-shot figcaption { min-height: 54px; align-items: flex-start; border-top: 1px solid var(--line); font-family: var(--serif); line-height: 1.4; }.panel-shot figcaption span:first-child { max-width: 48ch; }.panel-shot figcaption span:last-child { flex: 0 0 auto; font-family: var(--sans); font-size: .68rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+  .panel-card__body { padding: clamp(20px, 3vw, 30px); }.panel-card__meta { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: var(--slate); font-size: .72rem; font-weight: 700; letter-spacing: .08em; }
+  .level-badge { display: inline-flex; min-height: 28px; align-items: center; border-radius: 999px; padding: 4px 9px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); letter-spacing: 0; }.level-badge[data-level='intelligent'] { color: #714b00; background: #fff0c6; }
+  .panel-eyebrow { margin: 30px 0 8px; color: var(--color-notion-blue-strong); font-size: .72rem; font-weight: 750; letter-spacing: .08em; text-transform: uppercase; }.panel-card h3 { margin: 0; font-size: clamp(2rem, 3.2vw, 3.5rem); letter-spacing: -.05em; line-height: .95; }
+  .panel-summary { min-height: 75px; margin: 18px 0 26px; color: var(--slate); font-family: var(--serif); font-size: 1.05rem; line-height: 1.55; }
+  .panel-card details { border-block: 1px solid var(--line); }.panel-card summary { display: flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 12px; color: var(--slate); font-size: .82rem; font-weight: 650; cursor: pointer; list-style: none; }.panel-card summary::-webkit-details-marker { display: none; }.panel-card summary span { font-size: 1.3rem; transition: transform 180ms ease; }.panel-card details[open] summary span { transform: rotate(45deg); }
+  .panel-card dl { margin: 0 0 18px; }.panel-card dl div { display: grid; grid-template-columns: 112px 1fr; gap: 16px; border-top: 1px solid var(--line); padding: 13px 0; }.panel-card dt { color: var(--slate); font-size: .72rem; font-weight: 650; }.panel-card dd { margin: 0; font-family: var(--serif); font-size: .88rem; line-height: 1.45; }.panel-card dl .panel-limit { margin-inline: -10px; border-top: 0; border-radius: 8px; padding: 14px 10px; background: #f5f4f2; }
+  .panel-card__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 16px; }.panel-card__actions a { display: flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 12px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px; color: var(--ink); background: white; font-size: .8rem; font-weight: 700; text-decoration: none; }.panel-card__actions .panel-open { border-color: var(--color-notion-blue); color: white; background: var(--color-notion-blue); }.panel-card__actions .panel-open:hover { background: var(--color-notion-blue-strong); }
+  .empty-state { margin: 0; border: 1px dashed var(--line); border-radius: 12px; padding: 60px 20px; color: var(--slate); text-align: center; }
+  .closing { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(40px, 8vw, 110px); align-items: end; margin-top: clamp(80px, 11vw, 150px); border-radius: 12px; padding: clamp(28px, 5vw, 58px); background: var(--color-sky-tint); }.closing h2 { max-width: 760px; margin: 0; font-size: clamp(2.25rem, 4.5vw, 4.8rem); letter-spacing: -.055em; line-height: .95; }.closing > div:last-child { display: grid; gap: 24px; justify-items: start; }.closing > div:last-child p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: 1.04rem; line-height: 1.55; }
+  @media (max-width: 1080px) { .panels-intro__grid, .closing { grid-template-columns: 1fr; }.panels-intro__grid > p { max-width: 58ch; }.panel-grid { grid-template-columns: 1fr; }.panel-summary { min-height: 0; } }
+  @media (max-width: 760px) { .panel-filters { grid-template-columns: 1fr; }.reset-control { justify-self: stretch; } }
+  @media (max-width: 680px) { .panels-intro { padding-top: 18px; }.panels-intro__grid { gap: 26px; padding-top: 32px; }.panels-intro h1 { font-size: clamp(3rem, 15vw, 4.7rem); }.panel-shot picture { aspect-ratio: 375 / 440; }.panel-shot img { object-position: center top; }.panel-shot figcaption { flex-direction: column; gap: 5px; }.panel-card dl div { grid-template-columns: 1fr; gap: 5px; }.panel-card__actions { grid-template-columns: 1fr; } }
+</style>

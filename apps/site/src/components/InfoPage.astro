@@ -1,18 +1,15 @@
 ---
 import type { Locale } from '@logic-reserva/config';
-import { logic2bContact } from '@logic-reserva/config/contact';
 import Base from '../layouts/Base.astro';
-import { COMMERCIAL_PAGE_DETAILS, INFO_PAGES, SITE_CONTENT, type CommercialPageKey, type InfoPageKey } from '../content';
-import BrandLockup from './BrandLockup.astro';
+import { COMMERCIAL_PAGE_DETAILS, INFO_PAGES, type CommercialPageKey, type InfoPageKey } from '../content';
+import CommercialChrome from './CommercialChrome.astro';
 
 interface Props { locale?: Locale; page: InfoPageKey; path: string }
 
 const { locale = 'es', page, path } = Astro.props;
 const content = INFO_PAGES[locale][page];
-const shared = SITE_CONTENT[locale];
 const prefix = locale === 'en' ? '/en' : '';
 const languageHref = locale === 'en' ? path : `/en${path}`;
-const contact = logic2bContact(locale, 'commercial');
 const commercialPage: CommercialPageKey | null = page === 'planes' || page === 'restaurantes' || page === 'grupos' ? page : null;
 const detail = commercialPage ? COMMERCIAL_PAGE_DETAILS[locale][commercialPage] : null;
 const pageUrl = `https://reserva.logic2b.com${prefix}${path}`;
@@ -63,12 +60,7 @@ const fallbackTitles = locale === 'en'
   robots={commercialPage ? 'index, follow, max-image-preview:large' : 'index, nofollow'}
   structuredData={structuredData}
 >
-  <header class="info-nav">
-    <div class="shell">
-      <BrandLockup locale={locale} homeHref={`${prefix}/`} />
-      <div><a href={languageHref}>{shared.nav.language}</a><a class="pill" href={contact.href} target="_blank" rel="noreferrer">{shared.nav.contact}</a></div>
-    </div>
-  </header>
+  <CommercialChrome locale={locale} languageHref={languageHref}>
   <main id="contenido" class="shell info-main" tabindex="-1">
     <a class="back-link" href={`${prefix}/`}><span aria-hidden="true">←</span> {ui.back}</a>
     <div class="info-grid">
@@ -111,13 +103,10 @@ const fallbackTitles = locale === 'en'
       </>
     )}
   </main>
-  <footer class="info-footer"><div class="shell"><span>© 2026 Logic2B</span><nav><a href={`${prefix}/legal/`}>{shared.footer.legal}</a><a href={`${prefix}/privacidad/`}>{shared.footer.privacy}</a><a href={`${prefix}/cookies/`}>{shared.footer.cookies}</a></nav></div></footer>
+  </CommercialChrome>
 </Base>
 
 <style>
-  .info-nav { position: sticky; z-index: 50; top: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
-  .info-nav .shell, .info-footer .shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
-  .info-nav div div { display: flex; align-items: center; gap: 12px; }.info-nav div div > a:first-child { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; padding: 8px; color: var(--slate); font-size: .84rem; text-decoration: none; }.info-nav .pill { min-height: 44px; }
   .info-main { padding-block: clamp(64px, 9vw, 120px); }.back-link { display: inline-flex; min-height: 44px; align-items: center; margin-bottom: clamp(60px, 9vw, 110px); color: var(--slate); font-size: .84rem; text-decoration: none; }.back-link:hover { color: var(--ink); }
   .info-grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(50px, 10vw, 150px); }.info-grid h1 { max-width: 850px; }.info-intro { max-width: 62ch; margin: 30px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.15rem, 1.8vw, 1.4rem); line-height: 1.6; }
   .info-points { margin: 0; padding: 0; border-top: 1px solid var(--line); list-style: none; }.info-points li { display: grid; grid-template-columns: 42px 1fr; gap: 14px; border-bottom: 1px solid var(--line); padding: 22px 0; }.info-points span { color: var(--color-notion-blue-strong); font-size: .74rem; font-weight: 700; }.info-points p { margin: 0; font-size: 1.05rem; line-height: 1.45; }
@@ -127,6 +116,5 @@ const fallbackTitles = locale === 'en'
   .service-offerings { display: grid; grid-template-columns: .7fr 1.3fr; gap: clamp(40px, 8vw, 120px); margin-top: clamp(80px, 10vw, 130px); border-top: 1px solid var(--line); padding-top: clamp(48px, 7vw, 84px); }.service-offerings h2 { max-width: 500px; margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); letter-spacing: -.045em; line-height: 1; }.service-offerings__list { border-top: 1px solid var(--line); }.service-offerings article { display: grid; grid-template-columns: minmax(150px, .55fr) 1fr; gap: 24px; border-bottom: 1px solid var(--line); padding: 24px 0; }.service-offerings h3 { margin: 0; font-size: 1.15rem; }.service-offerings article span { display: inline-flex; margin-top: 8px; color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 750; }.service-offerings article p { margin: 0; color: var(--slate); font-family: var(--serif); line-height: 1.55; }
   .info-faq { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(40px, 8vw, 120px); margin-top: clamp(80px, 10vw, 130px); }.info-faq h2 { max-width: 500px; margin: 0; font-size: clamp(2.1rem, 4vw, 3.5rem); letter-spacing: -.04em; line-height: 1; }.info-faq details { border-top: 1px solid var(--line); }.info-faq details:last-child { border-bottom: 1px solid var(--line); }.info-faq summary { display: flex; justify-content: space-between; gap: 20px; padding: 22px 0; cursor: pointer; font-weight: 650; list-style: none; }.info-faq summary::-webkit-details-marker { display: none; }.info-faq summary span { font-size: 1.35rem; transition: transform 180ms ease; }.info-faq details[open] summary span { transform: rotate(45deg); }.info-faq details p { max-width: 68ch; margin: 0; padding: 0 40px 24px 0; color: var(--slate); font-family: var(--serif); line-height: 1.6; }
   .related-links { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin-top: 60px; border-top: 1px solid var(--line); padding-top: 24px; }.related-links > span { color: var(--slate); font-size: .82rem; }.related-links a { display: inline-flex; min-height: 44px; align-items: center; font-weight: 650; text-decoration: none; }.related-links i { margin-left: 7px; font-style: normal; }
-  .info-footer { height: 88px; border-top: 1px solid var(--line); color: var(--slate); background: white; font-size: .78rem; }.info-footer nav { display: flex; gap: 18px; }.info-footer a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; text-decoration: none; }
-  @media (max-width: 760px) { .info-nav .pill { display: none; }.info-grid, .outcomes, .service-offerings, .info-faq { grid-template-columns: 1fr; }.info-main { padding-top: 44px; }.back-link { margin-bottom: 58px; }.chapter-list article { grid-template-columns: 40px 1fr; gap: 12px; }.service-offerings article { grid-template-columns: 1fr; gap: 8px; }.info-cta { align-items: flex-start; flex-direction: column; }.info-footer .shell { align-items: flex-start; flex-direction: column; justify-content: center; }.info-footer nav { flex-wrap: wrap; } }
+  @media (max-width: 760px) { .info-grid, .outcomes, .info-faq { grid-template-columns: 1fr; }.info-main { padding-top: 44px; }.back-link { margin-bottom: 58px; }.chapter-list article { grid-template-columns: 40px 1fr; gap: 12px; }.info-cta { align-items: flex-start; flex-direction: column; } }
 </style>

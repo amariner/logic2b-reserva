@@ -1,0 +1,10 @@
+---
+import { THEME_CATALOG, type ThemeSlug } from '@logic-reserva/config/themes';
+import ThemeDetailPage from '../../../../components/ThemeDetailPage.astro';
+
+export const getStaticPaths = () => THEME_CATALOG.map(({ slug }) => ({ params: { theme: slug }, props: { slug } }));
+
+interface Props { slug: ThemeSlug }
+const { slug } = Astro.props;
+---
+<ThemeDetailPage locale="en" slug={slug} />

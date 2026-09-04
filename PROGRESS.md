@@ -4,93 +4,171 @@ Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué
 
 ---
 
-## 2026-09-03 · Sesión 47 · F26: home completo con oferta, portfolio, paneles y confianza ✅
+## 2026-09-04 · Sesión 59 · Correo continuo del hero a la solicitud ✅
 
-- F26 completada sobre el contrato de `docs/PARIDAD-CAMP.md`: la home es/en conecta tres planes con sus recorridos, las doce identidades, seis paneles, cinco guías, seis fases de implantación y una FAQ ampliada antes del contacto.
-- Los bloques comerciales reutilizan `PLAN_CATALOG`, `THEME_CATALOG`, `PANEL_CATALOG` y `GUIDE_CATALOG`; no hay una segunda lista de ofertas, identidades, módulos o guías en la landing.
-- El footer es ahora una puerta de producto completa: planes, temas, gestor, paneles, guías, soluciones, contacto, idioma y legales. Las anclas de las nueve previews sin recorrido profundo quedan resolubles desde `/temas/`.
-- QA: `pnpm check` 28/28, `pnpm build` 14/14 tareas y F26 dirigido 1/1 en es/en; la suite larga posterior sigue limitada por el cierre interno de Wrangler/Miniflare que deja `127.0.0.1:8791` en `ERR_CONNECTION_REFUSED`.
-- La paridad estructural aún no se declara completa: F27 mantiene pendiente el paquete final de capturas, auditoría, E2E completo y validación pública; no se hizo push ni deploy.
+- La comparación de `/empezar/` con Camp detectó que su captación breve no envía un lead parcial: conserva el correo y lo prellena en la solicitud completa. Reserva intentaba escribir desde el hero y pedía consentimiento antes de disponer del contexto necesario.
+- El hero es/en conduce ahora a `/empezar/`, transporta el correo únicamente en un fragmento que no llega al servidor y lo elimina de la URL en cuanto prellena el formulario. El consentimiento y el único `POST /api/leads` permanecen exclusivamente en la solicitud completa; sin JavaScript se conserva la navegación, sin serializar el correo.
+- La página enfocada muestra el correo preparado como contexto, admite direcciones largas y mantiene el plan, tema o panel seleccionado. QA visual completado a 1366×900 y 375×812 con ancho exacto y URL limpia.
+- `pnpm check` pasa 28/28 con 160 tests y el E2E específico pasa 1/1. La regresión integral alcanzó 20/78 en verde y fue interrumpida por petición explícita de integrar y subir inmediatamente; el paquete visual queda pendiente de regeneración antes de cualquier despliegue. No se desplegó ni se envió ningún lead.
 
----
+## 2026-09-04 · Sesión 58 · Recorrido comercial guiado y persistente ✅
 
-## 2026-09-03 · Sesión 46 · F25: planes, implantación y guías públicas ✅
+- La inspección directa del recorrido vivo de Camp detectó el siguiente diferencial interactivo: «Ver recorrido» abre una guía persistente con progreso y contexto que acompaña al visitante por varias páginas, mientras Reserva enviaba directamente a una sola vista del gestor.
+- Se añade un diálogo nativo bilingüe con introducción y seis hitos verificables: oferta en home, catálogo de temas, ficha Vedra, catálogo de paneles, ficha Plano e inicio comercial con Gestión seleccionado. La URL conserva `?recorrido=1…6` entre páginas; pausar o salir elimina solo ese parámetro y respeta cualquier `plan`, `theme` o `panel` válido.
+- Cabecera, menú móvil y hero abren el mismo recorrido. El fallback sin JavaScript mantiene enlaces navegables, el diálogo conserva foco y cierre nativos, respeta movimiento reducido y no añade rutas, backend, sesión, red ni capacidades de producto.
+- QA visual completado en escritorio y 375×812 con ancho exacto, controles alcanzables y estados intro/paso excluyentes. `pnpm check` pasa 28/28 con 160 tests y la regresión integral 78/78 en 12 minutos; la prueba nueva recorre los seis hitos en móvil, conserva Gestión al final y verifica cero escrituras.
+- Dos ejecuciones de `pnpm fotos` coinciden 42/42 byte a byte; la línea base, recalculada con la fórmula documentada sobre los hashes actuales, es `eee79bb14e6e568843d4e3e26a326c4938ca80ec20c6cd03e0e94fd58b8d9e5d`. Los dry-runs estrictos de preview y producción aceptan 328 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-- F25 completada con `/planes/` y `/en/planes/` como superficie canónica: se conservan exactamente Básico, Gestión e Inteligente y se añaden mantenimiento, desarrollo/mejoras y lanzamiento como servicios con `Alcance a definir`.
-- `/docs/` y `/en/docs/` publican cinco guías por rol —Sala, Gestión, Dirección, Propietario y Técnica— con datos, migración, dominio/DNS, RGPD, cobros, salida, soporte y responsabilidades visibles.
-- Precios, paneles, guías, soluciones y contacto quedan enlazados entre sí sin inventar importes ni activar proveedores; la captura comercial sigue siendo la única excepción real.
-- QA dirigido F25: 1/1; build posterior: site 20 páginas y web 34 páginas; `pnpm check` 28/28.
-- F26 pasa a ser el siguiente hito; la paridad total con Camp aún no está cerrada.
+## 2026-09-04 · Sesión 57 · Inicio comercial enfocado con contexto continuo ✅
 
----
+- Una nueva revisión del recorrido vivo de Camp detectó el siguiente diferencial de conversión: plan, tema o panel desembocan en una página de inicio comercial enfocada que conserva la elección, en lugar de devolver al visitante al cierre del home.
+- Se añaden `/empezar/` y `/en/empezar/` con título, tres garantías de proceso, WhatsApp directo y la misma implementación de formulario comercial. Los CTA de planes, fichas y previews transportan `?plan=`, `?theme=` o `?panel=` hasta esta ruta; el home conserva compatibilidad con enlaces anteriores y sigue usando el mismo endpoint `/api/leads`.
+- El formulario se extrae a un componente compartido y mantiene plan derivado, interés validado, teléfono/mensaje opcionales, privacidad, honeypot y respuesta fail-closed. Una selección de plan no deja una tarjeta de interés vacía y ninguna demo, dashboard o página adicional gana capacidad de escritura.
+- El sitio alcanza 68 páginas públicas con canonical, hreflang, sitemap, `WebPage`/`BreadcrumbList` y smoke GET/HEAD. QA visual completado en escritorio y 375×812; `pnpm check` pasa 28/28 con 160 tests y la regresión integral 77/77 en 10,5 minutos.
+- Dos ejecuciones de `pnpm fotos` conservan 42/42 PNG y el digest agregado `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción aceptan 328 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-## 2026-09-03 · Sesión 45 · F24: catálogo sectorial de paneles ✅
+## 2026-09-04 · Sesión 56 · Fichas públicas bilingües para las doce direcciones web ✅
 
-- F24 completada con `PANEL_CATALOG` compartido en `@logic-reserva/config`: seis puertas de entrada —Servicio del día, Plano de sala, Reservas y espera, Grupos y eventos, Informes operativos y Vista inteligente— con usuario, decisión, evidencia, nivel y límite honesto.
-- `/paneles/` y `/en/paneles/` ofrecen fichas indexables con capturas reales del catálogo F18, filtros Gestión/Inteligente, búsqueda accesible y fallback completo sin JavaScript.
-- Cada ficha conduce a un estado reproducible de Vedra o Solane; las rutas existentes, permisos, persistencia local y fronteras de demo no se modifican.
-- QA: build estático de 18 páginas comerciales y 34 demos; `pnpm e2e` 56/56 con SEO, responsive 320/375/430/1366 px, contraste, touch targets y recorridos F5–F19 verdes; `pnpm check` 28/28.
-- La paridad total con Camp aún no está cerrada: F25–F27 mantienen pendientes precios, guías, home completo y lanzamiento verificado.
+- La revisión de `/temas/` y de una ficha viva de Camp detectó el siguiente diferencial: sus direcciones visuales pasan por una página pública indexable antes de abrir la muestra, mientras Reserva enlazaba catálogo y home directamente a demos `noindex`.
+- Se añaden veinticuatro rutas públicas —doce es y doce en— desde `THEME_CATALOG`. Cada ficha incorpora metadatos propios, dirección ficticia, captura real responsive, nivel/tono/formato, cuatro capacidades, alcance honesto, CTA con `?theme=<slug>`, demo navegable y tres temas relacionados. Brasca, Vedra y Solane conservan sus recorridos profundos; las otras nueve se presentan exclusivamente como webs navegables.
+- Home y `/temas/` conducen ahora a explicación → contacto contextual o demo, sin perder el acceso directo desde las previews. Sitemap, canonical, hreflang, `WebPage`/`BreadcrumbList`, smoke GET/HEAD, teclado, targets táctiles y fallback sin escrituras cubren ya 66 páginas públicas. Se conserva `X-Frame-Options: DENY`: la ficha usa la captura canónica y un enlace explícito, no un iframe que debilite la seguridad.
+- QA visual de `/temas/la-trece/` completado a 1366×900 y 375×812, con ancho exacto, cero overflow y CTA móviles de 50 px separados del aviso de cookies. `pnpm check` pasa 28/28 con 160 tests y la regresión integral 76/76 en 10,5 minutos; el barrido responsive cubre 320/375/430/1366 px.
+- Dos ejecuciones de `pnpm fotos` conservan 42/42 PNG y el digest agregado `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción aceptan 325 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
----
+## 2026-09-04 · Sesión 55 · Fichas públicas bilingües para las seis vistas de producto ✅
 
-## 2026-09-03 · Sesión 44 · F23: doce direcciones web para restauración ✅
+- La comparación con las fichas públicas vivas de Camp detectó el siguiente diferencial concreto: Reserva tenía catálogo y demos profundas, pero no una página indexable por vista que explicara alcance, prueba y frontera antes de entrar al gestor.
+- Se añaden doce rutas públicas, seis en español y seis en inglés, desde una única fuente `PANEL_CATALOG`: Servicio, Plano, Reservas y espera, Grupos y eventos, Informes e Inteligente. Cada ficha incorpora metadatos propios, dirección ficticia, nivel y señales, decisión/evidencia/límite, captura real, CTA de contacto con `?panel=<slug>` y acceso al estado reproducible ya existente.
+- Home y `/paneles/` enlazan ahora esas fichas como siguiente paso comercial; las previews mantienen el acceso directo a la demo. Sitemap, canonical, hreflang, datos estructurados, smoke GET/HEAD, teclado, targets táctiles y fallback sin escrituras cubren las 42 páginas públicas.
+- QA visual de `/paneles/servicio/` completado a 1366×900 y 375×812; a móvil conserva cabecera y H1 en `scrollY=0`, ancho exacto y ambos CTA con separación respecto al aviso de cookies. `pnpm check` pasa 28/28 con 159 tests. La suite E2E valida 74 pruebas en la pasada integral y el único timeout del barrido de metadatos pasa 1/1 al repetirse con el presupuesto corregido para 42 rutas; los gates dirigidos de paridad pasan 17/17 por el mismo criterio.
+- Dos ejecuciones de `pnpm fotos` conservan 42/42 PNG y el digest agregado `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción aceptan 276 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-- F23 completada con `THEME_CATALOG` compartido en `@logic-reserva/config`: doce identidades con formato, tono, promesa, nivel y tratamiento visual propios; Brasca, Vedra y Solane conservan sus tres recorridos profundos.
-- `/temas/` y `/en/temas/` ofrecen catálogo indexable con búsqueda, filtro por nivel, fichas accesibles y fallback completo sin JavaScript. Las nueve nuevas direcciones se generan con una sola `ThemePage` y quedan disponibles en es/en bajo `/demos/temas/`.
-- Las previews son honestas y no convierten una identidad visual en gestor: todas llevan noindex triple, datos ficticios y enlaces claros de vuelta al catálogo o a las tres demos funcionales.
-- QA dirigido: build estático de 16 páginas comerciales y 34 demos, incluyendo las nueve rutas nuevas en ambos idiomas; la suite completa queda en `pnpm e2e` 55/55 y verifica 12 fichas, filtrado y 18 rutas nuevas con 200.
-- La paridad total con Camp aún no está cerrada: F24–F27 mantienen pendientes paneles, guías, home completo y lanzamiento verificado.
+## 2026-09-04 · Sesión 54 · Contexto de entorno dentro de cada preview ✅
 
----
+- La auditoría directa de las previews vivas de Camp identificó un detalle de orientación que aún faltaba: cada muestra se presenta como un entorno concreto, con dirección ficticia y metadatos breves antes de la explicación principal. Reserva incorpora ese patrón sin copiar contenido, diseño ni capacidades.
+- Las doce webs muestran ahora `<slug>.tudominio.com` y las seis vistas `panel.tudominio.com/<slug>`; en inglés usan `yourdomain.com`. Tres etiquetas derivadas de `THEME_CATALOG` o `PANEL_CATALOG` resumen nivel, formato o audiencia y carácter reproducible. No se duplican catálogos ni se crean dominios, paneles o integraciones reales.
+- El diálogo compartido conserva imagen, evidencia, límite, contacto y acceso profundo. Se ajustó su geometría para que ambos CTA queden visibles a 1280×720; a 375×812 el propio diálogo desplaza el contenido, alcanza los CTA y mantiene ancho exacto sin overflow horizontal. La nueva cobertura fija direcciones, etiquetas, es/en y accesibilidad móvil.
+- Gates incrementales: `pnpm check` 28/28 con 159 tests; E2E de F26 5/5 y gate táctil 1/1; QA visual a 1280×720 y 375×812. Dos ejecuciones de `pnpm fotos` conservan 42/42 PNG y el digest `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`.
+- Los dry-runs estrictos de preview y producción aceptan 251 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-## 2026-09-03 · Sesión 43 · F22: flujo, momentos y conexiones ✅
+## 2026-09-04 · Sesión 53 · Contexto de web o panel continuo hasta el lead ✅
 
-- F22 completada con un flujo editorial de siete momentos —web, disponibilidad, reserva, servicio, garantía/cobro, comunicación y decisión— que conserva la secuencia completa en escritorio y permite desplazamiento accesible en móvil.
-- La landing incorpora cinco pestañas de producto: Web, Reservas, Sala, Grupos y eventos, y Operativa. Cada una enlaza evidencia real, tres capacidades y un límite honesto; teclado, estados ARIA y fallback sin JavaScript quedan cubiertos.
-- El nuevo bloque de conexiones separa herramientas, pagos y asistentes, mostrando `demostrativo` o `por proyecto` sin ampliar la promesa de integraciones ni tocar la frontera `DEMO_MODE`.
-- QA: `pnpm check` 28/28, `pnpm e2e` 55/55 y barridos de contraste, táctiles y responsive verdes; no se hacen llamadas externas desde ninguna demo.
-- La paridad total con Camp aún no está cerrada: F23–F27 mantienen pendientes doce temas, paneles, guías, home completo y lanzamiento verificado.
+- La revisión de los CTA vivos de Camp confirmó un patrón que aún faltaba en Reserva: las selecciones de preview llegan a contacto mediante parámetros validados (`?theme=` o `?panel=`). Reserva adopta esa continuidad con sus catálogos y vocabulario propios, sin copiar la pantalla de Camp ni crear otro formulario.
+- Cada una de las doce webs y seis vistas genera ahora un destino es/en hacia `#contact-form` con su slug canónico. El formulario muestra por separado el interés seleccionado y el punto de partida derivado: una web propone Básico salvo Brasca/Vedra/Solane, que respetan su plan; un panel propone Gestión o Inteligente según su nivel. Un `?plan=` válido y explícito conserva prioridad.
+- El único payload comercial puede incluir `interest: { kind, slug, name }`. El Worker lo valida con clase cerrada y slug seguro, lo incorpora al correo interno y mantiene compatibilidad con solicitudes anteriores sin contexto. No se acepta texto arbitrario desde la URL y no cambian transporte, rate limit, honeypot, privacidad ni persistencia.
+- QA visual completado sobre el nuevo resumen a 1366×900 y 375×812, con dos tarjetas legibles y campos sin overflow. `pnpm check` pasa 28/28 con 159 tests unitarios/contrato. La regresión E2E pasa 74/74 por bloques; una ejecución monolítica se repitió por fragmentos después de que Wrangler 4.123 cerrara su proxy local con `Network connection lost`, no por un fallo de aplicación.
+- Dos ejecuciones de `pnpm fotos` conservan 42/42 PNG y el digest `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción aceptan 251 assets, 566,81 KiB y 84,85 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
----
+## 2026-09-04 · Sesión 52 · Formulario de proyecto con menor fricción y privacidad explícita ✅
 
-## 2026-09-03 · Sesión 42 · F21: shell comercial y prueba múltiple ✅
+- La revisión del cierre comercial vivo de Camp detectó un diferencial de conversión: su formulario admite teléfono y mensaje opcionales, mientras Reserva no exponía el teléfono ya soportado por el Worker y obligaba a redactar contexto antes de enviar.
+- El formulario completo es/en incorpora ahora teléfono opcional con autocompletado `tel`; el mensaje también pasa a opcional. Nombre, restaurante, email, punto de partida y aceptación de privacidad siguen siendo obligatorios. La captación breve del hero, la selección `basico|gestion|inteligente`, el honeypot, el rate limit y el transporte único permanecen intactos.
+- El esquema del Worker conserva compatibilidad con solicitudes anteriores, normaliza el teléfono cuando existe y entrega un rótulo neutral cuando no hay mensaje adicional. La política de privacidad enumera los datos tratados y deja explícito que teléfono y mensaje son opcionales; sus descripciones SEO es/en quedan dentro del contrato de 100–160 caracteres.
+- QA visual completado sobre contacto con plan seleccionado a 1366×900, 375×812 y 320×812: dos columnas donde caben, apilado compacto a 320 px, cero overflow y cero errores de consola. Gates: `pnpm check` 28/28 con 159 tests unitarios/contrato; E2E dirigido 3/3 y regresión integral 74/74 en 7,2 minutos.
+- Dos ejecuciones de `pnpm fotos` conservaron los mismos 42/42 PNG y digest `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción aceptan 250 assets, 566,33 KiB y 84,70 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-- F21 completada sobre el contrato de paridad: la cabecera expone Webs, Gestor, Planes y contacto; el hero ofrece web demo, recorrido guiado y gestor tanto en es/en como en móvil.
-- La primera pantalla incorpora captación breve con el mismo endpoint comercial y la misma validación/consentimiento del formulario completo, además de portfolio vivo de Brasca, Vedra y Solane.
-- El rail de ecosistema explicita madurez por capacidad —demostrado, demostrativo y por proyecto— sin convertir integraciones previstas en promesas activas ni alterar la frontera `DEMO_MODE`.
-- Se corrigieron los objetivos táctiles legales bilingües a 44×44 px. `pnpm e2e` queda en 53/53 y `pnpm fotos` produjo dos veces los mismos 16 hashes.
-- F21 ya está cerrada en el roadmap; la paridad total con Camp no: permanecen F22–F27 para flujo, momentos, doce temas, paneles, guías, home completo y lanzamiento.
+## 2026-09-04 · Sesión 51 · Intención de plan continua desde oferta hasta contacto ✅
 
----
+- La comparación del recorrido comercial de Camp detectó un último diferencial medible: sus ofertas preservan el plan elegido al abrir contacto, mientras Reserva separaba correctamente planes y demos pero obligaba a volver a expresar el punto de partida en el formulario.
+- Home y `/planes/` es/en ofrecen ahora dos decisiones por oferta: «Hablar de este plan» conserva `basico|gestion|inteligente` en la URL y «Ver evidencia» mantiene el acceso directo a Brasca, Vedra o Solane. Un helper compartido construye las rutas y los nombres proceden del catálogo canónico `COMMERCIAL_PLANS`.
+- El contacto reutiliza el campo `level` existente: valida el parámetro, preselecciona la necesidad correspondiente y muestra por separado «Punto de partida seleccionado · Básico/Gestión/Inteligente». No cambia el esquema, el transporte, la persistencia ni la frontera del único formulario real; un valor desconocido se ignora.
+- QA visual completado en home, planes y contacto a 1366×900 y 375×812, con CTA comercial primario, evidencia secundaria, targets móviles de 48–50 px, copy es/en y ausencia de overflow. Gates: `pnpm check` 28/28; E2E dirigido 1/1 más regresión responsive 3/3; regresión integral 74/74 en 6,6 minutos.
+- El paquete visual v3 se regeneró dos veces con 42/42 PNG y digest idéntico `8b10d47326d57f17422af0146f02d43e20b7f5013472f7b09720000ce483ac15`. Los dry-runs estrictos de preview y producción conservan 250 assets, 566,25 KiB y 84,66 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-## 2026-09-03 · Sesión 41 · Actualización de GitHub y auditoría de paridad ✅
+## 2026-09-04 · Sesión 50 · Previews comerciales enriquecidas con evidencia y doble CTA ✅
 
-- Se descargó `origin/main` y se integró el commit remoto `2168fb3` de 2026-09-02, que incorpora la auditoría y el contrato de paridad estructural con `camp.logic2b.com`.
-- La resolución conserva el producto local y normaliza el roadmap: F20–F27 quedan reservadas para la paridad Camp; UI, sincronización entre pestañas y exportación local pasan a M2–M4.
-- La comprobación inicial confirma que la paridad es todavía un objetivo documentado, no un estado alcanzado: faltan shell/hero, flujo completo, portfolio, catálogo de paneles, guías y cierre comercial equivalentes.
+- Una nueva comparación directa con los modales del Camp vivo detectó el siguiente diferencial medible: las previews de Reserva ya permitían explorar las doce webs y seis vistas, pero todavía no explicaban dentro del diálogo qué demuestra cada muestra, cuál es su límite ni ofrecían contacto y acceso directo como decisiones separadas.
+- El diálogo compartido consume ahora exclusivamente los catálogos canónicos: dirección visual y alcance para webs; decisión, evidencia y límite para paneles. Cada preview añade un CTA comercial hacia `#contacto` y conserva el enlace profundo a la experiencia completa, con copy contextual es/en y fallback íntegro sin JavaScript.
+- El CTA de contacto cierra el diálogo y aterriza en el formulario. Se mantienen cierre por botón, Escape y backdrop, restitución de foco, imagen/caption accesibles y targets mínimos; el ajuste responsive compacta la captura y los hechos sin ocultar la continuación del diálogo. QA visual completado para Brasca y Servicio del día a 1366×900 y 375×812.
+- Gates: `pnpm check` 28/28; E2E enfocado 3/3 y recorrido de contacto 1/1; regresión integral 74/74 en 7 minutos. El paquete visual v3 se regeneró dos veces con 42/42 PNG y digest idéntico `974a99e76f5905933709d40e413e6d37b99504a35d615b6a65c3e5fbd7d34aee`.
+- Los dry-runs estrictos de preview y producción conservan 250 assets, 566,25 KiB y 84,66 KiB gzip. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
----
+## 2026-09-04 · Sesión 49 · Preferencias de cookies globales y reversibles ✅
 
-## 2026-09-03 · Sesión 40 · Sincronización local y exportación de informes ✅
+- La paridad global con Camp incorpora un único componente de consentimiento en las treinta páginas comerciales es/en. La primera visita conserva la decisión rápida y el footer permite volver a abrir una configuración detallada desde home, planes, soluciones, legales, portfolio, paneles y guías.
+- El contrato existente `logic-reserva-consent-v1` permanece compatible y solo admite `necessary|analytics`. El estado local necesario queda siempre activo; aceptar «analítica futura» guarda permiso en este navegador, pero no carga hoy analítica, publicidad, etiquetas ni llamadas externas. La política de cookies explica ahora la revocación desde el footer.
+- El diálogo nativo conserva cierre por botón, Escape y backdrop, devuelve el foco al disparador y ofrece copy propio es/en. Sin JavaScript desaparece el botón de configuración y permanece el enlace a la política. QA visual completado a 1366×900 y 375×812; el ajuste móvil mantiene ambas decisiones y la política visibles en el primer viewport.
+- Gates: `pnpm check` 28/28; E2E dirigido 5/5 más contraste 1/1; regresión integral 74/74 en 6,7 minutos; `git diff --check` limpio. El paquete visual v3 se regeneró dos veces con 42/42 PNG idénticos y digest reproducible `974a99e76f5905933709d40e413e6d37b99504a35d615b6a65c3e5fbd7d34aee`.
+- Los dry-runs estrictos de preview y producción aceptan 250 assets, 566,25 KiB y 84,66 KiB gzip con los bindings previstos, sin D1 ni triggers. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-- M3 implementa `subscribeToStorageKey` como punto común para que Vedra, Solane, sus widgets, ticketing y confirmación reaccionen a cambios de otra pestaña sin abandonar la frontera local.
-- La nueva ADR-018 aclara el alcance: parser defensivo, `clear()` seguro, actualización inmediata del documento escritor y ausencia de consistencia multiusuario.
-- E2E añadido para publicar un evento desde un gestor y comprobar, sin recargar, que el widget pierde SS7/SS8 y otro gestor ve el evento.
-- M4 añade exportación CSV local desde Informes para ocupación, orígenes y escenarios hipotéticos, con escape de fórmulas, nombre estable y copy de muestra no contable.
-- QA: `pnpm check` 28/28 con 141 tests, `pnpm e2e` 52/52 y `pnpm fotos` 16/16 reproducible; no se generan peticiones externas desde ninguna demo.
+## 2026-09-04 · Sesión 48 · Previews de portfolio y paneles con paridad interactiva Camp ✅
 
----
+- La home incorpora previsualización accesible para las doce direcciones web y las seis vistas de gestor, cerrando el principal diferencial de interacción observado en el Camp vivo. Un único diálogo reutilizable consume los catálogos existentes, muestra su evidencia y conserva el enlace profundo a cada web o estado reproducible.
+- La mejora es progresiva: sin JavaScript no aparecen controles muertos y permanecen los 18 enlaces directos; con JavaScript los botones exponen nombres accesibles, foco inicial nativo, cierre por botón/Escape/backdrop y restitución de foco. Copy, CTA y rutas se mantienen en contexto es/en.
+- Revisión visual completada en 1366×900 para Brasca y 375×812 para Servicio del día. El portfolio conserva su ritmo editorial y el diálogo móvil apila captura, evidencia, explicación y CTA con el cierre siempre visible.
+- Gates incrementales: `pnpm check` 28/28; E2E funcional inicial 3/3; regresión final 5/5 con fallback, movimiento reducido, targets públicos de 44 px y treinta rutas sin overflow/consola a 320/375 px. Los dry-runs estrictos de preview y producción aceptan 250 assets, 566,25 KiB y los bindings previstos.
+- El paquete visual v3 se regeneró dos veces tras el cambio: 21 escenas, 42 PNG y hashes idénticos byte a byte. Nuevo digest agregado `4d6e4f838ba4a457fcde8ea74ffc247f32f7f4cf7ccc55eb5783de24b3e02923`. No se desplegó, no se envió ningún lead y no hubo escrituras externas.
 
-## 2026-08-31 · Sesión 39 · Logic2B UI convertido en contrato verificable ✅
+## 2026-09-04 · Sesión 47 · Auditoría diferencial contra Camp vivo y cierre comercial reforzado ✅
 
-- `https://ui.logic2b.com` deja de ser una referencia informal: `packages/ui/components.json` fija el registro y la versión `1.0.0-rc.16`; las bases originales de `Button`, `Badge` y `cn()` quedan conservadas bajo `.logic2b/base/`.
-- Las dos primitivas se adaptaron al CSS explícito del monorepo manteniendo Radix, variantes y `data-slot`. El gestor las consume en controles de demo, estados de reserva y la lista de espera compartida por Vedra y Solane.
-- `theme.css` implementa los tokens semánticos de Logic2B UI sobre la piel de Reserva: papel cálido, azul de acción, acentos planos, estados operativos, foco visible y mínimo táctil de 44 px.
-- Nuevo `pnpm verify:ui`, incluido en `pnpm check`, protege schema, registro, versión, snapshots, tokens y consumo real. El flujo de incorporación queda fijado en `docs/DESIGN.md`, ADR-017, `CLAUDE.md`, README y F20 del roadmap.
-- QA: `pnpm check` 28/28 con 140 tests; `pnpm e2e` 51/51. La aserción E2E nueva confirma `data-slot` renderizado y volvió a pasar de forma aislada. Revisión local de Vedra y Solane: primitivas a 44 px, sin overflow ni errores de consola. No se desplegó ni se modificó ningún servicio externo.
+- Nueva revisión directa de `camp.logic2b.com` contra el Worker local. La home de Reserva conserva paridad estructural 14/14 y los mismos volúmenes de empaquetado —doce webs, seis vistas, tres ofertas y cinco guías— con recorridos, vocabulario y límites propios de restauración.
+- El tramo final de conversión se acerca al patrón vivo de Camp sin copiar su composición: el cierre añade tres pruebas breves y verificables —web propia, capacidad compartida e implantación con Logic2B— en español e inglés junto a las dos capturas reales de producto.
+- El footer compartido de las treinta páginas públicas incorpora contacto persistente por WhatsApp y correo, reutilizando la configuración oficial de Logic2B. Se mantienen sus cuatro grupos de navegación, el espejo de idioma en contexto y targets de 44 px.
+- Se documentan como divergencias deliberadas el selector mensual/anual y los importes de Camp, además de analítica, cuentas, cobros e integraciones no activos. Reserva sigue concretando alcance y precio mediante propuesta; no se introdujo ninguna promesa o efecto externo nuevo.
+- Gates: `pnpm check` 28/28; E2E dirigido 4/4 para cierre, ES/EN, treinta rutas y contraste AA; barrido adicional 2/2 sobre las treinta rutas a 320/375 px, sin overflow ni consola. Revisión visual del cierre en navegador completada. No se desplegó preview o producción y no se envió ningún lead.
 
----
+## 2026-09-04 · Sesión 46 · F27 cerrada localmente; publicación pendiente de autorización ✅
+
+- La arquitectura comercial comparte ahora una única cabecera y un único footer en home, temas, paneles, planes y guías es/en. Los enlaces de idioma conservan la página equivalente, las demos mantienen sus cabeceras propias y no se eliminó ninguna ruta pública anterior.
+- SEO revalidado en las 30 páginas públicas: canonical propio, alternates es/en/x-default, títulos y descripciones únicos, `Organization` + `WebSite` y esquemas específicos donde corresponden. Sitemap completo sin demos; todas las rutas de demostración conservan `noindex` triple.
+- El contrato visual v3 amplía `pnpm fotos` a 21 escenas/42 PNG: ocho recorridos profundos, nueve webs y cuatro encuadres comerciales de home, portfolio, paneles y cierre. Render software, decodificación explícita y activos del mismo lote eliminaron la variación AVIF; dos ejecuciones consecutivas coincidieron byte a byte con digest agregado `90c16cd3345d87bf7cca2a0ee36b950211d9b47f9119e6da21ed8026d73a30b4`.
+- QA visual de los cuatro encuadres nuevos en escritorio/móvil y barrido público a 320/375/430/1366 px. Se conservaron contraste AA, targets de 44 px, skip links, movimiento reducido, cero overflow, cero errores de consola y carga local sin recursos externos.
+- El smoke versionado comprueba ahora GET y HEAD en home, temas, paneles, planes y guías es/en, además de demos, robots, sitemap y API fail-closed. Los dry-runs estrictos de preview y producción aceptaron 250 assets y 566,25 KiB sin binding D1 ni triggers.
+- Gates finales locales: `pnpm check` 28/28 con 158 tests unitarios/contrato, E2E integral 73/73 en 6,5 minutos, reauditoría final de las 30 superficies 8/8, capturas 42/42 reproducibles y ambos dry-runs verdes. No se desplegó preview ni producción, no se envió ningún lead y no hubo escrituras externas.
+
+## 2026-09-04 · Sesión 45 · Home completo con paridad estructural Camp ✅
+
+- F26 cerrada con el contrato narrativo completo y verificable: cabecera → hero → ecosistema → flujo → plataforma → conexiones → planes → portfolio → paneles → implantación → guías → FAQ → cierre visual → footer. Los catorce bloques se exponen mediante `data-home-block` y un E2E fija su orden exacto en español e inglés.
+- La segunda mitad del home se reconstruyó como un atlas operativo propio de Reserva: doce direcciones web desde `THEME_CATALOG`, seis vistas reales desde `PANEL_CATALOG`, cinco guías desde `GUIDE_CATALOG` y las tres ofertas de ADR-010 desde `COMMERCIAL_PLANS`. No se duplicaron catálogos ni se crearon capacidades, gestores o integraciones nuevas.
+- `IMPLEMENTATION_PATH` añade las seis etapas acordadas —datos de partida, configuración, validación, publicación, mantenimiento y límites— con responsables y lenguaje condicionado a propuesta. La FAQ crece de cuatro a ocho preguntas de compra sobre alcance, titularidad, motor existente, dificultad, datos, plazos, pagos y migración.
+- El cierre combina dos capturas existentes y reales del producto —inventario Solane en escritorio y grupo Vedra en móvil— con el formulario comercial autorizado. El footer pasa a cuatro grupos navegables con producto, exploración, demos, idioma, contacto y legales.
+- Auditoría visual local completada sobre el home completo y los cinco bloques nuevos a 1440×900 y 390×844. La composición conserva papel cálido, azul operativo, Poppins/serif editorial, tarjetas planas y evidencia del restaurante; no reproduce la composición ni el dashboard de Camp. Los barridos automáticos a 320/375/430/1366 quedan sin overflow ni errores de consola.
+- Gates al cierre: build Turbo 14/14, lint 7/7, 158 tests unitarios/contrato y E2E integral 71/71 en 5,9 minutos. No se desplegó, no se envió ningún lead y producción permanece intacta.
+
+## 2026-09-04 · Sesión 44 · Planes, implantación y guías públicas completados ✅
+
+- F25 cerrada sin alterar ADR-010: `packages/config/src/commercial.ts` mantiene exactamente Básico → Gestión → Inteligente, asociados a Brasca, Vedra y Solane. El mismo contrato alimenta ahora tres ofertas comparables en el home y la página canónica `/planes/` es/en; no se añadió `/precios/` ni una segunda fuente SEO.
+- `/planes/` separa la oferta comercial de una escalera funcional de cinco capacidades, y hace visibles lanzamiento, mantenimiento/soporte y desarrollo/mejoras. No publica importes, SLA, calendario ni integraciones no aprobadas; distingue lo que aporta el restaurante, lo que aporta Logic2B y lo que debe concretarse en propuesta.
+- Nuevo catálogo compartido de cinco guías por rol en `packages/config/src/guides.ts`: Sala, Gestión, Dirección, Propietario y Técnica. `/docs/` y diez páginas de detalle es/en cubren migración, datos, dominio/DNS, cobros, RGPD, salida, soporte, continuidad y responsabilidades con contenido propio y accionable.
+- Planes y guías incorporan navegación comercial compartida, canonical/hreflang, sitemap, `CollectionPage/ItemList`, `Article` y breadcrumbs. Precios, webs, paneles, demos, guías y contacto quedan enlazados sin callejones; las demos conservan `noindex`, estado local y cero escrituras externas.
+- Revisión visual en navegador sobre home, planes, índice y guía técnica, más barrido automático a 320/375/430/1366 px. Se corrigió el área táctil de los enlaces cortos del footer; las nuevas superficies quedan sin overflow, con un único h1, metadatos de 100–160 caracteres y objetivos de 44 px.
+- Gates al cierre: Turbo 28/28 con 157 tests unitarios/contrato, E2E F25 4/4 y regresión integral 67/67 en 6 minutos. No se desplegó, no se envió ningún lead y producción permanece intacta.
+
+## 2026-09-04 · Sesión 43 · Catálogo sectorial de paneles completado ✅
+
+- F24 cerrada con un catálogo compartido de seis puertas de entrada: Servicio del día, Plano de sala, Reservas y espera, Grupos y eventos, Informes y Vista inteligente. La nueva fuente `packages/config/src/panels.ts` fija copy es/en, nivel, evidencia, límite, captura y URL reproducible sin duplicar lógica de los gestores.
+- `/paneles/` y `/en/paneles/` incorporan búsqueda por vista/usuario/decisión/evidencia, filtro Gestión/Inteligente, contador accesible y mejora progresiva. Sin JavaScript siguen visibles las seis fichas y sus detalles nativos; sitemap, canonical, hreflang y `CollectionPage/ItemList` quedan alineados.
+- Cada ficha explica para quién es la vista, qué decisión ayuda a tomar, qué demuestra el fixture y qué no hace. Los seis enlaces conducen a estados existentes de Vedra o Solane; no se añadió otro dashboard, persistencia, permiso, KPI, integración ni efecto externo.
+- Las composiciones reutilizan exclusivamente las capturas reales 04, 05, 07 y 08 del inventario F18. La carga y el encuadre se revisaron en escritorio y móvil; las seis evidencias quedan completas, con datos ficticios rotulados, papel cálido, azul único y tarjetas planas propias de Reserva.
+- La cabecera y el footer del home enlazan el catálogo público de gestor, mientras los accesos de prueba siguen abriendo los recorridos profundos. Las demos mantienen `noindex`, estado local y ausencia de escrituras.
+- Gates al cierre del hito: typecheck, lint, test y build de los siete paquetes verdes con 150 tests; F24 dirigido 3/3, selección pública/SEO/responsive 12/12 a 320/375/430/1366 px y regresión E2E integral 63/63. No se desplegó, no se envió ningún lead y producción permanece intacta.
+
+## 2026-09-03 · Sesión 42 · Doce direcciones web para restauración completadas ✅
+
+- F23 cerrada con un catálogo compartido de doce marcas ficticias. Brasca, Vedra y Solane conservan sus recorridos profundos; La Trece, Salobre, Trama, Umbral, Nacre, Brisa Alta, Nave Nueve, Miga Club y Mercat 33 cubren los nueve formatos comerciales acordados sin inventar nueve gestores.
+- `/temas/` y `/en/temas/` incorporan búsqueda por marca/formato/ubicación/tono, filtros de profundidad y formato, contador accesible, fichas con vista ampliable y funcionamiento completo sin JavaScript. Home y footer enlazan el nuevo catálogo; sitemap, canonical, hreflang y `CollectionPage/ItemList` quedan alineados.
+- Las nueve webs nuevas se generan desde un único modelo bilingüe y dos componentes compartidos. Paleta, tipografía, composición y copy cambian por marca mediante tokens y layouts code-native; cada página incluye carta, relato, visita y una explicación honesta de cómo empezaría la reserva, sin formulario, motor, pago ni escritura.
+- Las 24 rutas ES/EN responden 200 y `noindex, nofollow`. Solo las tres marcas profundas declaran web + reserva + gestor; las otras nueve se rotulan como dirección web. Objetivos táctiles, skip links, reduced-motion, ausencia de overflow y cero escrituras quedan cubiertos.
+- El contrato de capturas v2 amplía `pnpm fotos` a 17 escenas/34 PNG en 1366×900 y 375×812. Las nueve nuevas entradas pasaron con recursos completos, etiqueta ficticia visible, cero errores de consola y red limitada a GET/HEAD local; revisión visual de las nueve composiciones y muestras móviles completada.
+- Gates: `pnpm check` 28/28, catálogo config 4/4, F23 dirigido 5/5, regresión E2E integral 60/60 y `pnpm fotos` 34/34. El runner E2E deshabilita el transporte de leads solo en local para evitar que Wrangler 4.123 termine ante el log esperado de configuración incompleta; producción conserva su configuración. No se desplegó, no se envió ningún lead y producción permanece intacta.
+
+## 2026-09-03 · Sesión 41 · Flujo, cinco momentos y conexiones completados ✅
+
+- F22 cerrada con un recorrido de siete pasos —web, disponibilidad, reserva, servicio, garantía/cobro, comunicación y decisión— visible de una sola mirada en escritorio y convertido en carrusel progresivo con controles y teclado en móvil.
+- La landing incorpora cinco momentos en pestañas: Web, Reservas, Sala, Grupos y eventos, y Operativa. Cada uno muestra un resultado, tres capacidades, un límite explícito y una captura responsive procedente del catálogo reproducible de Brasca, Vedra o Solane.
+- La mejora es progresiva: sin JavaScript siguen visibles los siete pasos y los cinco paneles; con JavaScript se activan `tablist`, selección única, flechas, Home/End y paneles asociados. `prefers-reduced-motion` evita desplazamiento suave.
+- El bloque de conexiones separa Herramientas, Pagos y Asistentes con contexto. Todos los elementos declaran `Conectado`, `Demostrativo`, `Previsto` o `Por proyecto`, y el copy limita las promesas al estado real de esta demostración.
+- QA visual local a 1366×900 y 375×812 confirmó la secuencia completa, la pista lateral del siguiente paso, las pestañas, la evidencia de Sala y las tres familias sin overflow ni pérdida de identidad.
+- Gates: `pnpm check` 28/28, build 14/14, selección F22/responsive/accesibilidad 8/8 y regresión E2E integral 55/55. No se desplegó, no se envió ningún lead y producción permanece intacta.
+
+## 2026-09-03 · Sesión 40 · Shell comercial y hero con prueba múltiple completados ✅
+
+- F21 cerrada con una cabecera compacta orientada a Webs, Gestor, Planes, contacto y recorrido; el menú móvil conserva las rutas de producto existentes y añade las nuevas puertas de entrada.
+- El hero mantiene la promesa editorial de Reserva y la prueba real de Solane, pero suma tres accesos verificables —web Vedra, recorrido guiado y gestor Solane— más dos tarjetas de identidad para Vedra y Brasca.
+- La captación breve solicita únicamente correo y consentimiento. Comparte `/api/leads`, rate limit, coordinación e idempotencia con el formulario completo mediante un esquema discriminado `brief|full`; nunca inventa nombre, restaurante ni mensaje.
+- El rail de ecosistema distingue de forma accesible conexiones `Conectado`, `Demostrativo`, `Visible` y `Previsto`; ninguna marca externa amplía por sí sola la promesa funcional.
+- Copy es/en, foco, movimiento reducido, objetivos táctiles, cookie banner y responsive quedaron cubiertos por la suite. Revisión local del primer pantallazo completada sin sustituir la identidad cálida, plana y azul de Reserva.
+- Gates: `pnpm check` 28/28, build completo 14/14, Worker 17/17, selección F21/responsive 21/21 y regresión E2E integral 53/53. No se desplegó, no se envió ningún lead y producción permanece intacta.
 
 ## 2026-09-02 · Sesión 39 · Paridad estructural Camp → Reserva definida ✅
 

@@ -402,6 +402,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Catálogo cerrado de doce marcas ficticias, incluyendo Brasca, Vedra y Solane, con formato, tono, promesa y nivel funcional propios
 - [x] Nueve nuevas direcciones cubren bar de barrio, arrocería, grupo pequeño, hotel, alta cocina, terraza estacional, eventos, cadena casual y espacio gastronómico
 - [x] `/temas/` es/en con búsqueda/filtros, fichas accesibles y vista previa ampliable
+- [x] Veinticuatro fichas públicas indexables —doce es y doce en— con SEO propio, captura, dirección ficticia, alcance, contacto contextual, demo y temas relacionados
 - [x] Doce demos web navegables; solo Brasca, Vedra y Solane prometen los recorridos profundos ya implementados
 - [x] Sistema de datos y componentes evita doce implementaciones divergentes, pero permite identidad visual real por marca
 - [x] Activos responsive, noindex de demos, datos ficticios, reduced-motion y capturas deterministas
@@ -411,7 +412,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F24 · Catálogo sectorial de paneles
+## F24 · Catálogo sectorial de paneles ✅
 
 **Objetivo:** empaquetar comercialmente la profundidad ya existente del gestor de Reserva sin copiar la interfaz de Camp.
 **Dependencias:** F10, F14–F19, F20.
@@ -421,13 +422,14 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Filtros Gestión/Inteligente y búsqueda accesible
 - [x] Capturas reales derivadas del catálogo de F18; no se inventan KPIs ni integraciones para rellenar tarjetas
 - [x] Páginas o paneles de detalle suficientes para entender cada módulo antes de abrir la demo
+- [x] Doce fichas públicas indexables —seis es y seis en— con SEO propio, alcance, prueba, límite, CTA contextual y enlace al estado reproducible
 - [x] Los recorridos, permisos y persistencia F5–F19 quedan intactos
 
 **Hecho cuando:** el gestor puede explorarse como producto desde fuera y cada panel conduce a una demo sectorial verificable. Cumplido con catálogo compartido, rutas es/en, capturas reales, estados reproducibles y E2E 56/56.
 
 ---
 
-## F25 · Precios, implantación y guías públicas
+## F25 · Precios, implantación y guías públicas ✅
 
 **Objetivo:** ofrecer la misma claridad de compra y confianza operativa que Camp alrededor del producto.
 **Dependencias:** F20.
@@ -444,7 +446,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F26 · Home completo con oferta, portfolio, paneles y confianza
+## F26 · Home completo con oferta, portfolio, paneles y confianza ✅
 
 **Objetivo:** cerrar la paridad de los 14 bloques del home sin alterar el gestor.
 **Dependencias:** F22–F25.
@@ -462,17 +464,27 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura
+## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura · cierre local ✅ / publicación pendiente
 
 **Objetivo:** verificar y publicar la paridad completa sin romper las fronteras de la demo ni el producto existente.
 **Dependencias:** F23–F26.
 
-- [ ] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
-- [ ] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
-- [ ] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
-- [ ] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
-- [ ] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
-- [ ] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
+- [x] Contenido es/en completo, canonical/hreflang, sitemap y datos estructurados para home, temas, paneles, precios y guías
+- [x] Navegación y footer idénticos en todas las superficies comerciales; enlaces antiguos conservados o redirigidos
+- [x] `pnpm fotos` ampliado con escenas del nuevo home, portfolio, paneles y cierre móvil/escritorio
+- [x] E2E de los 14 bloques, doce temas, seis paneles, guías, planes, formulario único y todos los recorridos F5–F19
+- [x] Gates de honestidad: integraciones por madurez, demo noindex, cero escrituras externas de demos y D1 cero
+- [x] Preferencias de cookies globales y reversibles desde el footer de las sesenta y ocho páginas, sin cargar analítica ni publicidad
+- [x] Previews comerciales de doce webs y seis paneles con evidencia, límite, contacto y acceso profundo, bilingües y con fallback sin JavaScript
+- [x] CTA por plan en home y `/planes/` que conserva el punto de partida hasta el formulario, separado del acceso a evidencia
+- [x] Formulario de proyecto con teléfono y contexto opcionales, consentimiento obligatorio y política de datos bilingüe
+- [x] Continuidad de la web o panel elegido hasta el formulario y el lead mediante contexto canónico validado, con plan derivado y sin duplicar formularios
+- [x] Dirección ficticia y metadatos canónicos dentro de cada preview, bilingües y accesibles en escritorio de poca altura y móvil
+- [x] Fichas públicas bilingües para cada dirección web, con captura real, alcance honesto, contacto contextual y demo separada sin relajar `X-Frame-Options`
+- [x] Inicio comercial bilingüe en `/empezar/` que conserva plan, web o panel, reutiliza el único formulario real y separa la conversación comercial del cierre largo del home
+- [x] Recorrido comercial guiado bilingüe que enlaza oferta, web, producto e inicio en seis hitos, conserva contexto entre páginas y no realiza escrituras
+- [x] Captación breve del hero que conserva el correo hasta `/empezar/` sin enviarlo al servidor, limpia la URL y mantiene fallback sin JavaScript
+- [x] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
 - [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
 
 **Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales.

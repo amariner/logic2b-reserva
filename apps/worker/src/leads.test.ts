@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { deliverLead, handleLead, leadSchema, type LeadCoordination, type LeadEnv } from './leads';
 
-const lead = { name: 'Ada Sala', restaurant: 'Bistró Ada', email: 'ada@example.test', phone: '+34 600 000 000', level: 'gestion', message: 'Quiero ordenar reservas y grupos.', accept: true, website: '', lang: 'es' } as const;
+const lead = { name: 'Ada Sala', restaurant: 'Bistró Ada', email: 'ada@example.test', phone: '+34 600 000 000', level: 'gestion', message: 'Quiero ordenar reservas y grupos.', interest: { kind: 'panel', slug: 'servicio', name: 'Servicio del día' }, accept: true, website: '', lang: 'es' } as const;
 const emailEnv = {
   DEMO_MODE: 'true',
   COMMERCIAL_LEADS_ENABLED: 'true',
@@ -28,6 +28,17 @@ describe('leads de Logic Reserva', () => {
     expect(leadSchema.safeParse({ ...lead, accept: false }).success).toBe(false);
     expect(leadSchema.safeParse({ ...lead, level: 'basico' }).success).toBe(true);
     expect(leadSchema.safeParse({ ...lead, level: 'automatiza' }).success).toBe(false);
+    expect(leadSchema.safeParse({ ...lead, interest: { kind: 'theme', slug: 'la-trece', name: 'La Trece' } }).success).toBe(true);
+    expect(leadSchema.safeParse({ ...lead, interest: { kind: 'catalogue', slug: 'la-trece', name: 'La Trece' } }).success).toBe(false);
+    expect(leadSchema.safeParse({ ...lead, interest: { kind: 'theme', slug: '../brasca', name: 'Brasca' } }).success).toBe(false);
+    expect(leadSchema.parse({ ...lead, phone: undefined, message: undefined })).toMatchObject({ message: '' });
+    expect(leadSchema.parse({ ...lead, phone: '  +34 600 000 000  ' })).toMatchObject({ source: 'full', phone: '+34 600 000 000' });
+  });
+
+  it('acepta la captación breve sin inventar restaurante, nombre ni mensaje', () => {
+    const parsed = leadSchema.parse({ source: 'brief', email: 'BRIEF@Example.Test', accept: true, website: '', lang: 'es' });
+    expect(parsed).toEqual({ source: 'brief', email: 'brief@example.test', accept: true, website: '', lang: 'es' });
+    expect(leadSchema.safeParse({ source: 'brief', email: 'brief@example.test', accept: false, lang: 'es' }).success).toBe(false);
   });
 
   it('responde invalid(400) sin llamar al proveedor', async () => {
@@ -124,5 +135,28 @@ describe('leads de Logic Reserva', () => {
     const payload = JSON.parse(String(init?.body)) as Record<string, unknown>;
     expect(headers.get('idempotency-key')).toBe('reserva-lead/test-ref/internal');
     expect(payload).toMatchObject({ from: 'Logic Reserva <hola@logic2b.com>', to: ['marinerandreu+logic@gmail.com'], reply_to: 'ada@example.test' });
+    expect(String(payload.text)).toContain('Teléfono: +34 600 000 000');
+    expect(String(payload.text)).toContain('Interés seleccionado: Vista de producto · Servicio del día');
+  });
+
+  it('entrega una solicitud completa sin teléfono ni mensaje adicional', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}', { status: 200 }));
+    const response = await submit(emailEnv, { ...lead, phone: undefined, message: undefined });
+    expect(response.status).toBe(202);
+    const [, init] = fetcher.mock.calls[0]!;
+    const payload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    expect(String(payload.text)).toContain('Teléfono: —');
+    expect(String(payload.text)).toContain('Sin mensaje adicional.');
+  });
+
+  it('entrega la captación breve por el mismo transporte e idempotencia', async () => {
+    const fetcher = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{}', { status: 200 }));
+    const response = await submit(emailEnv, { source: 'brief', email: 'brief@example.test', accept: true, website: '', lang: 'es' });
+    expect(response.status).toBe(202);
+    const [, init] = fetcher.mock.calls[0]!;
+    const payload = JSON.parse(String(init?.body)) as Record<string, unknown>;
+    expect(new Headers(init?.headers).get('idempotency-key')).toBe('reserva-lead/test-ref/internal');
+    expect(payload).toMatchObject({ reply_to: 'brief@example.test', subject: 'brief@example.test · interés inicial Logic Reserva' });
+    expect(String(payload.text)).toContain('Tipo: Captación breve');
   });
 });

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/index.ts", "./contact": "./src/contact.ts", "./themes": "./src/themes.ts", "./panels": "./src/panels.ts", "./guides": "./src/guides.ts", "./plans": "./src/plans.ts" },
+  "exports": { ".": "./src/index.ts", "./contact": "./src/contact.ts", "./themes": "./src/themes.ts", "./panels": "./src/panels.ts", "./commercial": "./src/commercial.ts", "./guides": "./src/guides.ts" },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",

@@ -1,0 +1,9 @@
+---
+import { GUIDE_CATALOG, type GuideSlug } from '@logic-reserva/config/guides';
+import GuidePage from '../../../components/GuidePage.astro';
+
+export const getStaticPaths = () => GUIDE_CATALOG.map(({ slug }) => ({ params: { guide: slug }, props: { slug } }));
+interface Props { slug: GuideSlug }
+const { slug } = Astro.props;
+---
+<GuidePage slug={slug} />

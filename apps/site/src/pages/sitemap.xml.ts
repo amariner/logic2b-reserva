@@ -1,20 +1,27 @@
 import type { APIRoute } from 'astro';
 import { PRODUCT } from '@logic-reserva/config';
+import { GUIDE_CATALOG } from '@logic-reserva/config/guides';
+import { PANEL_CATALOG } from '@logic-reserva/config/panels';
+import { THEME_CATALOG } from '@logic-reserva/config/themes';
 
 const paths = [
   { es: '/', en: '/en/', priority: '1.0', changefreq: 'weekly' },
-  { es: '/temas/', en: '/en/temas/', priority: '0.8', changefreq: 'monthly' },
-  { es: '/paneles/', en: '/en/paneles/', priority: '0.8', changefreq: 'monthly' },
-  { es: '/docs/', en: '/en/docs/', priority: '0.7', changefreq: 'monthly' },
+  { es: '/empezar/', en: '/en/empezar/', priority: '0.8', changefreq: 'monthly' },
+  { es: '/temas/', en: '/en/temas/', priority: '0.9', changefreq: 'monthly' },
+  ...THEME_CATALOG.map(({ slug }) => ({ es: `/temas/${slug}/`, en: `/en/temas/${slug}/`, priority: '0.8', changefreq: 'monthly' })),
+  { es: '/paneles/', en: '/en/paneles/', priority: '0.9', changefreq: 'monthly' },
+  ...PANEL_CATALOG.map(({ slug }) => ({ es: `/paneles/${slug}/`, en: `/en/paneles/${slug}/`, priority: '0.8', changefreq: 'monthly' })),
   { es: '/planes/', en: '/en/planes/', priority: '0.8', changefreq: 'monthly' },
+  { es: '/docs/', en: '/en/docs/', priority: '0.8', changefreq: 'monthly' },
+  ...GUIDE_CATALOG.map(({ slug }) => ({ es: `/docs/${slug}/`, en: `/en/docs/${slug}/`, priority: '0.7', changefreq: 'monthly' })),
   { es: '/soluciones/restaurantes/', en: '/en/soluciones/restaurantes/', priority: '0.9', changefreq: 'monthly' },
   { es: '/soluciones/grupos-y-eventos/', en: '/en/soluciones/grupos-y-eventos/', priority: '0.9', changefreq: 'monthly' },
   { es: '/legal/', en: '/en/legal/', priority: '0.2', changefreq: 'yearly' },
   { es: '/privacidad/', en: '/en/privacidad/', priority: '0.2', changefreq: 'yearly' },
   { es: '/cookies/', en: '/en/cookies/', priority: '0.2', changefreq: 'yearly' },
-] as const;
+];
 
-const lastmod = '2026-08-18';
+const lastmod = '2026-09-04';
 const renderUrl = (path: string, alternate: string, locale: 'es' | 'en', priority: string, changefreq: string) => `<url>
   <loc>${new URL(path, PRODUCT.url).href}</loc>
   <xhtml:link rel="alternate" hreflang="${locale}" href="${new URL(path, PRODUCT.url).href}" />

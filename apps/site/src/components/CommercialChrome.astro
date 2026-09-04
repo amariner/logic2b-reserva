@@ -1,0 +1,19 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import CommercialFooter from './CommercialFooter.astro';
+import CommercialHeader from './CommercialHeader.astro';
+import CommercialTour from './CommercialTour.astro';
+import CookiePreferences from './CookiePreferences.astro';
+
+interface Props { locale?: Locale; languageHref: string }
+
+const { locale = 'es', languageHref } = Astro.props;
+---
+
+<CommercialHeader locale={locale} languageHref={languageHref} />
+
+<slot />
+
+<CommercialFooter locale={locale} languageHref={languageHref} />
+<CookiePreferences locale={locale} />
+<CommercialTour locale={locale} />

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 3,
   "locale": "es-ES",
   "fixedNow": "2026-08-18T10:00:00+02:00",
   "captures": [
@@ -13,7 +13,7 @@
       "width": 1366,
       "height": 900,
       "file": "01-brasca-marca-desktop.png",
-      "sha256": "bf5899b722bac4c514f6420541e85b7c9f03f4e1f2c6d691d409295a9ccdc935"
+      "sha256": "f899fc21ccda61225b12f8305fd010c23e8b8affb9e413a517a8c82138af165f"
     },
     {
       "order": "01",
@@ -25,7 +25,7 @@
       "width": 375,
       "height": 812,
       "file": "01-brasca-marca-mobile.png",
-      "sha256": "8caf45aba9507380553cc8ef5240af1fc8e176cd72f8be961473b5614f45da87"
+      "sha256": "08e1cd4691c19c588ec3738b6090522d49528e071b0ed38600d7f67bbd8d7484"
     },
     {
       "order": "02",
@@ -37,7 +37,7 @@
       "width": 1366,
       "height": 900,
       "file": "02-brasca-solicitud-desktop.png",
-      "sha256": "9438d34dd65a1b765056a143ab9ff513c72c780b611e3d8e02efe2f65dd11197"
+      "sha256": "cdb886a5a96ff5e401c788f52e469891cfadb1f8b2bd2aae849a0da1dfadf429"
     },
     {
       "order": "02",
@@ -49,7 +49,7 @@
       "width": 375,
       "height": 812,
       "file": "02-brasca-solicitud-mobile.png",
-      "sha256": "33d763ecbe5e40fbc197ed98a11d0ac02d2735e8f747597810ef9acbef2dc9f3"
+      "sha256": "1994f58fb52c9edba743481ca230d69f3e9d06cd5680f8bab8816838dfeea6c7"
     },
     {
       "order": "03",
@@ -61,7 +61,7 @@
       "width": 1366,
       "height": 900,
       "file": "03-vedra-reserva-desktop.png",
-      "sha256": "3089da8a9308af272ba9d7c6c5e398e971b114bb45437d1cb92a5e12b5f247ee"
+      "sha256": "38ddb62cf71e31723de4d3d95e8c1bdb5fd886740f95ca6f2fa298411c7ff644"
     },
     {
       "order": "03",
@@ -73,7 +73,7 @@
       "width": 375,
       "height": 812,
       "file": "03-vedra-reserva-mobile.png",
-      "sha256": "3b20120a2fb6de552d550755fa1653a39e33ec3a9b3c939a4c707707d352b204"
+      "sha256": "c51669c6d032c463b37a7db95ec966291a947da293034daac0fe270e79d44e0c"
     },
     {
       "order": "04",
@@ -85,7 +85,7 @@
       "width": 1366,
       "height": 900,
       "file": "04-vedra-grupo-desktop.png",
-      "sha256": "7f36f55199e3a82749a9a0cd8700003eb0214f615b81e35aa96124622c9b22be"
+      "sha256": "ddf2a20356f0358e873cf761179488559a72457a54a9d50cc11e2ac734fa5464"
     },
     {
       "order": "04",
@@ -97,7 +97,7 @@
       "width": 375,
       "height": 812,
       "file": "04-vedra-grupo-mobile.png",
-      "sha256": "2da7b6bf04408fde61c039421aa6e5e8f6104b314459b29d01ba40a1dc33abfb"
+      "sha256": "43b2c717e927e6e9a2a1b1aa57e520a113779e411ea45531e3bc2c457733320f"
     },
     {
       "order": "05",
@@ -109,7 +109,7 @@
       "width": 1366,
       "height": 900,
       "file": "05-solane-inventario-desktop.png",
-      "sha256": "8ba42343ce9cb7c30dfca6a12935229c34ed37939388a137694266cc6af38fc9"
+      "sha256": "b0ce6730f7325dd4f81cffb36ae110e66287127509f342df720d16cc4e55db5d"
     },
     {
       "order": "05",
@@ -121,7 +121,7 @@
       "width": 375,
       "height": 812,
       "file": "05-solane-inventario-mobile.png",
-      "sha256": "92dfd4ba76b437a8d38d29cb04e16ba0a585759313f7bf3e51a6559540cc55ea"
+      "sha256": "2aef8c26e72451ce231e2aa40257d2444e6e31870b676381e7556900283fd981"
     },
     {
       "order": "06",
@@ -133,7 +133,7 @@
       "width": 1366,
       "height": 900,
       "file": "06-solane-deposito-desktop.png",
-      "sha256": "74cfa76e613c05659786b7e6c2b3e10001d9af515c23da32a5853bd29452ce83"
+      "sha256": "459c7980fc98564ab85f4b3517d78d80763cff656657f61f8925d6f536429ea5"
     },
     {
       "order": "06",
@@ -145,7 +145,7 @@
       "width": 375,
       "height": 812,
       "file": "06-solane-deposito-mobile.png",
-      "sha256": "808a038060bcc6cafa8691eabd742fa41217cbd898b074857c6fccd30f5d2e42"
+      "sha256": "e70a89b5549871f1af4de041620c25388de0e7c8bef982755c0a6e603539e78a"
     },
     {
       "order": "07",
@@ -157,7 +157,7 @@
       "width": 1366,
       "height": 900,
       "file": "07-solane-privatizacion-desktop.png",
-      "sha256": "6979bca8a9c57a3a953bf953008a6db2596083e4b5136b08c4db9119c4f4c00e"
+      "sha256": "f89e6f8df850520e2b4e2b04e897da450b0c181de1db9803b8bb5dc098f50259"
     },
     {
       "order": "07",
@@ -169,7 +169,7 @@
       "width": 375,
       "height": 812,
       "file": "07-solane-privatizacion-mobile.png",
-      "sha256": "8a8ce03ff1caef1f01d07cfaaac0a0abe520fad6739d1756647902708e4be4c1"
+      "sha256": "9135916ac53ce7bbce7e6f8cd5ec5b1a0aeb6ce958c3587f1e2537e5532a515f"
     },
     {
       "order": "08",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "3abb26354d5732ec6170419cad524107f971f8466b95ee3d8c705e7f6182809a"
+      "sha256": "584c4d2142d7787e49147e6aba3829544ccbe2b449f6c4e4a9704526d8e38a35"
     },
     {
       "order": "08",
@@ -193,7 +193,319 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "e957aa3c15ecd0755d6a11f2e6769b35a7961d4d350069742f4ce5494838dedf"
+      "sha256": "bf3dda85c47612b199f22202dea93d305226f71f85d0c4bb34d6191e4b38d4fb"
+    },
+    {
+      "order": "09",
+      "id": "la-trece-web",
+      "brand": "la-trece",
+      "route": "/demos/la-trece/",
+      "state": "Dirección web ficticia de Bar de barrio en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "09-la-trece-web-desktop.png",
+      "sha256": "f2d227f3b3fed340dee826c9111cad14c7e99505b6d0fc6e62e0e70095a9ab7f"
+    },
+    {
+      "order": "09",
+      "id": "la-trece-web",
+      "brand": "la-trece",
+      "route": "/demos/la-trece/",
+      "state": "Dirección web ficticia de Bar de barrio en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "09-la-trece-web-mobile.png",
+      "sha256": "bcc6b7153432ad3ec8f0176fc8c40a5c8aebd9ee30d4af759302a5a34cdca314"
+    },
+    {
+      "order": "10",
+      "id": "salobre-web",
+      "brand": "salobre",
+      "route": "/demos/salobre/",
+      "state": "Dirección web ficticia de Arrocería en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "10-salobre-web-desktop.png",
+      "sha256": "fbc0884cc6835d435b879ce11f7c0510625a57dbb5cf438d4638ecd5d71c382c"
+    },
+    {
+      "order": "10",
+      "id": "salobre-web",
+      "brand": "salobre",
+      "route": "/demos/salobre/",
+      "state": "Dirección web ficticia de Arrocería en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "10-salobre-web-mobile.png",
+      "sha256": "6aeb9fe794f786c76edcd30bb7e1873c80a6f932eec0067d9f59d263701e2c9f"
+    },
+    {
+      "order": "11",
+      "id": "trama-web",
+      "brand": "trama",
+      "route": "/demos/trama/",
+      "state": "Dirección web ficticia de Grupo pequeño en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "11-trama-web-desktop.png",
+      "sha256": "42135d2b632d0ac9d4edc0f68b9482d8abc67319a74fb5b2232bf37418f79839"
+    },
+    {
+      "order": "11",
+      "id": "trama-web",
+      "brand": "trama",
+      "route": "/demos/trama/",
+      "state": "Dirección web ficticia de Grupo pequeño en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "11-trama-web-mobile.png",
+      "sha256": "3926193aba57f3d078d9da6a04c31185b11219ce960257c6f4cccdeed3366dcc"
+    },
+    {
+      "order": "12",
+      "id": "umbral-web",
+      "brand": "umbral",
+      "route": "/demos/umbral/",
+      "state": "Dirección web ficticia de Restaurante de hotel en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "12-umbral-web-desktop.png",
+      "sha256": "01f6b8ea7f1e489163ab24ca5e7659d8a81d2e9911fdc283eedd67aee4ad8ce1"
+    },
+    {
+      "order": "12",
+      "id": "umbral-web",
+      "brand": "umbral",
+      "route": "/demos/umbral/",
+      "state": "Dirección web ficticia de Restaurante de hotel en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "12-umbral-web-mobile.png",
+      "sha256": "87c35bbce285c46aa0dbabe011db7d02b5acacd45ddc72054f1c705a47d114f1"
+    },
+    {
+      "order": "13",
+      "id": "nacre-web",
+      "brand": "nacre",
+      "route": "/demos/nacre/",
+      "state": "Dirección web ficticia de Alta cocina en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "13-nacre-web-desktop.png",
+      "sha256": "d97568eb66cc47519a5c80cf54bef65fa6a2c15318d9d09a80861f146960e351"
+    },
+    {
+      "order": "13",
+      "id": "nacre-web",
+      "brand": "nacre",
+      "route": "/demos/nacre/",
+      "state": "Dirección web ficticia de Alta cocina en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "13-nacre-web-mobile.png",
+      "sha256": "60a27f74cf488ac7ae5b8e151c6e5ba787134a85dfdcb2ba56183d9e796dc9a4"
+    },
+    {
+      "order": "14",
+      "id": "brisa-alta-web",
+      "brand": "brisa-alta",
+      "route": "/demos/brisa-alta/",
+      "state": "Dirección web ficticia de Terraza estacional en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "14-brisa-alta-web-desktop.png",
+      "sha256": "c5014d0eeb57025c334a7f3387cc99f09c282171e48af7f6918aa8e393848484"
+    },
+    {
+      "order": "14",
+      "id": "brisa-alta-web",
+      "brand": "brisa-alta",
+      "route": "/demos/brisa-alta/",
+      "state": "Dirección web ficticia de Terraza estacional en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "14-brisa-alta-web-mobile.png",
+      "sha256": "52423554680aeefa045b00b21bb3d99f7b8a33b1e4e778d8bb5e913c47d2531e"
+    },
+    {
+      "order": "15",
+      "id": "nave-nueve-web",
+      "brand": "nave-nueve",
+      "route": "/demos/nave-nueve/",
+      "state": "Dirección web ficticia de Local de eventos en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "15-nave-nueve-web-desktop.png",
+      "sha256": "43820035c339f78aa6aba8be7e7c6302f6f07a2be3fec71e0cef82f258a29e2d"
+    },
+    {
+      "order": "15",
+      "id": "nave-nueve-web",
+      "brand": "nave-nueve",
+      "route": "/demos/nave-nueve/",
+      "state": "Dirección web ficticia de Local de eventos en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "15-nave-nueve-web-mobile.png",
+      "sha256": "67194f3b89546058d4e667d9b3de0efb64668d9705ef19c01c9327764f58a9bc"
+    },
+    {
+      "order": "16",
+      "id": "miga-club-web",
+      "brand": "miga-club",
+      "route": "/demos/miga-club/",
+      "state": "Dirección web ficticia de Cadena casual en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "16-miga-club-web-desktop.png",
+      "sha256": "7dbab5fec6eb8c65eb8079b62a41e7cff80b365c4923b40a4329398870068db2"
+    },
+    {
+      "order": "16",
+      "id": "miga-club-web",
+      "brand": "miga-club",
+      "route": "/demos/miga-club/",
+      "state": "Dirección web ficticia de Cadena casual en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "16-miga-club-web-mobile.png",
+      "sha256": "2cba04ba7814ab2cc88578db34581e79dd979dfc1a9dca40ce655842663eae4c"
+    },
+    {
+      "order": "17",
+      "id": "mercat-33-web",
+      "brand": "mercat-33",
+      "route": "/demos/mercat-33/",
+      "state": "Dirección web ficticia de Espacio gastronómico en estado inicial",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "17-mercat-33-web-desktop.png",
+      "sha256": "915da162cf478ec4096b0600b2174d775a76f6586989938639fd540a260102b0"
+    },
+    {
+      "order": "17",
+      "id": "mercat-33-web",
+      "brand": "mercat-33",
+      "route": "/demos/mercat-33/",
+      "state": "Dirección web ficticia de Espacio gastronómico en estado inicial",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "17-mercat-33-web-mobile.png",
+      "sha256": "cf5f251d1a14bf1585165520b714fa46690724ca193e0d0a56614ee206b8a123"
+    },
+    {
+      "order": "18",
+      "id": "logic-reserva-home",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Hero comercial con tres entradas al producto y evidencia real",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "18-logic-reserva-home-desktop.png",
+      "sha256": "099cc0782ef020ffcaf11b46826aaa97155f5728a617ef380a8ffcb46ca218e3"
+    },
+    {
+      "order": "18",
+      "id": "logic-reserva-home",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Hero comercial con tres entradas al producto y evidencia real",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "18-logic-reserva-home-mobile.png",
+      "sha256": "a3b4c086124806659f7e11463c6bdc4a4566e318d75c3df077d63483ec071a94"
+    },
+    {
+      "order": "19",
+      "id": "logic-reserva-portfolio",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Catálogo comercial de doce direcciones web ficticias",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "19-logic-reserva-portfolio-desktop.png",
+      "sha256": "07357476a78cf48ccdd4a2d47fd8c09d38b2eb1ecfec6dfe1e4b0ff5f07119ee"
+    },
+    {
+      "order": "19",
+      "id": "logic-reserva-portfolio",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Catálogo comercial de doce direcciones web ficticias",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "19-logic-reserva-portfolio-mobile.png",
+      "sha256": "05d82a6a507af7306fc724081364a03e06b7b7699e75c98f780c1860bbab0fea"
+    },
+    {
+      "order": "20",
+      "id": "logic-reserva-paneles",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Catálogo comercial de seis vistas del gestor con evidencia",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "20-logic-reserva-paneles-desktop.png",
+      "sha256": "07c63debcdd82476aa64cbf7faaac806dfaa22a1bc4e257b02f09d0b30270c42"
+    },
+    {
+      "order": "20",
+      "id": "logic-reserva-paneles",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Catálogo comercial de seis vistas del gestor con evidencia",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "20-logic-reserva-paneles-mobile.png",
+      "sha256": "0027920910cc0c13171bd73864c0d8652b6818eb38f4af04f7854a64d650c7ca"
+    },
+    {
+      "order": "21",
+      "id": "logic-reserva-cierre",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Cierre comercial con producto, siguiente paso y formulario vacío",
+      "viewport": "desktop",
+      "width": 1366,
+      "height": 900,
+      "file": "21-logic-reserva-cierre-desktop.png",
+      "sha256": "af6fdd8473b38a33965a132f3d40d6913a89e9868e254d1d2c60b158071ab89e"
+    },
+    {
+      "order": "21",
+      "id": "logic-reserva-cierre",
+      "brand": "logic-reserva",
+      "route": "/",
+      "state": "Cierre comercial con producto, siguiente paso y formulario vacío",
+      "viewport": "mobile",
+      "width": 375,
+      "height": 812,
+      "file": "21-logic-reserva-cierre-mobile.png",
+      "sha256": "eada4a4b75b80fb9cc2e634a48d85703b572327727e51fab4203ef768ecdc0c2"
     }
   ]
 }
