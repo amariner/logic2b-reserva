@@ -8,7 +8,7 @@ Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.co
 
 No se copiará la estética de Camp ni su dashboard. Reserva conserva el contrato visual de `DESIGN.md` y sus gestores específicos de sala, grupos y eventos. La auditoría, el mapa de equivalencias y el contrato de 14 bloques del home viven en [`PARIDAD-CAMP.md`](PARIDAD-CAMP.md).
 
-Entrega local del 2026-09-04: el contrato está aplicado sobre un home bilingüe de catorce bloques y una envolvente compartida con cabecera pill, hero, rails, formularios, sliders, previews, prefooter y footer. Los catálogos y fichas conservan doce temas y seis paneles; el recorrido guiado tiene nueve hitos entre site y demos. Todo el contenido y los recursos visuales proceden de Logic Reserva. Los builds generan 68 páginas de site y 52 de web; `pnpm check` pasa 28/28 con 161 tests y la regresión E2E integral pasa 85/85. El despliegue permanece pendiente de autorización explícita.
+Entrega del 2026-09-04: el contrato está aplicado sobre un home bilingüe de catorce bloques y una envolvente compartida con cabecera pill, hero, rails, formularios, sliders, previews, prefooter y footer. Los catálogos y fichas conservan doce temas y seis paneles; el recorrido guiado tiene nueve hitos entre site y demos. Todo el contenido y los recursos visuales proceden de Logic Reserva. Los builds generan 68 páginas de site y 52 de web; `pnpm check` pasa 28/28 con 161 tests y la regresión E2E integral pasa 85/85. Producción sirve la versión `394a6270-735a-4418-851a-d505c2a4bd40`, verificada por GET/HEAD sin enviar leads.
 
 Arquitectura comercial vigente: **Básico → Gestión → Inteligente**. Brasca demuestra la web Básica; Vedra, el backend de Gestión; Solane, ese backend ampliado con IA y automatizaciones demostrativas. Decisión completa en `adr/ADR-010-tres-planes-y-backends-demostrativos.md`.
 
@@ -466,7 +466,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
-## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura · cierre local ✅ / publicación pendiente
+## F27 · Integración, SEO, capturas y lanzamiento de la nueva arquitectura ✅
 
 **Objetivo:** verificar y publicar la paridad completa sin romper las fronteras de la demo ni el producto existente.
 **Dependencias:** F23–F26.
@@ -491,9 +491,9 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Home de catorce bloques con hero, rails, formularios, sliders y popups de doce temas y seis paneles, alimentado solo por catálogos, textos y recursos visuales del proyecto
 - [x] Builds estáticos verificados: 68 páginas de `apps/site` y 52 páginas de `apps/web`
 - [x] Auditoría visual de navegador y responsive a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos sobre los recorridos dirigidos
-- [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
+- [x] Dry-run estricto, publicación de producción y smoke GET/HEAD mediante los gates existentes; preview no mutada y prueba de lead no ejecutada
 
-**Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales. El cierre local está completado; la publicación sigue requiriendo autorización expresa y validación de preview.
+**Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales. Cumplido y publicado como `394a6270-735a-4418-851a-d505c2a4bd40`, con smoke GET/HEAD verde y sin prueba de lead.
 
 ---
 

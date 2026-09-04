@@ -1,18 +1,18 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F27 completas y validadas localmente ✅ · reconstrucción CAMP-parity con `pnpm check` 28/28, E2E 85/85 y capturas 42/42 reproducibles ✅ · release de F21–F27 autorizado y en preparación · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** integrar en `main`, ejecutar el dry-run estricto, publicar producción y verificarla únicamente mediante GET/HEAD
+**Fase actual:** F0–F27 completas y publicadas ✅ · reconstrucción CAMP-parity con `pnpm check` 28/28, E2E 85/85 y capturas 42/42 reproducibles ✅ · producción `394a6270-735a-4418-851a-d505c2a4bd40` verificada por GET/HEAD · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
+**Siguiente hito:** observar la nueva arquitectura en producción y priorizar mejoras con evidencia, sin ampliar capacidades reales ni probar leads salvo nueva orden expresa
 
 ## Siguiente paso concreto
 
-1. Integrar el paquete CAMP-parity y el generador visual endurecido en `main` y subirlo a `origin/main`.
-2. Ejecutar `pnpm deploy:dry-run` y revisar assets, bindings, modo demo y presupuesto D1 cero.
-3. Publicar producción mediante `pnpm deploy` y ejecutar `pnpm verify:public:production` por GET/HEAD.
+1. Revisar métricas y errores de producción solo cuando exista una señal concreta o una orden de monitorización.
+2. Mantener el gate completo antes del siguiente release: `pnpm check`, E2E, dos pases de `pnpm fotos`, dry-run y smoke GET/HEAD.
+3. Conservar el filtro de `.screens-next-*` en el compositor para que una captura interrumpida nunca llegue al bundle público.
 4. No enviar un lead real: esa escritura externa queda fuera de la autorización de despliegue.
 
 ## Bloqueos / avisos
 
-- Entrega CAMP-parity local del 2026-09-04: home bilingüe de 14 bloques; cabecera pill, hero, rails, formularios, sliders y previews de temas/paneles; prefooter y footer comunes; catálogos y fichas de 12 temas y 6 paneles; recorrido bilingüe de 9 hitos con pausa/reanudación entre `apps/site` y `apps/web`. Solo utiliza recursos y textos del proyecto. Los builds generan 68 páginas de site y 52 de web; `pnpm check` pasa 28/28 con 161 tests, la regresión E2E integral pasa 85/85 en 9,5 minutos y dos pases de 42/42 capturas fijan el digest `a6ab36c4db011f6601a4b21e96c70322c99d7b04ce2268150c593d12a30e6aaf`. El release está autorizado y pendiente del gate de producción.
+- Entrega CAMP-parity del 2026-09-04: home bilingüe de 14 bloques; cabecera pill, hero, rails, formularios, sliders y previews de temas/paneles; prefooter y footer comunes; catálogos y fichas de 12 temas y 6 paneles; recorrido bilingüe de 9 hitos con pausa/reanudación entre `apps/site` y `apps/web`. Solo utiliza recursos y textos del proyecto. Los builds generan 68 páginas de site y 52 de web; `pnpm check` pasa 28/28 con 161 tests, la regresión E2E integral pasa 85/85 en 9,5 minutos y dos pases de 42/42 capturas fijan el digest `a6ab36c4db011f6601a4b21e96c70322c99d7b04ce2268150c593d12a30e6aaf`. Producción sirve `394a6270-735a-4418-851a-d505c2a4bd40` y el smoke GET/HEAD está verde.
 - Dirección de producto de 2026-09-02: Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`. El contrato, el mapa de equivalencias y los criterios globales están en `docs/PARIDAD-CAMP.md`; las fases F21–F27 sustituyen la antigua situación de roadmap agotado.
 - La línea base anterior de F27 quedó cerrada localmente con navegación/footer comunes en 68 páginas públicas, SEO completo, 21 escenas/42 PNG reproducibles, `pnpm check` 28/28, 160 tests, E2E 78/78 y dry-runs estrictos con 328 assets. Ese resultado es histórico; la reconstrucción CAMP-parity de la sesión 60 lo supera con E2E 85/85. Preview y producción siguen intactos.
 - La reauditoría del Camp vivo del 2026-09-04 confirma 14/14 bloques y refuerza el cierre con tres pruebas comerciales y contacto directo en el footer compartido. Gates incrementales: E2E 4/4 y responsive 2/2 sobre las treinta rutas a 320/375 px. Precios concretos, toggle mensual/anual y capacidades no activas siguen fuera de alcance de forma deliberada.
