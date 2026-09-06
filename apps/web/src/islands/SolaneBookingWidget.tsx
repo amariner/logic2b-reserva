@@ -20,6 +20,7 @@ import {
   type SolaneDemoState,
 } from '@logic-reserva/dashboard/solane-state';
 import type { Locale } from '@logic-reserva/config';
+import { subscribeToStorageKey } from '@logic-reserva/dashboard/storage-sync';
 import { DEMO_DATE, SOLANE_PAGE_COPY, localized } from '../data';
 
 interface SolaneBookingWidgetProps {
@@ -57,7 +58,11 @@ export default function SolaneBookingWidget({ restaurant, initialBookings, initi
   const gateway = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    setDemoState(parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires));
+    const load = (value: string | null = localStorage.getItem(SOLANE_STORAGE_KEY)) => {
+      setDemoState(parseSolaneStored(value, initialBookings, initialEvents, initialPrivateHires));
+    };
+    load();
+    return subscribeToStorageKey(SOLANE_STORAGE_KEY, load);
   }, [initialBookings, initialEvents, initialPrivateHires]);
 
   const durationMin = estimateDurationMin(partySize);

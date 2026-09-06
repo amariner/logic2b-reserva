@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { CustomerProfile, Restaurant, TableBooking } from '@logic-reserva/domain';
-import { bookingReports, buildCustomerRecords, customerRecordsToCsv, noShowRiskAssessments } from './analytics';
+import { bookingReports, bookingReportsToCsv, buildCustomerRecords, customerRecordsToCsv, noShowRiskAssessments } from './analytics';
 
 const restaurant: Restaurant = {
   id: 'solane', organizationId: 'demo', name: 'Solane',
@@ -37,6 +37,19 @@ describe('CRM e informes', () => {
     expect(report.sources.find((source) => source.source === 'widget')).toMatchObject({ count: 1, percentage: 50 });
     expect(report.marketplace.monthlyCents).toBe(1200);
     expect(report.noShowSavings.assumptions).toContain('Estimación');
+  });
+
+  it('exporta el informe derivado como CSV y escapa detalles manipulables', () => {
+    const report = bookingReports(bookings, restaurant);
+    const csv = bookingReportsToCsv({
+      ...report,
+      marketplace: { ...report.marketplace, assumptions: '=no debería ejecutarse' },
+    });
+    expect(csv).toContain('"section","metric","value","detail"');
+    expect(csv).toContain('"occupancy","dinner","50%"');
+    expect(csv).toContain('"sources","widget","50%"');
+    expect(csv).toContain('"\'=no debería ejecutarse"');
+    expect(csv).toContain('"hypothetical_marketplace_yearly_eur","144.00"');
   });
 
   it('prioriza riesgo desde la muestra y usa solo histórico anterior del mismo comensal', () => {

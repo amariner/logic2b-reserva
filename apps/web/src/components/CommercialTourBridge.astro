@@ -1,0 +1,245 @@
+---
+import type { Locale } from '@logic-reserva/config';
+
+interface Props { locale?: Locale }
+
+const { locale = 'es' } = Astro.props;
+const prefix = locale === 'en' ? '/en' : '';
+const ui = locale === 'en' ? {
+  tour: 'Logic Reserva guided journey', progress: 'Journey progress', visible: 'What you are seeing',
+  pause: 'Pause', resume: 'Resume guided journey', paused: 'Journey paused', exit: 'Exit',
+  next: 'Next milestone', finish: 'View plans',
+} : {
+  tour: 'Recorrido guiado de Logic Reserva', progress: 'Progreso del recorrido', visible: 'Qué estás viendo',
+  pause: 'Pausar', resume: 'Reanudar recorrido guiado', paused: 'Recorrido pausado', exit: 'Salir',
+  next: 'Siguiente hito', finish: 'Ver planes',
+};
+const steps = locale === 'en' ? [
+  { label: 'The offer', title: 'Three useful starting points.', body: 'Basic begins with an owned website, Management joins bookings and the floor, and Intelligent adds events and explainable decision support.', visible: 'The three plans compare fit, first capabilities, current boundary and evidence.', href: `${prefix}/?recorrido=1#planes` },
+  { label: 'The identity', title: 'Twelve directions, one product foundation.', body: 'Each fictional restaurant changes voice, rhythm and visual direction while the shared catalogue keeps scope and level consistent.', visible: 'The complete website catalogue can be searched and filtered without hiding product depth.', href: `${prefix}/temas/?recorrido=2` },
+  { label: 'The website', title: 'Vedra keeps the restaurant recognisable.', body: 'A Mediterranean identity, its menu and its own call to book open the journey before the manager appears.', visible: 'The complete Vedra website, using fictional content and a responsive restaurant identity.', href: `${prefix}/demos/vedra/?recorrido=3` },
+  { label: 'The booking', title: 'The guest books without leaving the restaurant.', body: 'Date, party size, service, time and menu enter one branded journey before any operational decision is made.', visible: 'Vedra’s booking widget with date, party size, service, time and menu.', href: `${prefix}/demos/vedra/?recorrido=4#reserva` },
+  { label: 'The service', title: 'The request reaches the team with context.', body: 'The daily service brings together bookings, covers, state and the tasks that need attention now.', visible: 'The real demonstrative daily-service view used by the front-of-house team.', href: `${prefix}/demos/vedra/gestion/?vista=servicio&recorrido=5` },
+  { label: 'Shared capacity', title: 'The event takes up tables too.', body: 'Ordinary bookings, groups and events read and consume the same table capacity instead of competing in separate lists.', visible: 'Vedra’s shared floor plan, where reservations and free tables are read together.', href: `${prefix}/demos/vedra/gestion/?vista=plano&recorrido=6` },
+  { label: 'Bookings and guests', title: 'Bookings, waitlist and guests stay together.', body: 'The enquiry source, booking state and guest context remain visible while the team decides what happens next.', visible: 'Vedra’s operational bookings list, with fictional entries that can be reviewed safely.', href: `${prefix}/demos/vedra/gestion/?vista=reservas&recorrido=7` },
+  { label: 'Reports and control', title: 'The reason remains visible.', body: 'Reports turn the fictional service into an explainable operational reading before the team acts.', visible: 'Vedra’s reports, calculated only from the scenario data available in this browser.', href: `${prefix}/demos/vedra/gestion/?vista=informes&recorrido=8` },
+  { label: 'Rules and settings', title: 'The operating rules close the loop.', body: 'Notifications, policies and team settings belong to the same context, while real providers remain an implementation decision.', visible: 'Vedra’s settings view: demonstrative configuration, without connected messages, payments or accounts.', href: `${prefix}/demos/vedra/gestion/?vista=ajustes&recorrido=9` },
+] : [
+  { label: 'La oferta', title: 'Tres puntos de partida útiles.', body: 'Básico empieza por la web propia, Gestión une reservas y sala, e Inteligente añade eventos y apoyo explicable a la decisión.', visible: 'Los tres planes comparan encaje, primeras capacidades, límite actual y evidencia.', href: `${prefix}/?recorrido=1#planes` },
+  { label: 'La identidad', title: 'Doce direcciones, una base de producto.', body: 'Cada restaurante ficticio cambia voz, ritmo y dirección visual mientras el catálogo compartido mantiene coherentes el alcance y el nivel.', visible: 'El catálogo completo de webs permite buscar y filtrar sin ocultar la profundidad de producto.', href: `${prefix}/temas/?recorrido=2` },
+  { label: 'La web', title: 'Vedra mantiene reconocible al restaurante.', body: 'Una identidad mediterránea, su carta y su propia llamada a reservar abren el recorrido antes de que aparezca el gestor.', visible: 'La web completa de Vedra, con contenido ficticio e identidad responsive de restaurante.', href: `${prefix}/demos/vedra/?recorrido=3` },
+  { label: 'La reserva', title: 'El cliente reserva sin salir del restaurante.', body: 'Fecha, comensales, servicio, hora y menú entran en un recorrido de marca antes de cualquier decisión operativa.', visible: 'El widget de reserva de Vedra con fecha, comensales, servicio, hora y menú.', href: `${prefix}/demos/vedra/?recorrido=4#reserva` },
+  { label: 'El servicio', title: 'La solicitud llega al equipo con contexto.', body: 'El servicio del día reúne reservas, cubiertos, estado y las tareas que necesitan atención ahora.', visible: 'La vista demostrativa real del servicio del día que utiliza el equipo de sala.', href: `${prefix}/demos/vedra/gestion/?vista=servicio&recorrido=5` },
+  { label: 'Capacidad compartida', title: 'El evento también ocupa mesa.', body: 'Reservas ordinarias, grupos y eventos leen y consumen la misma capacidad de mesas en lugar de competir en listas separadas.', visible: 'El plano compartido de Vedra, donde reservas y mesas libres se leen juntas.', href: `${prefix}/demos/vedra/gestion/?vista=plano&recorrido=6` },
+  { label: 'Reservas y clientes', title: 'Reservas, espera y clientes permanecen juntos.', body: 'El origen de la solicitud, el estado de la reserva y el contexto del cliente siguen visibles mientras el equipo decide el siguiente movimiento.', visible: 'La lista operativa de reservas de Vedra, con entradas ficticias que se pueden revisar de forma segura.', href: `${prefix}/demos/vedra/gestion/?vista=reservas&recorrido=7` },
+  { label: 'Informes y control', title: 'El motivo permanece visible.', body: 'Los informes convierten el servicio ficticio en una lectura operativa explicable antes de que el equipo actúe.', visible: 'Los informes de Vedra, calculados solo con los datos del escenario disponibles en este navegador.', href: `${prefix}/demos/vedra/gestion/?vista=informes&recorrido=8` },
+  { label: 'Reglas y ajustes', title: 'Las reglas operativas cierran el recorrido.', body: 'Notificaciones, políticas y ajustes de equipo pertenecen al mismo contexto, mientras los proveedores reales siguen siendo una decisión de implantación.', visible: 'Los ajustes de Vedra: configuración demostrativa, sin mensajes, pagos ni cuentas conectadas.', href: `${prefix}/demos/vedra/gestion/?vista=ajustes&recorrido=9` },
+];
+---
+
+<aside
+  class="commercial-tour-bridge"
+  data-commercial-tour-bridge
+  data-tour-steps={JSON.stringify(steps)}
+  data-tour-final-href={`${prefix}/planes/`}
+  data-tour-storage-key="logic2b:reserva-tour:v1"
+  aria-label={ui.tour}
+  aria-live="polite"
+  hidden
+>
+  <div class="commercial-tour-bridge__progress" data-tour-segments aria-label={ui.progress}>
+    {steps.map((step, index) => (
+      <button type="button" data-tour-jump={index} aria-label={`${index + 1}. ${step.label}`}><span></span></button>
+    ))}
+  </div>
+  <div class="commercial-tour-bridge__heading">
+    <p data-tour-eyebrow></p>
+    <button type="button" data-tour-exit>{ui.exit}<span aria-hidden="true">×</span></button>
+  </div>
+  <h2 data-tour-title></h2>
+  <p class="commercial-tour-bridge__body" data-tour-body></p>
+  <div class="commercial-tour-bridge__context"><strong>{ui.visible}</strong><p data-tour-visible></p></div>
+  <div class="commercial-tour-bridge__actions">
+    <button type="button" data-tour-pause>{ui.pause}</button>
+    <button class="commercial-tour-bridge__next" type="button" data-tour-next data-next-label={ui.next} data-finish-label={ui.finish}>
+      <span data-tour-next-text>{ui.next}</span><span aria-hidden="true">→</span>
+    </button>
+  </div>
+</aside>
+
+<button class="commercial-tour-bridge-resume" type="button" data-tour-resume hidden>
+  <span aria-hidden="true">▶</span><span><small>{ui.paused}</small>{ui.resume}</span>
+</button>
+
+<script>
+  const bridge = document.querySelector<HTMLElement>('[data-commercial-tour-bridge]');
+  const resume = document.querySelector<HTMLButtonElement>('[data-tour-resume]');
+  if (bridge && resume) {
+    type TourStep = { label: string; title: string; body: string; visible: string; href: string };
+    type TourStatus = 'idle' | 'intro' | 'active' | 'paused' | 'complete';
+    type TourState = { status: TourStatus; stepIndex: number };
+
+    const storageKey = bridge.dataset.tourStorageKey ?? 'logic2b:reserva-tour:v1';
+    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'paused', 'complete']);
+    const parseSteps = (): TourStep[] => {
+      try {
+        const parsed: unknown = JSON.parse(bridge.dataset.tourSteps ?? '[]');
+        return Array.isArray(parsed) ? parsed.filter((step): step is TourStep => Boolean(step && typeof step === 'object'
+          && 'label' in step && typeof step.label === 'string'
+          && 'title' in step && typeof step.title === 'string'
+          && 'body' in step && typeof step.body === 'string'
+          && 'visible' in step && typeof step.visible === 'string'
+          && 'href' in step && typeof step.href === 'string')) : [];
+      } catch { return []; }
+    };
+    const steps = parseSteps();
+    const fallbackState: TourState = { status: 'idle', stepIndex: 0 };
+    const clampStep = (value: number) => Math.min(Math.max(Math.trunc(value), 0), Math.max(steps.length - 1, 0));
+    const readState = (): TourState => {
+      try {
+        const parsed: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null');
+        if (!parsed || typeof parsed !== 'object' || !('status' in parsed) || !('stepIndex' in parsed)) return fallbackState;
+        const candidate = parsed as { status: unknown; stepIndex: unknown };
+        if (typeof candidate.status !== 'string' || !statuses.has(candidate.status as TourStatus) || typeof candidate.stepIndex !== 'number') return fallbackState;
+        return { status: candidate.status as TourStatus, stepIndex: clampStep(candidate.stepIndex) };
+      } catch { return fallbackState; }
+    };
+    const writeState = (nextState: TourState) => {
+      try { sessionStorage.setItem(storageKey, JSON.stringify(nextState)); } catch { /* Session storage can be unavailable. */ }
+      return nextState;
+    };
+    const cleanTourUrl = () => {
+      const url = new URL(window.location.href);
+      if (!url.searchParams.has('recorrido')) return;
+      url.searchParams.delete('recorrido');
+      window.history.replaceState(window.history.state, '', `${url.pathname}${url.search}${url.hash}`);
+    };
+    const scrollToHash = () => {
+      if (!window.location.hash) return;
+      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
+      if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
+    };
+
+    const eyebrow = bridge.querySelector<HTMLElement>('[data-tour-eyebrow]');
+    const title = bridge.querySelector<HTMLElement>('[data-tour-title]');
+    const body = bridge.querySelector<HTMLElement>('[data-tour-body]');
+    const visible = bridge.querySelector<HTMLElement>('[data-tour-visible]');
+    const next = bridge.querySelector<HTMLButtonElement>('[data-tour-next]');
+    const nextText = next?.querySelector<HTMLElement>('[data-tour-next-text]');
+    const segments = [...bridge.querySelectorAll<HTMLButtonElement>('[data-tour-jump]')];
+    let state = readState();
+
+    const setMode = (mode: 'idle' | 'active' | 'paused') => {
+      bridge.hidden = mode !== 'active';
+      resume.hidden = mode !== 'paused';
+    };
+    const showStep = (index: number, focusBridge = false) => {
+      const safeIndex = clampStep(index);
+      const step = steps[safeIndex];
+      if (!step) return;
+      state = writeState({ status: 'active', stepIndex: safeIndex });
+      if (eyebrow) eyebrow.textContent = `${safeIndex + 1}/${steps.length} · ${step.label}`;
+      if (title) title.textContent = step.title;
+      if (body) body.textContent = step.body;
+      if (visible) visible.textContent = step.visible;
+      segments.forEach((segment, segmentIndex) => {
+        const current = segmentIndex === safeIndex;
+        segment.toggleAttribute('data-current', current);
+        segment.toggleAttribute('data-complete', segmentIndex < safeIndex);
+        segment.setAttribute('aria-current', current ? 'step' : 'false');
+      });
+      if (nextText && next) nextText.textContent = safeIndex === steps.length - 1 ? next.dataset.finishLabel ?? '' : next.dataset.nextLabel ?? '';
+      setMode('active');
+      if (focusBridge) requestAnimationFrame(() => bridge.querySelector<HTMLButtonElement>('[data-tour-exit]')?.focus());
+    };
+    const navigateTo = (index: number) => {
+      const safeIndex = clampStep(index);
+      const step = steps[safeIndex];
+      if (!step) return;
+      state = writeState({ status: 'active', stepIndex: safeIndex });
+      window.location.assign(step.href);
+    };
+    const pauseTour = () => {
+      state = writeState({ status: 'paused', stepIndex: state.stepIndex });
+      cleanTourUrl();
+      setMode('paused');
+      requestAnimationFrame(() => resume.focus());
+    };
+    const exitTour = () => {
+      state = writeState({ status: 'idle', stepIndex: 0 });
+      cleanTourUrl();
+      setMode('idle');
+    };
+
+    bridge.querySelector<HTMLButtonElement>('[data-tour-pause]')?.addEventListener('click', pauseTour);
+    bridge.querySelector<HTMLButtonElement>('[data-tour-exit]')?.addEventListener('click', exitTour);
+    next?.addEventListener('click', () => {
+      if (state.stepIndex < steps.length - 1) navigateTo(state.stepIndex + 1);
+      else {
+        state = writeState({ status: 'complete', stepIndex: state.stepIndex });
+        cleanTourUrl();
+        window.location.assign(bridge.dataset.tourFinalHref ?? '/planes/');
+      }
+    });
+    segments.forEach((segment) => segment.addEventListener('click', () => navigateTo(Number(segment.dataset.tourJump ?? 0))));
+    resume.addEventListener('click', () => showStep(state.stepIndex, true));
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !bridge.hidden) pauseTour(); });
+
+    const requested = new URLSearchParams(window.location.search).get('recorrido');
+    const requestedStep = requested && /^[3-9]$/.test(requested) ? Number(requested) - 1 : null;
+    if (requestedStep !== null) {
+      cleanTourUrl();
+      showStep(requestedStep);
+      scrollToHash();
+    } else if (state.status === 'active') showStep(state.stepIndex);
+    else if (state.status === 'paused') setMode('paused');
+    else setMode('idle');
+  }
+</script>
+
+<style>
+  .commercial-tour-bridge {
+    position: fixed;
+    z-index: 120;
+    right: 20px;
+    bottom: 20px;
+    width: min(440px, calc(100vw - 40px));
+    max-height: calc(100dvh - 40px);
+    overflow-y: auto;
+    border: 1px solid rgb(255 255 255 / 14%);
+    border-radius: 20px;
+    padding: 22px;
+    color: white;
+    background: var(--color-midnight-ink, #02093a);
+    box-shadow: 0 28px 90px rgb(2 9 58 / 38%);
+  }
+  .commercial-tour-bridge[hidden], .commercial-tour-bridge-resume[hidden] { display: none; }
+  .commercial-tour-bridge__progress { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 20px; }
+  .commercial-tour-bridge__progress button { height: 22px; border: 0; padding: 9px 0; background: transparent; cursor: pointer; }
+  .commercial-tour-bridge__progress button span { display: block; height: 3px; border-radius: 999px; background: rgb(255 255 255 / 20%); }
+  .commercial-tour-bridge__progress button[data-complete] span { background: var(--color-sky-wash, #9ed8ff); }
+  .commercial-tour-bridge__progress button[data-current] span { background: var(--color-marigold, #ffd34e); }
+  .commercial-tour-bridge__heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .commercial-tour-bridge__heading p { margin: 0; color: var(--color-sky-wash, #9ed8ff); font-size: .67rem; font-weight: 760; letter-spacing: .075em; text-transform: uppercase; }
+  .commercial-tour-bridge__heading button { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: flex-end; gap: 8px; border: 0; padding: 0; color: rgb(255 255 255 / 64%); background: transparent; cursor: pointer; font: inherit; font-size: .7rem; }
+  .commercial-tour-bridge__heading button span { font-size: 1.1rem; }
+  .commercial-tour-bridge h2 { margin: 9px 0 0; color: white; font-family: var(--serif, serif); font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.055em; line-height: .94; }
+  .commercial-tour-bridge__body { margin: 16px 0 0; color: rgb(255 255 255 / 74%); font-family: var(--serif, serif); font-size: .9rem; line-height: 1.52; }
+  .commercial-tour-bridge__context { margin-top: 17px; border-left: 2px solid var(--color-marigold, #ffd34e); padding-left: 13px; }
+  .commercial-tour-bridge__context strong { color: rgb(255 255 255 / 56%); font-size: .61rem; letter-spacing: .07em; text-transform: uppercase; }
+  .commercial-tour-bridge__context p { margin: 5px 0 0; font-size: .73rem; line-height: 1.45; }
+  .commercial-tour-bridge__actions { display: flex; gap: 8px; margin-top: 20px; }
+  .commercial-tour-bridge__actions button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 16px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 999px; padding: 9px 14px; color: white; background: transparent; cursor: pointer; font: inherit; font-size: .73rem; font-weight: 720; }
+  .commercial-tour-bridge__actions .commercial-tour-bridge__next { flex: 1; justify-content: space-between; color: var(--color-midnight-ink, #02093a); border-color: white; background: white; }
+  .commercial-tour-bridge-resume { position: fixed; z-index: 120; right: 20px; bottom: 20px; display: flex; min-height: 58px; align-items: center; gap: 12px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; padding: 8px 18px 8px 10px; color: white; background: var(--color-midnight-ink, #02093a); box-shadow: 0 18px 55px rgb(2 9 58 / 32%); cursor: pointer; font: inherit; }
+  .commercial-tour-bridge-resume > span:first-child { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: var(--color-midnight-ink, #02093a); background: var(--color-marigold, #ffd34e); font-size: .7rem; }
+  .commercial-tour-bridge-resume > span:last-child { display: grid; gap: 2px; text-align: left; font-size: .73rem; font-weight: 720; }
+  .commercial-tour-bridge-resume small { color: rgb(255 255 255 / 58%); font-size: .59rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+  @media (max-width: 620px) {
+    .commercial-tour-bridge { right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); left: 8px; width: auto; max-height: calc(100dvh - 16px - env(safe-area-inset-bottom)); border-radius: 18px; padding: 18px; }
+    .commercial-tour-bridge__body { font-size: .86rem; }
+    .commercial-tour-bridge-resume { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); }
+  }
+  @media (max-width: 380px) { .commercial-tour-bridge__context { display: none; } }
+  @media (prefers-reduced-motion: reduce) { .commercial-tour-bridge, .commercial-tour-bridge-resume { scroll-behavior: auto; } }
+</style>

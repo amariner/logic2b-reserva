@@ -80,7 +80,7 @@ La matriz ejecutable y los límites completos viven en `docs/DEMO-MODE.md`. “V
 
 ## 7. Guion de demo que maximiza credibilidad
 
-(1) vista de servicio con plano → (2) crear evento y ver bloqueo de mesas del escenario → (3) comensal: reserva + menú + depósito simulado → (4) aceptación, desglose y liberación local → (5) CRM e informes ficticios. La demo no cobra, exporta ni modifica sistemas externos.
+(1) vista de servicio con plano → (2) crear evento y ver bloqueo de mesas del escenario → (3) comensal: reserva + menú + depósito simulado → (4) aceptación, desglose y liberación local → (5) CRM e informes ficticios. La demo no cobra, no exporta a terceros ni modifica sistemas externos; sus descargas son archivos locales de la muestra.
 
 ## 8. Fuentes primarias revisadas
 

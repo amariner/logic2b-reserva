@@ -1,0 +1,19 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import type { ThemeEntry } from '@logic-reserva/config/themes';
+import ThemeDemoLayout from '../layouts/ThemeDemoLayout.astro';
+import ThemeWebPage from './ThemeWebPage.astro';
+
+/** Compatibility adapter for the former `/demos/temas/:slug` routes. */
+interface Props { theme: ThemeEntry; locale?: Locale }
+
+const { theme, locale = 'es' } = Astro.props;
+if (!theme.web) throw new Error(`Theme ${theme.slug} has no website copy`);
+const title = locale === 'en'
+  ? `${theme.name} — ${theme.format.en} (fictional demo)`
+  : `${theme.name} — ${theme.format.es} (demo ficticia)`;
+---
+
+<ThemeDemoLayout theme={theme} locale={locale} title={title}>
+  <ThemeWebPage theme={theme} locale={locale} />
+</ThemeDemoLayout>

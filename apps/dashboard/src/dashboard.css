@@ -340,6 +340,7 @@
 .rd-crm-history { margin-top: 13px; border-top: 1px solid var(--brand-line); padding-top: 12px; }.rd-crm-history > h3 { margin: 0 0 8px; font-size: .68rem; }.rd-crm-history > p { color: var(--brand-muted); font-size: .63rem; }.rd-crm-history ol { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }.rd-crm-history li { display: flex; justify-content: space-between; gap: 12px; border-radius: 7px; padding: 7px 9px; background: #f7f8fb; font-size: .59rem; }.rd-crm-history time { color: var(--brand-ink); font-weight: 700; }.rd-crm-history li span { color: var(--brand-muted); text-align: right; }
 
 .rd-report-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; gap: 11px; }
+.rd-report-header-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
 .rd-report-card { min-width: 0; border: 1px solid var(--brand-line); border-radius: 11px; padding: 18px; background: white; }.rd-report-card--wide { grid-column: span 2; }
 .rd-report-card > header { display: flex; align-items: center; gap: 9px; margin-bottom: 16px; }.rd-report-card > header > span { display: grid; width: 34px; height: 34px; flex: 0 0 auto; place-items: center; border-radius: 8px; color: var(--brand); background: var(--brand-soft); }.rd-report-card h2 { margin: 0; font-size: .85rem; }
 .rd-occupancy-list { display: grid; gap: 14px; }.rd-occupancy-list section > div:first-child { display: flex; justify-content: space-between; gap: 10px; font-size: .68rem; }.rd-occupancy-list strong { color: var(--brand); }.rd-occupancy-list p { margin: 5px 0 0; color: var(--brand-muted); font-size: .57rem; }
@@ -383,6 +384,8 @@
   .rd-private-proposal > div { grid-template-columns: 1fr 1fr; }
   .rd-report-grid { grid-template-columns: 1fr 1fr; }
   .rd-report-card--wide { grid-column: 1 / -1; }
+  .rd-report-header-actions { width: 100%; justify-content: stretch; }
+  .rd-report-header-actions .rd-export-action { flex: 1; }
   .rd-decision-list { grid-template-columns: 1fr; }
   .rd-risk-list { grid-template-columns: 1fr; }
 }

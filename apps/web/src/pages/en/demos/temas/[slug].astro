@@ -1,0 +1,9 @@
+---
+import { WEB_ONLY_THEMES, type ThemeEntry } from '@logic-reserva/config/themes';
+import ThemePage from '../../../../components/ThemePage.astro';
+
+export const getStaticPaths = () => WEB_ONLY_THEMES.map((theme) => ({ params: { slug: theme.slug }, props: { theme } }));
+const { theme } = Astro.props as { theme: ThemeEntry };
+---
+
+<ThemePage theme={theme} locale="en" />

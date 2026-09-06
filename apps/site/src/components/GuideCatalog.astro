@@ -1,0 +1,14 @@
+---
+import type { Locale } from '@logic-reserva/config';
+import GuidesIndexPage from './GuidesIndexPage.astro';
+
+/**
+ * Compatibility adapter for the catalogue component used before the Camp
+ * parity merge. The canonical implementation now lives in GuidesIndexPage.
+ */
+interface Props { locale?: Locale; path: string }
+
+const { locale = 'es' } = Astro.props;
+---
+
+<GuidesIndexPage locale={locale} />

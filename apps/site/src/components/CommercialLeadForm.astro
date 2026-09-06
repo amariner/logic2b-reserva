@@ -5,9 +5,9 @@ import { PANEL_CATALOG, localizedPanelText } from '@logic-reserva/config/panels'
 import { THEME_CATALOG } from '@logic-reserva/config/themes';
 import { SITE_CONTENT } from '../content';
 
-interface Props { locale?: Locale; id?: string }
+interface Props { locale?: Locale; id?: string; variant?: 'default' | 'dialog' }
 
-const { locale = 'es', id = 'lead-form' } = Astro.props;
+const { locale = 'es', id = 'lead-form', variant = 'default' } = Astro.props;
 const c = SITE_CONTENT[locale];
 const prefix = locale === 'en' ? '/en' : '';
 const localCommercial = (value: Parameters<typeof localizedCommercialText>[0]) => localizedCommercialText(value, locale);
@@ -27,15 +27,17 @@ const panelInterests = PANEL_CATALOG.map((panel) => ({
   plan: panel.level === 'intelligent' ? 'inteligente' : 'gestion',
 }));
 const ui = locale === 'en' ? {
-  selectedPlan: 'Selected starting point', selectedInterest: 'Selected interest', preparedEmail: 'Email ready to complete', themeInterest: 'Website', panelInterest: 'Product view',
+  selectedPlan: 'Selected starting point', selectedInterest: 'Selected interest', preparedEmail: 'Email ready to complete',
+  themeInterest: 'Website', panelInterest: 'Product view', sending: 'Sending…',
 } : {
-  selectedPlan: 'Punto de partida seleccionado', selectedInterest: 'Interés seleccionado', preparedEmail: 'Correo preparado para completar', themeInterest: 'Web', panelInterest: 'Vista de producto',
+  selectedPlan: 'Punto de partida seleccionado', selectedInterest: 'Interés seleccionado', preparedEmail: 'Correo preparado para completar',
+  themeInterest: 'Web', panelInterest: 'Vista de producto', sending: 'Enviando…',
 };
 ---
 
 <form
   id={id}
-  class="lead-form card"
+  class:list={['lead-form', 'card', variant === 'dialog' && 'lead-form--dialog']}
   data-lead-form
   data-full-lead-form
   data-lead-source="full"
@@ -50,41 +52,28 @@ const ui = locale === 'en' ? {
     <p class="lead-plan-selection" data-plan-selection hidden><span>{ui.selectedPlan}</span><strong data-plan-selection-name></strong></p>
     <p class="lead-interest-selection" data-interest-selection hidden><span>{ui.selectedInterest}</span><strong><i data-interest-selection-kind></i> · <span data-interest-selection-name></span></strong></p>
   </div>
-  <div class="field-row"><label>{c.lead.fields.name}<input name="name" required autocomplete="name" /></label><label>{c.lead.fields.restaurant}<input name="restaurant" required autocomplete="organization" /></label></div>
-  <div class="field-row"><label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label><label>{c.lead.fields.phone}<input name="phone" type="tel" autocomplete="tel" inputmode="tel" /></label></div>
+  <div class="field-row">
+    <label>{c.lead.fields.name}<input name="name" required autocomplete="name" /></label>
+    <label>{c.lead.fields.restaurant}<input name="restaurant" required autocomplete="organization" /></label>
+  </div>
+  <div class="field-row">
+    <label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label>
+    <label>{c.lead.fields.phone}<input name="phone" type="tel" autocomplete="tel" inputmode="tel" /></label>
+  </div>
   <label>{c.lead.fields.level}<select name="level">{c.lead.priorities.map((priority) => <option value={priority.value} data-plan-name={commercialPlanName(priority.value)} selected={priority.value === 'gestion'}>{priority.label}</option>)}</select></label>
-  <label>{c.lead.fields.message}<textarea name="message" rows="4"></textarea></label>
+  <label>{c.lead.fields.message}<textarea name="message" rows={variant === 'dialog' ? 3 : 4}></textarea></label>
   <label class="privacy-check"><input name="privacyAccepted" type="checkbox" required /><span>{c.lead.fields.privacy} <a href={`${prefix}/privacidad/`}>{c.footer.privacy}</a>.</span></label>
   <input name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
-  <button class="lead-submit" type="submit">{c.lead.submit}<span aria-hidden="true">→</span></button>
-  <p class="lead-status" data-lead-status data-disabled={c.lead.disabled} data-invalid={c.lead.invalid} data-failure={c.lead.failure} data-success={c.lead.success} data-limited={c.lead.limited} role="status"></p>
+  <button class="lead-submit" type="submit" data-idle-label={c.lead.submit} data-sending-label={ui.sending}><span data-lead-submit-label>{c.lead.submit}</span><span aria-hidden="true">→</span></button>
+  <p class="lead-status" data-lead-status data-disabled={c.lead.disabled} data-invalid={c.lead.invalid} data-failure={c.lead.failure} data-success={c.lead.success} data-limited={c.lead.limited} role="status" aria-live="polite"></p>
 </form>
 
 <script>
-  const fullLeadForm = document.querySelector<HTMLFormElement>('[data-full-lead-form]');
-  const planSelect = fullLeadForm?.querySelector<HTMLSelectElement>('select[name="level"]');
-  const emailInput = fullLeadForm?.querySelector<HTMLInputElement>('input[name="email"]');
-  const emailSelection = fullLeadForm?.querySelector<HTMLElement>('[data-email-selection]');
-  const emailSelectionValue = emailSelection?.querySelector<HTMLElement>('[data-email-selection-value]');
-  const planSelection = fullLeadForm?.querySelector<HTMLElement>('[data-plan-selection]');
-  const planSelectionName = planSelection?.querySelector<HTMLElement>('[data-plan-selection-name]');
-  const leadSelections = fullLeadForm?.querySelector<HTMLElement>('[data-lead-selections]');
-  const interestSelection = fullLeadForm?.querySelector<HTMLElement>('[data-interest-selection]');
-  const interestSelectionKind = interestSelection?.querySelector<HTMLElement>('[data-interest-selection-kind]');
-  const interestSelectionName = interestSelection?.querySelector<HTMLElement>('[data-interest-selection-name]');
-  const searchParams = new URLSearchParams(window.location.search);
-  const hashParams = window.location.hash.startsWith('#') ? new URLSearchParams(window.location.hash.slice(1)) : new URLSearchParams();
-  const requestedPlan = searchParams.get('plan');
-  const requestedEmail = (hashParams.get('email') ?? searchParams.get('email') ?? '').trim();
-  if (hashParams.has('email')) window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
-  const emailProbe = document.createElement('input');
-  emailProbe.type = 'email';
-  emailProbe.value = requestedEmail;
-  const validRequestedEmail = requestedEmail.length > 0 && requestedEmail.length <= 254 && emailProbe.checkValidity();
   const validPlans = new Set(['basico', 'gestion', 'inteligente']);
   type InterestKind = 'theme' | 'panel';
   type InterestOption = { slug: string; name: string; plan: string };
   type SelectedInterest = InterestOption & { kind: InterestKind };
+
   const parseInterestOptions = (value: string | undefined): InterestOption[] => {
     try {
       const parsed: unknown = JSON.parse(value ?? '[]');
@@ -95,85 +84,124 @@ const ui = locale === 'en' ? {
         && 'plan' in item && typeof item.plan === 'string' && validPlans.has(item.plan)));
     } catch { return []; }
   };
-  const themeOptions = parseInterestOptions(fullLeadForm?.dataset.themeInterests);
-  const panelOptions = parseInterestOptions(fullLeadForm?.dataset.panelInterests);
-  const requestedTheme = themeOptions.find(({ slug }) => slug === searchParams.get('theme'));
-  const requestedPanel = panelOptions.find(({ slug }) => slug === searchParams.get('panel'));
-  const selectedInterest: SelectedInterest | null = requestedTheme && !requestedPanel
-    ? { ...requestedTheme, kind: 'theme' }
-    : requestedPanel && !requestedTheme ? { ...requestedPanel, kind: 'panel' } : null;
-  const syncPlanSelection = () => {
-    if (planSelectionName && planSelect) planSelectionName.textContent = planSelect.selectedOptions[0]?.dataset.planName ?? planSelect.selectedOptions[0]?.textContent ?? '';
-  };
-  const applyRequestedContext = () => {
-    let hasSelection = false;
-    if (validRequestedEmail && emailInput && emailSelection && emailSelectionValue) {
-      emailInput.value = requestedEmail;
-      emailSelectionValue.textContent = requestedEmail;
-      emailSelection.hidden = false;
-      hasSelection = true;
-    } else if (emailSelection) emailSelection.hidden = true;
-    const plan = requestedPlan && validPlans.has(requestedPlan) ? requestedPlan : selectedInterest?.plan;
-    if (plan && planSelect && planSelection) {
-      planSelect.value = plan;
-      planSelection.hidden = false;
-      syncPlanSelection();
-      hasSelection = true;
-    } else if (planSelection) planSelection.hidden = true;
-    if (selectedInterest && interestSelection && interestSelectionKind && interestSelectionName) {
-      interestSelectionKind.textContent = selectedInterest.kind === 'theme' ? fullLeadForm?.dataset.themeInterestLabel ?? '' : fullLeadForm?.dataset.panelInterestLabel ?? '';
-      interestSelectionName.textContent = selectedInterest.name;
-      interestSelection.hidden = false;
-      hasSelection = true;
-    } else if (interestSelection) interestSelection.hidden = true;
-    if (leadSelections) leadSelections.hidden = !hasSelection;
-  };
-  applyRequestedContext();
-  planSelect?.addEventListener('change', syncPlanSelection);
 
-  document.querySelectorAll<HTMLFormElement>('[data-lead-form]').forEach((leadForm) => {
-    leadForm.addEventListener('submit', async (event) => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const hashParams = window.location.hash.startsWith('#') ? new URLSearchParams(window.location.hash.slice(1)) : new URLSearchParams();
+  const requestedPlan = searchParams.get('plan');
+  const requestedEmail = (hashParams.get('email') ?? searchParams.get('email') ?? '').trim();
+  const emailProbe = document.createElement('input');
+  emailProbe.type = 'email';
+  emailProbe.value = requestedEmail;
+  const validRequestedEmail = requestedEmail.length > 0 && requestedEmail.length <= 254 && emailProbe.checkValidity();
+
+  if (validRequestedEmail && hashParams.has('email')) {
+    document.querySelectorAll<HTMLAnchorElement>('[data-context-language-link]').forEach((link) => {
+      const destination = new URL(link.href, window.location.origin);
+      destination.hash = new URLSearchParams({ email: requestedEmail }).toString();
+      link.href = `${destination.pathname}${destination.search}${destination.hash}`;
+    });
+  }
+  if (hashParams.has('email')) window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
+
+  document.querySelectorAll<HTMLFormElement>('[data-full-lead-form]').forEach((fullLeadForm) => {
+    if (fullLeadForm.dataset.leadInitialised === 'true') return;
+    fullLeadForm.dataset.leadInitialised = 'true';
+
+    const planSelect = fullLeadForm.querySelector<HTMLSelectElement>('select[name="level"]');
+    const emailInput = fullLeadForm.querySelector<HTMLInputElement>('input[name="email"]');
+    const emailSelection = fullLeadForm.querySelector<HTMLElement>('[data-email-selection]');
+    const emailSelectionValue = emailSelection?.querySelector<HTMLElement>('[data-email-selection-value]');
+    const planSelection = fullLeadForm.querySelector<HTMLElement>('[data-plan-selection]');
+    const planSelectionName = planSelection?.querySelector<HTMLElement>('[data-plan-selection-name]');
+    const leadSelections = fullLeadForm.querySelector<HTMLElement>('[data-lead-selections]');
+    const interestSelection = fullLeadForm.querySelector<HTMLElement>('[data-interest-selection]');
+    const interestSelectionKind = interestSelection?.querySelector<HTMLElement>('[data-interest-selection-kind]');
+    const interestSelectionName = interestSelection?.querySelector<HTMLElement>('[data-interest-selection-name]');
+    const themeOptions = parseInterestOptions(fullLeadForm.dataset.themeInterests);
+    const panelOptions = parseInterestOptions(fullLeadForm.dataset.panelInterests);
+    const requestedTheme = themeOptions.find(({ slug }) => slug === searchParams.get('theme'));
+    const requestedPanel = panelOptions.find(({ slug }) => slug === searchParams.get('panel'));
+    const selectedInterest: SelectedInterest | null = requestedTheme && !requestedPanel
+      ? { ...requestedTheme, kind: 'theme' }
+      : requestedPanel && !requestedTheme ? { ...requestedPanel, kind: 'panel' } : null;
+
+    const syncPlanSelection = () => {
+      if (planSelectionName && planSelect) planSelectionName.textContent = planSelect.selectedOptions[0]?.dataset.planName ?? planSelect.selectedOptions[0]?.textContent ?? '';
+    };
+    const applyRequestedContext = () => {
+      let hasSelection = false;
+      if (validRequestedEmail && emailInput && emailSelection && emailSelectionValue) {
+        emailInput.value = requestedEmail;
+        emailSelectionValue.textContent = requestedEmail;
+        emailSelection.hidden = false;
+        hasSelection = true;
+      } else if (emailSelection) emailSelection.hidden = true;
+      const plan = requestedPlan && validPlans.has(requestedPlan) ? requestedPlan : selectedInterest?.plan;
+      if (plan && planSelect && planSelection) {
+        planSelect.value = plan;
+        planSelection.hidden = false;
+        syncPlanSelection();
+        hasSelection = true;
+      } else if (planSelection) planSelection.hidden = true;
+      if (selectedInterest && interestSelection && interestSelectionKind && interestSelectionName) {
+        interestSelectionKind.textContent = selectedInterest.kind === 'theme' ? fullLeadForm.dataset.themeInterestLabel ?? '' : fullLeadForm.dataset.panelInterestLabel ?? '';
+        interestSelectionName.textContent = selectedInterest.name;
+        interestSelection.hidden = false;
+        hasSelection = true;
+      } else if (interestSelection) interestSelection.hidden = true;
+      if (leadSelections) leadSelections.hidden = !hasSelection;
+    };
+    applyRequestedContext();
+    planSelect?.addEventListener('change', syncPlanSelection);
+
+    fullLeadForm.addEventListener('submit', async (event) => {
       event.preventDefault();
-      const leadStatus = leadForm.querySelector<HTMLElement>('[data-lead-status]');
-      if (!leadForm.checkValidity()) {
+      const leadStatus = fullLeadForm.querySelector<HTMLElement>('[data-lead-status]');
+      if (!fullLeadForm.checkValidity()) {
         if (leadStatus) leadStatus.textContent = leadStatus.dataset.invalid ?? '';
-        leadForm.reportValidity();
+        fullLeadForm.reportValidity();
         return;
       }
-      const submit = leadForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const submit = fullLeadForm.querySelector<HTMLButtonElement>('button[type="submit"]');
+      const submitLabel = submit?.querySelector<HTMLElement>('[data-lead-submit-label]');
       if (submit) submit.disabled = true;
+      if (submitLabel) submitLabel.textContent = submit?.dataset.sendingLabel ?? '';
+      if (leadStatus) leadStatus.textContent = '';
       try {
-        const formData = new FormData(leadForm);
-        const source = leadForm.dataset.leadSource === 'brief' ? 'brief' : 'full';
-        const common = {
-          source,
-          email: String(formData.get('email') ?? ''), website: String(formData.get('website') ?? ''),
-          accept: formData.get('privacyAccepted') === 'on', lang: document.documentElement.lang === 'en' ? 'en' : 'es',
-        };
+        const formData = new FormData(fullLeadForm);
         const phone = String(formData.get('phone') ?? '').trim();
-        const payload = source === 'brief' ? common : {
-          ...common,
-          name: String(formData.get('name') ?? ''), restaurant: String(formData.get('restaurant') ?? ''),
+        const payload = {
+          source: 'full',
+          email: String(formData.get('email') ?? ''),
+          website: String(formData.get('website') ?? ''),
+          accept: formData.get('privacyAccepted') === 'on',
+          lang: document.documentElement.lang === 'en' ? 'en' : 'es',
+          name: String(formData.get('name') ?? ''),
+          restaurant: String(formData.get('restaurant') ?? ''),
           ...(phone ? { phone } : {}),
-          level: String(formData.get('level') ?? ''), message: String(formData.get('message') ?? ''),
+          level: String(formData.get('level') ?? ''),
+          message: String(formData.get('message') ?? ''),
           ...(selectedInterest ? { interest: { kind: selectedInterest.kind, slug: selectedInterest.slug, name: selectedInterest.name } } : {}),
         };
-        const response = await fetch('/api/leads', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
-        const body = await response.json().catch(() => ({})) as { ref?: string };
+        const response = await fetch('/api/leads', {
+          method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload),
+        });
+        const responseBody = await response.json().catch(() => ({})) as { ref?: string };
         if (leadStatus) {
-          if (response.status === 202) leadStatus.textContent = `${leadStatus.dataset.success ?? ''}${body.ref ? ` · ${body.ref}` : ''}`;
+          if (response.status === 202) leadStatus.textContent = `${leadStatus.dataset.success ?? ''}${responseBody.ref ? ` · ${responseBody.ref}` : ''}`;
           else if (response.status === 429) leadStatus.textContent = leadStatus.dataset.limited ?? '';
           else if (response.status === 403 || response.status === 503) leadStatus.textContent = leadStatus.dataset.disabled ?? '';
           else leadStatus.textContent = leadStatus.dataset.failure ?? '';
         }
         if (response.status === 202) {
-          leadForm.reset();
-          if (leadForm === fullLeadForm) applyRequestedContext();
+          fullLeadForm.reset();
+          applyRequestedContext();
         }
       } catch {
         if (leadStatus) leadStatus.textContent = leadStatus.dataset.failure ?? '';
       } finally {
         if (submit) submit.disabled = false;
+        if (submitLabel) submitLabel.textContent = submit?.dataset.idleLabel ?? '';
       }
     });
   });
@@ -181,27 +209,30 @@ const ui = locale === 'en' ? {
 
 <style>
   .lead-form { padding: clamp(22px, 4vw, 36px); background: white; }
+  .lead-form--dialog { border: 0; border-radius: 0; padding: 0; }
   .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   label { display: grid; gap: 8px; color: rgb(0 0 0 / 68%); font-size: .82rem; font-weight: 600; }
-  input, select, textarea { width: 100%; min-height: 44px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 8px; padding: 11px 12px; color: var(--ink); background: white; font: inherit; }
+  input, select, textarea { width: 100%; min-height: 46px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 9px; padding: 11px 12px; color: var(--ink); background: white; font: inherit; transition: border-color 160ms ease, box-shadow 160ms ease; }
+  textarea { resize: vertical; }
   input:hover, select:hover, textarea:hover { border-color: rgb(0 0 0 / 28%); }
+  input:focus, select:focus, textarea:focus { border-color: var(--color-notion-blue); box-shadow: 0 0 0 3px rgb(0 117 222 / 10%); }
   .lead-selections { display: grid; gap: 8px; margin: 0 0 18px; }
-  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 8px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
+  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 9px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
   .lead-selections[hidden], .lead-email-selection[hidden], .lead-plan-selection[hidden], .lead-interest-selection[hidden] { display: none; }
   .lead-email-selection span, .lead-plan-selection span, .lead-interest-selection > span { font-weight: 650; }
   .lead-email-selection strong, .lead-plan-selection strong, .lead-interest-selection strong { min-width: 0; overflow-wrap: anywhere; color: var(--ink); font-size: .82rem; text-align: right; }
   .lead-interest-selection i { font-style: normal; }
   .lead-form > label, .lead-form .field-row { margin-bottom: 14px; }
-  .privacy-check { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px !important; border: 1px solid var(--line); border-radius: 8px; padding: 12px; font-weight: 500; line-height: 1.35; }
+  .privacy-check { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px !important; border: 1px solid var(--line); border-radius: 9px; padding: 12px; font-weight: 500; line-height: 1.35; }
   .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
-  .privacy-check a { display: inline-flex; min-height: 44px; align-items: center; }
-  .lead-submit { display: inline-flex; width: 100%; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-radius: 8px; padding: 10px 18px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 650; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
+  .privacy-check a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; vertical-align: middle; text-underline-offset: 3px; }
+  .lead-submit { display: inline-flex; width: 100%; min-height: 50px; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-radius: 999px; padding: 10px 19px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 680; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
   .lead-submit:hover { background: #0065bd; transform: translateY(-2px); }
-  .lead-submit span { font-size: 1.05rem; transition: transform 180ms ease; }
-  .lead-submit:hover span { transform: translateX(3px); }
-  .lead-form button:disabled { cursor: wait; opacity: .55; }
-  .lead-status { min-height: 44px; margin: 14px 0 0; color: var(--state-warning); font-size: .82rem; line-height: 1.5; }
+  .lead-submit > span:last-child { font-size: 1.05rem; transition: transform 180ms ease; }
+  .lead-submit:hover > span:last-child { transform: translateX(3px); }
+  .lead-form button:disabled { cursor: wait; opacity: .58; transform: none; }
+  .lead-status { min-height: 24px; margin: 14px 0 0; color: var(--state-warning); font-size: .82rem; line-height: 1.5; }
   .honeypot { position: absolute; left: -9999px; }
-  @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; } }
-  @media (prefers-reduced-motion: reduce) { .lead-submit { transition: none; } }
+  @media (max-width: 560px) { .field-row { grid-template-columns: 1fr; }.lead-email-selection, .lead-plan-selection, .lead-interest-selection { align-items: flex-start; flex-direction: column; gap: 4px; }.lead-email-selection strong, .lead-plan-selection strong, .lead-interest-selection strong { text-align: left; } }
+  @media (prefers-reduced-motion: reduce) { .lead-submit, input, select, textarea { transition: none; } }
 </style>

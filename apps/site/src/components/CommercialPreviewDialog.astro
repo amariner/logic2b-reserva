@@ -5,14 +5,15 @@ interface Props { locale?: Locale }
 
 const { locale = 'es' } = Astro.props;
 const ui = locale === 'en'
-  ? { close: 'Close preview', eyebrow: 'Product preview', fallback: 'Open full experience', contact: 'Discuss this starting point', context: 'Preview context' }
-  : { close: 'Cerrar vista previa', eyebrow: 'Vista previa de producto', fallback: 'Abrir experiencia completa', contact: 'Hablar de este punto de partida', context: 'Contexto de la muestra' };
+  ? { close: 'Close preview', eyebrow: 'Product preview', fallback: 'Open full experience', detail: 'View full details', contact: 'Discuss this starting point', context: 'Preview context', frame: 'Navigable product demonstration' }
+  : { close: 'Cerrar vista previa', eyebrow: 'Vista previa de producto', fallback: 'Abrir experiencia completa', detail: 'Ver ficha completa', contact: 'Hablar de este punto de partida', context: 'Contexto de la muestra', frame: 'Demostración navegable del producto' };
 ---
 
-<dialog class="commercial-preview" data-commercial-preview aria-labelledby="commercial-preview-title" aria-describedby="commercial-preview-body">
+<dialog id="commercial-preview-dialog" class="commercial-preview" data-commercial-preview aria-labelledby="commercial-preview-title" aria-describedby="commercial-preview-body">
   <div class="commercial-preview__frame">
     <button class="commercial-preview__close" type="button" data-commercial-preview-close aria-label={ui.close}><span aria-hidden="true">×</span></button>
     <figure class="commercial-preview__visual">
+      <iframe data-commercial-preview-frame src="about:blank" title={ui.frame} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
       <img data-commercial-preview-image alt="" width="1366" height="900" decoding="async" />
       <figcaption data-commercial-preview-caption></figcaption>
     </figure>
@@ -35,7 +36,7 @@ const ui = locale === 'en'
       </dl>
       <div class="commercial-preview__actions">
         <a data-commercial-preview-contact href="#contacto"><span data-commercial-preview-contact-label>{ui.contact}</span><span aria-hidden="true">→</span></a>
-        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.fallback}</span><span aria-hidden="true">↗</span></a>
+        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.detail}</span><span aria-hidden="true">↗</span></a>
       </div>
     </div>
   </div>
@@ -43,9 +44,10 @@ const ui = locale === 'en'
 
 <script>
   const preview = document.querySelector<HTMLDialogElement>('[data-commercial-preview]');
-  const triggers = [...document.querySelectorAll<HTMLButtonElement>('[data-commercial-preview-trigger]')];
+  const triggers = [...document.querySelectorAll<HTMLElement>('[data-commercial-preview-trigger], [data-theme-preview-open], [data-panel-preview-open]')];
   if (preview && typeof preview.showModal === 'function' && triggers.length > 0) {
     document.documentElement.classList.add('commercial-preview-ready');
+    const frame = preview.querySelector<HTMLIFrameElement>('[data-commercial-preview-frame]');
     const image = preview.querySelector<HTMLImageElement>('[data-commercial-preview-image]');
     const caption = preview.querySelector<HTMLElement>('[data-commercial-preview-caption]');
     const address = preview.querySelector<HTMLElement>('[data-commercial-preview-address]');
@@ -65,12 +67,46 @@ const ui = locale === 'en'
     const contactLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-contact-label]');
     const link = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]');
     const linkLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-link-label]');
+    let returnFocus: HTMLElement | null = null;
+
+    const detailUrlFor = (trigger: HTMLElement) => {
+      if (trigger.dataset.previewDetailUrl) return trigger.dataset.previewDetailUrl;
+      const contactUrl = new URL(trigger.dataset.previewContactUrl ?? '#', window.location.href);
+      const prefix = window.location.pathname === '/en' || window.location.pathname.startsWith('/en/') ? '/en' : '';
+      const theme = contactUrl.searchParams.get('theme');
+      if (theme) return `${prefix}/temas/${encodeURIComponent(theme)}/`;
+      const panel = contactUrl.searchParams.get('panel');
+      if (panel) return `${prefix}/paneles/${encodeURIComponent(panel)}/`;
+      return trigger.dataset.previewUrl ?? '/';
+    };
+
+    const frameUrlFor = (trigger: HTMLElement) => {
+      const candidate = trigger.dataset.previewFrame ?? '';
+      if (!candidate) return '';
+      const url = new URL(candidate, window.location.href);
+      return /^\/(?:en\/)?demos\//.test(url.pathname) ? `${url.pathname}${url.search}${url.hash}` : '';
+    };
 
     for (const trigger of triggers) {
-      trigger.addEventListener('click', () => {
+      trigger.setAttribute('aria-controls', preview.id);
+      trigger.setAttribute('aria-haspopup', 'dialog');
+      trigger.addEventListener('click', (event) => {
+        event.preventDefault();
+        returnFocus = trigger;
+        const frameUrl = frameUrlFor(trigger);
+        if (frame) {
+          if (frameUrl) {
+            if (frame.getAttribute('src') !== frameUrl) frame.src = frameUrl;
+            frame.title = trigger.dataset.previewAlt ?? trigger.dataset.previewTitle ?? frame.title;
+            frame.hidden = false;
+          } else {
+            frame.hidden = true;
+          }
+        }
         if (image) {
           image.src = trigger.dataset.previewImage ?? '';
           image.alt = trigger.dataset.previewAlt ?? '';
+          image.hidden = Boolean(frameUrl);
         }
         if (caption) caption.textContent = trigger.dataset.previewCaption ?? '';
         if (address) address.textContent = trigger.dataset.previewAddress ?? '';
@@ -89,8 +125,12 @@ const ui = locale === 'en'
         if (contact) contact.href = trigger.dataset.previewContactUrl ?? '#contacto';
         if (contactLabel) contactLabel.textContent = trigger.dataset.previewContactAction ?? contactLabel.textContent ?? '';
         if (link) {
-          link.href = trigger.dataset.previewUrl ?? '/';
-          if (linkLabel) linkLabel.textContent = trigger.dataset.previewAction ?? linkLabel.textContent ?? '';
+          const detailUrl = detailUrlFor(trigger);
+          link.href = detailUrl;
+          if (linkLabel) {
+            const hasDetail = Boolean(trigger.dataset.previewDetailUrl) || detailUrl.includes('/temas/') || detailUrl.includes('/paneles/');
+            linkLabel.textContent = trigger.dataset.previewDetailAction ?? (hasDetail ? (document.documentElement.lang === 'en' ? 'View full details' : 'Ver ficha completa') : trigger.dataset.previewAction ?? linkLabel.textContent ?? '');
+          }
         }
         preview.showModal();
       });
@@ -98,22 +138,29 @@ const ui = locale === 'en'
 
     preview.querySelector<HTMLButtonElement>('[data-commercial-preview-close]')?.addEventListener('click', () => preview.close());
     preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]')?.addEventListener('click', () => preview.close());
+    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]')?.addEventListener('click', () => preview.close());
     preview.addEventListener('click', (event) => {
       if (event.target === preview) preview.close();
+    });
+    preview.addEventListener('close', () => {
+      returnFocus?.focus({ preventScroll: true });
+      returnFocus = null;
     });
   }
 </script>
 
 <style is:global>
-  [data-commercial-preview-trigger] { display: none; }
-  .commercial-preview-ready [data-commercial-preview-trigger] { display: inline-flex; }
+  button[data-commercial-preview-trigger], button[data-theme-preview-open], button[data-panel-preview-open] { display: none; }
+  .commercial-preview-ready [data-commercial-preview-trigger], .commercial-preview-ready [data-theme-preview-open], .commercial-preview-ready [data-panel-preview-open] { display: inline-flex; }
+  .commercial-preview-ready .theme-rail-card > [data-commercial-preview-trigger] { display: block; }
   .commercial-preview-ready .panel-teaser-card__actions { grid-template-columns: 1fr 1fr; }
   .commercial-preview { width: min(1080px, calc(100% - 32px)); max-width: none; max-height: min(820px, calc(100dvh - 32px)); overflow: visible; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
   .commercial-preview::backdrop { background: rgb(7 14 43 / 72%); backdrop-filter: blur(5px); }
   .commercial-preview__frame { display: grid; height: min(720px, calc(100dvh - 32px)); min-height: 0; grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); overflow: hidden; border-radius: inherit; }
   .commercial-preview__close { position: absolute; z-index: 3; top: -12px; right: -12px; display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid rgb(0 0 0 / 12%); border-radius: 50%; color: var(--ink); background: white; box-shadow: 0 10px 24px rgb(7 14 43 / 18%); cursor: pointer; font-size: 1.55rem; }
   .commercial-preview__visual { display: grid; min-width: 0; margin: 0; grid-template-rows: minmax(0, 1fr) auto; background: #edf0f4; }
-  .commercial-preview__visual img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: cover; object-position: center top; }
+  .commercial-preview__visual iframe, .commercial-preview__visual img { display: block; width: 100%; height: 100%; min-height: 0; border: 0; object-fit: cover; object-position: center top; background: white; }
+  .commercial-preview__visual iframe[hidden], .commercial-preview__visual img[hidden] { display: none; }
   .commercial-preview__visual figcaption { min-height: 46px; padding: 14px 18px; color: rgb(255 255 255 / 76%); background: var(--color-midnight-ink); font-size: .72rem; line-height: 1.35; }
   .commercial-preview__copy { display: flex; min-width: 0; min-height: 0; flex-direction: column; justify-content: safe center; overflow-y: auto; padding: clamp(28px, 3.5vw, 48px); }
   .commercial-preview__context { display: grid; gap: 10px; margin-bottom: 22px; }
@@ -144,7 +191,7 @@ const ui = locale === 'en'
     .commercial-preview { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow: auto; }
     .commercial-preview__frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
     .commercial-preview__visual { min-height: 0; }
-    .commercial-preview__visual img { aspect-ratio: 16 / 9; }
+    .commercial-preview__visual iframe, .commercial-preview__visual img { aspect-ratio: 16 / 9; }
     .commercial-preview__copy { padding: 26px 22px 30px; }
     .commercial-preview__copy h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
     .commercial-preview__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }

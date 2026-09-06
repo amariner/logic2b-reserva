@@ -151,6 +151,22 @@ export function customerRecordsToCsv(records: readonly CustomerRecord[]): string
   return [header, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
 }
 
+export function bookingReportsToCsv(report: BookingReports): string {
+  const header = ['section', 'metric', 'value', 'detail'];
+  const rows: (string | number)[][] = [
+    ...report.shifts.map((shift) => [
+      'occupancy', shift.kind, `${shift.occupancyPercent}%`, `${shift.covers} covers · ${shift.capacity} capacity · ${shift.serviceDays} sample services`,
+    ]),
+    ...report.sources.map((source) => [
+      'sources', source.source, `${source.percentage}%`, `${source.count} bookings`,
+    ]),
+    ['scenario', 'no_show_exposure', report.noShowsPrevented, report.noShowSavings.assumptions],
+    ['scenario', 'hypothetical_marketplace_monthly_eur', (report.marketplace.monthlyCents / 100).toFixed(2), report.marketplace.assumptions],
+    ['scenario', 'hypothetical_marketplace_yearly_eur', (report.marketplace.yearlyCents / 100).toFixed(2), 'Same fictional sample multiplied by 12; not a real year.'],
+  ];
+  return [header, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
+}
+
 export function bookingReports(bookings: readonly TableBooking[], restaurant: Restaurant): BookingReports {
   const capacityPerService = restaurant.spaces.flatMap((space) => space.tables).reduce((sum, table) => sum + table.maxSeats, 0);
   const shifts = restaurant.shifts.map((shift): ShiftReport => {

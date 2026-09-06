@@ -15,6 +15,8 @@ La confirmación de asistencia de Solane prepara enlaces exclusivamente locales:
 
 Presupuesto D1, inventario de jobs y medición remota agregada: [`docs/D1-BUDGET.md`](docs/D1-BUDGET.md). El presupuesto de este Worker es cero y `pnpm check` bloquea bindings, SQL y crons D1 accidentales.
 
+El diseño parte de [Logic2B UI](https://ui.logic2b.com/): registro y versión están fijados en `packages/ui/components.json`, las primitivas copiadas conservan sus snapshots y `pnpm verify:ui` evita que el proyecto vuelva a separarse del sistema compartido. La personalización cálida de Reserva está documentada en [`docs/DESIGN.md`](docs/DESIGN.md).
+
 ## Arranque
 
 ```bash

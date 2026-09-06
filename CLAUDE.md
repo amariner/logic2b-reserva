@@ -39,6 +39,7 @@ Cuando llegue una orden tipo "sigue desarrollando este proyecto" (`/goal` o simi
 - Copy siempre desde `content.ts`; nada de strings de marca hardcodeados en componentes.
 - Los nuevos recursos raster generados por IA usan la herramienta integrada de OpenAI, nunca Higgsfield; se solicitan de uno en uno y con una pausa entre generaciones.
 - La usuaria de referencia del gestor es el jefe de sala en plena hora punta: usable a 1366px, foco visible, `prefers-reduced-motion`, contraste AA.
+- **Sistema de diseño:** `https://ui.logic2b.com` es la fuente canónica. Nuevas primitivas React se copian con la CLI al paquete `packages/ui`, conservan snapshots en `.logic2b/base` y se consumen desde sus exports; los tokens oficiales se personalizan en `theme.css`. No crear un sistema transversal alternativo dentro de una app. Contrato en `docs/DESIGN.md` y ADR-017; `pnpm verify:ui` protege la integración.
 
 ## Arquitectura
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "exports": { ".": "./src/DashboardDemo.tsx", "./state": "./src/state.ts", "./solane-state": "./src/solane-state.ts", "./styles.css": "./src/dashboard.css" },
+  "exports": { ".": "./src/DashboardDemo.tsx", "./state": "./src/state.ts", "./solane-state": "./src/solane-state.ts", "./storage-sync": "./src/storage-sync.ts", "./styles.css": "./src/dashboard.css" },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@logic-reserva/config": "workspace:*",
     "@logic-reserva/domain": "workspace:*",
+    "@logic-reserva/ui": "workspace:*",
     "lucide-react": "^0.550.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"

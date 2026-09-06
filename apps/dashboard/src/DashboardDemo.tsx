@@ -14,6 +14,8 @@ import {
   UtensilsCrossed,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { Badge } from '@logic-reserva/ui/badge';
+import { Button } from '@logic-reserva/ui/button';
 import {
   SLOT_STEP_MIN,
   seatingTimes,
@@ -52,6 +54,7 @@ import SolaneDashboard from './SolaneDashboard';
 import ReportsView from './views/ReportsView';
 import WaitlistView from './views/WaitlistView';
 import MobileDashboardNav from './MobileDashboardNav';
+import { subscribeToStorageKey } from './storage-sync';
 
 interface VedraDashboardProps {
   slug: 'vedra';
@@ -118,7 +121,13 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
     }
     const syncView = () => setCurrentView(dashboardView(new URL(window.location.href).searchParams.get('vista')));
     window.addEventListener('popstate', syncView);
-    return () => window.removeEventListener('popstate', syncView);
+    const unsubscribeStorage = subscribeToStorageKey(VEDRA_STORAGE_KEY, (value) => {
+      setState(parseVedraStored(value, initialBookings));
+    });
+    return () => {
+      window.removeEventListener('popstate', syncView);
+      unsubscribeStorage();
+    };
   }, [initialBookings]);
 
   useEffect(() => {
@@ -192,12 +201,12 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
         </nav>
         <div className="rd-sidebar__bottom">
           <a href={websiteHref}><ExternalLink size={16} aria-hidden="true" />{dashboardText(copy.backToWebsite, locale)}</a>
-          <button type="button" onClick={reset}><RotateCcw size={16} aria-hidden="true" />{dashboardText(copy.reset, locale)}</button>
+          <Button variant="ghost" type="button" onClick={reset}><RotateCcw size={16} aria-hidden="true" />{dashboardText(copy.reset, locale)}</Button>
         </div>
       </aside>
 
       <main id="contenido" className="rd-main" tabIndex={-1}>
-        <div className="rd-demo-notice"><span>{dashboardText(copy.fictional, locale)}</span><button type="button" onClick={reset}><RotateCcw size={15} aria-hidden="true" />{dashboardText(copy.reset, locale)}</button></div>
+        <div className="rd-demo-notice"><span>{dashboardText(copy.fictional, locale)}</span><Button variant="outline" type="button" onClick={reset}><RotateCcw size={15} aria-hidden="true" />{dashboardText(copy.reset, locale)}</Button></div>
         <p className="rd-live" role="status" aria-live="polite">{notice}</p>
 
         {view === 'servicio' && (
@@ -244,7 +253,7 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
                 const assignedTables = booking.tableIds.map((tableId) => tableById.get(tableId)?.name ?? tableId).join(' + ');
                 const transitions = nextBookingStatuses(booking.status);
                 return <article key={booking.id} data-mobile-service-booking={booking.id}>
-                  <header><time>{timeLabel(booking.slot.startMin)}</time><span className="badge" data-tone={STATUS_TONES[booking.status]}>{dashboardText(copy.status[booking.status], locale)}</span></header>
+                  <header><time>{timeLabel(booking.slot.startMin)}</time><Badge className="badge" data-tone={STATUS_TONES[booking.status]}>{dashboardText(copy.status[booking.status], locale)}</Badge></header>
                   <div><span className="rd-avatar" aria-hidden="true">{booking.guest.name.slice(0, 1).toUpperCase()}</span><div><h2>{booking.guest.name}</h2><p>{booking.partySize} {dashboardText(copy.reservations.people, locale)} · {assignedTables}</p></div></div>
                   {transitions.length > 0 && <footer>{transitions.map((status) => <button key={status} className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} type="button" data-mobile-service-action={status} onClick={() => transition(booking.id, status)}>{dashboardText(copy.action[status], locale)}</button>)}</footer>}
                 </article>;
@@ -276,7 +285,7 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
                       <div><dt>{dashboardText(copy.reservations.party, locale)}</dt><dd><b>{booking.partySize} {dashboardText(copy.reservations.people, locale)}</b><span>{dashboardText(copy.source[booking.source], locale)}</span></dd></div>
                       <div><dt>{dashboardText(copy.reservations.assignment, locale)}</dt><dd><b>{assignedTables}</b><span>{menu?.name ?? dashboardText(copy.reservations.noMenu, locale)}</span></dd></div>
                     </dl>
-                    <div className="rd-booking__state"><span className="badge" data-tone={STATUS_TONES[booking.status]} data-booking-status>{dashboardText(copy.status[booking.status], locale)}</span>{booking.source === 'widget' && <span className="rd-web-badge">{dashboardText(copy.source.widget, locale)}</span>}</div>
+                    <div className="rd-booking__state"><Badge className="badge" data-tone={STATUS_TONES[booking.status]} data-booking-status>{dashboardText(copy.status[booking.status], locale)}</Badge>{booking.source === 'widget' && <span className="rd-web-badge">{dashboardText(copy.source.widget, locale)}</span>}</div>
                     <div className="rd-booking__actions">
                       {transitions.length === 0 ? <small>{dashboardText(copy.reservations.noActions, locale)}</small> : transitions.map((status) => <button key={status} className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} type="button" data-booking-action={status} onClick={() => transition(booking.id, status)}>{dashboardText(copy.action[status], locale)}</button>)}
                     </div>

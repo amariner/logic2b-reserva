@@ -1,5 +1,7 @@
 import { Armchair, BellRing, Clock3, UserPlus, UsersRound, XCircle } from 'lucide-react';
 import { useId, useMemo, useState, type FormEvent } from 'react';
+import { Badge } from '@logic-reserva/ui/badge';
+import { Button } from '@logic-reserva/ui/button';
 import {
   estimateDurationMin,
   tableAvailability,
@@ -121,7 +123,7 @@ export default function WaitlistView({
     <section className="rd-view" data-dashboard-view="espera">
       <header className="rd-view-header">
         <div><p className="rd-eyebrow">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.body}</p></div>
-        <span className="badge" data-tone="info"><BellRing size={14} aria-hidden="true" />{copy.localOnly}</span>
+        <Badge className="badge" data-tone="info"><BellRing size={14} aria-hidden="true" />{copy.localOnly}</Badge>
       </header>
       {!canManage && <p className="rd-role-warning"><BellRing size={16} aria-hidden="true" />{copy.readOnly}</p>}
       <p className="rd-live" role="status" aria-live="polite">{notice}</p>
@@ -139,7 +141,7 @@ export default function WaitlistView({
             <label htmlFor={`${formId}-date`}><span>{copy.date}</span><input id={`${formId}-date`} type="date" required value={date} disabled={!canManage} onChange={(event) => setDate(event.target.value)} /></label>
             <label htmlFor={`${formId}-time`}><span>{copy.time}</span><input id={`${formId}-time`} type="time" step="900" required value={timeLabel(time)} disabled={!canManage} onChange={(event) => setTime(minutesFromTime(event.target.value))} /></label>
           </div>
-          <button className="rd-primary-action" type="submit" disabled={!canManage}><UserPlus size={16} aria-hidden="true" />{copy.add}</button>
+          <Button className="rd-primary-action" type="submit" disabled={!canManage}><UserPlus size={16} aria-hidden="true" />{copy.add}</Button>
         </form>
 
         <div className="rd-waitlist-queue">
@@ -151,12 +153,12 @@ export default function WaitlistView({
             const arrival = new Intl.DateTimeFormat(locale, { hour: '2-digit', minute: '2-digit' }).format(new Date(entry.arrivedAt));
             return (
               <article className="rd-waitlist-card" key={entry.id} data-waitlist-entry={entry.id} data-waitlist-status={entry.status}>
-                <header><span className="rd-avatar" aria-hidden="true">{entry.guest.name.slice(0, 1).toUpperCase()}</span><div><h3>{entry.guest.name}</h3><p><UsersRound size={13} aria-hidden="true" />{entry.partySize} · <Clock3 size={13} aria-hidden="true" />{entry.quotedWaitMin} {copy.minutes}</p></div><span className="badge" data-tone={entry.status === 'notified' ? 'info' : 'warning'}>{copy[entry.status]}</span></header>
+                <header><span className="rd-avatar" aria-hidden="true">{entry.guest.name.slice(0, 1).toUpperCase()}</span><div><h3>{entry.guest.name}</h3><p><UsersRound size={13} aria-hidden="true" />{entry.partySize} · <Clock3 size={13} aria-hidden="true" />{entry.quotedWaitMin} {copy.minutes}</p></div><Badge className="badge" data-tone={entry.status === 'notified' ? 'info' : 'warning'}>{copy[entry.status]}</Badge></header>
                 <dl><div><dt>{copy.arrived}</dt><dd>{arrival}</dd></div><div><dt>{copy.requested}</dt><dd>{entry.requestedSlot.date} · {timeLabel(entry.requestedSlot.startMin)}</dd></div><div><dt>{option ? copy.tableReady : copy.noTable}</dt><dd>{tableNames ?? '—'}</dd></div></dl>
                 <div className="rd-waitlist-actions">
-                  {entry.status === 'waiting' && <button type="button" data-waitlist-action="notified" disabled={!canManage} onClick={() => { onTransition(entry.id, 'notified'); setNotice(`${entry.guest.name} · ${copy.notified}`); }}><BellRing size={15} aria-hidden="true" />{copy.notify}</button>}
-                  <button className="rd-primary-action" type="button" data-waitlist-action="seated" disabled={!canManage || option === undefined} onClick={() => { onSeat(entry.id, `walkin-${entry.id}`); setNotice(`${entry.guest.name} · ${copy.seated}`); }}><Armchair size={15} aria-hidden="true" />{option ? copy.seat : copy.noTable}</button>
-                  <button className="danger" type="button" data-waitlist-action="cancelled" disabled={!canManage} onClick={() => { onTransition(entry.id, 'cancelled'); setNotice(`${entry.guest.name} · ${copy.cancelled}`); }}><XCircle size={15} aria-hidden="true" />{copy.cancel}</button>
+                  {entry.status === 'waiting' && <Button variant="outline" type="button" data-waitlist-action="notified" disabled={!canManage} onClick={() => { onTransition(entry.id, 'notified'); setNotice(`${entry.guest.name} · ${copy.notified}`); }}><BellRing size={15} aria-hidden="true" />{copy.notify}</Button>}
+                  <Button className="rd-primary-action" type="button" data-waitlist-action="seated" disabled={!canManage || option === undefined} onClick={() => { onSeat(entry.id, `walkin-${entry.id}`); setNotice(`${entry.guest.name} · ${copy.seated}`); }}><Armchair size={15} aria-hidden="true" />{option ? copy.seat : copy.noTable}</Button>
+                  <Button className="danger" variant="destructive" type="button" data-waitlist-action="cancelled" disabled={!canManage} onClick={() => { onTransition(entry.id, 'cancelled'); setNotice(`${entry.guest.name} · ${copy.cancelled}`); }}><XCircle size={15} aria-hidden="true" />{copy.cancel}</Button>
                 </div>
               </article>
             );
@@ -164,7 +166,7 @@ export default function WaitlistView({
         </div>
       </div>
 
-      {historyEntries.length > 0 && <section className="rd-waitlist-history"><h2>{copy.history}</h2>{historyEntries.map((entry) => <div key={entry.id} data-waitlist-history={entry.status}><span>{entry.guest.name} · {entry.partySize}</span><span className="badge" data-tone={entry.status === 'seated' ? 'success' : 'danger'}>{copy[entry.status]}</span></div>)}</section>}
+      {historyEntries.length > 0 && <section className="rd-waitlist-history"><h2>{copy.history}</h2>{historyEntries.map((entry) => <div key={entry.id} data-waitlist-history={entry.status}><span>{entry.guest.name} · {entry.partySize}</span><Badge className="badge" data-tone={entry.status === 'seated' ? 'success' : 'danger'}>{copy[entry.status]}</Badge></div>)}</section>}
     </section>
   );
 }

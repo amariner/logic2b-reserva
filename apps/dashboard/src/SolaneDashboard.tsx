@@ -44,6 +44,7 @@ import ReportsView from './views/ReportsView';
 import SolaneCustomersView from './views/SolaneCustomersView';
 import WaitlistView from './views/WaitlistView';
 import MobileDashboardNav from './MobileDashboardNav';
+import { subscribeToStorageKey } from './storage-sync';
 
 interface SolaneDashboardProps {
   slug: 'solane';
@@ -278,7 +279,13 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
     }
     const syncView = () => setViewState(parseView(new URL(window.location.href).searchParams.get('vista')));
     window.addEventListener('popstate', syncView);
-    return () => window.removeEventListener('popstate', syncView);
+    const unsubscribeStorage = subscribeToStorageKey(SOLANE_STORAGE_KEY, (value) => {
+      setState(parseSolaneStored(value, initialBookings, initialEvents, initialPrivateHires));
+    });
+    return () => {
+      window.removeEventListener('popstate', syncView);
+      unsubscribeStorage();
+    };
   }, [initialBookings, initialEvents, initialPrivateHires]);
 
   useEffect(() => {

@@ -1,7 +1,7 @@
-import { BarChart3, CircleDollarSign, ExternalLink, Link2, ScanSearch, ShieldCheck, Sparkles, UsersRound, Workflow } from 'lucide-react';
+import { BarChart3, CircleDollarSign, Download, ExternalLink, Link2, ScanSearch, ShieldCheck, Sparkles, UsersRound, Workflow } from 'lucide-react';
 import type { AttendanceConfirmation, BookingSource, NoShowSignalCode, NoShowSuggestedAction, Restaurant, RiskTier, TableBooking } from '@logic-reserva/domain';
 import type { DashboardLocale } from '../content';
-import { bookingReports, noShowRiskAssessments } from '../analytics';
+import { bookingReports, bookingReportsToCsv, noShowRiskAssessments } from '../analytics';
 
 interface ReportsViewProps {
   locale: DashboardLocale;
@@ -79,6 +79,7 @@ export default function ReportsView({ locale, restaurant, bookings, mode, attend
     confirmationPrepare: 'Preparar enlace local', confirmationPrepared: 'Enlace preparado · no enviado', confirmationOpen: 'Abrir enlace del comensal', confirmationConfirmed: 'Asistencia confirmada', confirmationChange: 'Cambio solicitado · seguimiento manual', confirmationExpired: 'Enlace caducado', confirmationReadOnly: 'Cocina solo puede consultar el estado.',
     automations: 'Automatizaciones', automationLabel: 'Ejecución simulada en este navegador', active: 'Activa · demo', suggested: 'Sugerida por IA · demo',
     inventoryAutomation: 'Evento publicado → mesas fuera del widget', depositAutomation: 'Reserva sentada → depósito liberado', followupAutomation: 'Privatización pendiente → preparar seguimiento',
+    export: 'Exportar informe demo', exportHelp: 'Descarga local · muestra ficticia · sin contabilidad real',
   } : {
     eyebrow: 'Reports', title: mode === 'intelligent' ? 'Decisions with a visible basis.' : 'Your operation at a glance.',
     body: 'Every figure is calculated in the browser from the visible fictional sample; no analytics service is connected.',
@@ -98,12 +99,23 @@ export default function ReportsView({ locale, restaurant, bookings, mode, attend
     confirmationPrepare: 'Prepare local link', confirmationPrepared: 'Link prepared · not sent', confirmationOpen: 'Open guest link', confirmationConfirmed: 'Attendance confirmed', confirmationChange: 'Change requested · manual follow-up', confirmationExpired: 'Link expired', confirmationReadOnly: 'Kitchen can only view the status.',
     automations: 'Automations', automationLabel: 'Simulated execution in this browser', active: 'Active · demo', suggested: 'Suggested by demo AI',
     inventoryAutomation: 'Published event → tables removed from widget', depositAutomation: 'Guest seated → deposit released', followupAutomation: 'Pending private hire → prepare follow-up',
+    export: 'Export demo report', exportHelp: 'Local download · fictional sample · not real accounting',
   };
   const peakLabel = peakShift.kind === 'lunch' ? copy.lunch : copy.dinner;
 
+  const download = () => {
+    const blob = new Blob([bookingReportsToCsv(report)], { type: 'text/csv;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = `${restaurant.id}-informe-demo.csv`;
+    anchor.click();
+    window.setTimeout(() => URL.revokeObjectURL(url), 0);
+  };
+
   return (
     <section className="rd-view" data-dashboard-view="informes" data-report-mode={mode}>
-      <header className="rd-view-header"><div><p className="rd-eyebrow">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.body}</p></div><span className="badge" data-tone="info">{copy.sample}</span></header>
+      <header className="rd-view-header"><div><p className="rd-eyebrow">{copy.eyebrow}</p><h1>{copy.title}</h1><p>{copy.body}</p></div><div className="rd-report-header-actions"><span className="badge" data-tone="info">{copy.sample}</span><button className="rd-primary-action rd-export-action" type="button" data-export-report onClick={download}><Download size={16} aria-hidden="true" /><span><b>{copy.export}</b><small>{copy.exportHelp}</small></span></button></div></header>
       <div className="rd-report-grid">
         <article className="rd-report-card rd-report-card--wide" data-report-occupancy>
           <header><span><BarChart3 size={19} aria-hidden="true" /></span><h2>{copy.occupancy}</h2></header>
