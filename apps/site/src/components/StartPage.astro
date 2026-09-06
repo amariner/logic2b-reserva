@@ -15,23 +15,23 @@ const ui = locale === 'en' ? {
   description: 'Tell Logic2B what your restaurant needs and keep the selected Logic Reserva plan, website or product view in one focused project enquiry.',
   back: 'Review plans and scope', eyebrow: 'A first step, without commitment',
   title: 'Let’s understand what your restaurant needs.',
-  intro: 'Share the essentials. We will review the operation, the evidence you selected and the next useful step before defining scope or price.',
-  proofs: ['A personal response, not an automatic quote', 'Scope, boundaries and next steps stated clearly', 'No card, payment or commitment'],
+  intro: 'Tell us how you work and what you would like to improve. We will reply with a proposal for your restaurant.',
+  proofs: ['A personal reply from Logic2B', 'Scope, boundaries and next steps stated clearly', 'No card, payment or commitment'],
   formEyebrow: 'Project enquiry', formTitle: 'Tell us the essentials.',
-  formBody: 'The selected plan, website or product view remains attached to this enquiry. You can still change the operational priority before sending it.',
+  formBody: 'A few details will help us prepare our conversation. Your selection stays attached to the form.',
   direct: 'Prefer to start with a conversation?', whatsapp: 'Write to Logic2B on WhatsApp',
-  boundary: 'Submitting this form requests a conversation. It does not approve a price, activate a service or create a restaurant account.',
+  boundary: 'Submitting this form requests a conversation. It does not activate a service or create a restaurant account.',
 } : {
   metaTitle: 'Habla de tu proyecto de restaurante | Logic Reserva',
   description: 'Cuéntale a Logic2B qué necesita tu restaurante y conserva el plan, la web o la vista de Logic Reserva elegidos en una solicitud enfocada.',
   back: 'Revisar planes y alcance', eyebrow: 'Un primer paso, sin compromiso',
   title: 'Veamos qué necesita tu restaurante.',
-  intro: 'Comparte lo esencial. Revisaremos la operativa, la evidencia elegida y el siguiente paso útil antes de concretar alcance o precio.',
-  proofs: ['Respuesta personal, no una cotización automática', 'Alcance, límites y próximos pasos claros', 'Sin tarjeta, pago ni compromiso'],
+  intro: 'Cuéntanos cómo trabajáis y qué te gustaría mejorar. Te responderemos con una propuesta adaptada a tu restaurante.',
+  proofs: ['Respuesta personal de Logic2B', 'Alcance, límites y próximos pasos claros', 'Sin tarjeta, pago ni compromiso'],
   formEyebrow: 'Solicitud de proyecto', formTitle: 'Cuéntanos lo esencial.',
-  formBody: 'El plan, la web o la vista de producto elegidos permanecen unidos a esta solicitud. Puedes cambiar la prioridad operativa antes de enviarla.',
+  formBody: 'Solo necesitamos unos datos para preparar la conversación. Tu selección se conserva en el formulario.',
   direct: '¿Prefieres empezar conversando?', whatsapp: 'Escribir a Logic2B por WhatsApp',
-  boundary: 'Enviar este formulario solicita una conversación. No aprueba un precio, activa un servicio ni crea una cuenta de restaurante.',
+  boundary: 'Enviar este formulario solicita una conversación. No activa un servicio ni crea una cuenta de restaurante.',
 };
 const path = `${prefix}/empezar/`;
 const structuredData = [{
@@ -73,7 +73,7 @@ const structuredData = [{
   .start-copy { position: sticky; top: 116px; padding-bottom: 70px; }
   .back { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; color: var(--slate); font-size: .8rem; font-weight: 650; text-decoration: none; }
   .start-copy > .eyebrow { margin-top: clamp(56px, 8vw, 104px); }
-  h1 { max-width: 690px; margin: 18px 0 0; font-size: clamp(3.4rem, 6.7vw, 7rem); font-weight: 600; letter-spacing: -.065em; line-height: .88; text-wrap: balance; }
+  h1 { max-width: 690px; margin: 18px 0 0; font-size: clamp(3.2rem, 5.7vw, 5.8rem); font-weight: 600; letter-spacing: -.06em; line-height: .91; text-wrap: balance; }
   .start-intro { max-width: 590px; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.2rem); line-height: 1.58; }
   .start-copy ul { display: grid; gap: 11px; margin: 30px 0 0; padding: 0; list-style: none; }
   .start-copy li { display: flex; align-items: center; gap: 11px; font-size: .82rem; font-weight: 680; line-height: 1.35; }
@@ -95,5 +95,5 @@ const structuredData = [{
     .start-form { margin-inline: -14px; padding: 8px 14px 50px; background: var(--color-sky-tint); }
     .start-form__heading { padding-top: 44px; }
   }
-  @media (max-width: 520px) { h1 { font-size: clamp(3.25rem, 15vw, 4.7rem); }.start-form :global(.lead-form) { border-radius: 10px; } }
+  @media (max-width: 520px) { h1 { font-size: clamp(2.9rem, 13vw, 4.2rem); }.start-form :global(.lead-form) { border-radius: 10px; } }
 </style>

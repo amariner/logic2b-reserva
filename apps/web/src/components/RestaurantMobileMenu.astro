@@ -1,0 +1,41 @@
+---
+import type { Locale } from '@logic-reserva/config';
+interface Props { locale: Locale; links: { href: string; label: string }[] }
+const { locale, links } = Astro.props;
+const label = locale === 'en' ? 'Menu' : 'Menú';
+---
+<details class="restaurant-mobile-menu">
+  <summary aria-label={locale === 'en' ? 'Restaurant menu' : 'Menú del restaurante'}>{label}<span aria-hidden="true">☰</span></summary>
+  <nav aria-label={locale === 'en' ? 'Mobile restaurant navigation' : 'Navegación móvil del restaurante'}>
+    {links.map((link) => <a href={link.href}>{link.label}</a>)}
+  </nav>
+</details>
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('.restaurant-mobile-menu').forEach((menu) => {
+    const summary = menu.querySelector('summary');
+    menu.addEventListener('click', (event) => {
+      if (event.target instanceof Element && event.target.closest('a')) menu.open = false;
+    });
+    menu.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') { menu.open = false; summary?.focus(); }
+    });
+    document.addEventListener('click', (event) => {
+      if (event.target instanceof Node && !menu.contains(event.target)) menu.open = false;
+    });
+    menu.addEventListener('focusout', () => {
+      requestAnimationFrame(() => { if (!menu.contains(document.activeElement)) menu.open = false; });
+    });
+  });
+</script>
+<style>
+  .restaurant-mobile-menu { display: none; }
+  @media (max-width: 1080px) {
+    .restaurant-mobile-menu { display: block; }
+    summary { display: flex; min-width: 60px; min-height: 44px; align-items: center; justify-content: center; gap: 7px; padding: 8px; border: 1px solid currentColor; border-radius: 6px; cursor: pointer; font: 650 .75rem var(--sans); list-style: none; }
+    summary::-webkit-details-marker { display: none; }
+    nav { position: absolute; top: calc(100% + 8px); right: 12px; z-index: 50; display: grid !important; width: min(320px, calc(100vw - 24px)); max-height: calc(100dvh - 150px); overflow-y: auto; padding: 12px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 10px; color: var(--restaurant-ink, var(--brand-ink)); background: var(--restaurant-paper, var(--brand-card)); box-shadow: 0 16px 45px rgb(0 0 0 / 18%); }
+    nav a { display: flex; align-items: center; min-height: 48px; padding: 12px; border-radius: 5px; color: inherit; font: 600 .9rem var(--sans); text-decoration: none; }
+    nav a:hover { background: rgb(0 0 0 / 6%); }
+    summary:focus-visible, nav a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+  }
+</style>

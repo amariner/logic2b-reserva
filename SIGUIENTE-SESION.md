@@ -1,12 +1,34 @@
 # SIGUIENTE SESIÓN
 
 **Fase actual:** F0–F26 completas ✅ · F27, auditoría diferencial y previews Camp enriquecidas cerradas localmente ✅ · F0–F19 publicadas en producción · F21–F27 pendientes de publicación autorizada · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** completar la regresión y regeneración visual de la sesión 59; publicar F21–F27 solo tras autorización explícita
+**Siguiente hito:** revisión del propietario y publicación de los cambios locales solo tras autorización explícita
+
+## Auditoría de temas del 05–06/09/2026 · cerrada localmente
+
+Los pendientes de regresión y capturas de la sesión 59 y de la revisión comercial posterior quedan cubiertos por esta auditoría: doce webs y doce fichas en español/inglés, seis anchos de 320 a 1366 px, nueve fotos originales coherentes, menús móviles nativos, cartas sin superposición y previews de las portadas reales.
+
+Gates: `pnpm check` 28/28 con 160 tests; 92 escenarios funcionales verificados por bloques contra Worker; 102 páginas y 3.774 referencias internas sin ausencias. Wrangler/ProxyWorker se cerraba durante pruebas largas: se utilizó el mismo bundle directamente en Miniflare/workerd, con `LEADS_TRANSPORT:disabled`.
+
+Las 48 portadas coinciden byte a byte. Las 42 capturas contractuales pasan la comparación visual de Playwright: 40 hashes idénticos y dos diferencias minúsculas de antialiasing, registradas expresamente. Se fija Chromium Headless Shell 151.0.7922.34 y se incorpora `CAPTURE_BASELINE_DIR=/ruta/al/primer-pase pnpm fotos:comparar`; el criterio y el digest están en `docs/SALES-ASSETS.md`. El informe con las doce composiciones está en `docs/AUDITORIA-TEMAS.md`.
+
+No se ha publicado ni enviado un lead real. Los apartados históricos siguientes describen sus ejecuciones originales; sus pendientes de auditoría quedan sustituidos por este cierre.
+
+## Revisión UI/UX del 05/09/2026
+
+La petición actual autoriza simplificar todas las páginas comerciales y definir precios. Sustituye la exclusión antigua de tarifas concretas: Básico 49 €/mes + 290 € de alta, Gestión 149 €/mes + 790 €, Inteligente 249 €/mes + 1.490 €, sin IVA. Justificación con fuentes primarias en `docs/COMPETENCIA.md`.
+
+Home con los mismos 14 bloques de Camp; tipografía, composición, fotos de restaurante, jerarquía y espaciado revisados. `PricingCards.astro` es la única presentación de packs para home y Planes. `commercial.css` limita el nuevo diseño a las superficies comerciales. Se conservan todos los cambios que ya estaban en el worktree antes de esta sesión.
+
+Auditoría de archivos compilados: 102 páginas HTML, 68 comerciales, 3.598 referencias internas, cero rutas o recursos ausentes. Navegador: home escritorio/móvil 390 px, pestañas, precios, catálogos, guías, fichas, soluciones y conservación de `plan=inteligente` en la solicitud. Los selectores y textos E2E se han alineado con el diseño; se conserva la cobertura y se añade la apertura de los detalles antes de comprobar su contenido. La paridad es estructural y visual, no un calco de píxeles al 100 %. Las 42 capturas contractuales no se han regenerado en esta revisión.
+
+Validación final: `pnpm check` 28/28. 18 E2E contra Worker en verde antes de que Wrangler 4.123 / ProxyWorker se cerrase con `Network connection lost` (dos intentos de regresión integral interrumpidos por infraestructura local). 12/12 pruebas UI sobre el build estático en verde, incluidas las 68 páginas a 320/375/430/1366 px, filtros, fichas, planes y guías. No registrar esta combinación como 78/78. Vista estática de diseño retenida en `http://127.0.0.1:8791/`; no tiene endpoint de leads.
+
+No se ha desplegado, enviado un lead ni cambiado servicios externos. Antes del release, conservar el gate de autorización explícita y completar la regresión visual contractual. Mapa de cambios en `docs/UI-PARIDAD-CAMP.md`.
 
 ## Siguiente paso concreto
 
 1. Solicitar autorización antes de cualquier despliegue; el cierre local no autoriza mutar preview o producción.
-2. Antes del release, completar el E2E integral y ejecutar dos pases de `pnpm fotos` para incorporar el nuevo bloque de transición del hero a la línea base visual.
+2. La regresión local y la línea base visual están actualizadas; si se modifica código antes del release, repetir los checks afectados y el gate `pnpm check`.
 3. Con autorización: desplegar preview, ejecutar `pnpm verify:public:preview` por GET/HEAD y revisar home, portfolio, paneles y cierre en los dos viewports contractuales.
 4. Solo tras aceptar preview: publicar producción mediante el gate existente y ejecutar `pnpm verify:public:production`; cualquier prueba de lead queda fuera salvo orden expresa.
 

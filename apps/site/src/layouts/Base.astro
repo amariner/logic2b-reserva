@@ -2,6 +2,7 @@
 import '@fontsource-variable/inter';
 import '@fontsource-variable/source-serif-4';
 import '@logic-reserva/ui/theme.css';
+import '../styles/commercial.css';
 import { PRODUCT, type Locale } from '@logic-reserva/config';
 
 interface Props {
@@ -95,7 +96,7 @@ const skipLabel = locale === 'en' ? 'Skip to main content' : 'Saltar al contenid
     <meta name="twitter:image:alt" content={imageAlt} />
     {schemas.map((schema) => <script is:inline type="application/ld+json" set:html={JSON.stringify(schema).replaceAll('<', '\\u003c')} />)}
   </head>
-  <body>
+  <body class="commercial-site">
     <a class="skip-link" href="#contenido">{skipLabel}</a>
     <slot />
   </body>

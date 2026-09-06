@@ -506,6 +506,29 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 
 ---
 
+## Ajuste UI/UX y tarifas · 05/09/2026
+
+- [x] Mantener los catorce apartados de Camp adaptados a restauración.
+- [x] Simplificar home, catálogos, fichas, precios, guías y solicitud con estilos comerciales compartidos.
+- [x] Definir precios y alta desde una fuente única con investigación de mercado documentada.
+- [x] Reutilizar imágenes del sector y optimizar las doce capturas de catálogo.
+- [x] Auditar enlaces y recursos de las 102 páginas compiladas y revisar recorridos principales en navegador.
+- [x] Alinear las aserciones E2E de hero, precios y desplegables con el nuevo diseño.
+- [x] Validar 12/12 pruebas UI del build, con las 68 páginas a 320/375/430/1366 px sin overflow ni consola.
+- [x] Completar la regresión contra Worker: 92 escenarios verificados por bloques, usando el runtime directo para evitar los cierres de ProxyWorker.
+- [x] Regenerar las 42 capturas contractuales y validar 42/42 comparaciones visuales con el protocolo documentado en `SALES-ASSETS.md`.
+- [ ] Publicación autorizada mediante el proceso existente.
+
+## Auditoría del catálogo · 05–06/09/2026
+
+- [x] Revisar las doce webs y fichas en ES/EN a 320, 375, 430, 768, 1024 y 1366 px.
+- [x] Incorporar nueve fotografías originales coherentes, AVIF responsive y descripciones bilingües.
+- [x] Resolver navegación móvil, anclajes, contraste, tipografía y solapamientos de cartas.
+- [x] Publicar en el build 48 previews reales con idioma y viewport correctos, reproducibles byte a byte.
+- [x] Conservar los límites de Brasca, Vedra/Solane y las nueve direcciones sin motor.
+- [x] Añadir 14 pruebas específicas, cerrar los 92 escenarios funcionales y documentar evidencias y limitaciones en `AUDITORIA-TEMAS.md`.
+- [x] Cerrar `pnpm check` 28/28 y auditar 3.774 referencias del build sin ausencias.
+
 ## Después (backlog, no fases)
 
 Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

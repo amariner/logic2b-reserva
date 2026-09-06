@@ -1,7 +1,7 @@
 ---
 import type { Locale } from '@logic-reserva/config';
 import { PRODUCT } from '@logic-reserva/config';
-import { THEME_CATALOG, localizedThemeText, themeDetailUrl, themeUrl, type ThemeEntry } from '@logic-reserva/config/themes';
+import { THEME_CATALOG, localizedThemeText, themeDemoScope, themeDetailUrl, themeUrl, type ThemeEntry } from '@logic-reserva/config/themes';
 import Base from '../layouts/Base.astro';
 import CommercialChrome from './CommercialChrome.astro';
 
@@ -14,13 +14,13 @@ const languageHref = locale === 'en' ? '/temas/' : '/en/temas/';
 const local = (value: ThemeEntry['format']) => localizedThemeText(value, locale);
 const ui = locale === 'en' ? {
   metaTitle: 'Restaurant website directions | Logic Reserva',
-  title: 'Twelve restaurant websites. One commercial system.',
+  title: 'A website worthy of your restaurant.',
   description: 'Explore twelve fictional restaurant website directions by format, tone and product depth. Three include the full Logic Reserva journey.',
-  eyebrow: 'Website direction library',
-  intro: 'A working catalogue for comparing how the same commercial proposition changes with the room, the occasion and the brand. Every concept is fictional.',
+  eyebrow: 'Restaurant websites',
+  intro: 'Bistro, terrace, fine dining or events venue. Explore twelve example designs and find the one that fits your brand.',
   back: 'Back to Logic Reserva', language: 'ES', contact: 'Discuss my website',
   searchLabel: 'Search by brand, format, location or tone', searchPlaceholder: 'Try “terrace” or “Bilbao”',
-  depthLabel: 'Journey depth', all: 'All', deep: 'Full journey', webOnly: 'Website only',
+  depthLabel: 'Demo type', all: 'All', deep: 'Full journey', webOnly: 'Website only',
   formatLabel: 'Restaurant format', allFormats: 'All formats', reset: 'Clear filters',
   count: 'directions shown', oneCount: 'direction shown', noResults: 'No direction matches those filters.',
   expand: 'Why this direction works', promise: 'Commercial promise', tone: 'Visual tone', level: 'Product depth',
@@ -28,15 +28,15 @@ const ui = locale === 'en' ? {
   fictional: 'Fictional concept', catalogue: 'Restaurant website directions', footer: 'Commercial exploration · No real restaurants or bookings',
 } : {
   metaTitle: 'Webs para restaurantes | Logic Reserva',
-  title: 'Doce webs de restaurante. Un sistema comercial.',
+  title: 'Tu restaurante, con una web a su altura.',
   description: 'Explora doce direcciones web ficticias para restaurantes por formato, tono y profundidad de producto. Tres incluyen el recorrido completo de Logic Reserva.',
-  eyebrow: 'Biblioteca de direcciones web',
-  intro: 'Un catálogo de trabajo para comparar cómo cambia una misma propuesta comercial según la sala, la ocasión y la marca. Todos los conceptos son ficticios.',
+  eyebrow: 'Webs para restaurantes',
+  intro: 'Bistró, terraza, gastronómico o espacio de eventos. Explora doce diseños de ejemplo y encuentra el que encaja con tu marca.',
   back: 'Volver a Logic Reserva', language: 'EN', contact: 'Hablar de mi web',
   searchLabel: 'Buscar por marca, formato, ubicación o tono', searchPlaceholder: 'Prueba “terraza” o “Bilbao”',
-  depthLabel: 'Profundidad del recorrido', all: 'Todas', deep: 'Recorrido completo', webOnly: 'Solo web',
+  depthLabel: 'Tipo de demo', all: 'Todas', deep: 'Recorrido completo', webOnly: 'Solo web',
   formatLabel: 'Formato de restaurante', allFormats: 'Todos los formatos', reset: 'Limpiar filtros',
-  count: 'direcciones visibles', oneCount: 'dirección visible', noResults: 'Ninguna dirección coincide con esos filtros.',
+  count: 'webs disponibles', oneCount: 'web disponible', noResults: 'Ninguna dirección coincide con esos filtros.',
   expand: 'Por qué funciona esta dirección', promise: 'Promesa comercial', tone: 'Tono visual', level: 'Profundidad de producto',
   details: 'Ver ficha completa', open: 'Abrir web', deepNote: 'Web, reserva y gestor navegables.', webNote: 'Dirección web navegable; sin motor de reservas ni gestor.',
   fictional: 'Concepto ficticio', catalogue: 'Direcciones web para restauración', footer: 'Exploración comercial · Sin restaurantes ni reservas reales',
@@ -129,7 +129,7 @@ const itemList = {
                 <div class="theme-meta"><span>{local(theme.location)}</span><span>{ui.fictional}</span></div>
                 <h3>{theme.name}</h3>
                 <p class="theme-promise">{local(theme.promise)}</p>
-                <div class="theme-depth"><span data-depth={theme.depth}>{theme.depth === 'deep' ? ui.deep : ui.webOnly}</span><p>{theme.depth === 'deep' ? ui.deepNote : ui.webNote}</p></div>
+                <div class="theme-depth"><span data-depth={theme.depth}>{theme.depth === 'deep' ? ui.deep : ui.webOnly}</span><p>{themeDemoScope(theme, locale)}</p></div>
                 <details>
                   <summary>{ui.expand}<span aria-hidden="true">+</span></summary>
                   <dl>
@@ -190,8 +190,8 @@ const itemList = {
 
 <style>
   .themes-main { padding-bottom: clamp(80px, 10vw, 150px); }.themes-intro { padding-top: 34px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
-  .themes-intro__grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .55fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(42px, 7vw, 90px) 0 clamp(44px, 6vw, 72px); }
-  .themes-intro h1 { max-width: 980px; margin: 0; font-size: clamp(3.2rem, 7.4vw, 7.4rem); font-weight: 600; letter-spacing: -.064em; line-height: .9; }
+  .themes-intro__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(34px, 5vw, 64px) 0 clamp(40px, 5vw, 62px); }
+  .themes-intro h1 { max-width: 850px; margin: 0; font-size: clamp(3.1rem, 5.8vw, 5.8rem); font-weight: 600; letter-spacing: -.06em; line-height: .92; }
   .themes-intro__grid > p { margin: 0 0 4px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.55; }
   .catalogue { scroll-margin-top: 90px; }.theme-filters { display: grid; grid-template-columns: minmax(250px, 1.4fr) minmax(310px, 1fr) minmax(190px, .7fr) auto; gap: 12px; align-items: end; border-block: 1px solid var(--line); padding: 18px 0; }
   .theme-filters label, .theme-filters legend { display: block; margin: 0 0 8px; color: var(--slate); font-size: .72rem; font-weight: 650; letter-spacing: .035em; }
@@ -215,6 +215,11 @@ const itemList = {
   .theme-card details { border-block: 1px solid var(--line); }.theme-card summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; color: var(--slate); font-size: .76rem; cursor: pointer; list-style: none; }.theme-card summary::-webkit-details-marker { display: none; }.theme-card summary span { font-size: 1.2rem; transition: transform 180ms ease; }.theme-card details[open] summary span { transform: rotate(45deg); }.theme-card dl { margin: 0 0 16px; }.theme-card dl div { display: grid; grid-template-columns: 105px 1fr; gap: 8px; padding: 6px 0; }.theme-card dt { color: var(--slate); font-size: .68rem; }.theme-card dd { margin: 0; font-size: .78rem; line-height: 1.35; }
   .theme-card__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }.theme-card__actions a { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 8px; border-radius: 7px; padding: 10px 13px; font-size: .78rem; font-weight: 700; text-decoration: none; }.theme-details { color: white; background: var(--theme-primary); }.theme-open { border: 1px solid color-mix(in srgb, var(--theme-primary) 30%, transparent); color: var(--theme-primary); background: white; }.theme-card__actions a:hover { color: white; background: var(--theme-ink); }.empty-state { margin: 0; border: 1px dashed var(--line); border-radius: 12px; padding: 60px 20px; color: var(--slate); text-align: center; }
   @media (max-width: 1080px) { .theme-filters { grid-template-columns: 1fr 1fr; }.theme-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }.reset-control { justify-self: stretch; }.themes-intro__grid { grid-template-columns: 1fr; }.themes-intro__grid > p { max-width: 55ch; } }
-  @media (max-width: 680px) { .themes-intro { padding-top: 18px; }.themes-intro__grid { gap: 26px; padding-top: 32px; }.themes-intro h1 { font-size: clamp(3rem, 16vw, 4.7rem); }.theme-filters { grid-template-columns: 1fr; }.theme-grid { grid-template-columns: 1fr; }.theme-visual { min-height: 250px; }.theme-card__actions { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { .themes-intro { padding-top: 18px; }.themes-intro__grid { gap: 24px; padding-top: 28px; }.themes-intro h1 { font-size: clamp(2.85rem, 13vw, 4.2rem); }.theme-filters { grid-template-columns: 1fr; }.theme-grid { grid-template-columns: 1fr; }.theme-visual { min-height: 250px; }.theme-card__actions { grid-template-columns: 1fr; } }
   @media (prefers-reduced-motion: reduce) { .theme-card summary span { transition: none; } }
+  .theme-visual:has(picture)::before { display: none; }
+  .theme-visual:has(picture) strong { right: 22px; max-width: none; line-height: 1; }
+  .theme-visual small { font-size: .72rem; }
+  .theme-visual .theme-mark, .theme-visual .theme-index { background: rgb(0 0 0 / 65%); }
+  .theme-card h3, .theme-card strong { overflow-wrap: anywhere; }
 </style>

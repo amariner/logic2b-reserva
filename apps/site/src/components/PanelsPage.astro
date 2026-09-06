@@ -16,30 +16,30 @@ const local = (value: PanelEntry['title']) => localizedPanelText(value, locale);
 const ui = locale === 'en' ? {
   metaTitle: 'Restaurant management views | Logic Reserva',
   description: 'Explore six fictional restaurant management views with real product evidence, reproducible demo states and explicit implementation limits.',
-  eyebrow: 'Restaurant product catalogue',
-  title: 'Six views. One service to understand.',
-  intro: 'Choose the decision you need to make before opening the workspace. Every entry uses real screens and fictional fixture data from Logic Reserva.',
+  eyebrow: 'Restaurant management',
+  title: 'Your whole service, in order.',
+  intro: 'Check bookings, organise tables and prepare events. Try six management views with example data.',
   back: 'Back to Logic Reserva', language: 'ES', contact: 'Discuss my operation',
   searchLabel: 'Search by view, user, decision or evidence', searchPlaceholder: 'Try “waitlist” or “management”',
   levelLabel: 'Product level', all: 'All', management: 'Management', intelligent: 'Intelligent', reset: 'Clear filters',
   count: 'views shown', oneCount: 'view shown', noResults: 'No view matches those filters.',
   user: 'For whom', decision: 'Decision', evidence: 'Evidence in the demo', limit: 'Current limit', expand: 'Understand this view',
-  details: 'View product details', open: 'Open reproducible demo', screenshot: 'Real product capture', fictional: 'Fictional data', catalogue: 'Restaurant management views',
+  details: 'View product details', open: 'Try the manager', screenshot: 'Real product capture', fictional: 'Fictional data', catalogue: 'Restaurant management views',
   closingTitle: 'Start with the decision that is costing you most time.',
   closingBody: 'Logic2B validates rules, data, integrations and launch scope with your team before any real implementation.',
   closingAction: 'Discuss my operation', footer: 'Commercial exploration · No real bookings, messages or charges',
 } : {
   metaTitle: 'Paneles para restaurantes | Logic Reserva',
   description: 'Explora seis paneles ficticios para restauración con evidencia real del producto, estados de demo reproducibles y límites de implantación explícitos.',
-  eyebrow: 'Catálogo de producto para restauración',
-  title: 'Seis vistas. Un servicio que entender.',
-  intro: 'Elige la decisión que necesitas tomar antes de abrir el gestor. Cada entrada usa pantallas reales y datos fixture ficticios de Logic Reserva.',
+  eyebrow: 'Gestor para restaurantes',
+  title: 'Todo tu servicio, en su sitio.',
+  intro: 'Consulta reservas, organiza las mesas y prepara tus eventos. Prueba las seis vistas del gestor con datos de ejemplo.',
   back: 'Volver a Logic Reserva', language: 'EN', contact: 'Hablar de mi operativa',
   searchLabel: 'Buscar por vista, usuario, decisión o evidencia', searchPlaceholder: 'Prueba “espera” o “dirección”',
   levelLabel: 'Nivel de producto', all: 'Todos', management: 'Gestión', intelligent: 'Inteligente', reset: 'Limpiar filtros',
   count: 'vistas visibles', oneCount: 'vista visible', noResults: 'Ninguna vista coincide con esos filtros.',
   user: 'Para quién', decision: 'Decisión', evidence: 'Evidencia en la demo', limit: 'Límite actual', expand: 'Entender esta vista',
-  details: 'Ver ficha del panel', open: 'Abrir demo reproducible', screenshot: 'Captura real de producto', fictional: 'Datos ficticios', catalogue: 'Paneles para restauración',
+  details: 'Ver ficha del panel', open: 'Probar el gestor', screenshot: 'Captura real de producto', fictional: 'Datos ficticios', catalogue: 'Paneles para restauración',
   closingTitle: 'Empieza por la decisión que más tiempo te está costando.',
   closingBody: 'Logic2B valida reglas, datos, integraciones y alcance de lanzamiento con tu equipo antes de cualquier implantación real.',
   closingAction: 'Hablar de mi operativa', footer: 'Exploración comercial · Sin reservas, mensajes ni cobros reales',
@@ -189,8 +189,8 @@ const itemList = {
 
 <style>
   .panels-main { overflow: clip; padding-bottom: clamp(80px, 10vw, 150px); }.panels-intro { padding-top: 34px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
-  .panels-intro__grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(260px, .55fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(38px, 6vw, 76px) 0 clamp(36px, 5vw, 60px); }
-  .panels-intro h1 { max-width: 900px; margin: 0; font-size: clamp(3.1rem, 7vw, 7rem); font-weight: 600; letter-spacing: -.064em; line-height: .9; }
+  .panels-intro__grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); gap: clamp(40px, 8vw, 120px); align-items: end; padding: clamp(34px, 5vw, 64px) 0 clamp(36px, 5vw, 58px); }
+  .panels-intro h1 { max-width: 820px; margin: 0; font-size: clamp(3.05rem, 5.7vw, 5.7rem); font-weight: 600; letter-spacing: -.06em; line-height: .92; }
   .panels-intro__grid > p { margin: 0 0 4px; color: var(--slate); font-family: var(--serif); font-size: clamp(1.05rem, 1.5vw, 1.25rem); line-height: 1.55; }
   .catalogue { scroll-margin-top: 90px; }.panel-filters { display: grid; grid-template-columns: minmax(260px, 1.25fr) minmax(310px, .8fr) auto; gap: 12px; align-items: end; border-block: 1px solid var(--line); padding: 18px 0; }
   .panel-filters label, .panel-filters legend { display: block; margin: 0 0 8px; color: var(--slate); font-size: .75rem; font-weight: 650; letter-spacing: .035em; }
@@ -216,5 +216,5 @@ const itemList = {
   .closing { display: grid; grid-template-columns: 1.2fr .8fr; gap: clamp(40px, 8vw, 110px); align-items: end; margin-top: clamp(80px, 11vw, 150px); border-radius: 12px; padding: clamp(28px, 5vw, 58px); background: var(--color-sky-tint); }.closing h2 { max-width: 760px; margin: 0; font-size: clamp(2.25rem, 4.5vw, 4.8rem); letter-spacing: -.055em; line-height: .95; }.closing > div:last-child { display: grid; gap: 24px; justify-items: start; }.closing > div:last-child p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: 1.04rem; line-height: 1.55; }
   @media (max-width: 1080px) { .panels-intro__grid, .closing { grid-template-columns: 1fr; }.panels-intro__grid > p { max-width: 58ch; }.panel-grid { grid-template-columns: 1fr; }.panel-summary { min-height: 0; } }
   @media (max-width: 760px) { .panel-filters { grid-template-columns: 1fr; }.reset-control { justify-self: stretch; } }
-  @media (max-width: 680px) { .panels-intro { padding-top: 18px; }.panels-intro__grid { gap: 26px; padding-top: 32px; }.panels-intro h1 { font-size: clamp(3rem, 15vw, 4.7rem); }.panel-shot picture { aspect-ratio: 375 / 440; }.panel-shot img { object-position: center top; }.panel-shot figcaption { flex-direction: column; gap: 5px; }.panel-card dl div { grid-template-columns: 1fr; gap: 5px; }.panel-card__actions { grid-template-columns: 1fr; } }
+  @media (max-width: 680px) { .panels-intro { padding-top: 18px; }.panels-intro__grid { gap: 24px; padding-top: 28px; }.panels-intro h1 { font-size: clamp(2.85rem, 13vw, 4.2rem); }.panel-shot picture { aspect-ratio: 375 / 440; }.panel-shot img { object-position: center top; }.panel-shot figcaption { flex-direction: column; gap: 5px; }.panel-card dl div { grid-template-columns: 1fr; gap: 5px; }.panel-card__actions { grid-template-columns: 1fr; } }
 </style>

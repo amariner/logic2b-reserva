@@ -49,7 +49,7 @@ Cada combinación escena/viewport se ejecuta en serie, en un contexto de navegad
 2. Bloquear todo origen salvo `http://127.0.0.1:8791` y todo método salvo GET/HEAD antes de abrir la primera página.
 3. Abrir la ruta, borrar cookies, `sessionStorage` y `localStorage`, recargar y usar el reset propio de la demo cuando exista.
 4. Preparar la escena únicamente con fixtures y acciones públicas ya cubiertas por los E2E. Se permite abrir una vista, seleccionar una reserva o avanzar un diálogo; no se permite copiar reglas de disponibilidad, depósito, riesgo o transición al script.
-5. Esperar `document.fonts.ready`, carga y `image.decode()` de cada imagen del encuadre y el final de cualquier render React/Astro. Las escenas comerciales consumen los PNG ya creados en el mismo directorio temporal, no el paquete de la ejecución anterior. Desactivar animaciones, transiciones, caret y barras de desplazamiento solo mediante una hoja de estilo de captura.
+5. Esperar `document.fonts.ready`, carga y `image.decode()` de cada imagen del encuadre y el final de cualquier render React/Astro. La intersección con el viewport se comprueba en ambos ejes: un carrusel no debe esperar imágenes lazy situadas fuera de la pantalla. Las imágenes seleccionadas se solicitan antes de decodificarlas. Las escenas comerciales consumen los PNG ya creados en el mismo directorio temporal, no el paquete de la ejecución anterior. Desactivar animaciones, transiciones, caret y barras de desplazamiento solo mediante una hoja de estilo de captura.
 6. Verificar etiqueta ficticia visible en demos o cabecera comercial visible en escenas de landing, ausencia de overflow horizontal y cero errores de consola o página.
 7. Capturar el viewport y cerrar el contexto, aunque falle la escena.
 
@@ -96,12 +96,18 @@ La regeneración escribe primero en un directorio temporal y solo sustituye el p
 - cada PNG tiene las dimensiones contractuales, contenido no vacío e imágenes cargadas en el encuadre; las demos conservan su etiqueta ficticia y la landing su cabecera comercial;
 - no hubo errores de consola, excepciones de página, overflow horizontal ni peticiones prohibidas;
 - una segunda ejecución limpia produce el mismo inventario, nombres, orden y dimensiones;
-- dos ejecuciones consecutivas producen los mismos 42 hashes byte a byte;
+- dos ejecuciones consecutivas mantienen el inventario y pasan 42/42 comparaciones visuales con `threshold: 0.1` y `maxDiffPixels: 0`; se registran también los hashes exactos y cualquier variación de antialiasing;
 - el catálogo no contiene datos personales reales ni afirma entrega, cobro, IA o automatización conectada;
 - `pnpm check && pnpm e2e` continúan verdes después de incorporar el paquete.
 
-Línea base vigente tras incorporar la continuidad del plan, simplificar el formulario, conservar el contexto hasta el lead, añadir las fichas públicas de panel/tema, separar el inicio comercial en `/empezar/` y sumar el recorrido guiado: versión 3, 42 capturas y digest agregado `eee79bb14e6e568843d4e3e26a326c4938ca80ec20c6cd03e0e94fd58b8d9e5d` en dos ejecuciones consecutivas del 2026-09-04. Las fichas, la página enfocada y el diálogo cerrado por defecto quedan fuera de los cuatro recortes comerciales de Reserva; el tour solo aparece con `?recorrido=…`. El digest se calcula aplicando SHA-256 a la concatenación, sin separadores, de los 42 valores `sha256` del manifiesto en su orden declarado.
+Línea base vigente del 06/09/2026: versión 3, 42 capturas con Chromium Headless Shell 151.0.7922.34 y digest agregado `1da526293ba4be768e31efb0d48d1cb1a88685902eb8445160e7425e5600f3a5`. Incluye la revisión comercial, las fotografías de las nueve direcciones y la continuidad del correo hasta la solicitud. El digest se calcula aplicando SHA-256 a la concatenación, sin separadores, de los 42 valores `sha256` del manifiesto en su orden declarado.
 
-La transición de correo incorporada después de esta línea base cambia el bloque visible del hero. Regenerar el paquete dos veces y actualizar el digest antes de usar estas capturas en un release.
+Los dos pases finales coinciden en 40/42 hashes. Los dos restantes difieren en 57 píxeles de los bordes del catálogo de paneles y 6 píxeles de la imagen reducida del cierre móvil; el comparador estándar de Playwright confirma **42/42 sin diferencias perceptuales** con tolerancia de color 0.1 y cero píxeles de diferencia admitidos tras esa comparación. Se sustituye la igualdad binaria absoluta como único gate por esta comparación explícita, para distinguir ruido de rasterizado de una regresión visual. Los PNG se conservan sin retoques ni cuantización de color.
+
+Para repetir la comprobación: conservar el directorio completo del primer pase, ejecutar el segundo y lanzar `CAPTURE_BASELINE_DIR=/ruta/al/primer-pase pnpm fotos:comparar`. El comparador exige el mismo inventario, nunca actualiza las imágenes de referencia y genera diferencias en `test-results/visual/` si falla. Las 48 portadas comerciales independientes sí coinciden byte a byte; su manifest está en `images/theme-previews/`.
 
 Un cambio de escena, ruta, viewport, convención de nombre o frontera de red exige actualizar primero este documento y después el script y el manifiesto en el mismo cambio.
+
+El runner prefiere Chromium Headless Shell instalado por `pnpm exec playwright install chromium`; `CHROMIUM_PATH` permite fijar un binario explícito y Chrome del sistema queda como fallback. Registra la versión en la salida y exige dos frames consecutivos idénticos antes de guardar cada PNG. No comparar hashes obtenidos con versiones diferentes del navegador.
+
+El runner desactiva rasterizado parcial y optimizaciones de CPU de Skia. Son opciones del [runner oficial de Chrome](https://github.com/GoogleChrome/chrome-launcher/blob/main/docs/chrome-flags-for-tools.md), aplicadas solo a la captura para evitar variaciones de unos pocos píxeles entre ejecuciones.

@@ -1,6 +1,7 @@
 ---
+import RestaurantMobileMenu from './RestaurantMobileMenu.astro';
 import type { Locale } from '@logic-reserva/config';
-import { localizedThemeText, themeUrl, type ThemeEntry, type ThemeSlug } from '@logic-reserva/config/themes';
+import { localizedThemeText, themeContactUrl, themeUrl, type ThemeEntry, type ThemeSlug } from '@logic-reserva/config/themes';
 
 interface Props { theme: ThemeEntry; locale?: Locale }
 
@@ -11,21 +12,21 @@ const local = (value: ThemeEntry['format']) => localizedThemeText(value, locale)
 const prefix = locale === 'en' ? '/en' : '';
 const otherLocale: Locale = locale === 'en' ? 'es' : 'en';
 const ui = locale === 'en' ? {
-  menu: 'Menu', story: 'Approach', visit: 'Visit', book: 'Start a booking',
+  menu: 'Menu', story: 'Our place', visit: 'Visit', book: 'Start a booking',
   location: 'Location', hours: 'Opening hours', fictional: 'Fictional restaurant',
   today: 'Today at the restaurant', available: 'Website direction open to explore',
-  menuEyebrow: 'A short menu', storyEyebrow: 'Website direction', visitEyebrow: 'Before you arrive',
-  bookingEyebrow: 'How booking would begin', bookingTitle: 'The website hands over the right context before offering a table.',
+  menuEyebrow: 'A short menu', storyEyebrow: 'Our way of welcoming', visitEyebrow: 'Before you arrive',
+  bookingEyebrow: 'How booking would begin', bookingTitle: 'Your next table starts here.',
   bookingBody: 'This web-only direction does not include an active booking engine, availability, messages or payments. In a real project, those rules would be agreed with Logic2B around the restaurant operation.',
   bookingPoints: ['Party size and occasion', 'Service or venue choice', 'Terms shown before confirmation'],
   discuss: 'Discuss this direction', allThemes: 'View all 12 websites', powered: 'A fictional website direction by Logic Reserva',
   language: 'ES', navigation: 'Restaurant navigation', backLabel: 'Logic Reserva website catalogue',
 } : {
-  menu: 'Carta', story: 'Enfoque', visit: 'Visita', book: 'Empezar reserva',
+  menu: 'Carta', story: 'La casa', visit: 'Visita', book: 'Empezar reserva',
   location: 'Ubicación', hours: 'Horario', fictional: 'Restaurante ficticio',
   today: 'Hoy en el restaurante', available: 'Dirección web abierta para explorar',
-  menuEyebrow: 'Una carta corta', storyEyebrow: 'Dirección de la web', visitEyebrow: 'Antes de llegar',
-  bookingEyebrow: 'Cómo empezaría la reserva', bookingTitle: 'La web entrega el contexto correcto antes de ofrecer una mesa.',
+  menuEyebrow: 'Una carta corta', storyEyebrow: 'Nuestra forma de recibir', visitEyebrow: 'Antes de llegar',
+  bookingEyebrow: 'Cómo empezaría la reserva', bookingTitle: 'Tu próxima mesa empieza aquí.',
   bookingBody: 'Esta dirección solo web no incluye motor activo, disponibilidad, mensajes ni pagos. En un proyecto real, esas reglas se acordarían con Logic2B alrededor de la operativa del restaurante.',
   bookingPoints: ['Tamaño del grupo y ocasión', 'Servicio o local elegido', 'Condiciones antes de confirmar'],
   discuss: 'Hablar de esta dirección', allThemes: 'Ver las 12 webs', powered: 'Una dirección web ficticia de Logic Reserva',
@@ -37,7 +38,7 @@ const ui = locale === 'en' ? {
   <header class="restaurant-nav">
     <a class="restaurant-brand" href="#contenido" aria-label={`${theme.name} — ${ui.fictional}`}><span>{theme.mark}</span><strong>{theme.name}</strong></a>
     <nav aria-label={ui.navigation}><a href="#carta">{ui.menu}</a><a href="#enfoque">{ui.story}</a><a href="#visita">{ui.visit}</a></nav>
-    <div class="restaurant-actions"><a class="restaurant-language" href={themeUrl(theme.slug as ThemeSlug, otherLocale)} hreflang={otherLocale}>{ui.language}</a><a class="restaurant-book" href="#reservar">{ui.book}</a></div>
+    <div class="restaurant-actions"><a class="restaurant-language" href={themeUrl(theme.slug as ThemeSlug, otherLocale)} hreflang={otherLocale} aria-label={otherLocale === 'en' ? 'View in English' : 'Ver en español'}>{ui.language}</a><a class="restaurant-book" href="#reservar">{ui.book}</a><RestaurantMobileMenu locale={locale} links={[{ href: "#carta", label: ui.menu }, { href: "#enfoque", label: ui.story }, { href: "#visita", label: ui.visit }, { href: themeUrl(theme.slug as ThemeSlug, otherLocale), label: otherLocale === "en" ? "View in English" : "Ver en español" }, { href: `${prefix}/temas/`, label: ui.allThemes }]} /></div>
   </header>
 
   <main id="contenido" tabindex="-1">
@@ -49,11 +50,13 @@ const ui = locale === 'en' ? {
         <p class="restaurant-body">{local(web.body)}</p>
         <div class="hero-actions"><a href="#reservar">{ui.book}<span aria-hidden="true">↘</span></a><a href="#carta">{ui.menu}<span aria-hidden="true">↓</span></a></div>
       </div>
-      <div class="hero-art" aria-hidden="true">
-        <span class="art-number">01 / 04</span><span class="art-mark">{theme.mark}</span>
-        <div class="art-table"><i></i><i></i><i></i><i></i></div>
-        <p>{theme.name}</p>
-      </div>
+      <figure class="hero-art">
+        <picture>
+          <source type="image/avif" srcset={`${theme.imageBase}-640.avif 640w, ${theme.imageBase}-960.avif 960w, ${theme.imageBase}-1600.avif 1600w`} sizes="(max-width: 900px) 100vw, 50vw" />
+          <img src={`${theme.imageBase}-960.avif`} alt={theme.imageAlt ? local(theme.imageAlt) : `${theme.name} · ${local(theme.format)}`} width="1536" height="1024" loading="eager" fetchpriority="high" decoding="async" />
+        </picture>
+        <figcaption><span>{theme.name}</span><span>{local(theme.location)}</span></figcaption>
+      </figure>
       <p class="hero-side-note">{ui.fictional} · {local(theme.tone)}</p>
     </section>
 
@@ -79,7 +82,7 @@ const ui = locale === 'en' ? {
 
     <section id="reservar" class="restaurant-booking" aria-labelledby="booking-title">
       <div class="booking-title"><p>{ui.bookingEyebrow}</p><h2 id="booking-title">{ui.bookingTitle}</h2></div>
-      <div class="booking-explainer"><p>{ui.bookingBody}</p><ol>{ui.bookingPoints.map((point, index) => <li><span>0{index + 1}</span>{point}</li>)}</ol><div><a href={`${prefix}/#contacto`}>{ui.discuss}<span aria-hidden="true">↗</span></a><a href={`${prefix}/temas/`}>{ui.allThemes}</a></div></div>
+      <div class="booking-explainer"><p>{ui.bookingBody}</p><ol>{ui.bookingPoints.map((point, index) => <li><span>0{index + 1}</span>{point}</li>)}</ol><div><a href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.discuss}<span aria-hidden="true">↗</span></a><a href={`${prefix}/temas/`}>{ui.allThemes}</a></div></div>
     </section>
   </main>
 

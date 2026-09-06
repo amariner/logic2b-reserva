@@ -2,6 +2,25 @@
 
 Síntesis de la investigación de mercado que fundamenta el producto. Cautela: modelos, tarifas y cobertura varían por país, canal y plan. Una cifra sin fuente primaria y fecha no debe presentarse como dato duro en la demo.
 
+## Actualización de precios públicos · 4 de septiembre de 2026
+
+La revisión de páginas oficiales sitúa a los gestores generalistas para un restaurante entre **45 y 177 €/mes**, antes de extras o de una implantación a medida:
+
+- **resOS** publica 45 €/mes para 350 reservas, 85 €/mes para 750 y 125 €/mes para reservas ilimitadas. Experiencias, pagos, diseño personalizable, analítica, API y otros módulos se cobran como extras. Fuente: https://resos.com/pricing/
+- **Tablein** publica 67 €/mes para 50 reservas, 117 €/mes para 150 y 177 €/mes para reservas ilimitadas. Incluye todas las funciones, pero el volumen separa los planes. Fuente: https://www.tablein.com/pricing
+- **TheFork Manager** mantiene planes Visibility, Performance y Enterprise, pero su página española no muestra una cuota mensual universal; las reservas originadas en TheFork y asociados pueden llevar una comisión basada en el ticket medio. Fuente: https://www.theforkmanager.com/es/software-restaurantes-precio
+- **CoverManager** no publica una tarifa estándar verificable en su web española; se mantiene como referencia funcional, no como ancla numérica.
+
+Logic Reserva no se posiciona como autoservicio genérico: combina dirección web propia, configuración sectorial y acompañamiento. La escalera aprobada para la demo comercial es:
+
+| Plan | Cuota | Puesta en marcha | Criterio |
+|---|---:|---:|---|
+| Básico | 49 €/mes | 690 € | Entrada comparable a un gestor ligero, centrada en web y captación propia |
+| Gestión | 149 €/mes | 1.290 € | Por encima del SaaS estándar por incluir web, sala, grupos e implantación guiada |
+| Inteligente | 299 €/mes | 1.990 € | Eventos, privatizaciones y apoyo explicable; proveedores e integraciones se valoran aparte |
+
+Los importes son por restaurante, sin IVA. Básico plantea seis meses mínimos; los costes de pasarela, SMS, TPV, migración o integración externa no están incluidos. Antes de contratación deben pasar de referencia comercial a condiciones contractuales completas.
+
 ## 1. Tres modelos económicos
 
 | Modelo habitual | Ejemplos | Ingresos que puede incluir | Propuesta principal |
@@ -79,3 +98,19 @@ La matriz ejecutable y los límites completos viven en `docs/DEMO-MODE.md`. “V
 - Celebra: https://celebra.club/
 - Propuesta de adquisición de TheFork: https://ir.americanexpress.com/news/investor-relations-news/investor-relations-news-details/2026/American-Express-Announces-Proposed-Acquisition-of-TheFork-a-Leading-European-Restaurant-Booking-Platform/default.aspx
 - Planes Resy powered by Tock: https://resy.com/join/plans-pricing/
+
+## Revisión de tarifas — 5 de septiembre de 2026
+
+Fuentes primarias consultadas para esta revisión (no se han utilizado estimaciones de comparadores):
+
+| Proveedor | Tarifa publicada | Contexto |
+| --- | --- | --- |
+| [CoverManager España](https://www.covermanager.com/es/precios) | Essential 89 €/mes; Premium 189 €/mes; Enterprise a medida | La página muestra estos importes y habla también de propuesta por tamaño, módulos y volumen. No permite asegurar coste final ni base fiscal. |
+| [resmio España](https://www.resmio.com/es/precios/) | Tabla: Basic 0 €, Premium 69,90 €, Ultimate 129,90 €/mes | Las tarjetas muestran importes con descuento (62,91/116,91). Permanencia de 12 meses; cancelación mensual añade 10 €/mes. Comparar modalidades equivalentes. |
+| [Zenchef Francia](https://www.zenchef.com/fr/formules) | Reserve 129 €, Manage 169 €, Grow 249 €/mes | Referencia del mercado francés, no oferta confirmada para España. Pagos y complementos tienen condiciones propias. |
+
+Decisión comercial solicitada por el propietario: Básico **49 €/mes + 290 € de alta**, Gestión **149 €/mes + 790 € de alta**, Inteligente **249 €/mes + 1.490 € de alta**. Precios sin IVA, por restaurante. Básico conserva seis meses de permanencia; demás condiciones en la propuesta. Cuota sin comisión de Logic2B por reserva; proveedores de pago, mensajes, migración e integraciones a medida aparte.
+
+La cuota de Gestión queda entre las referencias de entrada y los planes de gestión completos. Inteligente se sitúa en el rango superior, con web, eventos y privatizaciones como especialización. Las altas son una estimación comercial propia para diseño y configuración, no precios atribuidos a los competidores. Validar margen con el esfuerzo real de cada implantación. Esta propuesta sustituye los importes de 49/149/299 y altas de 690/1.290/1.990 de la revisión anterior.
+
+La demo actual no se compara como servicio operativo equivalente a estos SaaS: sigue siendo una demostración local sin reservas, mensajes ni cobros reales. Cada implantación de restaurante necesita alcance acordado.

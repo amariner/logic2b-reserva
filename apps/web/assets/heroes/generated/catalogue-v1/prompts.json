@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "la-trece",
+    "prompt": "Use case: photorealistic-natural. Asset: website hero photograph, landscape 3:2. Fictional neighbourhood tapas bar La Trece in Zaragoza, Spain. Warm lived-in vermouth bar, red tile frontage under a zinc counter, small plate of authentic gildas with green peppers anchovies olives and a slice of tortilla with two short vermouth glasses in foreground, worn wood stools and softly blurred bottles behind. Beautiful professional editorial restaurant photography, restrained natural daylight, realistic food and architecture, rich brick red and butter yellow accents. Centered subject safe for mobile crop. No people, no words, no logos, no watermark. One full-bleed photograph, not a collage.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "salobre",
+    "prompt": "Use case: photorealistic-natural. Asset: restaurant website hero, landscape 3:2. Fictional Alicante rice restaurant Salobre, beautiful Spanish Mediterranean lunch: shallow authentic paella pan of arroz del senyoret with peeled prawns and squid on pale linen table, two simple ceramic plates, clear glasses, soft blue sea glimpsed through open restaurant windows, wicker chairs, warm limestone. Rice is a thin dry layer, appetizing and realistic. Professional natural editorial photography, sunlit but restrained, navy blue accents, honey golden rice. Subject centered and safe for mobile crop. No people, no writing, no logos, no watermarks. One photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "trama",
+    "prompt": "Use case: photorealistic-natural. Asset: restaurant website hero landscape 3:2. Fictional Trama contemporary neighbourhood restaurant in Bilbao. Architectural editorial photography of a beautifully composed small dining room with deep forest green banquettes, warm oak tables, coral upholstered chairs, large steel-framed windows and pale stone walls, understated urban Basque atmosphere, one welcoming communal table at center neatly set with simple ceramics and clear water glasses. Soft overcast northern daylight, honest textures, immaculate realistic architecture, no people, no text, no logos. Full bleed single photo, center safe for mobile crop.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "umbral",
+    "prompt": "Use case: photorealistic-natural. Asset: restaurant website hero landscape 3:2. Fictional Umbral boutique hotel restaurant in Seville, refined Andalusian courtyard dining beneath stone arches, cream stucco and discreet aubergine cushions, aged brass accents, orange tree in large terracotta pot, small round white linen tables and wicker chairs, welcoming open doorway, morning light tracing the courtyard tiles. Beautiful premium architectural editorial photography, plausible and natural materials, calm hospitality not a hotel bedroom or pool. No people, no text, no logos, no watermark. Center safe composition for mobile crop, single full bleed photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "nacre",
+    "prompt": "Use case: photorealistic-natural. Asset: fine dining website hero landscape 3:2. Fictional Nacre restaurant in San Sebastian. Exceptionally refined contemporary Basque fine dining editorial photograph: single sculptural off-white ceramic plate with a small carefully composed seafood tasting course, translucent cured white fish, a few sea herbs and delicate pale sauce, textured ivory linen, slim silver cutlery, distant soft silhouette of an empty fine dining room. Minimal precise sensory, muted pearl grey charcoal warm ivory palette, soft side window light, generous negative space, realistic food not fantasy. Center safe for mobile cropping, no people no text no logos no watermarks, one full bleed photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "brisa-alta",
+    "prompt": "Use case: photorealistic-natural. Asset: restaurant website hero landscape 3:2. Fictional Brisa Alta seasonal rooftop dining terrace in Malaga at golden hour. Mediterranean blue horizon beyond a discreet harbor, airy linen parasols, terracotta pots with aromatic herbs, simple pale wood dining tables, woven chairs, a center foreground table with a ceramic plate of ripe tomatoes and almond cream, two grapefruit drinks. Elegant relaxed open air dining, warm apricot sunlight with natural teal sea tones, premium editorial photography with credible architecture. No people no words no logos no watermarks, center safe mobile crop, single photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "nave-nueve",
+    "prompt": "Use case: photorealistic-natural. Asset: events venue website hero, landscape 3:2. Fictional Nave Nueve Madrid, beautifully restored industrial hall for private dinners and launches. Wide architectural editorial photograph of one long carefully set banquet table beneath exposed steel roof trusses and tall factory windows, weathered brick, polished concrete floor, black dining chairs, restrained chartreuse floral accents and warm suspended bulbs. Plausible spacious venue, coherent perspective and usable aisles, premium event staging without extravagant wedding decor. Soft late afternoon light, no people no text no logos no watermark, subject center safe for mobile crop, one single photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "miga-club",
+    "prompt": "Use case: photorealistic-natural. Asset: casual restaurant website hero landscape 3:2. Fictional Miga Club in Barcelona, cheerful contemporary sandwich and lunch cafe. Mouthwatering hot chicken sandwich cut into two halves with pickles and green leaves on plain cream ceramic plate, alongside a small balanced grain and roasted vegetable bowl and clear drink, on light oak cafe table. Background softly blurred cobalt blue seating and butter yellow tile, bright natural daylight, editorial food photography, real appetizing bread texture and modest plausible portions. No branded packaging, no people no text no logos no watermark. Centered crop safe composition, single full bleed photograph.",
+    "tool": "OpenAI built-in imagegen"
+  },
+  {
+    "slug": "mercat-33",
+    "prompt": "Use case: photorealistic-natural. Asset: restaurant website hero landscape 3:2. Fictional Mercat 33 food hall in Valencia, restored Spanish market hall with tall iron structure and warm skylight, several distinct open food counters with ceramic tile in oxblood and muted jade green, ovens and glass food displays, welcoming central communal wood tables, fresh produce and simple flowers. Polished architectural editorial photography, credible human scale, clean uncluttered circulation and coherent architecture, diverse food stalls rather than one fine dining restaurant. No people, no readable signs, no words, no logos, no watermarks, center safe crop for mobile, one full bleed photograph.",
+    "tool": "OpenAI built-in imagegen"
+  }
+]

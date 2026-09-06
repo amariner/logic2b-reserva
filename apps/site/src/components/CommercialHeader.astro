@@ -31,7 +31,7 @@ const mobileNavItems = [
   <div class="shell nav-shell">
     <BrandLockup locale={locale} homeHref={`${prefix}/`} />
     <nav class="main-nav" aria-label={ui.navigation}>
-      {navItems.map((item) => <a href={item.href}>{item.label}</a>)}
+      {navItems.map((item) => <a href={item.href} aria-current={Astro.url.pathname.startsWith(item.href) ? "page" : undefined}>{item.label}</a>)}
     </nav>
     <div class="nav-actions">
       <a class="language-link" href={languageHref} hreflang={locale === 'en' ? 'es' : 'en'}>{ui.language}</a>
@@ -52,9 +52,9 @@ const mobileNavItems = [
 </script>
 
 <style>
-  .site-header { position: sticky; z-index: 50; top: 0; right: 0; left: 0; height: 72px; border-bottom: 1px solid var(--line); background: rgb(255 254 252 / 92%); box-shadow: var(--shadow-nav); backdrop-filter: blur(14px); }
+  .site-header { position: sticky; z-index: 50; top: 0; right: 0; left: 0; height: 96px; padding-top: 14px; background: transparent; pointer-events: none; }
   .site-header--home { position: fixed; }
-  .nav-shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 20px; }
+  .nav-shell { display: flex; height: 68px; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid rgb(2 9 58 / 8%); border-radius: 999px; padding: 0 16px 0 20px; background: rgb(255 255 255 / 92%); box-shadow: 0 12px 34px rgb(2 9 58 / 8%); backdrop-filter: blur(16px); pointer-events: auto; }
   .main-nav { display: flex; align-items: center; gap: 2px; }
   .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 11px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
   .main-nav a:hover, .language-link:hover { color: var(--ink); background: rgb(0 0 0 / 4%); }
@@ -71,5 +71,5 @@ const mobileNavItems = [
   .mobile-menu nav a { display: flex; min-height: 46px; align-items: center; border-radius: 8px; padding: 10px 12px; color: var(--slate); font-size: .84rem; font-weight: 550; text-decoration: none; }
   .mobile-menu nav a:hover { color: var(--ink); background: var(--color-sky-tint); }
   @media (max-width: 1120px) { .main-nav { display: none; }.mobile-menu { display: inline-block; } }
-  @media (max-width: 640px) { .nav-contact, .nav-cta { display: none; }.site-header .shell { width: min(100% - 24px, var(--page-max-width)); } }
+  @media (max-width: 640px) { .site-header { height: 82px; padding-top: 8px; }.nav-shell { height: 62px; padding-inline: 14px 10px; }.nav-contact, .nav-cta { display: none; }.site-header .shell { width: min(100% - 20px, var(--page-max-width)); } }
 </style>

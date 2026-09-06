@@ -7,6 +7,9 @@ export interface CommercialPlan {
   readonly slug: CommercialPlanSlug;
   readonly name: CommercialText;
   readonly eyebrow: CommercialText;
+  readonly monthlyPriceCents: number;
+  readonly onboardingPriceCents: number;
+  readonly priceNote: CommercialText;
   readonly promise: CommercialText;
   readonly bestFor: CommercialText;
   readonly capabilities: readonly CommercialText[];
@@ -36,13 +39,16 @@ export const COMMERCIAL_PLANS = [
   {
     slug: 'basico',
     name: text('Básico', 'Basic'),
-    eyebrow: text('Presencia y captación propias', 'Owned presence and acquisition'),
-    promise: text('Una web que explica, convence y abre una solicitud sin entregar la relación a otra marca.', 'A website that explains, persuades and opens an enquiry without handing the relationship to another brand.'),
-    bestFor: text('Restaurantes que necesitan ordenar primero su presencia digital y el primer contacto.', 'Restaurants that first need to organise their digital presence and first contact.'),
+    eyebrow: text('Tu web, tu marca', 'Your website, your brand'),
+    monthlyPriceCents: 4_900,
+    onboardingPriceCents: 29_000,
+    priceNote: text('Por restaurante · permanencia mínima de 6 meses', 'Per restaurant · 6-month minimum term'),
+    promise: text('Presenta tu restaurante y recibe solicitudes desde tu propia web.', 'Present your restaurant and receive enquiries through your own website.'),
+    bestFor: text('Bistrós y restaurantes que confirman sus mesas por teléfono o email.', 'Bistros and restaurants confirming tables by phone or email.'),
     capabilities: [
       text('Web propia adaptada a la identidad del restaurante', 'Owned website adapted to the restaurant identity'),
       text('Carta, horarios, ubicación y propuesta comercial', 'Menu, hours, location and commercial proposition'),
-      text('Recorrido de solicitud que una implantación podría enviar por email', 'Enquiry journey that an implementation could send by email'),
+      text('Formulario de solicitud por email, a configurar en la implantación', 'Email enquiry form, configured during implementation'),
     ],
     boundary: text('No incluye gestor operativo. La demo Brasca no envía ni guarda solicitudes.', 'Does not include an operational workspace. The Brasca demo sends or stores no enquiries.'),
     nextStep: text('Añadir Gestión cuando coordinar reservas y sala ya pesa más que captar.', 'Add Management when coordinating bookings and the floor costs more than acquisition.'),
@@ -51,9 +57,12 @@ export const COMMERCIAL_PLANS = [
   {
     slug: 'gestion',
     name: text('Gestión', 'Management'),
-    eyebrow: text('Operación compartida', 'Shared operation'),
-    promise: text('Reservas, mesas, grupos, clientes e informes dentro del mismo contexto de servicio.', 'Bookings, tables, groups, guests and reports inside the same service context.'),
-    bestFor: text('Equipos que reconstruyen el día entre llamadas, mensajes, hojas y memoria de sala.', 'Teams rebuilding the day from calls, messages, sheets and floor-team memory.'),
+    eyebrow: text('Web + gestión de sala', 'Website + floor management'),
+    monthlyPriceCents: 14_900,
+    onboardingPriceCents: 79_000,
+    priceNote: text('Por restaurante · web incluida · alta aparte', 'Per restaurant · website included · setup separate'),
+    promise: text('Tu web y el servicio diario, organizados en un solo lugar.', 'Your website and daily service, organised in one place.'),
+    bestFor: text('Restaurantes con varios turnos, salas y reservas de grupo.', 'Restaurants with multiple sittings, rooms and group bookings.'),
     capabilities: [
       text('Todo el alcance de Básico', 'Everything in Basic'),
       text('Reservas, espera, plano de sala, grupos y clientes', 'Bookings, waitlist, floor plan, groups and guests'),
@@ -66,13 +75,16 @@ export const COMMERCIAL_PLANS = [
   {
     slug: 'inteligente',
     name: text('Inteligente', 'Intelligent'),
-    eyebrow: text('Decisión y operación avanzada', 'Decision and advanced operations'),
-    promise: text('La base de Gestión ampliada con eventos, depósitos, privatizaciones y apoyo explicable a la decisión.', 'The Management foundation extended with events, deposits, private hire and explainable decision support.'),
-    bestFor: text('Operaciones con más compromisos de capacidad, reglas comerciales y decisiones que coordinar.', 'Operations coordinating more capacity commitments, commercial rules and decisions.'),
+    eyebrow: text('Web + gestión avanzada', 'Website + advanced management'),
+    monthlyPriceCents: 24_900,
+    onboardingPriceCents: 149_000,
+    priceNote: text('Por restaurante · integraciones externas no incluidas', 'Per restaurant · external integrations not included'),
+    promise: text('Coordina eventos, señales y decisiones con la sala siempre a la vista.', 'Coordinate events, deposits and decisions with the floor in view.'),
+    bestFor: text('Gastronómicos y espacios con eventos o privatizaciones.', 'Fine dining restaurants and venues with events or private hire.'),
     capabilities: [
       text('Todo el alcance de Gestión', 'Everything in Management'),
       text('Eventos, depósitos y privatizaciones sobre inventario compartido', 'Events, deposits and private hire on shared inventory'),
-      text('IA determinista y automatizaciones simuladas con factores visibles', 'Deterministic AI and simulated automation with visible factors'),
+      text('Asistencia a la decisión y automatizaciones en demo', 'Decision support and automation in the demo'),
     ],
     boundary: text('La inteligencia y las automatizaciones son demostrativas: no existe modelo externo, cobro ni acción autónoma.', 'Intelligence and automation are demonstrative: there is no external model, charge or autonomous action.'),
     nextStep: text('El alcance real se valida por restaurante, proveedor e integración antes de implantar.', 'Real scope is validated per restaurant, provider and integration before implementation.'),
@@ -120,37 +132,37 @@ export const IMPLEMENTATION_PATH = [
   {
     slug: 'inputs',
     title: text('Datos de partida', 'Starting inputs'),
-    summary: text('Mesas, espacios, turnos, menús, canales, dominio y responsables se inventarían y revisarían antes de configurar.', 'Tables, spaces, shifts, menus, channels, domain and owners would be inventoried and reviewed before configuration.'),
+    summary: text('Revisamos mesas, espacios, turnos, menús, canales, dominio y responsables.', 'We review tables, spaces, shifts, menus, channels, domain and owners.'),
     owner: text('Restaurante + Logic2B', 'Restaurant + Logic2B'),
   },
   {
     slug: 'configuration',
     title: text('Configuración', 'Configuration'),
-    summary: text('La identidad, disponibilidad, reglas, permisos y recorridos se adaptarían al alcance aprobado.', 'Identity, availability, rules, permissions and journeys would be adapted to the approved scope.'),
+    summary: text('Configuramos identidad, disponibilidad, reglas, permisos y recorridos sobre el alcance aprobado.', 'We configure identity, availability, rules, permissions and journeys around the approved scope.'),
     owner: text('Logic2B, con validación del restaurante', 'Logic2B, with restaurant validation'),
   },
   {
     slug: 'validation',
     title: text('Validación', 'Validation'),
-    summary: text('El equipo probaría reservas, grupos, bloqueos, datos, roles y salidas con criterios de aceptación visibles.', 'The team would test bookings, groups, blocks, data, roles and exports against visible acceptance criteria.'),
+    summary: text('El equipo prueba reservas, grupos, bloqueos, datos y roles con criterios de aceptación claros.', 'The team tests bookings, groups, blocks, data and roles against clear acceptance criteria.'),
     owner: text('Equipo operativo del restaurante', 'Restaurant operations team'),
   },
   {
     slug: 'publication',
     title: text('Publicación', 'Publication'),
-    summary: text('Dominio, DNS, contenidos, proveedores y reversión se comprobarían antes de abrir tráfico real.', 'Domain, DNS, content, providers and rollback would be checked before opening real traffic.'),
+    summary: text('Comprobamos dominio, contenidos, proveedores y reversión antes de abrir tráfico real.', 'We check the domain, content, providers and rollback before opening real traffic.'),
     owner: text('Responsables acordados por proyecto', 'Owners agreed per project'),
   },
   {
     slug: 'maintenance',
     title: text('Mantenimiento', 'Maintenance'),
-    summary: text('Canal, horario, prioridades, compatibilidad, copias y continuidad solo existirían según la propuesta aceptada.', 'Channel, hours, priorities, compatibility, backups and continuity would exist only as defined in the accepted proposal.'),
+    summary: text('La propuesta fija canal, horario, prioridades, mantenimiento, copias y continuidad.', 'The proposal sets the support channel, hours, priorities, maintenance, backups and continuity.'),
     owner: text('Alcance de servicio aprobado', 'Approved service scope'),
   },
   {
     slug: 'boundaries',
     title: text('Límites y mejoras', 'Boundaries and improvements'),
-    summary: text('Integraciones, cobros, mensajería, SLA y nuevas funciones no se presuponen: se estiman y aprueban por separado.', 'Integrations, payments, messaging, SLAs and new features are not assumed: they are estimated and approved separately.'),
+    summary: text('Integraciones, cobros, mensajería y nuevas funciones se estiman y aprueban por separado.', 'Integrations, payments, messaging and new features are estimated and approved separately.'),
     owner: text('Propuesta y backlog compartido', 'Proposal and shared backlog'),
   },
 ] as const satisfies readonly ImplementationStep[];

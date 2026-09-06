@@ -94,7 +94,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(portfolio.filter({ has: page.locator('text=Recorrido completo') })).toHaveCount(3);
     expect(await portfolio.locator('.portfolio-card__surface').evaluateAll((items) => items.map((item) => item.getAttribute('href')))).toEqual(themeSlugs.map((slug) => `/temas/${slug}/`));
     await expect(portfolio.locator('[data-commercial-preview-trigger]')).toHaveCount(12);
-    await expect(page.getByRole('link', { name: /Explorar las doce webs/ })).toHaveAttribute('href', '/temas/');
+    await expect(page.locator('#portfolio').getByRole('link', { name: /Explorar las doce webs/ })).toHaveAttribute('href', '/temas/');
 
     const panels = page.locator('.panel-teaser-card');
     await expect(panels).toHaveCount(6);
@@ -136,8 +136,8 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(page.locator('.implementation-path > li')).toHaveCount(6);
     expect(await page.locator('.guide-teaser-card').evaluateAll((items) => items.map((item) => item.getAttribute('href')))).toEqual(['/en/docs/sala/', '/en/docs/gestion/', '/en/docs/direccion/', '/en/docs/propietario/', '/en/docs/tecnica/']);
     await expect(page.locator('#preguntas details')).toHaveCount(8);
-    await expect(page.getByRole('heading', { name: 'The system adapts. The restaurant keeps its identity.' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'From restaurant context to an accepted launch.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Your restaurant has its own personality.' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'We help you get started.' })).toBeVisible();
   });
 
   test('previsualiza webs y paneles sin perder idioma ni enlaces directos', async ({ page, browser }) => {
@@ -149,9 +149,9 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog.getByRole('heading', { name: 'Brasca' })).toBeVisible();
     await expect(dialog.locator('[data-commercial-preview-address]')).toHaveText('brasca.tudominio.com');
     await expect(dialog.locator('.commercial-preview__context li')).toHaveText(['Básico · recorrido profundo', 'Responsive', 'Bistró de barrio']);
-    await expect(dialog.locator('[data-commercial-preview-image]')).toHaveAttribute('src', '/images/heroes/brasca-v2-640.avif');
+    await expect(dialog.locator('[data-commercial-preview-image]')).toHaveAttribute('src', '/images/theme-previews/es/brasca-desktop.webp');
     await expect(dialog.locator('[data-commercial-preview-detail]')).toHaveText('Cercano, táctil y sin ceremonia');
-    await expect(dialog.locator('[data-commercial-preview-evidence]')).toHaveText('Web, reserva y recorrido de gestión');
+    await expect(dialog.locator('[data-commercial-preview-evidence]')).toHaveText('Web y formulario de solicitud local');
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('Marca y contenidos ficticios');
     await expect(dialog.getByRole('link', { name: /Quiero una web así/ })).toHaveAttribute('href', '/empezar/?theme=brasca');
     await expect(dialog.getByRole('link', { name: /Abrir web/ })).toHaveAttribute('href', '/demos/brasca/');
@@ -325,10 +325,10 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
     await expect(page.locator('.portfolio-card img')).toHaveCount(12);
     await expect(page.locator('.closing-visual img')).toHaveCount(2);
-    await expect(page.locator('.product-proof__screen img')).toHaveAttribute('src', '/images/screens/05-solane-inventario-desktop.png');
-    await expect(page.getByRole('heading', { level: 2, name: 'Del contexto del restaurante a un lanzamiento aceptado.' })).toBeVisible();
-    await expect(page.getByText('La implantación se define con Logic2B a partir de tu operativa real.')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Abrir la demo · 2 min' })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(page.locator('.hero-brand-card img').first()).toHaveAttribute('src', '/images/theme-previews/es/brasca-desktop.webp');
+    await expect(page.getByRole('heading', { level: 2, name: 'Te acompañamos en la puesta en marcha.' })).toBeVisible();
+    await expect(page.getByText('Acordamos el calendario, las conexiones y el soporte antes de empezar.')).toBeVisible();
+    await expect(page.locator('.hero-entry--manager')).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
 
     const header = page.getByRole('banner');
     await expect(header.getByRole('link', { name: 'Logic2B — ir a logic2b.com' })).toHaveAttribute('href', 'https://logic2b.com');
@@ -348,7 +348,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
     await expect(page).toHaveTitle('Restaurant and event bookings | Logic Reserva');
     await expect(page.locator('link[rel="alternate"][hreflang="es"]')).toHaveAttribute('href', 'https://reserva.logic2b.com/');
-    await expect(page.getByRole('heading', { level: 2, name: 'From restaurant context to an accepted launch.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'We help you get started.' })).toBeVisible();
   });
 
   test('F21 presenta un shell compacto, tres entradas y ecosistema con madurez explícita', async ({ page }) => {
@@ -360,11 +360,11 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(header.getByRole('link', { name: 'Ver recorrido', exact: true })).toHaveAttribute('href', '/?recorrido=intro');
 
     await expect(page.locator('.hero-entry')).toHaveCount(3);
-    await expect(page.getByRole('link', { name: /Ver web demo/ })).toHaveAttribute('href', '/demos/vedra/');
+    await expect(page.locator('.hero-entry--web')).toHaveAttribute('href', '/demos/vedra/');
     await expect(page.getByRole('link', { name: /Recorrido guiado/ })).toHaveAttribute('href', '/?recorrido=intro');
-    await expect(page.getByRole('link', { name: /Abrir la demo · 2 min/ })).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
-    await expect(page.locator('.hero-brand-card')).toHaveCount(2);
-    await expect(page.locator('.product-proof__screen img')).toBeVisible();
+    await expect(page.locator('.hero-entry--manager')).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(page.locator('.hero-brand-card')).toHaveCount(6);
+    await expect(page.locator('.hero-brand-card img').first()).toBeVisible();
 
     const ecosystem = page.locator('#ecosistema');
     await expect(ecosystem.getByRole('listitem')).toHaveCount(6);
@@ -375,7 +375,7 @@ test.describe('landing comercial Logic Reserva', () => {
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
     await expect(page.getByRole('banner').getByRole('link', { name: 'Websites', exact: true })).toBeVisible();
-    await expect(page.getByRole('heading', { level: 2, name: 'Connect service without turning every tool into another island.' })).toBeVisible();
+    await expect(page.locator('#ecosystem-title')).toBeVisible();
   });
 
   test('F22 explica siete pasos, cinco momentos y conexiones con madurez verificable', async ({ page }) => {
@@ -384,7 +384,7 @@ test.describe('landing comercial Logic Reserva', () => {
 
     const journey = page.locator('#recorrido');
     await expect(journey.locator('[data-journey-step]')).toHaveCount(7);
-    await expect(journey.locator('[data-journey-controls]')).toBeHidden();
+    await expect(journey.locator('[data-journey-controls]')).toBeVisible();
     const journeyGeometry = await journey.locator('[data-journey-step]').evaluateAll((steps) => {
       const viewport = document.querySelector('[data-journey-viewport]')?.getBoundingClientRect();
       return {
@@ -397,7 +397,9 @@ test.describe('landing comercial Logic Reserva', () => {
     });
     expect(journeyGeometry.viewport).not.toBeNull();
     expect(journeyGeometry.steps[0]?.left).toBeGreaterThanOrEqual((journeyGeometry.viewport?.left ?? 0) - 1);
-    expect(journeyGeometry.steps.at(-1)?.right).toBeLessThanOrEqual((journeyGeometry.viewport?.right ?? 0) + 1);
+    expect(journeyGeometry.steps.at(-1)?.right).toBeGreaterThan(journeyGeometry.viewport?.right ?? 0);
+    await journey.locator('[data-journey-next]').click();
+    await expect.poll(() => journey.locator('[data-journey-viewport]').evaluate((el) => el.scrollLeft)).toBeGreaterThan(0);
 
     const tabs = page.locator('[data-platform-tab]');
     const panels = page.locator('[data-platform-panel]');
@@ -423,9 +425,9 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(connections.getByText('Por proyecto', { exact: true })).toHaveCount(3);
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
-    await expect(page.getByRole('heading', { level: 2, name: 'A booking does not end when it is confirmed.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Your whole restaurant service, connected.' })).toBeVisible();
     await expect(page.locator('[data-platform-tab]')).toHaveCount(5);
-    await expect(page.getByRole('heading', { level: 2, name: 'A connection only helps when every system knows what is happening.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 2, name: 'Your tools, part of the same service.' })).toBeVisible();
   });
 
   test('F22 conserva carrusel, teclado, movimiento reducido y contenido sin JavaScript', async ({ page, browser }) => {
@@ -472,7 +474,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(form.getByRole('checkbox')).toHaveCount(0);
     await expect(form).toContainText('El correo no se envía a Logic2B en este paso');
     await form.getByLabel('Correo profesional').fill('brief@example.test');
-    await form.getByRole('button', { name: 'Continuar' }).click();
+    await form.getByRole('button', { name: 'Solicitar información' }).click();
     await expect(page).toHaveURL(/\/empezar\/$/);
     await expect(page.locator('#lead-form input[name="email"]')).toHaveValue('brief@example.test');
     await expect(page.locator('[data-email-selection]')).toContainText('Correo preparado para completar');
@@ -482,7 +484,7 @@ test.describe('landing comercial Logic Reserva', () => {
     const englishForm = page.locator('#brief-lead-form');
     await expect(englishForm).toHaveAttribute('action', '/en/empezar/');
     await englishForm.getByLabel('Work email').fill('hello@example.test');
-    await englishForm.getByRole('button', { name: 'Continue' }).click();
+    await englishForm.getByRole('button', { name: 'Request information' }).click();
     await expect(page).toHaveURL(/\/en\/empezar\/$/);
     await expect(page.locator('#lead-form input[name="email"]')).toHaveValue('hello@example.test');
     await expect(page.locator('[data-email-selection]')).toContainText('Email ready to complete');
@@ -492,7 +494,7 @@ test.describe('landing comercial Logic Reserva', () => {
     const staticPage = await staticContext.newPage();
     await staticPage.goto('/', { waitUntil: 'networkidle' });
     await staticPage.locator('#brief-lead-form').getByLabel('Correo profesional').fill('fallback@example.test');
-    await staticPage.locator('#brief-lead-form').getByRole('button', { name: 'Continuar' }).click();
+    await staticPage.locator('#brief-lead-form').getByRole('button', { name: 'Solicitar información' }).click();
     await expect.poll(() => new URL(staticPage.url()).pathname).toBe('/empezar/');
     expect(new URL(staticPage.url()).search).toBe('');
     await staticContext.close();
@@ -528,8 +530,8 @@ test.describe('landing comercial Logic Reserva', () => {
   test('el texto pequeño conserva contraste AA sobre los acentos de la landing', async ({ page }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const selectors = [
-      '.eyebrow', '.brand-wordmark__product', '.product-proof__bar', '.product-proof figcaption div span',
-      '.demo-note', '.hero-flow i', '.panel-teaser-card figcaption', '.guide-teaser-card > div',
+      '.eyebrow', '.brand-wordmark__product', '.hero-brand-card b', '.hero-brand-card small',
+      '.demo-note', '.hero-entry strong', '.panel-teaser-card figcaption', '.guide-teaser-card > div',
       '.implementation-path p', '.implementation-path article > div', '.closing-copy > p:not(.eyebrow)',
       '.journey-step--service .journey-step__body', '.platform-limit p', '.platform-evidence__bar',
       '.maturity-status[data-tone="demo"]', '.maturity-status[data-tone="planned"]',
@@ -578,7 +580,7 @@ test.describe('landing comercial Logic Reserva', () => {
     for (const { selector, ratio } of ratios) expect(ratio, selector).toBeGreaterThanOrEqual(4.5);
 
     await page.goto('/planes/', { waitUntil: 'networkidle' });
-    expect(await textContrastRatio(page.locator('.plan-card[data-plan="inteligente"] .plan-card__top')), 'Plan Inteligente').toBeGreaterThanOrEqual(4.5);
+    expect(await textContrastRatio(page.locator('.plan-card[data-plan="inteligente"] .pricing-top')), 'Plan Inteligente').toBeGreaterThanOrEqual(4.5);
   });
 
   test('los objetivos táctiles públicos conservan un área mínima de 44 px', async ({ page }) => {
@@ -740,10 +742,14 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.setViewportSize({ width: 1280, height: 720 });
     await page.goto('/', { waitUntil: 'networkidle' });
     const banner = await page.locator('[data-cookie-banner]').boundingBox();
-    const secondaryAction = await page.getByRole('link', { name: 'Hablar de mi operativa' }).boundingBox();
     expect(banner).not.toBeNull();
-    expect(secondaryAction).not.toBeNull();
-    expect(banner!.x).toBeGreaterThanOrEqual(secondaryAction!.x + secondaryAction!.width);
+    const actions = page.locator('.hero-actions a, .hero-lead-form button');
+    await expect(actions).toHaveCount(4);
+    for (const action of await actions.all()) {
+      const box = await action.boundingBox();
+      expect(box).not.toBeNull();
+      expect(banner!.x >= box!.x + box!.width || box!.x >= banner!.x + banner!.width || banner!.y >= box!.y + box!.height || box!.y >= banner!.y + banner!.height).toBe(true);
+    }
   });
 
   test('el formulario falla en cerrado y no finge un envío', async ({ page }) => {
@@ -826,25 +832,27 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
     const homeOffers = page.locator('#planes .offer-card');
     await expect(homeOffers).toHaveCount(3);
     await expect(homeOffers.locator('h3')).toHaveText(['Básico', 'Gestión', 'Inteligente']);
-    await expect(homeOffers.locator('.offer-contact')).toHaveCount(3);
-    await expect(homeOffers.locator('.offer-demo')).toHaveCount(3);
-    await expect(homeOffers.nth(0).locator('.offer-contact')).toHaveAttribute('href', '/empezar/?plan=basico');
-    await expect(homeOffers.nth(0).locator('.offer-demo')).toHaveAttribute('href', '/demos/brasca/');
-    await expect(homeOffers.nth(1).locator('.offer-demo')).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
-    await expect(homeOffers.nth(2).locator('.offer-demo')).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
+    await expect(homeOffers.locator('.pricing-cta')).toHaveCount(3);
+    await expect(homeOffers.locator('.pricing-links a:last-child')).toHaveCount(3);
+    await expect(homeOffers.nth(0).locator('.pricing-cta')).toHaveAttribute('href', '/empezar/?plan=basico');
+    await expect(homeOffers.nth(0).locator('.pricing-links a:last-child')).toHaveAttribute('href', '/demos/brasca/');
+    await expect(homeOffers.nth(1).locator('.pricing-links a:last-child')).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
+    await expect(homeOffers.nth(2).locator('.pricing-links a:last-child')).toHaveAttribute('href', '/demos/solane/gestion/?vista=plano');
 
     await page.goto('/planes/', { waitUntil: 'networkidle' });
     const plans = page.locator('.plan-card');
     await expect(plans).toHaveCount(3);
-    await expect(plans.locator('h2')).toHaveText(['Básico', 'Gestión', 'Inteligente']);
+    await expect(plans.locator('h3')).toHaveText(['Básico', 'Gestión', 'Inteligente']);
     await expect(page.locator('.ladder-row:not(.ladder-row--head)')).toHaveCount(5);
     await expect(page.locator('.service-grid article')).toHaveCount(3);
+    await page.locator('.scope-details > summary').click();
     await expect(page.getByRole('heading', { name: 'Servicios de lanzamiento' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Mantenimiento y soporte' })).toBeVisible();
     await expect(page.getByRole('heading', { name: 'Desarrollo y mejoras' })).toBeVisible();
-    await expect(page.locator('body')).not.toContainText('€');
+    await expect(page.locator('.pricing-price')).toHaveText([/49\s*€/, /149\s*€/, /249\s*€/]);
+    await expect(page.locator('.pricing-terms')).toContainText('Precios sin IVA');
     await expect(page.getByRole('link', { name: /Leer guías de implantación/ })).toHaveAttribute('href', '/docs/');
-    const basicContact = page.locator('.plan-card[data-plan="basico"] .plan-contact');
+    const basicContact = page.locator('.plan-card[data-plan="basico"] .pricing-cta');
     await expect(basicContact).toHaveAttribute('href', '/empezar/?plan=basico');
     await basicContact.click();
     await expect(page).toHaveURL(/\/empezar\/\?plan=basico$/);
@@ -853,9 +861,9 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
     await expect(page.locator('[data-plan-selection-name]')).toHaveText('Básico');
 
     await page.goto('/en/planes/', { waitUntil: 'networkidle' });
-    await expect(page.locator('.plan-card h2')).toHaveText(['Basic', 'Management', 'Intelligent']);
+    await expect(page.locator('.plan-card h3')).toHaveText(['Basic', 'Management', 'Intelligent']);
     await expect(page.getByRole('heading', { name: 'Launching, caring and improving are different jobs.' })).toBeVisible();
-    const intelligentContact = page.locator('.plan-card[data-plan="inteligente"] .plan-contact');
+    const intelligentContact = page.locator('.plan-card[data-plan="inteligente"] .pricing-cta');
     await expect(intelligentContact).toHaveAttribute('href', '/en/empezar/?plan=inteligente');
     await intelligentContact.click();
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('inteligente');
@@ -868,6 +876,7 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
     await expect(page.locator('.guide-card')).toHaveCount(5);
     await expect(page.locator('.guide-card h2')).toHaveText(['Guía de Sala', 'Guía de Gestión', 'Guía de Dirección', 'Guía del Propietario', 'Guía Técnica']);
     await expect(page.locator('.contract-row:not(.contract-row--head)')).toHaveCount(8);
+    await page.locator('.scope-details > summary').click();
     for (const topic of ['Migración', 'Datos', 'Dominio / DNS', 'Cobros', 'RGPD', 'Salida', 'Soporte', 'Roles']) {
       await expect(page.getByRole('cell', { name: topic, exact: true })).toBeVisible();
     }
@@ -877,7 +886,7 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
 
     await page.goto('/en/docs/', { waitUntil: 'networkidle' });
     await expect(page.locator('.guide-card')).toHaveCount(5);
-    await expect(page.getByRole('heading', { level: 1, name: 'Five roles. One implementation everyone can understand.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'A guide for everyone on the team.' })).toBeVisible();
   });
 
   test('cada guía tiene contenido propio, datos estructurados y salida hacia producto o contacto', async ({ page }) => {
@@ -904,7 +913,7 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
 
   test('planes, demos, paneles, guías y contacto forman un recorrido sin callejones', async ({ page }) => {
     await page.goto('/planes/', { waitUntil: 'networkidle' });
-    await expect(page.getByRole('link', { name: /Abrir la demo · Brasca/ })).toBeVisible();
+    await expect(page.locator('.plan-card[data-plan="basico"] .pricing-links a')).toBeVisible();
     await expect(page.getByRole('link', { name: /Explorar vistas de producto/ })).toHaveAttribute('href', '/paneles/');
     await expect(page.getByRole('link', { name: /Leer guías de implantación/ })).toHaveAttribute('href', '/docs/');
     await expect(page.getByRole('link', { name: /Hablar de mi alcance/ })).toHaveAttribute('href', '/#contacto');
@@ -948,7 +957,7 @@ test.describe('F24 · catálogo sectorial de paneles', () => {
     const staticPage = await staticContext.newPage();
     await staticPage.goto('/en/paneles/', { waitUntil: 'networkidle' });
     await expect(staticPage.locator('[data-panel-card]:visible')).toHaveCount(6);
-    await expect(staticPage.getByRole('heading', { level: 1, name: 'Six views. One service to understand.' })).toBeVisible();
+    await expect(staticPage.getByRole('heading', { level: 1, name: 'Your whole service, in order.' })).toBeVisible();
     await expect(staticPage.locator('[data-panel-card] details')).toHaveCount(6);
     await staticContext.close();
   });
@@ -965,11 +974,11 @@ test.describe('F24 · catálogo sectorial de paneles', () => {
     await expect(cards.locator('.panel-limit')).toHaveCount(6);
     await expect(cards.locator('form')).toHaveCount(0);
     await expect(cards.getByRole('link', { name: 'Ver ficha del panel' })).toHaveCount(6);
-    await expect(cards.getByRole('link', { name: 'Abrir demo reproducible' })).toHaveCount(6);
+    await expect(cards.getByRole('link', { name: 'Probar el gestor' })).toHaveCount(6);
 
     expect(await cards.getByRole('link', { name: 'Ver ficha del panel' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')))).toEqual(panelSlugs.map((slug) => `/paneles/${slug}/`));
 
-    const links = await cards.getByRole('link', { name: 'Abrir demo reproducible' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
+    const links = await cards.getByRole('link', { name: 'Probar el gestor' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
     expect(links).toEqual(expectedLinks);
     const imageSources = await cards.locator('.panel-shot img').evaluateAll((images) => images.map((image) => image.getAttribute('src')));
     expect(imageSources.every((source) => /^\/images\/screens\/(04-vedra-grupo|05-solane-inventario|07-solane-privatizacion|08-solane-riesgo)-desktop\.png$/.test(source ?? ''))).toBe(true);
@@ -1046,7 +1055,7 @@ test.describe('F23 · doce direcciones web para restauración', () => {
     const staticPage = await staticContext.newPage();
     await staticPage.goto('/en/temas/', { waitUntil: 'networkidle' });
     await expect(staticPage.locator('[data-theme-card]:visible')).toHaveCount(12);
-    await expect(staticPage.getByRole('heading', { level: 1, name: 'Twelve restaurant websites. One commercial system.' })).toBeVisible();
+    await expect(staticPage.getByRole('heading', { level: 1, name: 'A website worthy of your restaurant.' })).toBeVisible();
     await staticContext.close();
   });
 
@@ -1077,7 +1086,7 @@ test.describe('F23 · doce direcciones web para restauración', () => {
         await page.goto(path, { waitUntil: 'networkidle' });
         await expect(page.locator('h1')).toHaveCount(1);
         await expect(page.locator('.browser-bar code')).toHaveText(`${slug}.${prefix ? 'yourdomain.com' : 'tudominio.com'}`);
-        await expect(page.locator('.browser-view img')).toHaveAttribute('src', /\/images\/screens\/.+-desktop\.png$/);
+        await expect(page.locator('.browser-view img')).toHaveAttribute('src', /\/images\/theme-previews\/(es|en)\/.+-desktop\.webp$/);
         await expect(page.locator('.theme-detail__intro li')).toHaveCount(3);
         await expect(page.locator('.theme-detail__decision > ul li')).toHaveCount(4);
         await expect(page.locator('.theme-detail__actions a')).toHaveCount(2);

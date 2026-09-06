@@ -1,3 +1,22 @@
+## 2026-09-06 · Auditoría de los doce temas cerrada en local ✅
+
+- Revisadas las doce webs y sus fichas ES/EN: composición, tipografía, contraste, navegación, anclajes, cartas, horarios y solicitud. Menú móvil nativo compartido, utilizable con teclado y sin JavaScript; corregidas las superposiciones de precios de Vedra/Solane y la proporción de sus portadas móviles.
+- Nueve fotografías originales de OpenAI, coherentes con cada formato, con AVIF responsive y descripciones bilingües. Se conservan las tres imágenes aprobadas; `pnpm images` reproduce los 45 AVIF sin diferencias de hash. Originales y prompts versionados.
+- Catálogo, home y fichas usan portadas reales y alcance comercial compartido. 48 capturas ES/EN de escritorio/móvil idénticas en dos pases. Las 42 capturas contractuales se regeneran y pasan 42/42 comparaciones visuales; 40 hashes idénticos y dos diferencias de antialiasing documentadas, sin retocar los PNG. Chromium de captura fijado y nuevo comando `fotos:comparar`.
+- `pnpm check`: **28/28**, con **160 tests**. **92 escenarios E2E verificados por bloques** contra Worker, incluidos los 14 nuevos del catálogo en seis anchos (320/375/430/768/1024/1366). Tras los cierres de ProxyWorker, la validación usa el mismo bundle en Miniflare/workerd directo con leads deshabilitados. No se contabilizan las ejecuciones interrumpidas como pases completos.
+- Auditoría del build: **102 páginas, 3.774 referencias internas y cero ausencias**. Evidencias, limitaciones del navegador y protocolo de comparación en `docs/AUDITORIA-TEMAS.md` y `docs/SALES-ASSETS.md`.
+- Cambios previos del worktree preservados. Sin despliegue, lead real ni cambios en reservas, cobros o servicios externos.
+
+## 2026-09-05 · Revisión de diseño y tarifas solicitada por el propietario
+
+- Comparación del Camp publicado: conservados los 14 bloques comerciales, los siete pasos, las cinco pestañas, los doce temas, los seis paneles y las cinco guías.
+- Home: tipografía editorial, mosaico con fotografía de restaurantes, espacios más consistentes, packs visuales y reducción de detalle repetido. Se han sustituido capas de CSS acumuladas por una definición coherente de la home.
+- Páginas interiores: lenguaje más directo, títulos de escala común, filtros y tarjetas unificados, solicitud más corta y responsabilidades desplegables. Los estilos están acotados al layout comercial.
+- Componente compartido de precios y tarifas centralizadas: 49/149/249 €/mes y 290/790/1.490 € de alta, sin IVA. Corregida la puesta en marcha que antes se describía como incluida pese a cobrarse aparte. Fuentes: CoverManager, resmio y Zenchef, con contexto de país/condiciones en COMPETENCIA.md.
+- Fotografías existentes de Brasca/Vedra/Solane reutilizadas; doce capturas optimizadas a WebP. Originales y demos preservados.
+- Validación final: `pnpm check` 28/28; auditoría de 102 páginas y 3.598 referencias sin errores. 18 E2E pasan contra Worker (estructura, previews, navegación de 68 páginas, SEO, teclado, contraste y objetivos táctiles); la regresión integral se interrumpe por dos cierres de Wrangler/ProxyWorker con `Network connection lost`, sin atribuirlos al diseño. 12/12 pruebas UI pasan sobre los mismos archivos compilados con servidor estático: las 68 páginas a 320/375/430/1366 px sin overflow ni consola, precios, guías, filtros y fichas ES/EN. No se declara E2E integral 78/78 ni regeneración de las 42 capturas contractuales.
+- Sin publicación, sin leads y sin cambios en persistencia, cobros o servicios externos. El worktree ya contenía cambios previos y se han conservado.
+
 # PROGRESS — Logic Reserva
 
 Una entrada por sesión, la más reciente arriba. Formato: fecha · fase · qué se hizo · estado del check.

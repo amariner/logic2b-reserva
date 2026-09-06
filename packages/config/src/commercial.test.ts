@@ -10,13 +10,15 @@ describe('commercial offer', () => {
   it('maps every plan to its agreed demonstration and explicit boundary', () => {
     expect(COMMERCIAL_PLANS.map(({ demo }) => demo.name)).toEqual(['Brasca', 'Vedra', 'Solane']);
     expect(COMMERCIAL_PLANS.every(({ capabilities, boundary }) => capabilities.length === 3 && boundary.es.length > 40)).toBe(true);
+    expect(COMMERCIAL_PLANS.map(({ monthlyPriceCents }) => monthlyPriceCents)).toEqual([4_900, 14_900, 24_900]);
+    expect(COMMERCIAL_PLANS.map(({ onboardingPriceCents }) => onboardingPriceCents)).toEqual([29_000, 79_000, 149_000]);
     expect(commercialDemoUrl(COMMERCIAL_PLANS[1])).toBe('/demos/vedra/gestion/?vista=servicio');
     expect(commercialDemoUrl(COMMERCIAL_PLANS[2], 'en')).toBe('/en/demos/solane/gestion/?vista=plano');
     expect(commercialContactUrl(COMMERCIAL_PLANS[0])).toBe('/empezar/?plan=basico');
     expect(commercialContactUrl(COMMERCIAL_PLANS[2], 'en')).toBe('/en/empezar/?plan=inteligente');
   });
 
-  it('describes launch, care and evolution without publishing prices', () => {
+  it('describes launch, care and evolution alongside transparent plan prices', () => {
     expect(IMPLEMENTATION_SERVICES.map(({ slug }) => slug)).toEqual(['launch', 'care', 'evolution']);
     const text = JSON.stringify(IMPLEMENTATION_SERVICES);
     expect(text).not.toMatch(/€|EUR|\beuros?\b/i);

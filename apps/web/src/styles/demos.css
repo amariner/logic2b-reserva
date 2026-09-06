@@ -81,7 +81,7 @@
 .brand-button.ghost { color: var(--brand-strong); background: var(--brand-soft); border-color: transparent; }
 .brand-hero__visual { position: relative; }
 .brand-hero__frame { overflow: hidden; border: 1px solid var(--brand-line); border-radius: 12px; background: var(--brand-card); box-shadow: 0 4px 12px rgb(0 0 0 / 10%); }
-.brand-hero__frame img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.brand-hero__frame img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; }
 .brand-hero__mark { position: absolute; right: -18px; bottom: -18px; display: grid; width: 78px; height: 78px; place-items: center; border: 2px solid var(--brand); border-radius: 50%; color: var(--brand-strong); background: var(--brand-card); font-family: var(--brand-display); font-size: 1.45rem; font-weight: 700; animation: brand-mark 3.2s ease-in-out infinite; }
 
 @keyframes brand-mark { 0%, 100% { transform: rotate(-4deg) translateY(0); } 50% { transform: rotate(3deg) translateY(-7px); } }
@@ -101,3 +101,7 @@
 @media (prefers-reduced-motion: reduce) {
   .brand-hero__mark { animation: none; }
 }
+
+.demo-body main > section[id] { scroll-margin-top: 90px; }
+.demo-body main h2, .demo-body main h3 { overflow-wrap: anywhere; }
+.brand-hero__frame { display: block; }

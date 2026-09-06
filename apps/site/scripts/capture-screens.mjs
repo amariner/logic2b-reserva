@@ -325,17 +325,19 @@ try {
     await waitForOrigin();
   }
 
-  const executablePath = [
+  const fallbackExecutable = [
     process.env.CHROMIUM_PATH,
     "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
     "/Applications/Chromium.app/Contents/MacOS/Chromium",
   ]
     .filter(Boolean)
     .find((candidate) => existsSync(candidate));
+  const executablePath = process.env.CHROMIUM_PATH ?? (existsSync(chromium.executablePath()) ? undefined : fallbackExecutable);
   browser = await chromium.launch({
     ...(executablePath ? { executablePath } : {}),
-    args: ["--disable-gpu"],
+    args: ["--disable-gpu", "--disable-partial-raster", "--disable-skia-runtime-opts"],
   });
+  console.log(`[fotos] Chromium ${browser.version()} · ${executablePath ?? 'Playwright headless shell'}`);
 
   const jobs = scenes.flatMap((scene) =>
     viewports.map((viewport) => ({ scene, viewport })),
@@ -501,7 +503,9 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         captureOffset,
       );
     }
-    await page.waitForTimeout(50);
+    // The final crop can expose another lazy image or responsive source.
+    await settle(page);
+    await page.evaluate(() => new Promise((resolveFrame) => requestAnimationFrame(() => requestAnimationFrame(resolveFrame))));
 
     const checks = await page.evaluate(() => {
       const notice = document.querySelector(".demo-notice, .theme-demo-notice");
@@ -544,7 +548,7 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
         captureImagesReady: [...document.images]
           .filter((image) => {
             const box = image.getBoundingClientRect();
-            return box.bottom > 0 && box.top < innerHeight;
+            return box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth;
           })
           .every((image) => image.complete && image.naturalWidth > 0),
       };
@@ -587,8 +591,16 @@ async function captureScene(activeBrowser, scene, viewport, targetDir) {
 
     const file = `${scene.order}-${scene.id}-${viewport.id}.png`;
     const path = join(targetDir, file);
-    await page.screenshot({ path, fullPage: false, animations: "disabled" });
-    const buffer = await readFile(path);
+    let buffer = await page.screenshot({ fullPage: false, animations: "disabled" });
+    let stable = false;
+    for (let attempt = 0; attempt < 4; attempt += 1) {
+      const next = await page.screenshot({ fullPage: false, animations: "disabled" });
+      stable = buffer.equals(next);
+      buffer = next;
+      if (stable) break;
+    }
+    assert.ok(stable, `${file}: el rasterizado no se estabiliza`);
+    await writeFile(path, buffer);
     const dimensions = pngDimensions(buffer);
     const fileStat = await stat(path);
     assert.deepEqual(dimensions, {
@@ -656,15 +668,12 @@ async function settle(page) {
       [...document.images]
         .filter((image) => {
           const box = image.getBoundingClientRect();
-          return image.loading !== "lazy" || (box.bottom > 0 && box.top < innerHeight);
+          return image.loading !== "lazy" || (box.bottom > 0 && box.top < innerHeight && box.right > 0 && box.left < innerWidth);
         })
         .map(async (image) => {
-          if (!image.complete) {
-            await new Promise((resolveImage) => {
-              image.addEventListener("load", resolveImage, { once: true });
-              image.addEventListener("error", resolveImage, { once: true });
-            });
-          }
+          // Horizontal carousels can keep off-screen images lazy indefinitely.
+          // Request only the selected in-frame images before awaiting decoding.
+          image.loading = "eager";
           await image.decode().catch(() => undefined);
         }),
     );

@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '@logic-reserva/config';
 import BrandHero from './BrandHero.astro';
+import RestaurantMobileMenu from './RestaurantMobileMenu.astro';
 import { BRASCA_PAGE_COPY, DEMO_COPY, DEMO_DATE, DEMO_FIXTURES, localized } from '../data';
 
 interface Props { locale?: Locale }
@@ -22,7 +23,7 @@ const ui = locale === 'en' ? { nav: 'Brasca navigation', invalid: 'Check the req
     <nav aria-label={ui.nav}>
       {shared.nav.map((item) => <a href={item.href}>{localized(item.label, locale)}</a>)}
     </nav>
-    <div class="brasca-actions"><a class="brasca-language" href={languageHref}>{localized(copy.footer.language, locale)}</a><a class="brand-button" href="#reserva">{localized(shared.hero.primaryAction, locale)}</a></div>
+    <div class="brasca-actions"><a class="brasca-language" href={languageHref}>{localized(copy.footer.language, locale)}</a><a class="brand-button" href="#reserva">{localized(shared.hero.primaryAction, locale)}</a><RestaurantMobileMenu locale={locale} links={[...shared.nav.map((item) => ({ href: item.href, label: localized(item.label, locale) })), { href: languageHref, label: locale === 'en' ? 'Ver en español' : 'View in English' }]} /></div>
   </div>
 </header>
 
@@ -101,6 +102,7 @@ const ui = locale === 'en' ? { nav: 'Brasca navigation', invalid: 'Check the req
 </script>
 
 <style>
+
   .brasca-header { position: sticky; z-index: 30; top: 0; height: 66px; border-bottom: 1px solid var(--brand-line); background: rgb(251 244 235 / 94%); backdrop-filter: blur(12px); }
   .brasca-header .shell, .brasca-footer .shell { display: flex; height: 100%; align-items: center; justify-content: space-between; gap: 24px; }
   .brasca-lockup { display: inline-flex; min-height: 44px; align-items: center; gap: 10px; color: var(--brand-ink); text-decoration: none; }.brasca-lockup span { display: grid; width: 34px; height: 34px; place-items: center; border: 2px solid var(--brand); border-radius: 50%; background: var(--brand-card); font-family: var(--brand-display); }
@@ -113,4 +115,6 @@ const ui = locale === 'en' ? { nav: 'Brasca navigation', invalid: 'Check the req
   .brasca-footer { padding-block: 50px; border-top: 1px solid var(--brand-line); background: var(--brand-card); }.brasca-footer .shell { align-items: flex-start; }.brasca-footer p { color: var(--brand-muted); font-size: .82rem; }.brasca-footer nav { display: grid; gap: 10px; text-align: right; }.brasca-footer nav a { display: inline-flex; min-height: 44px; align-items: center; justify-content: flex-end; color: var(--brand-muted); font-size: .82rem; text-decoration: none; }.brasca-footer nav a:hover { color: var(--brand); }
   @media (max-width: 900px) { .brasca-header nav { display: none; }.story-grid, .visit-grid, .request-grid { grid-template-columns: 1fr; }.story-illustration { min-height: 480px; }.visit-details { grid-template-columns: 1fr 1fr; }.visit-details section + section { border-top: 0; border-left: 1px solid var(--brand-line); } }
   @media (max-width: 620px) { .brasca-language { display: none; }.brasca-header .shell { width: min(100% - 24px, var(--page-max-width)); }.menu-group { grid-template-columns: 1fr; gap: 18px; }.menu-item { gap: 16px; }.story-illustration { min-height: 390px; }.story-sun { top: 40px; left: 35px; width: 80px; height: 80px; }.story-flame { top: 55px; right: 35px; width: 95px; height: 190px; }.visit-details { grid-template-columns: 1fr; }.visit-details section + section { border-top: 1px solid var(--brand-line); border-left: 0; }.brasca-map { min-height: 390px; }.request-row { grid-template-columns: 1fr; }.brasca-footer .shell { flex-direction: column; }.brasca-footer nav { text-align: left; } }
+  @media (max-width: 1080px) { .brasca-header nav, .brasca-language, .brasca-header .brand-button.ghost { display: none; } }
+  @media (max-width: 380px) { .brasca-lockup > span { display: none; } .brasca-header .shell { gap: 8px; } .brasca-header .brand-button { font-size: .75rem; padding-inline: 10px; } }
 </style>

@@ -71,7 +71,7 @@ img { max-width: 100%; }
 .shell { width: min(var(--page-max-width), calc(100% - 48px)); margin-inline: auto; }
 .eyebrow { margin: 0 0 14px; color: var(--slate); font-size: .75rem; letter-spacing: .09em; text-transform: uppercase; }
 .display, .heading { margin: 0; font-family: var(--sans); font-weight: 600; }
-.display { font-size: clamp(3.3rem, 7.5vw, 6rem); line-height: 1.04; letter-spacing: -.048em; }
+.display { font-size: clamp(3.15rem, 6vw, 5.4rem); line-height: 1; letter-spacing: -.052em; }
 .heading { font-size: clamp(2.5rem, 5.6vw, 3.375rem); line-height: 1.04; letter-spacing: -.035em; }
 .heading em, .display em { font-weight: 400; }
 .muted { color: var(--slate); }
@@ -105,7 +105,7 @@ img { max-width: 100%; }
 
 @media (max-width: 640px) {
   .shell { width: min(100% - 28px, var(--page-max-width)); }
-  .display { font-size: clamp(3rem, 15vw, 4.3rem); }
+  .display { font-size: clamp(2.85rem, 13vw, 4.15rem); }
 }
 
 @media (prefers-reduced-motion: reduce) {

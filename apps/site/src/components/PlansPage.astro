@@ -1,6 +1,7 @@
 ---
 import { PRODUCT, type Locale } from '@logic-reserva/config';
-import { COMMERCIAL_PLANS, IMPLEMENTATION_SERVICES, commercialContactUrl, commercialDemoUrl, localizedCommercialText, type CommercialText } from '@logic-reserva/config/commercial';
+import { COMMERCIAL_PLANS, IMPLEMENTATION_SERVICES, localizedCommercialText, type CommercialText } from '@logic-reserva/config/commercial';
+import PricingCards from './PricingCards.astro';
 import Base from '../layouts/Base.astro';
 import CommercialChrome from './CommercialChrome.astro';
 
@@ -12,36 +13,36 @@ const local = (value: CommercialText) => localizedCommercialText(value, locale);
 const ui = locale === 'en' ? {
   metaTitle: 'Restaurant booking plans | Logic Reserva',
   description: 'Compare three Logic Reserva plans, their working demos, implementation responsibilities, maintenance and growth path for restaurant teams.',
-  eyebrow: 'Three commercial starting points', title: 'Start with the bottleneck. Grow without rebuilding everything.',
-  intro: 'Basic, Management and Intelligent remain the three agreed offers. The functional detail below explains what changes between them; scope, timeline and price are defined in a proposal.',
-  back: 'Back to Logic Reserva', bestFor: 'A fit when', includes: 'Demonstrated scope', boundary: 'Current boundary', growth: 'Growth path', contactPlan: 'Discuss this plan', demo: 'Open the demo',
-  ladderEyebrow: 'Functional ladder', ladderTitle: 'Three offers, five capabilities to discuss.', ladderIntro: 'This is not a second price list. It separates the operational capabilities that make each commercial step understandable.',
+  eyebrow: 'Three commercial starting points', title: 'A plan for each stage of your restaurant.',
+  intro: 'Three transparent starting points for one restaurant. Monthly pricing and launch are visible; providers, migration and custom integrations are quoted separately.',
+  back: 'Back to Logic Reserva', bestFor: 'A fit when', includes: 'Included from the start', boundary: 'Current boundary', growth: 'Growth path', contactPlan: 'Choose this plan', demo: 'Open the demo', perMonth: '/month', onboarding: 'Launch',
+  ladderEyebrow: 'Functional ladder', ladderTitle: 'Compare what you need.', ladderIntro: 'Each plan adds to the previous one. Start with your website and expand later.',
   stage: 'Capability', starts: 'Starts in', evidence: 'Evidence',
-  implementationEyebrow: 'Implementation contract', implementationTitle: 'Launching, caring and improving are different jobs.',
-  implementationIntro: 'They are made visible so neither the restaurant nor Logic2B has to infer responsibilities after approval.',
+  implementationEyebrow: 'Getting started', implementationTitle: 'Launching, caring and improving are different jobs.',
+  implementationIntro: 'We review setup, support and any separately quoted work with you.',
   scope: 'Scope boundary', responsibilityEyebrow: 'Shared responsibility', responsibilityTitle: 'What each party needs to bring.',
   restaurant: 'Restaurant', logic: 'Logic2B', proposal: 'Defined per proposal',
   restaurantItems: ['Business rules, content and authorised users', 'Ownership or authorised access to domain, DNS and provider accounts', 'Validation of data, privacy basis, payment rules and acceptance'],
   logicItems: ['Discovery, configuration and agreed implementation', 'Technical documentation, testing and handover', 'Maintenance and support only within the approved scope'],
   proposalItems: ['Migration volume and historical data', 'Payment, POS, messaging or other integrations', 'Timeline, service level, maintenance, price and exit support'],
-  nextEyebrow: 'Inspect before deciding', nextTitle: 'The plan is the start of the conversation, not a substitute for evidence.',
+  nextEyebrow: 'Inspect before deciding', nextTitle: 'Find your starting point.',
   websites: 'Compare restaurant websites', panels: 'Explore product views', guides: 'Read implementation guides', contact: 'Discuss my scope',
 } : {
   metaTitle: 'Planes para restaurantes | Logic Reserva',
   description: 'Compara los tres planes de Logic Reserva, sus demos, responsabilidades de implantación, mantenimiento y camino de crecimiento para restauración.',
-  eyebrow: 'Tres puntos de partida comerciales', title: 'Empieza por el cuello de botella. Crece sin rehacerlo todo.',
-  intro: 'Básico, Gestión e Inteligente siguen siendo las tres ofertas acordadas. El detalle funcional explica qué cambia entre ellas; alcance, calendario y precio se concretan en propuesta.',
-  back: 'Volver a Logic Reserva', bestFor: 'Encaja cuando', includes: 'Alcance demostrado', boundary: 'Límite actual', growth: 'Camino de crecimiento', contactPlan: 'Hablar de este plan', demo: 'Abrir la demo',
-  ladderEyebrow: 'Escalera funcional', ladderTitle: 'Tres ofertas, cinco capacidades que conversar.', ladderIntro: 'No es una segunda lista de precios. Separa las capacidades operativas que hacen comprensible cada paso comercial.',
+  eyebrow: 'Tres puntos de partida comerciales', title: 'Un plan para cada momento de tu restaurante.',
+  intro: 'Tres puntos de partida transparentes para un restaurante. La cuota y la puesta en marcha son visibles; proveedores, migración e integraciones a medida se valoran aparte.',
+  back: 'Volver a Logic Reserva', bestFor: 'Encaja cuando', includes: 'Incluido desde el inicio', boundary: 'Límite actual', growth: 'Camino de crecimiento', contactPlan: 'Elegir este plan', demo: 'Abrir la demo', perMonth: '/mes', onboarding: 'Puesta en marcha',
+  ladderEyebrow: 'Escalera funcional', ladderTitle: 'Compara lo que necesitas.', ladderIntro: 'Cada plan añade funciones al anterior. Puedes empezar por la web y ampliar después.',
   stage: 'Capacidad', starts: 'Empieza en', evidence: 'Evidencia',
-  implementationEyebrow: 'Contrato de implantación', implementationTitle: 'Lanzar, mantener y mejorar son trabajos distintos.',
-  implementationIntro: 'Los hacemos visibles para que ni el restaurante ni Logic2B tengan que deducir responsabilidades después de aprobar.',
+  implementationEyebrow: 'Puesta en marcha', implementationTitle: 'Lanzar, mantener y mejorar son trabajos distintos.',
+  implementationIntro: 'Revisamos contigo qué incluye el alta, cómo te ayudamos y qué se presupuesta aparte.',
   scope: 'Límite de alcance', responsibilityEyebrow: 'Responsabilidad compartida', responsibilityTitle: 'Qué necesita aportar cada parte.',
   restaurant: 'Restaurante', logic: 'Logic2B', proposal: 'Se define por propuesta',
   restaurantItems: ['Reglas de negocio, contenidos y usuarios autorizados', 'Titularidad o acceso autorizado a dominio, DNS y cuentas de proveedores', 'Validación de datos, base de privacidad, reglas de cobro y aceptación'],
   logicItems: ['Descubrimiento, configuración e implantación acordada', 'Documentación técnica, pruebas y entrega', 'Mantenimiento y soporte solo dentro del alcance aprobado'],
   proposalItems: ['Volumen de migración y datos históricos', 'Cobros, TPV, mensajería u otras integraciones', 'Calendario, nivel de servicio, mantenimiento, precio y apoyo de salida'],
-  nextEyebrow: 'Revisar antes de decidir', nextTitle: 'El plan abre la conversación; la evidencia evita comprar a ciegas.',
+  nextEyebrow: 'Revisar antes de decidir', nextTitle: 'Encuentra tu punto de partida.',
   websites: 'Comparar webs de restaurante', panels: 'Explorar vistas de producto', guides: 'Leer guías de implantación', contact: 'Hablar de mi alcance',
 };
 const ladder = locale === 'en' ? [
@@ -77,22 +78,7 @@ const structuredData = [{
         <div class="plans-hero__grid"><div><p class="eyebrow">{ui.eyebrow}</p><h1 id="plans-title">{ui.title}</h1></div><p>{ui.intro}</p></div>
       </section>
 
-      <section class="shell plan-grid" aria-label={ui.eyebrow}>
-        {COMMERCIAL_PLANS.map((plan, index) => (
-          <article class="plan-card" data-plan={plan.slug}>
-            <div class="plan-card__top"><span>0{index + 1}</span><span>{local(plan.eyebrow)}</span></div>
-            <h2>{local(plan.name)}</h2><p class="plan-promise">{local(plan.promise)}</p>
-            <dl><div><dt>{ui.bestFor}</dt><dd>{local(plan.bestFor)}</dd></div></dl>
-            <div class="capabilities"><p>{ui.includes}</p><ul>{plan.capabilities.map((capability) => <li>{local(capability)}</li>)}</ul></div>
-            <aside><strong>{ui.boundary}</strong><p>{local(plan.boundary)}</p></aside>
-            <div class="growth"><strong>{ui.growth}</strong><p>{local(plan.nextStep)}</p></div>
-            <div class="plan-actions">
-              <a class="plan-contact" href={commercialContactUrl(plan, locale)}><span>{ui.contactPlan} · {local(plan.name)}</span><span aria-hidden="true">→</span></a>
-              <a class="plan-demo" href={commercialDemoUrl(plan, locale)}><span>{ui.demo} · {plan.demo.name}</span><span aria-hidden="true">↗</span></a>
-            </div>
-          </article>
-        ))}
-      </section>
+      <section class="shell" aria-label={ui.eyebrow}><PricingCards locale={locale} /></section>
 
       <section class="shell ladder" aria-labelledby="ladder-title">
         <div class="section-heading"><div><p class="eyebrow">{ui.ladderEyebrow}</p><h2 id="ladder-title">{ui.ladderTitle}</h2></div><p>{ui.ladderIntro}</p></div>
@@ -104,7 +90,7 @@ const structuredData = [{
 
       <section class="implementation" aria-labelledby="implementation-title"><div class="shell">
         <div class="section-heading"><div><p class="eyebrow">{ui.implementationEyebrow}</p><h2 id="implementation-title">{ui.implementationTitle}</h2></div><p>{ui.implementationIntro}</p></div>
-        <div class="service-grid">{IMPLEMENTATION_SERVICES.map((service, index) => <article><span>0{index + 1}</span><h3>{local(service.title)}</h3><p>{local(service.summary)}</p><ol>{service.steps.map((step) => <li>{local(step)}</li>)}</ol><aside><strong>{ui.scope}</strong><p>{local(service.boundary)}</p></aside></article>)}</div>
+        <details class="scope-details"><summary>{ui.implementationTitle}</summary><div class="service-grid">{IMPLEMENTATION_SERVICES.map((service, index) => <article><span>0{index + 1}</span><h3>{local(service.title)}</h3><p>{local(service.summary)}</p><ol>{service.steps.map((step) => <li>{local(step)}</li>)}</ol><aside><strong>{ui.scope}</strong><p>{local(service.boundary)}</p></aside></article>)}</div></details>
       </div></section>
 
       <section class="shell responsibilities" aria-labelledby="responsibility-title">
@@ -123,12 +109,11 @@ const structuredData = [{
 
 <style>
   .plans-main { overflow: clip; padding-bottom: clamp(90px, 11vw, 160px); }.plans-hero { padding-top: 28px; }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
-  .plans-hero__grid, .section-heading { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(280px, .6fr); align-items: end; gap: clamp(40px, 8vw, 120px); padding: clamp(38px, 6vw, 78px) 0 clamp(44px, 6vw, 72px); }.plans-hero h1 { max-width: 920px; margin: 0; font-size: clamp(3.3rem, 7.2vw, 7.2rem); font-weight: 600; letter-spacing: -.067em; line-height: .89; }.plans-hero__grid > p, .section-heading > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.22rem); line-height: 1.58; }
-  .plan-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }.plan-card { display: flex; min-width: 0; flex-direction: column; overflow: hidden; border: 1px solid rgb(0 0 0 / 12%); border-radius: 12px; padding: clamp(20px, 3vw, 30px); background: white; }.plan-card[data-plan='inteligente'] { color: white; border-color: var(--color-midnight-ink); background: var(--color-midnight-ink); }.plan-card__top { display: flex; min-height: 42px; align-items: flex-start; justify-content: space-between; gap: 18px; color: var(--slate); font-size: .7rem; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; }.plan-card[data-plan='inteligente'] .plan-card__top { color: #c9d3ff; }.plan-card h2 { margin: 28px 0 10px; font-size: clamp(2.6rem, 4.2vw, 4.6rem); letter-spacing: -.06em; line-height: .9; }.plan-promise { min-height: 112px; margin: 0; color: var(--slate); font-family: var(--serif); font-size: 1.04rem; line-height: 1.52; }.plan-card[data-plan='inteligente'] .plan-promise { color: #e0e5fb; }.plan-card dl { margin: 24px 0 0; border-block: 1px solid var(--line); padding: 17px 0; }.plan-card[data-plan='inteligente'] dl { border-color: rgb(255 255 255 / 22%); }.plan-card dt, .capabilities > p, .growth strong, .plan-card aside strong { color: var(--slate); font-size: .7rem; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; }.plan-card[data-plan='inteligente'] dt, .plan-card[data-plan='inteligente'] .capabilities > p, .plan-card[data-plan='inteligente'] .growth strong, .plan-card[data-plan='inteligente'] aside strong { color: #c9d3ff; }.plan-card dd { margin: 8px 0 0; font-size: .87rem; line-height: 1.45; }.capabilities { margin-top: 22px; }.capabilities ul, .responsibility-grid ul { margin: 13px 0 0; padding: 0; list-style: none; }.capabilities li { position: relative; padding: 9px 0 9px 20px; border-top: 1px solid var(--line); font-size: .84rem; line-height: 1.4; }.plan-card[data-plan='inteligente'] .capabilities li { border-color: rgb(255 255 255 / 18%); }.capabilities li::before { position: absolute; top: 10px; left: 0; color: var(--color-notion-blue-strong); content: '✓'; font-weight: 800; }.plan-card[data-plan='inteligente'] .capabilities li::before { color: var(--color-marigold); }.plan-card aside { margin-top: 20px; border-radius: 8px; padding: 14px; background: #f3f2ef; }.plan-card[data-plan='inteligente'] aside { background: rgb(255 255 255 / 9%); }.plan-card aside p, .growth p { margin: 7px 0 0; font-size: .78rem; line-height: 1.48; }.growth { margin: 20px 0; }.plan-actions { display: grid; gap: 8px; margin-top: auto; }.plan-actions a { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 15px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 13px; font-size: .79rem; font-weight: 700; text-decoration: none; }.plan-contact { color: white; border-color: var(--color-notion-blue) !important; background: var(--color-notion-blue); }.plan-demo { color: var(--ink); background: white; }.plan-card[data-plan='inteligente'] .plan-contact { color: var(--ink); border-color: var(--color-marigold) !important; background: var(--color-marigold); }.plan-card[data-plan='inteligente'] .plan-demo { color: white; border-color: rgb(255 255 255 / 24%); background: transparent; }
+  .plans-hero__grid, .section-heading { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr); align-items: end; gap: clamp(40px, 8vw, 120px); padding: clamp(34px, 5vw, 64px) 0 clamp(42px, 5vw, 64px); }.plans-hero h1 { max-width: 820px; margin: 0; font-size: clamp(3.2rem, 5.8vw, 5.8rem); font-weight: 600; letter-spacing: -.06em; line-height: .92; }.plans-hero__grid > p, .section-heading > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.22rem); line-height: 1.58; }
   .ladder { padding-top: clamp(90px, 12vw, 170px); }.section-heading h2, .responsibilities h2, .next h2 { max-width: 860px; margin: 0; font-size: clamp(2.5rem, 5vw, 5.2rem); letter-spacing: -.058em; line-height: .94; }.ladder-table { border-top: 1px solid var(--line); }.ladder-row { display: grid; grid-template-columns: 1.05fr .35fr 1fr; gap: 24px; align-items: center; border-bottom: 1px solid var(--line); padding: 21px 0; }.ladder-row > span:first-child { display: flex; align-items: center; gap: 18px; font-weight: 650; }.ladder-row i { color: var(--color-notion-blue-strong); font-size: .7rem; font-style: normal; }.ladder-row > span:last-child { color: var(--slate); font-family: var(--serif); line-height: 1.45; }.ladder-row--head { color: var(--slate); padding-block: 13px; font-size: .7rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }.ladder-row--head > span:first-child { font-weight: 700; }
   .implementation { margin-top: clamp(90px, 12vw, 170px); padding: clamp(70px, 9vw, 120px) 0; background: var(--color-sky-tint); }.implementation .section-heading { padding-top: 0; }.service-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }.service-grid article { display: flex; flex-direction: column; border-radius: 12px; padding: clamp(22px, 3vw, 32px); background: white; }.service-grid article > span { color: var(--color-notion-blue-strong); font-size: .72rem; font-weight: 700; }.service-grid h3 { margin: 36px 0 12px; font-size: clamp(1.8rem, 2.7vw, 2.7rem); letter-spacing: -.045em; line-height: .98; }.service-grid article > p { min-height: 76px; margin: 0; color: var(--slate); font-family: var(--serif); line-height: 1.5; }.service-grid ol { margin: 22px 0; padding: 0; list-style: none; counter-reset: service; }.service-grid li { position: relative; border-top: 1px solid var(--line); padding: 12px 0 12px 30px; font-size: .82rem; line-height: 1.4; counter-increment: service; }.service-grid li::before { position: absolute; left: 0; color: var(--slate); content: counter(service, decimal-leading-zero); font-size: .65rem; }.service-grid aside { margin-top: auto; border-radius: 8px; padding: 14px; background: #f3f2ef; }.service-grid aside strong { color: var(--slate); font-size: .68rem; text-transform: uppercase; }.service-grid aside p { margin: 7px 0 0; font-size: .78rem; line-height: 1.45; }
   .responsibilities { display: grid; grid-template-columns: .75fr 1.25fr; gap: clamp(45px, 8vw, 120px); padding-top: clamp(90px, 12vw, 170px); }.responsibility-grid { display: grid; gap: 12px; }.responsibility-grid article { border-top: 1px solid var(--line); padding: 20px 0; }.responsibility-grid h3 { margin: 0; font-size: 1.35rem; letter-spacing: -.02em; }.responsibility-grid li { position: relative; padding: 8px 0 8px 22px; color: var(--slate); font-family: var(--serif); line-height: 1.5; }.responsibility-grid li::before { position: absolute; left: 0; color: var(--color-notion-blue-strong); content: '—'; }
   .next { display: grid; grid-template-columns: 1fr .85fr; gap: clamp(45px, 8vw, 120px); align-items: end; margin-top: clamp(90px, 12vw, 170px); border-radius: 12px; padding: clamp(28px, 5vw, 58px); color: white; background: var(--color-midnight-ink); }.next .eyebrow { color: var(--color-marigold); }.next nav { display: grid; border-top: 1px solid rgb(255 255 255 / 25%); }.next a { display: flex; min-height: 52px; align-items: center; justify-content: space-between; border-bottom: 1px solid rgb(255 255 255 / 25%); color: white; text-decoration: none; }
-  @media (max-width: 980px) { .plan-grid, .service-grid { grid-template-columns: 1fr; }.plan-promise, .service-grid article > p { min-height: 0; }.plans-hero__grid, .section-heading, .responsibilities, .next { grid-template-columns: 1fr; }.responsibilities, .next { gap: 38px; } }
-  @media (max-width: 660px) { .plans-hero { padding-top: 16px; }.plans-hero__grid { gap: 28px; }.plans-hero h1 { font-size: clamp(3.15rem, 15vw, 5rem); }.ladder-row { grid-template-columns: 1fr; gap: 7px; padding: 18px 0; }.ladder-row--head { display: none; }.ladder-row > span:first-child { gap: 10px; }.ladder-row strong { padding-left: 28px; }.ladder-row > span:last-child { padding-left: 28px; }.next { margin-inline: 14px; } }
+  @media (max-width: 980px) { .service-grid { grid-template-columns: 1fr; }.service-grid article > p { min-height: 0; }.plans-hero__grid, .section-heading, .responsibilities, .next { grid-template-columns: 1fr; }.responsibilities, .next { gap: 38px; } }
+  @media (max-width: 660px) { .plans-hero { padding-top: 16px; }.plans-hero__grid { gap: 24px; }.plans-hero h1 { font-size: clamp(3rem, 13vw, 4.35rem); }.ladder-row { grid-template-columns: 1fr; gap: 7px; padding: 18px 0; }.ladder-row--head { display: none; }.ladder-row > span:first-child { gap: 10px; }.ladder-row strong { padding-left: 28px; }.ladder-row > span:last-child { padding-left: 28px; }.next { margin-inline: 14px; } }
 </style>

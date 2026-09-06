@@ -1,0 +1,342 @@
+{
+  "version": 1,
+  "fixedNow": "2026-08-18T10:00:00+02:00",
+  "captures": [
+    {
+      "file": "es/brasca-desktop.webp",
+      "route": "/demos/brasca/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "5959d108d782e403bf0e99317ccc5234243525926389b7024a89105a36fbf3af"
+    },
+    {
+      "file": "es/brasca-mobile.webp",
+      "route": "/demos/brasca/",
+      "width": 375,
+      "height": 812,
+      "sha256": "b48dd4f4d2d8045ce5ae37a57f2f2016f1e646a69e70542fa895409a4e1c993b"
+    },
+    {
+      "file": "es/vedra-desktop.webp",
+      "route": "/demos/vedra/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "c63a9220f62444604383164862ecfb4bd924646f32ed78c14adb38884d59f812"
+    },
+    {
+      "file": "es/vedra-mobile.webp",
+      "route": "/demos/vedra/",
+      "width": 375,
+      "height": 812,
+      "sha256": "dea8e3bd669a8ad5800dfd639c87b4387dc2ec131a8fcd44265e8c3c3f8154a9"
+    },
+    {
+      "file": "es/solane-desktop.webp",
+      "route": "/demos/solane/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "b996a0e23061fb384e5b46dbbb550f5f8bc0283a6666aa87d0e2aae3327921d1"
+    },
+    {
+      "file": "es/solane-mobile.webp",
+      "route": "/demos/solane/",
+      "width": 375,
+      "height": 812,
+      "sha256": "e502e6191dc787022475892607119e9a519211d310acd9cef07543ba4beff56b"
+    },
+    {
+      "file": "es/la-trece-desktop.webp",
+      "route": "/demos/la-trece/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "67adfe016975e4afb71f719460fbe44140148d6f5622e4b713db540d60b1d1f3"
+    },
+    {
+      "file": "es/la-trece-mobile.webp",
+      "route": "/demos/la-trece/",
+      "width": 375,
+      "height": 812,
+      "sha256": "8504aee264458930771da7cd1ef75dce1b45861092bf32266831c3bbc694dc4b"
+    },
+    {
+      "file": "es/salobre-desktop.webp",
+      "route": "/demos/salobre/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "52a3b7d68cb22756b6da7cb5da019f39aab71dfb1aaf4ffa33e86c14a4b9728b"
+    },
+    {
+      "file": "es/salobre-mobile.webp",
+      "route": "/demos/salobre/",
+      "width": 375,
+      "height": 812,
+      "sha256": "838fa5c715c5ceb92ccd99d7e2478a3ad688e3faffe7ccb72d0cd738b7244c30"
+    },
+    {
+      "file": "es/trama-desktop.webp",
+      "route": "/demos/trama/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "05d02362d7e07edbf5b2fc7324292e9c9f26d4b4652124394c5a5e76c64ebc62"
+    },
+    {
+      "file": "es/trama-mobile.webp",
+      "route": "/demos/trama/",
+      "width": 375,
+      "height": 812,
+      "sha256": "13f89e4fa88c7828297b652e67cccc9e7768753adea8b1b89dc6d229b112135d"
+    },
+    {
+      "file": "es/umbral-desktop.webp",
+      "route": "/demos/umbral/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "f86df8600c5f7e63117eeb87795bd743879056336ac91eb53ba88df460208728"
+    },
+    {
+      "file": "es/umbral-mobile.webp",
+      "route": "/demos/umbral/",
+      "width": 375,
+      "height": 812,
+      "sha256": "c4bc83b0e51c5dfdfdeb6823fadc40cb24c613d283d519f0b5837dba1d8867d2"
+    },
+    {
+      "file": "es/nacre-desktop.webp",
+      "route": "/demos/nacre/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "0865e289cffb668ef31cb89b98baf6a02093e1118a57edb54272952de6e2d139"
+    },
+    {
+      "file": "es/nacre-mobile.webp",
+      "route": "/demos/nacre/",
+      "width": 375,
+      "height": 812,
+      "sha256": "07518b067a0429d73f7c292759123b04b50b25b85222b7cc7ab9c305137181fd"
+    },
+    {
+      "file": "es/brisa-alta-desktop.webp",
+      "route": "/demos/brisa-alta/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "4b581c2abf07a572a928ed428407c7c6925602c28348bbebb04415bbb7a98581"
+    },
+    {
+      "file": "es/brisa-alta-mobile.webp",
+      "route": "/demos/brisa-alta/",
+      "width": 375,
+      "height": 812,
+      "sha256": "b6912cfc0082e88de979ebf88cdf501344782bf700d02478ca2ceb49c1ca4b28"
+    },
+    {
+      "file": "es/nave-nueve-desktop.webp",
+      "route": "/demos/nave-nueve/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "9ad25f6a2e7d5ed992cd32089936a10fbbb6f68146f0fae096c8895458bd63ac"
+    },
+    {
+      "file": "es/nave-nueve-mobile.webp",
+      "route": "/demos/nave-nueve/",
+      "width": 375,
+      "height": 812,
+      "sha256": "a2931288c8795a44e8b30fff8ec8bf1c37cac980284134b07e024b272f6ded1d"
+    },
+    {
+      "file": "es/miga-club-desktop.webp",
+      "route": "/demos/miga-club/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "f1aea7f77667bcd3dd34f9437d92924142d8939e44d947af5a5ec9ad1fb72fbb"
+    },
+    {
+      "file": "es/miga-club-mobile.webp",
+      "route": "/demos/miga-club/",
+      "width": 375,
+      "height": 812,
+      "sha256": "39151b2e51ca5e550d9da2853c6a49aa9c641c02daa2e400a1622e885c15c749"
+    },
+    {
+      "file": "es/mercat-33-desktop.webp",
+      "route": "/demos/mercat-33/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "eb0926ba93cde8d393c6cb2ded252b1a99208deb7396eda519fba5ed1f1e6869"
+    },
+    {
+      "file": "es/mercat-33-mobile.webp",
+      "route": "/demos/mercat-33/",
+      "width": 375,
+      "height": 812,
+      "sha256": "43944ea47dca1e46f4656a7fea8535cbfc6b89e8aa71c8cf1ec836f005df37f3"
+    },
+    {
+      "file": "en/brasca-desktop.webp",
+      "route": "/en/demos/brasca/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "70faded550a6b1ff40faa4bba51d846a8c8203c02ee507a18a4cad9ae355990c"
+    },
+    {
+      "file": "en/brasca-mobile.webp",
+      "route": "/en/demos/brasca/",
+      "width": 375,
+      "height": 812,
+      "sha256": "3ed34189ee4ec94f354b2ac145a23fadab0a23a16d1dbecd706d583f1b821fac"
+    },
+    {
+      "file": "en/vedra-desktop.webp",
+      "route": "/en/demos/vedra/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "361bbe558c2773a8b57152c419194c490872ae91c57bf07d5f684458888c91b4"
+    },
+    {
+      "file": "en/vedra-mobile.webp",
+      "route": "/en/demos/vedra/",
+      "width": 375,
+      "height": 812,
+      "sha256": "bc6ee401ccd8231ca1bfaa41b2743f404a927d8672e8bacf92fc64c15a34d295"
+    },
+    {
+      "file": "en/solane-desktop.webp",
+      "route": "/en/demos/solane/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "cfc3a56f93bf25ed307fa34461ae3ab4e5968eb807d35e65c8b310c42d0ee857"
+    },
+    {
+      "file": "en/solane-mobile.webp",
+      "route": "/en/demos/solane/",
+      "width": 375,
+      "height": 812,
+      "sha256": "4d9ebe3a8c85afc91ad7d476da554035d5a9413a8f8afb9bf63aaf1bb84f853d"
+    },
+    {
+      "file": "en/la-trece-desktop.webp",
+      "route": "/en/demos/la-trece/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "bb04c1cfb271f2fa2a3b6dce861f81aaef0d064af31966d71c95ec28d3da3cba"
+    },
+    {
+      "file": "en/la-trece-mobile.webp",
+      "route": "/en/demos/la-trece/",
+      "width": 375,
+      "height": 812,
+      "sha256": "ed6328a01bc8c21bddad396044ad633cb722f8f9f6d10bd6353be9fac814fdc2"
+    },
+    {
+      "file": "en/salobre-desktop.webp",
+      "route": "/en/demos/salobre/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "738d64018570f22c4a6926016db05d45aa3a9e8a1010a22f3fecb0fe87d30ee3"
+    },
+    {
+      "file": "en/salobre-mobile.webp",
+      "route": "/en/demos/salobre/",
+      "width": 375,
+      "height": 812,
+      "sha256": "78523a1b4f2ed49a38837f5526e45d6d3e87c3ec85cf6a379a03a714a1ec50e8"
+    },
+    {
+      "file": "en/trama-desktop.webp",
+      "route": "/en/demos/trama/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "fa435781ce6df9969e13523aa312a12db63f0e0df704c0149aab4825de45ac22"
+    },
+    {
+      "file": "en/trama-mobile.webp",
+      "route": "/en/demos/trama/",
+      "width": 375,
+      "height": 812,
+      "sha256": "78d11b5e75548de729b996118b992e38d8ba5f74043b4e836b5ce699a0eadbc7"
+    },
+    {
+      "file": "en/umbral-desktop.webp",
+      "route": "/en/demos/umbral/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "a602b0e7fe34af0be287e64b77a9990139b46b94c2570847e67b2893add6d32a"
+    },
+    {
+      "file": "en/umbral-mobile.webp",
+      "route": "/en/demos/umbral/",
+      "width": 375,
+      "height": 812,
+      "sha256": "194deccdb3baa77993b7c23d170b66f9557904a345f4107670643e42750794a3"
+    },
+    {
+      "file": "en/nacre-desktop.webp",
+      "route": "/en/demos/nacre/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "8de28b07128954a4b905bc4fc81a624cf5cf3678c3cc779353813aa3d3e1b70b"
+    },
+    {
+      "file": "en/nacre-mobile.webp",
+      "route": "/en/demos/nacre/",
+      "width": 375,
+      "height": 812,
+      "sha256": "c005c3026e735302bdeb85a0f32a9d7c16a0be1215d48da091ba77a69dea95a3"
+    },
+    {
+      "file": "en/brisa-alta-desktop.webp",
+      "route": "/en/demos/brisa-alta/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "5a431db4804e3f07c7e2174df082e4040e1000fff10ba64a88e3fa6ff9a84c3b"
+    },
+    {
+      "file": "en/brisa-alta-mobile.webp",
+      "route": "/en/demos/brisa-alta/",
+      "width": 375,
+      "height": 812,
+      "sha256": "18b5f4ac8818d693a7021e719b3ec4ac81b5446a6893e8bcf4700660cac0c601"
+    },
+    {
+      "file": "en/nave-nueve-desktop.webp",
+      "route": "/en/demos/nave-nueve/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "28cff2d7c03250ef371d8b48148770fdc8768a53a50ab166d2a15feba47ee613"
+    },
+    {
+      "file": "en/nave-nueve-mobile.webp",
+      "route": "/en/demos/nave-nueve/",
+      "width": 375,
+      "height": 812,
+      "sha256": "c01d9f44b961f39c8035fe3b39d65d34e4a6e0e0533061bb555e806098c1333b"
+    },
+    {
+      "file": "en/miga-club-desktop.webp",
+      "route": "/en/demos/miga-club/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "0c26ca7f75e13763d25f3b2c49a0b6b2b6b6d3bed8cab911373c9a30fd15a232"
+    },
+    {
+      "file": "en/miga-club-mobile.webp",
+      "route": "/en/demos/miga-club/",
+      "width": 375,
+      "height": 812,
+      "sha256": "adc165cb795e04b1819697733da6a704e2351535a70505730da346dcd09a151b"
+    },
+    {
+      "file": "en/mercat-33-desktop.webp",
+      "route": "/en/demos/mercat-33/",
+      "width": 1366,
+      "height": 900,
+      "sha256": "0039b0313e1f9b885667f8c2c94c8d7823ed77645345f9a3354443df33bc053f"
+    },
+    {
+      "file": "en/mercat-33-mobile.webp",
+      "route": "/en/demos/mercat-33/",
+      "width": 375,
+      "height": 812,
+      "sha256": "bf0371f8d405f3fca94b8d7526d0a8437b48cbf03e2eeb042393153d98a72e86"
+    }
+  ]
+}

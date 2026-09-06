@@ -6,7 +6,9 @@ import {
   localizedThemeText,
   themeContactUrl,
   themeDetailUrl,
+  themeDemoScope,
   themeMetaDescription,
+  themePreviewBase,
   themeUrl,
   type ThemeSlug,
   type ThemeText,
@@ -28,9 +30,9 @@ const ui = locale === 'en' ? {
   titleSuffix: ' | Restaurant website by Logic Reserva', back: 'All website directions', product: 'Restaurant website direction',
   fictional: 'Fictional navigable demonstration', responsive: 'Responsive', address: `${theme.slug}.yourdomain.com`,
   summary: `A complete website direction for presenting ${theme.name} as a ${local(theme.format).toLocaleLowerCase()}, turning visits into better prepared enquiries without losing its identity.`,
-  open: 'Open navigable website', want: 'I want a website like this', frameTitle: `Navigable preview of the fictional ${theme.name} website`,
-  demoLabel: 'Navigable demo', fit: 'Why this direction works', fitTitle: 'An identity shaped to sell and operate.',
-  fitBody: 'This is not a closed template. The useful structure, performance and conversion logic stay shared while photography, voice, rhythm, offer and calls to action adapt to the real restaurant.',
+  open: 'Open navigable website', want: 'I want a website like this', frameTitle: `Screenshot of the fictional ${theme.name} website`,
+  demoLabel: 'Navigable demo', fit: 'Why this direction works', fitTitle: 'Your restaurant’s personality, online too.',
+  fitBody: 'We adapt photography, colours, copy and menus to your restaurant. Clear on mobile and desktop, with booking always within reach.',
   capabilities: [
     'Visual direction applied to the homepage, menu, story and contact',
     'Hierarchy prepared for mobile, desktop and accessible reading',
@@ -38,15 +40,15 @@ const ui = locale === 'en' ? {
     'One shared product base, configured without duplicating the project',
   ],
   details: 'Website details', level: 'Starting point', status: 'Status', scope: 'Demonstrated scope', delivery: 'Delivery',
-  deliveryValue: 'Defined in an approved proposal', deep: 'Website, booking and management journey', webOnly: 'Responsive website direction; no booking engine or manager',
+  deliveryValue: 'Defined in an approved proposal', deep: theme.slug === 'brasca' ? 'Website and local enquiry form' : 'Website, booking and management journey', webOnly: 'Responsive website direction; no booking engine or manager',
   included: 'Includes', tone: 'Visual tone', format: 'Restaurant format', location: 'Fictional location', related: 'Related website directions', all: 'View all twelve websites',
 } : {
   titleSuffix: ' | Web para restaurantes · Logic Reserva', back: 'Todas las direcciones web', product: 'Dirección web para restaurantes',
   fictional: 'Demostración ficticia navegable', responsive: 'Responsive', address: `${theme.slug}.tudominio.com`,
   summary: `Una dirección web completa para presentar ${theme.name} como ${local(theme.format).toLocaleLowerCase()}, convertir visitas en solicitudes mejor preparadas y conservar su identidad.`,
-  open: 'Abrir web navegable', want: 'Quiero una web así', frameTitle: `Vista navegable de la web ficticia ${theme.name}`,
-  demoLabel: 'Demo navegable', fit: 'Qué resuelve esta dirección', fitTitle: 'Una identidad pensada para vender y operar.',
-  fitBody: 'No es una plantilla cerrada. La estructura, el rendimiento y la lógica de conversión se comparten; fotografía, voz, ritmo, oferta y llamadas a la acción se adaptan al restaurante real.',
+  open: 'Abrir web navegable', want: 'Quiero una web así', frameTitle: `Captura de la web ficticia ${theme.name}`,
+  demoLabel: 'Demo navegable', fit: 'Qué resuelve esta dirección', fitTitle: 'La esencia de tu restaurante, también online.',
+  fitBody: 'Adaptamos fotografía, colores, textos y carta a tu restaurante. Una web clara en móvil y escritorio, con la reserva siempre a mano.',
   capabilities: [
     'Dirección visual aplicada a portada, carta, historia y contacto',
     'Jerarquía preparada para móvil, escritorio y lectura accesible',
@@ -54,10 +56,10 @@ const ui = locale === 'en' ? {
     'Una misma base de producto, configurada sin duplicar el proyecto',
   ],
   details: 'Detalles de la web', level: 'Punto de partida', status: 'Estado', scope: 'Alcance demostrado', delivery: 'Entrega',
-  deliveryValue: 'Definida en propuesta aprobada', deep: 'Web, reserva y recorrido de gestión', webOnly: 'Dirección web responsive; sin motor de reservas ni gestor',
+  deliveryValue: 'Definida en propuesta aprobada', deep: theme.slug === 'brasca' ? 'Web y formulario de solicitud local' : 'Web, reserva y recorrido de gestión', webOnly: 'Dirección web responsive; sin motor de reservas ni gestor',
   included: 'Incluye', tone: 'Tono visual', format: 'Formato de restaurante', location: 'Ubicación ficticia', related: 'Direcciones web relacionadas', all: 'Ver las doce webs',
 };
-const scope = theme.depth === 'deep' ? ui.deep : ui.webOnly;
+const scope = themeDemoScope(theme, locale);
 const currentUrl = new URL(themeDetailUrl(theme.slug as ThemeSlug, locale), PRODUCT.url).href;
 const structuredData = [{
   '@context': 'https://schema.org', '@type': 'WebPage', name: theme.name, description: local(metadata), url: currentUrl,
@@ -77,7 +79,7 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
   locale={locale}
   title={`${theme.name}${ui.titleSuffix}`}
   description={local(metadata)}
-  image={`/images/screens/${theme.screenshotBase}-desktop.png`}
+  image={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-desktop.webp`}
   imageAlt={`${theme.name} · ${local(theme.format)}`}
   imageWidth={1366}
   imageHeight={900}
@@ -106,8 +108,8 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
           <div class="browser-bar"><span aria-hidden="true"><i></i><i></i><i></i></span><code>{ui.address}</code><b>{ui.fictional}</b></div>
           <div class="browser-view">
             <picture>
-              <source media="(max-width: 640px)" srcset={`/images/screens/${theme.screenshotBase}-mobile.png`} />
-              <img src={`/images/screens/${theme.screenshotBase}-desktop.png`} alt={ui.frameTitle} width="1366" height="900" loading="eager" decoding="async" />
+              <source media="(max-width: 620px)" srcset={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-mobile.webp`} />
+              <img src={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-desktop.webp`} alt={ui.frameTitle} width="1366" height="900" loading="eager" decoding="async" />
             </picture>
           </div>
         </section>
@@ -171,7 +173,7 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
 <style>
   .theme-detail { color: var(--ink); background: var(--paper); }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
   .theme-detail__hero { padding-top: 28px; }.theme-detail__heading { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: clamp(44px, 8vw, 130px); align-items: end; padding: clamp(38px, 6vw, 78px) 0 34px; }
-  .theme-detail h1 { margin: 0; font-size: clamp(4.6rem, 10vw, 9rem); font-weight: 620; letter-spacing: -.075em; line-height: .82; }.theme-detail__intro > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.1rem, 1.5vw, 1.28rem); line-height: 1.55; }
+  .theme-detail h1 { margin: 0; font-size: clamp(4rem, 7.2vw, 7rem); font-weight: 620; letter-spacing: -.068em; line-height: .86; }.theme-detail__intro > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.1rem, 1.5vw, 1.28rem); line-height: 1.55; }
   .theme-detail__intro ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }.theme-detail__intro li { border: 1px solid color-mix(in srgb, var(--theme-primary) 25%, transparent); border-radius: 999px; padding: 7px 11px; color: var(--theme-primary); background: color-mix(in srgb, var(--theme-paper) 76%, white); font-size: .72rem; font-weight: 700; }
   .theme-detail__browser { margin-bottom: 0; }.browser-bar { display: grid; grid-template-columns: 72px 1fr auto; gap: 18px; align-items: center; min-height: 52px; border: 1px solid rgb(0 0 0 / 14%); border-bottom: 0; border-radius: 14px 14px 0 0; padding: 8px 16px; color: var(--slate); background: #f2f2f1; }.browser-bar > span { display: flex; gap: 7px; }.browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: #cbc9c5; }.browser-bar code { justify-self: center; min-width: min(520px, 70%); border: 1px solid rgb(0 0 0 / 10%); border-radius: 6px; padding: 7px 14px; color: var(--theme-ink); background: white; font-family: inherit; font-size: .75rem; text-align: center; }.browser-bar b { font-size: .64rem; font-weight: 650; letter-spacing: .035em; text-transform: uppercase; }
   .browser-view { position: relative; aspect-ratio: 1366 / 900; overflow: hidden; border: 1px solid rgb(0 0 0 / 14%); background: var(--theme-paper); }.browser-view picture, .browser-view img { display: block; width: 100%; height: 100%; }.browser-view img { object-fit: cover; object-position: top; }
@@ -181,5 +183,7 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
   .theme-detail__facts { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; padding-block: clamp(70px, 9vw, 130px); background: var(--line); }.theme-detail__facts > div { padding: clamp(30px, 5vw, 64px); background: white; }.theme-detail__facts h2 { margin: 0 0 34px; font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -.045em; }.theme-detail__facts dl { margin: 0; }.theme-detail__facts dl div { display: grid; grid-template-columns: 150px 1fr; gap: 20px; border-top: 1px solid var(--line); padding: 14px 0; }.theme-detail__facts dt { color: var(--slate); font-size: .72rem; }.theme-detail__facts dd { margin: 0; font-size: .87rem; line-height: 1.4; }.theme-detail__included > a { margin-top: 24px; color: white; background: var(--theme-primary); }
   .theme-detail__related { padding-bottom: clamp(90px, 10vw, 150px); }.theme-detail__related > div:first-child { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }.theme-detail__related h2 { margin: 0; font-size: clamp(2.1rem, 4vw, 4.2rem); letter-spacing: -.055em; }.theme-detail__related > div:first-child a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--ink); font-size: .82rem; text-decoration: none; }.related-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }.related-grid a { position: relative; display: flex; min-height: 220px; flex-direction: column; justify-content: end; overflow: hidden; padding: 24px; color: var(--related-ink); background: var(--related-paper); text-decoration: none; }.related-grid a::before { position: absolute; inset: 0 0 auto; height: 8px; background: var(--related-accent); content: ''; }.related-grid span, .related-grid small { font-size: .68rem; text-transform: uppercase; }.related-grid strong { margin: 18px 0 8px; font-size: clamp(2rem, 4vw, 3.6rem); letter-spacing: -.06em; line-height: .9; }.related-grid i { position: absolute; top: 24px; right: 24px; font-style: normal; }
   @media (max-width: 960px) { .theme-detail__heading, .theme-detail__decision, .theme-detail__fit-grid { grid-template-columns: 1fr; }.theme-detail__heading { gap: 30px; }.theme-detail__decision { gap: 32px; }.theme-detail__actions { grid-template-columns: 1fr 1fr; }.theme-detail__facts { grid-template-columns: 1fr; }.related-grid { grid-template-columns: 1fr 1fr; }.related-grid a:last-child { grid-column: 1 / -1; }.browser-bar { grid-template-columns: 50px 1fr; }.browser-bar b { display: none; }.browser-bar code { min-width: 0; width: 100%; } }
-  @media (max-width: 620px) { .theme-detail__hero { padding-top: 16px; }.theme-detail__heading { padding-top: 30px; }.theme-detail h1 { font-size: clamp(4rem, 21vw, 6rem); }.browser-bar { gap: 8px; padding-inline: 10px; }.browser-bar code { overflow: hidden; padding-inline: 8px; text-overflow: ellipsis; white-space: nowrap; }.browser-view { aspect-ratio: 375 / 812; }.theme-detail__decision { padding-block: 52px; }.theme-detail__actions { grid-template-columns: 1fr; }.theme-detail__fit-grid { padding-block: 70px; }.theme-detail__facts dl div { grid-template-columns: 1fr; gap: 5px; }.theme-detail__facts { margin-inline: 14px; padding-block: 54px; }.theme-detail__related > div:first-child { align-items: start; flex-direction: column; }.related-grid { grid-template-columns: 1fr; }.related-grid a:last-child { grid-column: auto; }.related-grid a { min-height: 180px; } }
+  @media (max-width: 620px) { .theme-detail__hero { padding-top: 16px; }.theme-detail__heading { padding-top: 30px; }.theme-detail h1 { font-size: clamp(3.5rem, 18vw, 5rem); }.browser-bar { gap: 8px; padding-inline: 10px; }.browser-bar code { overflow: hidden; padding-inline: 8px; text-overflow: ellipsis; white-space: nowrap; }.browser-view { aspect-ratio: 375 / 812; }.theme-detail__decision { padding-block: 52px; }.theme-detail__actions { grid-template-columns: 1fr; }.theme-detail__fit-grid { padding-block: 70px; }.theme-detail__facts dl div { grid-template-columns: 1fr; gap: 5px; }.theme-detail__facts { margin-inline: 14px; padding-block: 54px; }.theme-detail__related > div:first-child { align-items: start; flex-direction: column; }.related-grid { grid-template-columns: 1fr; }.related-grid a:last-child { grid-column: auto; }.related-grid a { min-height: 180px; } }
+  .theme-detail h1, .theme-detail h2, .related-grid strong { overflow-wrap: anywhere; line-height: 1.04; }
+  .theme-detail__fit .eyebrow, .theme-detail__fit li span { color: color-mix(in srgb, var(--theme-accent) 65%, white); }
 </style>
