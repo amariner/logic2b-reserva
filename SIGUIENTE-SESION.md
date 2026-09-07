@@ -1,7 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F26 completas ✅ · F27, auditoría diferencial y previews Camp enriquecidas cerradas localmente ✅ · F0–F19 publicadas en producción · F21–F27 pendientes de publicación autorizada · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅ · correo en preview descartado por decisión de producto (2026-08-18)
-**Siguiente hito:** revisión del propietario y publicación de los cambios locales solo tras autorización explícita
+**Fase actual:** F0–F27 completas ✅ · cierre visual e interactivo del home del 07/09 integrado localmente ✅ · publicación en producción no solicitada · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅
+**Siguiente hito:** revisar en GitHub el cierre del home; desplegar preview o producción únicamente si el propietario lo pide expresamente
+
+## Cierre del home del 07/09/2026
+
+Quedan cerrados el rediseño de «Bonita por fuera. Bien resuelta por dentro.», las cinco interfaces con tabs e iconos, los zooms de detalle, los logos oficiales de plataformas, la jerarquía de conexiones, el carrusel con iconografía contextual, los popups centrados de webs/paneles y las rutas a sus fichas. Contacto vive en cabecera mediante WhatsApp; ya no existe acción flotante ni pausa/reanudación del recorrido. El formulario del prefooter utiliza radios más contenidos.
+
+Gates: `pnpm check` 28/28 con 161 tests; E2E dirigido F26 5/5 sobre Worker local separado, con ES/EN, 375 px y fallback sin JavaScript. QA visual manual en navegador completado. El primer arranque automático de Playwright sufrió el cierre conocido de Wrangler antes de servir la app; la ejecución válida se realizó sobre el mismo build con Worker estable. No se desplegó ni se envió ningún lead.
 
 ## Auditoría de temas del 05–06/09/2026 · cerrada localmente
 

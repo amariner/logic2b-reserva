@@ -143,7 +143,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
   test('previsualiza webs y paneles sin perder idioma ni enlaces directos', async ({ page, browser }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const dialog = page.locator('[data-commercial-preview]');
-    const themeTrigger = page.getByRole('button', { name: 'Previsualizar web: Brasca' });
+    const themeTrigger = page.getByRole('link', { name: 'Previsualizar web: Brasca' });
     await themeTrigger.click();
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('heading', { name: 'Brasca' })).toBeVisible();
@@ -155,10 +155,11 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('Marca y contenidos ficticios');
     await expect(dialog.getByRole('link', { name: /Quiero una web así/ })).toHaveAttribute('href', '/empezar/?theme=brasca');
     await expect(dialog.getByRole('link', { name: /Abrir web/ })).toHaveAttribute('href', '/demos/brasca/');
+    await expect(dialog.getByRole('link', { name: /Ver ficha completa/ })).toHaveAttribute('href', '/temas/brasca/');
     await dialog.getByRole('button', { name: 'Cerrar vista previa' }).click();
     await expect(themeTrigger).toBeFocused();
 
-    const panelTrigger = page.getByRole('button', { name: 'Previsualizar panel', exact: true }).first();
+    const panelTrigger = page.getByRole('link', { name: 'Previsualizar panel: Servicio del día' });
     await panelTrigger.click();
     await expect(dialog.getByRole('heading', { name: 'Servicio del día' })).toBeVisible();
     await expect(dialog.locator('[data-commercial-preview-address]')).toHaveText('panel.tudominio.com/servicio');
@@ -169,6 +170,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('no hay operación multiusuario');
     await expect(dialog.getByRole('link', { name: /Quiero esta vista de producto/ })).toHaveAttribute('href', '/empezar/?panel=servicio');
     await expect(dialog.getByRole('link', { name: /Abrir vista/ })).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
+    await expect(dialog.getByRole('link', { name: /Ver ficha completa/ })).toHaveAttribute('href', '/paneles/servicio/');
     await page.keyboard.press('Escape');
     await expect(panelTrigger).toBeFocused();
     await panelTrigger.click();
@@ -176,11 +178,11 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog).not.toBeVisible();
     await expect(page).toHaveURL(/\/empezar\/\?panel=servicio$/);
     await expect(page.locator('#lead-form')).toBeInViewport();
-    await expect(page.locator('[data-interest-selection]')).toContainText('Vista de producto · Servicio del día');
+    await expect(page.locator('[data-interest-selection]:visible')).toContainText('Vista de producto · Servicio del día');
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('gestion');
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
-    const englishTrigger = page.getByRole('button', { name: 'Preview website: Brasca' });
+    const englishTrigger = page.getByRole('link', { name: 'Preview website: Brasca' });
     await englishTrigger.click();
     await expect(page.locator('[data-commercial-preview-address]')).toHaveText('brasca.yourdomain.com');
     await expect(page.locator('[data-commercial-preview]').getByRole('link', { name: /I want a website like this/ })).toHaveAttribute('href', '/en/empezar/?theme=brasca');
@@ -191,7 +193,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     const mobileContext = await browser.newContext({ viewport: { width: 375, height: 812 } });
     const mobilePage = await mobileContext.newPage();
     await mobilePage.goto('/', { waitUntil: 'networkidle' });
-    await mobilePage.getByRole('button', { name: 'Previsualizar panel', exact: true }).first().click();
+    await mobilePage.getByRole('link', { name: 'Previsualizar panel: Servicio del día' }).click();
     const mobileContact = mobilePage.locator('[data-commercial-preview]').getByRole('link', { name: /Quiero esta vista de producto/ });
     await mobileContact.scrollIntoViewIfNeeded();
     await expect(mobileContact).toBeInViewport();
@@ -201,7 +203,9 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     const staticContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
     const staticPage = await staticContext.newPage();
     await staticPage.goto('/', { waitUntil: 'networkidle' });
-    await expect(staticPage.locator('[data-commercial-preview-trigger]:visible')).toHaveCount(0);
+    await expect(staticPage.locator('button[data-commercial-preview-trigger]:visible')).toHaveCount(0);
+    await expect(staticPage.locator('a.portfolio-card__surface:visible')).toHaveCount(12);
+    await expect(staticPage.locator('a.panel-teaser-card__preview:visible')).toHaveCount(6);
     await expect(staticPage.locator('.portfolio-card__surface')).toHaveCount(12);
     await expect(staticPage.locator('.panel-teaser-card__actions > a')).toHaveCount(6);
     await expect(staticPage.locator('[data-cookie-preferences]:visible')).toHaveCount(0);

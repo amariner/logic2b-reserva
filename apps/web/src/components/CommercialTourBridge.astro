@@ -7,11 +7,11 @@ const { locale = 'es' } = Astro.props;
 const prefix = locale === 'en' ? '/en' : '';
 const ui = locale === 'en' ? {
   tour: 'Logic Reserva guided journey', progress: 'Journey progress', visible: 'What you are seeing',
-  pause: 'Pause', resume: 'Resume guided journey', paused: 'Journey paused', exit: 'Exit',
+  exit: 'Exit',
   next: 'Next milestone', finish: 'View plans',
 } : {
   tour: 'Recorrido guiado de Logic Reserva', progress: 'Progreso del recorrido', visible: 'Qué estás viendo',
-  pause: 'Pausar', resume: 'Reanudar recorrido guiado', paused: 'Recorrido pausado', exit: 'Salir',
+  exit: 'Salir',
   next: 'Siguiente hito', finish: 'Ver planes',
 };
 const steps = locale === 'en' ? [
@@ -60,27 +60,21 @@ const steps = locale === 'en' ? [
   <p class="commercial-tour-bridge__body" data-tour-body></p>
   <div class="commercial-tour-bridge__context"><strong>{ui.visible}</strong><p data-tour-visible></p></div>
   <div class="commercial-tour-bridge__actions">
-    <button type="button" data-tour-pause>{ui.pause}</button>
     <button class="commercial-tour-bridge__next" type="button" data-tour-next data-next-label={ui.next} data-finish-label={ui.finish}>
       <span data-tour-next-text>{ui.next}</span><span aria-hidden="true">→</span>
     </button>
   </div>
 </aside>
 
-<button class="commercial-tour-bridge-resume" type="button" data-tour-resume hidden>
-  <span aria-hidden="true">▶</span><span><small>{ui.paused}</small>{ui.resume}</span>
-</button>
-
 <script>
   const bridge = document.querySelector<HTMLElement>('[data-commercial-tour-bridge]');
-  const resume = document.querySelector<HTMLButtonElement>('[data-tour-resume]');
-  if (bridge && resume) {
+  if (bridge) {
     type TourStep = { label: string; title: string; body: string; visible: string; href: string };
-    type TourStatus = 'idle' | 'intro' | 'active' | 'paused' | 'complete';
+    type TourStatus = 'idle' | 'intro' | 'active' | 'complete';
     type TourState = { status: TourStatus; stepIndex: number };
 
     const storageKey = bridge.dataset.tourStorageKey ?? 'logic2b:reserva-tour:v1';
-    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'paused', 'complete']);
+    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'complete']);
     const parseSteps = (): TourStep[] => {
       try {
         const parsed: unknown = JSON.parse(bridge.dataset.tourSteps ?? '[]');
@@ -129,9 +123,8 @@ const steps = locale === 'en' ? [
     const segments = [...bridge.querySelectorAll<HTMLButtonElement>('[data-tour-jump]')];
     let state = readState();
 
-    const setMode = (mode: 'idle' | 'active' | 'paused') => {
+    const setMode = (mode: 'idle' | 'active') => {
       bridge.hidden = mode !== 'active';
-      resume.hidden = mode !== 'paused';
     };
     const showStep = (index: number, focusBridge = false) => {
       const safeIndex = clampStep(index);
@@ -159,19 +152,12 @@ const steps = locale === 'en' ? [
       state = writeState({ status: 'active', stepIndex: safeIndex });
       window.location.assign(step.href);
     };
-    const pauseTour = () => {
-      state = writeState({ status: 'paused', stepIndex: state.stepIndex });
-      cleanTourUrl();
-      setMode('paused');
-      requestAnimationFrame(() => resume.focus());
-    };
     const exitTour = () => {
       state = writeState({ status: 'idle', stepIndex: 0 });
       cleanTourUrl();
       setMode('idle');
     };
 
-    bridge.querySelector<HTMLButtonElement>('[data-tour-pause]')?.addEventListener('click', pauseTour);
     bridge.querySelector<HTMLButtonElement>('[data-tour-exit]')?.addEventListener('click', exitTour);
     next?.addEventListener('click', () => {
       if (state.stepIndex < steps.length - 1) navigateTo(state.stepIndex + 1);
@@ -182,8 +168,7 @@ const steps = locale === 'en' ? [
       }
     });
     segments.forEach((segment) => segment.addEventListener('click', () => navigateTo(Number(segment.dataset.tourJump ?? 0))));
-    resume.addEventListener('click', () => showStep(state.stepIndex, true));
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !bridge.hidden) pauseTour(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !bridge.hidden) exitTour(); });
 
     const requested = new URLSearchParams(window.location.search).get('recorrido');
     const requestedStep = requested && /^[3-9]$/.test(requested) ? Number(requested) - 1 : null;
@@ -192,7 +177,6 @@ const steps = locale === 'en' ? [
       showStep(requestedStep);
       scrollToHash();
     } else if (state.status === 'active') showStep(state.stepIndex);
-    else if (state.status === 'paused') setMode('paused');
     else setMode('idle');
   }
 </script>
@@ -213,7 +197,7 @@ const steps = locale === 'en' ? [
     background: var(--color-midnight-ink, #02093a);
     box-shadow: 0 28px 90px rgb(2 9 58 / 38%);
   }
-  .commercial-tour-bridge[hidden], .commercial-tour-bridge-resume[hidden] { display: none; }
+  .commercial-tour-bridge[hidden] { display: none; }
   .commercial-tour-bridge__progress { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 20px; }
   .commercial-tour-bridge__progress button { height: 22px; border: 0; padding: 9px 0; background: transparent; cursor: pointer; }
   .commercial-tour-bridge__progress button span { display: block; height: 3px; border-radius: 999px; background: rgb(255 255 255 / 20%); }
@@ -230,16 +214,11 @@ const steps = locale === 'en' ? [
   .commercial-tour-bridge__context p { margin: 5px 0 0; font-size: .73rem; line-height: 1.45; }
   .commercial-tour-bridge__actions { display: flex; gap: 8px; margin-top: 20px; }
   .commercial-tour-bridge__actions button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 16px; border: 1px solid rgb(255 255 255 / 20%); border-radius: 999px; padding: 9px 14px; color: white; background: transparent; cursor: pointer; font: inherit; font-size: .73rem; font-weight: 720; }
-  .commercial-tour-bridge__actions .commercial-tour-bridge__next { flex: 1; justify-content: space-between; color: var(--color-midnight-ink, #02093a); border-color: white; background: white; }
-  .commercial-tour-bridge-resume { position: fixed; z-index: 120; right: 20px; bottom: 20px; display: flex; min-height: 58px; align-items: center; gap: 12px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; padding: 8px 18px 8px 10px; color: white; background: var(--color-midnight-ink, #02093a); box-shadow: 0 18px 55px rgb(2 9 58 / 32%); cursor: pointer; font: inherit; }
-  .commercial-tour-bridge-resume > span:first-child { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: var(--color-midnight-ink, #02093a); background: var(--color-marigold, #ffd34e); font-size: .7rem; }
-  .commercial-tour-bridge-resume > span:last-child { display: grid; gap: 2px; text-align: left; font-size: .73rem; font-weight: 720; }
-  .commercial-tour-bridge-resume small { color: rgb(255 255 255 / 58%); font-size: .59rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+  .commercial-tour-bridge__actions .commercial-tour-bridge__next { width: 100%; flex: 1; justify-content: space-between; color: var(--color-midnight-ink, #02093a); border-color: white; background: white; }
   @media (max-width: 620px) {
     .commercial-tour-bridge { right: 8px; bottom: max(8px, env(safe-area-inset-bottom)); left: 8px; width: auto; max-height: calc(100dvh - 16px - env(safe-area-inset-bottom)); border-radius: 18px; padding: 18px; }
     .commercial-tour-bridge__body { font-size: .86rem; }
-    .commercial-tour-bridge-resume { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); }
   }
   @media (max-width: 380px) { .commercial-tour-bridge__context { display: none; } }
-  @media (prefers-reduced-motion: reduce) { .commercial-tour-bridge, .commercial-tour-bridge-resume { scroll-behavior: auto; } }
+  @media (prefers-reduced-motion: reduce) { .commercial-tour-bridge { scroll-behavior: auto; } }
 </style>

@@ -1,3 +1,11 @@
+## 2026-09-07 · Cierre visual e interactivo del home solicitado ✅
+
+- El bloque «Bonita por fuera. Bien resuelta por dentro.» se reconstruye con cinco interfaces code-native —web, reservas, sala, grupos y operativa—, tabs con iconos y ampliaciones de los datos que explican cada decisión. El carrusel narrativo incorpora iconografía específica en sus siete momentos.
+- Conexiones muestra marcas reales mediante los SVG oficiales de Simple Icons: Shopify, WooCommerce, PrestaShop, Squarespace, Wix, WordPress, Google Calendar, WhatsApp, Mailchimp, Resend, Zapier, Odoo y Stripe, además de Redsys. La composición distingue comercio, operativa, pago y el flujo de integración sin prometer conectores activos.
+- Las doce webs y seis paneles del home abren un popup centrado con evidencia, límites, enlace a la demo y ficha completa. Sus superficies conservan un enlace profundo utilizable sin JavaScript; los catálogos de temas y paneles enlazan también desde la imagen completa a su explicación.
+- El contacto de cabecera abre WhatsApp y desaparece la acción flotante inferior. El recorrido guiado mantiene los seis hitos pero elimina pausa/reanudación; Escape sale. Se centran los diálogos de preview y consulta, y el formulario de prefooter abandona la geometría excesivamente redonda.
+- QA visual realizado en navegador sobre home, tabs, ampliación de sala, conexiones y popup. `pnpm check`: **28/28**, con **161 tests** y builds de 68 páginas site + 52 páginas web. E2E dirigido del contrato completo del home: **5/5**, incluido escritorio, móvil, ES/EN y fallback sin JavaScript. No se desplegó producción ni se envió ningún lead.
+
 ## 2026-09-06 · Auditoría de los doce temas cerrada en local ✅
 
 - Revisadas las doce webs y sus fichas ES/EN: composición, tipografía, contraste, navegación, anclajes, cartas, horarios y solicitud. Menú móvil nativo compartido, utilizable con teclado y sin JavaScript; corregidas las superposiciones de precios de Vedra/Solane y la proporción de sus portadas móviles.

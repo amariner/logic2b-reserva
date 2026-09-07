@@ -70,8 +70,8 @@ export const SITE_CONTENT = {
     },
     platform: {
       eyebrow: 'Cinco momentos de plataforma',
-      title: 'Todo lo que necesitas para organizar un buen servicio.',
-      intro: 'Web, reservas, sala, eventos y decisiones. Explora cada área con las demos de nuestros restaurantes.',
+      title: 'Bonita por fuera. Bien resuelta por dentro.',
+      intro: 'La marca recibe al cliente; la operativa acompaña al equipo. Explora cinco momentos con interfaces claras y detalles ampliados.',
       tabsLabel: 'Momentos de la plataforma',
       resultLabel: 'Tu día a día',
       capabilitiesLabel: 'Qué puedes hacer',
@@ -196,7 +196,7 @@ export const SITE_CONTENT = {
       { id: 'communication', label: 'Communication', title: 'Coordinated communication.', body: 'Confirmations and follow-ups are prepared with context, without pretending to send automatically.' },
       { id: 'decision', label: 'Decision', title: 'Data to guide decisions.', body: 'Local reports and priorities support decisions without taking action on their own.' },
     ] },
-    platform: { eyebrow: 'Five platform moments', title: 'Everything you need for a well-run service.', intro: 'Website, bookings, floor, events and decisions. Explore each area with our restaurant demos.', tabsLabel: 'Platform moments', resultLabel: 'Outcome', capabilitiesLabel: 'What it demonstrates', limitLabel: 'Current limit', evidenceLabel: 'Real product evidence', items: [
+    platform: { eyebrow: 'Five platform moments', title: 'Beautiful outside. Thought through inside.', intro: 'The brand welcomes the guest; operations support the team. Explore five moments through clear interfaces and enlarged details.', tabsLabel: 'Platform moments', resultLabel: 'Outcome', capabilitiesLabel: 'What it demonstrates', limitLabel: 'Current limit', evidenceLabel: 'Real product evidence', items: [
       { id: 'web', label: 'Website', result: 'A website that whets the appetite.', capabilities: ['Conversion-led story and menu', 'Enquiry embedded in the owned website', 'Responsive design with a distinct brand'], limit: 'Domain, content, SEO and real enquiry delivery are defined for each implementation.', status: 'Demonstrative', tone: 'demo', image: '01-brasca-marca', alt: 'Responsive home page for the fictional Brasca restaurant with a booking call to action', href: '/demos/brasca/', action: 'Open the Brasca website' },
       { id: 'bookings', label: 'Bookings', result: 'Booking a table, made easy.', capabilities: ['Turns and party sizes', 'Optional or fixed menus', 'Enquiry context through confirmation'], limit: 'Inventory is local and fictional; it is not connected to a real restaurant engine or POS.', status: 'Demonstrative', tone: 'demo', image: '03-vedra-reserva', alt: 'Vedra booking engine with a time and group menu selected', href: '/demos/vedra/', action: 'Try a booking in Vedra' },
       { id: 'floor', label: 'Floor', result: 'The whole floor at a glance.', capabilities: ['Operational agenda for the day', 'Floor plan with table assignment', 'Waitlist and service states'], limit: 'There is no multi-user operation or shared synchronisation yet: state lives in this browser.', status: 'Demonstrative', tone: 'demo', image: '05-solane-inventario', alt: 'Solane floor plan with bookings and an event sharing table inventory', href: '/demos/solane/gestion/?vista=plano', action: 'Open the Solane floor plan' },

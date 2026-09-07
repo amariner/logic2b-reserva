@@ -208,25 +208,25 @@ const ui = locale === 'en' ? {
 </script>
 
 <style>
-  .lead-form { padding: clamp(22px, 4vw, 36px); background: white; }
+  .lead-form { border-radius: 6px; padding: clamp(22px, 4vw, 36px); background: white; }
   .lead-form--dialog { border: 0; border-radius: 0; padding: 0; }
   .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
   label { display: grid; gap: 8px; color: rgb(0 0 0 / 68%); font-size: .82rem; font-weight: 600; }
-  input, select, textarea { width: 100%; min-height: 46px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 9px; padding: 11px 12px; color: var(--ink); background: white; font: inherit; transition: border-color 160ms ease, box-shadow 160ms ease; }
+  input, select, textarea { width: 100%; min-height: 46px; border: 1px solid rgb(0 0 0 / 16%); border-radius: 4px; padding: 11px 12px; color: var(--ink); background: white; font: inherit; transition: border-color 160ms ease, box-shadow 160ms ease; }
   textarea { resize: vertical; }
   input:hover, select:hover, textarea:hover { border-color: rgb(0 0 0 / 28%); }
   input:focus, select:focus, textarea:focus { border-color: var(--color-notion-blue); box-shadow: 0 0 0 3px rgb(0 117 222 / 10%); }
   .lead-selections { display: grid; gap: 8px; margin: 0 0 18px; }
-  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 9px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
+  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 4px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
   .lead-selections[hidden], .lead-email-selection[hidden], .lead-plan-selection[hidden], .lead-interest-selection[hidden] { display: none; }
   .lead-email-selection span, .lead-plan-selection span, .lead-interest-selection > span { font-weight: 650; }
   .lead-email-selection strong, .lead-plan-selection strong, .lead-interest-selection strong { min-width: 0; overflow-wrap: anywhere; color: var(--ink); font-size: .82rem; text-align: right; }
   .lead-interest-selection i { font-style: normal; }
   .lead-form > label, .lead-form .field-row { margin-bottom: 14px; }
-  .privacy-check { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px !important; border: 1px solid var(--line); border-radius: 9px; padding: 12px; font-weight: 500; line-height: 1.35; }
+  .privacy-check { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px !important; border: 1px solid var(--line); border-radius: 4px; padding: 12px; font-weight: 500; line-height: 1.35; }
   .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
   .privacy-check a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; vertical-align: middle; text-underline-offset: 3px; }
-  .lead-submit { display: inline-flex; width: 100%; min-height: 50px; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-radius: 999px; padding: 10px 19px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 680; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
+  .lead-submit { display: inline-flex; width: 100%; min-height: 50px; align-items: center; justify-content: space-between; gap: 18px; border: 0; border-radius: 5px; padding: 10px 19px; color: white; background: var(--color-notion-blue); font: inherit; font-size: .9rem; font-weight: 680; text-decoration: none; cursor: pointer; transition: background-color 180ms ease, transform 180ms ease; }
   .lead-submit:hover { background: #0065bd; transform: translateY(-2px); }
   .lead-submit > span:last-child { font-size: 1.05rem; transition: transform 180ms ease; }
   .lead-submit:hover > span:last-child { transform: translateX(3px); }

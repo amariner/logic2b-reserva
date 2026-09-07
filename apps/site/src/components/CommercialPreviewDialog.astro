@@ -36,7 +36,8 @@ const ui = locale === 'en'
       </dl>
       <div class="commercial-preview__actions">
         <a data-commercial-preview-contact href="#contacto"><span data-commercial-preview-contact-label>{ui.contact}</span><span aria-hidden="true">→</span></a>
-        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.detail}</span><span aria-hidden="true">↗</span></a>
+        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.fallback}</span><span aria-hidden="true">↗</span></a>
+        <a data-commercial-preview-detail-link href="/"><span>{ui.detail}</span><span aria-hidden="true">→</span></a>
       </div>
     </div>
   </div>
@@ -67,6 +68,7 @@ const ui = locale === 'en'
     const contactLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-contact-label]');
     const link = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]');
     const linkLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-link-label]');
+    const detailLink = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-detail-link]');
     let returnFocus: HTMLElement | null = null;
 
     const detailUrlFor = (trigger: HTMLElement) => {
@@ -124,14 +126,9 @@ const ui = locale === 'en'
         if (limit) limit.textContent = trigger.dataset.previewLimit ?? '';
         if (contact) contact.href = trigger.dataset.previewContactUrl ?? '#contacto';
         if (contactLabel) contactLabel.textContent = trigger.dataset.previewContactAction ?? contactLabel.textContent ?? '';
-        if (link) {
-          const detailUrl = detailUrlFor(trigger);
-          link.href = detailUrl;
-          if (linkLabel) {
-            const hasDetail = Boolean(trigger.dataset.previewDetailUrl) || detailUrl.includes('/temas/') || detailUrl.includes('/paneles/');
-            linkLabel.textContent = trigger.dataset.previewDetailAction ?? (hasDetail ? (document.documentElement.lang === 'en' ? 'View full details' : 'Ver ficha completa') : trigger.dataset.previewAction ?? linkLabel.textContent ?? '');
-          }
-        }
+        if (link) link.href = trigger.dataset.previewUrl ?? '/';
+        if (linkLabel) linkLabel.textContent = trigger.dataset.previewAction ?? linkLabel.textContent ?? '';
+        if (detailLink) detailLink.href = detailUrlFor(trigger);
         preview.showModal();
       });
     }
@@ -139,6 +136,7 @@ const ui = locale === 'en'
     preview.querySelector<HTMLButtonElement>('[data-commercial-preview-close]')?.addEventListener('click', () => preview.close());
     preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]')?.addEventListener('click', () => preview.close());
     preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]')?.addEventListener('click', () => preview.close());
+    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-detail-link]')?.addEventListener('click', () => preview.close());
     preview.addEventListener('click', (event) => {
       if (event.target === preview) preview.close();
     });
@@ -151,10 +149,9 @@ const ui = locale === 'en'
 
 <style is:global>
   button[data-commercial-preview-trigger], button[data-theme-preview-open], button[data-panel-preview-open] { display: none; }
-  .commercial-preview-ready [data-commercial-preview-trigger], .commercial-preview-ready [data-theme-preview-open], .commercial-preview-ready [data-panel-preview-open] { display: inline-flex; }
+  .commercial-preview-ready button[data-commercial-preview-trigger], .commercial-preview-ready button[data-theme-preview-open], .commercial-preview-ready button[data-panel-preview-open] { display: inline-flex; }
   .commercial-preview-ready .theme-rail-card > [data-commercial-preview-trigger] { display: block; }
-  .commercial-preview-ready .panel-teaser-card__actions { grid-template-columns: 1fr 1fr; }
-  .commercial-preview { width: min(1080px, calc(100% - 32px)); max-width: none; max-height: min(820px, calc(100dvh - 32px)); overflow: visible; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
+  .commercial-preview { inset: 0; width: min(1080px, calc(100% - 32px)); max-width: none; max-height: min(820px, calc(100dvh - 32px)); margin: auto; overflow: visible; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
   .commercial-preview::backdrop { background: rgb(7 14 43 / 72%); backdrop-filter: blur(5px); }
   .commercial-preview__frame { display: grid; height: min(720px, calc(100dvh - 32px)); min-height: 0; grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); overflow: hidden; border-radius: inherit; }
   .commercial-preview__close { position: absolute; z-index: 3; top: -12px; right: -12px; display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid rgb(0 0 0 / 12%); border-radius: 50%; color: var(--ink); background: white; box-shadow: 0 10px 24px rgb(7 14 43 / 18%); cursor: pointer; font-size: 1.55rem; }
@@ -177,7 +174,7 @@ const ui = locale === 'en'
   .commercial-preview__boundary dd { color: var(--slate); }
   .commercial-preview__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 24px; }
   .commercial-preview__actions a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--ink); background: white; font-size: .75rem; font-weight: 750; text-decoration: none; }
-  .commercial-preview__actions a:first-child { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
+  .commercial-preview__actions a:first-child { grid-column: 1 / -1; color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
   @media (min-width: 761px) and (max-height: 780px) {
     .commercial-preview__copy { justify-content: flex-start; padding: 28px 34px; }
     .commercial-preview__context { margin-bottom: 14px; }
@@ -195,6 +192,8 @@ const ui = locale === 'en'
     .commercial-preview__copy { padding: 26px 22px 30px; }
     .commercial-preview__copy h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
     .commercial-preview__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
+    .commercial-preview__actions { grid-template-columns: 1fr; }
+    .commercial-preview__actions a:first-child { grid-column: auto; }
     .commercial-preview__close { position: fixed; top: 18px; right: 18px; }
   }
   @media (max-width: 420px) {

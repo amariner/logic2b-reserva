@@ -54,5 +54,5 @@
 @media(max-width:640px){.commercial-site.commercial-site .guide-grid{grid-template-columns:1fr}.commercial-site.commercial-site .footer-grid{gap:24px}.commercial-site.commercial-site .site-footer{padding-top:44px}}
 @media(max-width:760px){.commercial-site.commercial-site .start-copy h1{font-size:2.65rem}.commercial-site.commercial-site .start-copy>aside{display:none}.commercial-site.commercial-site .start-copy>.eyebrow{margin-top:14px}.commercial-site.commercial-site .start-intro{margin-top:18px;font-size:.93rem}.commercial-site.commercial-site .start-copy ul{gap:8px;margin-top:18px}}
 /* Preview buttons only become actionable after their dialog is initialized. */
-html:not(.commercial-preview-ready) .commercial-site [data-commercial-preview-trigger]{display:none!important}
+html:not(.commercial-preview-ready) .commercial-site button[data-commercial-preview-trigger]{display:none!important}
 .commercial-site.commercial-site .hero-support a{display:inline-flex;align-items:center;min-width:44px;min-height:44px}

@@ -1,0 +1,35 @@
+---
+interface Props { name: string; size?: number; label?: string }
+
+const { name, size = 24, label } = Astro.props;
+const paths: Record<string, string[]> = {
+  web: ['M3.5 5.5h17v13h-17zM3.5 9h17', 'M7 7.25h.01M10 7.25h.01', 'M8 14h8'],
+  availability: ['M5 4h14v16H5zM8 2v4M16 2v4M5 8h14', 'M8 12h3v3H8zM14 12h2M14 15h2'],
+  booking: ['M5 4h14v16H5zM8 2v4M16 2v4M5 8h14', 'm9 14 2 2 4-5'],
+  service: ['M4 6h16v14H4zM4 10h16', 'M8 14h3M14 14h2M8 17h8'],
+  guarantee: ['M4 7h16v11H4zM4 10h16', 'M8 14h3M16 14h.01'],
+  communication: ['M4 5h16v12H8l-4 3V5Z', 'M8 9h8M8 13h5'],
+  decision: ['M4 19V10M10 19V5M16 19v-7M22 19V8M2 19h20', 'm4 8 6-5 6 7 6-5'],
+  bookings: ['M5 4h14v16H5zM8 2v4M16 2v4M5 8h14', 'm9 14 2 2 4-5'],
+  floor: ['M4 5h16v15H4zM8 5v15M16 5v15M4 12h16', 'M10 9h4M10 16h4'],
+  groups: ['M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM16 10a2.5 2.5 0 1 0 0-5', 'M3 20v-2a5 5 0 0 1 10 0v2M13 14a4 4 0 0 1 8 3v3'],
+  operations: ['M4 19V9M10 19V5M16 19V12M22 19V7M2 19h20', 'm4 7 6-4 6 6 6-4'],
+};
+const selected = paths[name] ?? paths.web;
+---
+
+<svg
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="none"
+  stroke="currentColor"
+  stroke-width="1.7"
+  stroke-linecap="round"
+  stroke-linejoin="round"
+  aria-hidden={label ? undefined : 'true'}
+  role={label ? 'img' : undefined}
+>
+  {label && <title>{label}</title>}
+  {selected.map((path) => <path d={path} />)}
+</svg>

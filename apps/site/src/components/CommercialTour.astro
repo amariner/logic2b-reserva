@@ -10,15 +10,15 @@ const ui = locale === 'en' ? {
   introTitle: 'From the website to the restaurant floor.',
   introBody: 'In under four minutes, follow the offer, the restaurant identity, a direct booking and the decisions that reach the floor.',
   introMeta: '9 milestones · under 4 minutes · fictional data', start: 'Start guided journey', explore: 'Explore freely',
-  progress: 'Journey progress', visible: 'What you are seeing', pause: 'Pause', next: 'Next milestone',
-  finish: 'View plans', exit: 'Exit', resume: 'Resume guided journey', paused: 'Journey paused',
+  progress: 'Journey progress', visible: 'What you are seeing', next: 'Next milestone',
+  finish: 'View plans', exit: 'Exit',
 } : {
   close: 'Salir del recorrido', eyebrow: 'Recorrido guiado de Logic Reserva',
   introTitle: 'De la web al trabajo de sala.',
   introBody: 'En menos de cuatro minutos recorrerás la oferta, la identidad del restaurante, una reserva directa y las decisiones que llegan a sala.',
   introMeta: '9 hitos · menos de 4 minutos · datos ficticios', start: 'Iniciar visita guiada', explore: 'Explorar libremente',
-  progress: 'Progreso del recorrido', visible: 'Qué estás viendo', pause: 'Pausar', next: 'Siguiente hito',
-  finish: 'Ver planes', exit: 'Salir', resume: 'Reanudar recorrido guiado', paused: 'Recorrido pausado',
+  progress: 'Progreso del recorrido', visible: 'Qué estás viendo', next: 'Siguiente hito',
+  finish: 'Ver planes', exit: 'Salir',
 };
 const finishHref = `${prefix}/planes/`;
 const steps = locale === 'en' ? [
@@ -167,22 +167,16 @@ const steps = locale === 'en' ? [
   <p class="commercial-tour-dock__body" data-tour-dock-body></p>
   <div class="commercial-tour-dock__context"><strong>{ui.visible}</strong><p data-tour-dock-visible></p></div>
   <div class="commercial-tour-dock__actions">
-    <button type="button" data-tour-pause>{ui.pause}</button>
     <button class="commercial-tour-dock__next" type="button" data-tour-next data-next-label={ui.next} data-finish-label={ui.finish}><span data-tour-next-text>{ui.next}</span><span aria-hidden="true">→</span></button>
   </div>
 </aside>
 
-<button class="commercial-tour-resume" type="button" data-tour-resume hidden>
-  <span aria-hidden="true">▶</span><span><small>{ui.paused}</small>{ui.resume}</span>
-</button>
-
 <script>
   const tourIntro = document.querySelector<HTMLDialogElement>('[data-commercial-tour-intro]');
   const tourDock = document.querySelector<HTMLElement>('[data-commercial-tour-dock]');
-  const tourResume = document.querySelector<HTMLButtonElement>('[data-tour-resume]');
-  if (tourIntro && tourDock && tourResume) {
+  if (tourIntro && tourDock) {
     type TourStep = { label: string; title: string; body: string; visible: string; href: string };
-    type TourStatus = 'idle' | 'intro' | 'active' | 'paused' | 'complete';
+    type TourStatus = 'idle' | 'intro' | 'active' | 'complete';
     type TourState = { status: TourStatus; stepIndex: number };
     const storageKey = tourIntro.dataset.tourStorageKey ?? 'logic2b:reserva-tour:v1';
     const finishHref = tourIntro.dataset.tourFinishHref ?? '/planes/';
@@ -198,7 +192,7 @@ const steps = locale === 'en' ? [
       } catch { return []; }
     };
     const steps = parseSteps();
-    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'paused', 'complete']);
+    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'complete']);
     const fallbackState: TourState = { status: 'idle', stepIndex: 0 };
     const readState = (): TourState => {
       try {
@@ -233,9 +227,8 @@ const steps = locale === 'en' ? [
       const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
       if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
     };
-    const setUiMode = (mode: 'idle' | 'active' | 'paused') => {
+    const setUiMode = (mode: 'idle' | 'active') => {
       tourDock.hidden = mode !== 'active';
-      tourResume.hidden = mode !== 'paused';
     };
     const showDock = (index: number) => {
       const step = steps[index];
@@ -265,11 +258,6 @@ const steps = locale === 'en' ? [
       setUiMode('idle');
       if (tourIntro.open) tourIntro.close();
     };
-    const pauseTour = () => {
-      state = writeState({ status: 'paused', stepIndex: state.stepIndex });
-      cleanTourUrl();
-      setUiMode('paused');
-    };
     const navigateTo = (index: number) => {
       const step = steps[index];
       if (!step) return;
@@ -280,8 +268,7 @@ const steps = locale === 'en' ? [
     document.querySelectorAll<HTMLAnchorElement>('[data-tour-trigger], [data-camp-tour-trigger]').forEach((trigger) => {
       trigger.addEventListener('click', (event) => {
         event.preventDefault();
-        if (state.status === 'paused') showDock(state.stepIndex);
-        else showIntro();
+        showIntro();
       });
     });
     tourIntro.querySelector<HTMLElement>('[data-tour-start]')?.addEventListener('click', (event) => { event.preventDefault(); navigateTo(0); });
@@ -289,7 +276,6 @@ const steps = locale === 'en' ? [
     tourIntro.querySelectorAll<HTMLElement>('[data-tour-exit]').forEach((control) => control.addEventListener('click', exitTour));
     tourIntro.addEventListener('click', (event) => { if (event.target === tourIntro) exitTour(); });
     tourIntro.addEventListener('cancel', () => { state = writeState({ status: 'idle', stepIndex: 0 }); });
-    tourDock.querySelector<HTMLElement>('[data-tour-pause]')?.addEventListener('click', pauseTour);
     tourDock.querySelectorAll<HTMLElement>('[data-tour-exit]').forEach((control) => control.addEventListener('click', exitTour));
     next?.addEventListener('click', () => {
       if (state.stepIndex < steps.length - 1) navigateTo(state.stepIndex + 1);
@@ -299,8 +285,7 @@ const steps = locale === 'en' ? [
       }
     });
     segments.forEach((segment) => segment.addEventListener('click', () => navigateTo(Number(segment.dataset.tourJump ?? 0))));
-    tourResume.addEventListener('click', () => showDock(state.stepIndex));
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !tourDock.hidden) pauseTour(); });
+    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !tourDock.hidden) exitTour(); });
     window.addEventListener('hashchange', scrollToHash);
 
     const requested = new URLSearchParams(window.location.search).get('recorrido');
@@ -313,14 +298,13 @@ const steps = locale === 'en' ? [
       showDock(requestedIndex);
       scrollToHash();
     } else if (state.status === 'active') showDock(state.stepIndex);
-    else if (state.status === 'paused') setUiMode('paused');
     else if (state.status === 'intro') showIntro();
     else setUiMode('idle');
   }
 </script>
 
 <style>
-  .commercial-tour-intro { width: min(670px, calc(100vw - 28px)); max-height: min(760px, calc(100dvh - 28px)); overflow: visible; border: 0; border-radius: 22px; padding: 0; color: var(--ink); background: transparent; }
+  .commercial-tour-intro { inset: 0; width: min(670px, calc(100vw - 28px)); max-height: min(760px, calc(100dvh - 28px)); margin: auto; overflow: visible; border: 0; border-radius: 22px; padding: 0; color: var(--ink); background: transparent; }
   .commercial-tour-intro::backdrop { background: rgb(2 9 58 / 76%); backdrop-filter: blur(8px); }
   .commercial-tour-intro > article { position: relative; overflow: auto; max-height: min(760px, calc(100dvh - 28px)); border-radius: 22px; padding: clamp(30px, 6vw, 58px); background: var(--paper); box-shadow: 0 34px 110px rgb(0 0 0 / 38%); }
   .commercial-tour-intro__close { position: absolute; top: 16px; right: 16px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--slate); background: white; cursor: pointer; font-size: 1.35rem; }
@@ -332,7 +316,7 @@ const steps = locale === 'en' ? [
   .commercial-tour-intro__actions a, .commercial-tour-intro__actions button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 20px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--slate); background: white; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 720; text-decoration: none; }
   .commercial-tour-intro__actions a { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
   .commercial-tour-dock { position: fixed; z-index: 82; right: 20px; bottom: 20px; width: min(440px, calc(100vw - 40px)); border: 1px solid rgb(255 255 255 / 14%); border-radius: 20px; padding: 22px; color: white; background: var(--color-midnight-ink); box-shadow: 0 28px 90px rgb(2 9 58 / 38%); }
-  .commercial-tour-dock[hidden], .commercial-tour-resume[hidden] { display: none; }
+  .commercial-tour-dock[hidden] { display: none; }
   .commercial-tour-dock__progress { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 20px; }
   .commercial-tour-dock__progress button { height: 18px; border: 0; padding: 7px 0; background: transparent; cursor: pointer; }
   .commercial-tour-dock__progress button span { display: block; height: 3px; border-radius: 999px; background: rgb(255 255 255 / 20%); }
@@ -349,11 +333,7 @@ const steps = locale === 'en' ? [
   .commercial-tour-dock__context p { margin: 5px 0 0; font-size: .73rem; line-height: 1.45; }
   .commercial-tour-dock__actions { display: flex; gap: 8px; margin-top: 20px; }
   .commercial-tour-dock__actions button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 16px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; padding: 9px 14px; color: white; background: transparent; cursor: pointer; font: inherit; font-size: .73rem; font-weight: 720; }
-  .commercial-tour-dock__actions .commercial-tour-dock__next { flex: 1; justify-content: space-between; color: var(--color-midnight-ink); border-color: white; background: white; }
-  .commercial-tour-resume { position: fixed; z-index: 82; right: 20px; bottom: 20px; display: flex; min-height: 58px; align-items: center; gap: 12px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; padding: 8px 18px 8px 10px; color: white; background: var(--color-midnight-ink); box-shadow: 0 18px 55px rgb(2 9 58 / 32%); cursor: pointer; }
-  .commercial-tour-resume > span:first-child { display: grid; width: 38px; height: 38px; place-items: center; border-radius: 50%; color: var(--color-midnight-ink); background: var(--color-marigold); font-size: .7rem; }
-  .commercial-tour-resume > span:last-child { display: grid; gap: 2px; text-align: left; font-size: .73rem; font-weight: 720; }
-  .commercial-tour-resume small { color: rgb(255 255 255 / 48%); font-size: .59rem; font-weight: 650; letter-spacing: .06em; text-transform: uppercase; }
+  .commercial-tour-dock__actions .commercial-tour-dock__next { width: 100%; flex: 1; justify-content: space-between; color: var(--color-midnight-ink); border-color: white; background: white; }
   @media (max-width: 620px) {
     .commercial-tour-intro { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
     .commercial-tour-intro > article { max-height: calc(100dvh - 16px); border-radius: 17px; padding: 32px 22px 24px; }
@@ -361,7 +341,6 @@ const steps = locale === 'en' ? [
     .commercial-tour-intro__actions { display: grid; }
     .commercial-tour-dock { right: 8px; bottom: 8px; left: 8px; width: auto; max-height: calc(100dvh - 16px); overflow-y: auto; border-radius: 18px; padding: 18px; }
     .commercial-tour-dock__body { font-size: .86rem; }
-    .commercial-tour-resume { right: 10px; bottom: 10px; }
   }
   @media (max-width: 380px) { .commercial-tour-dock__context { display: none; } }
   @media (prefers-reduced-motion: reduce) { .commercial-tour-intro::backdrop { backdrop-filter: none; } }
