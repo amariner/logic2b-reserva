@@ -154,7 +154,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog.locator('[data-commercial-preview-evidence]')).toHaveText('Web y formulario de solicitud local');
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('Marca y contenidos ficticios');
     await expect(dialog.getByRole('link', { name: /Quiero una web así/ })).toHaveAttribute('href', '/empezar/?theme=brasca');
-    await expect(dialog.getByRole('link', { name: /Abrir web/ })).toHaveAttribute('href', '/demos/brasca/');
+    await expect(dialog.getByRole('link', { name: /Ver ficha completa/ })).toHaveAttribute('href', '/temas/brasca/');
     await dialog.getByRole('button', { name: 'Cerrar vista previa' }).click();
     await expect(themeTrigger).toBeFocused();
 
@@ -168,7 +168,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(dialog.locator('[data-commercial-preview-evidence]')).toContainText('servicio del 18 de septiembre');
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('no hay operación multiusuario');
     await expect(dialog.getByRole('link', { name: /Quiero esta vista de producto/ })).toHaveAttribute('href', '/empezar/?panel=servicio');
-    await expect(dialog.getByRole('link', { name: /Abrir vista/ })).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
+    await expect(dialog.getByRole('link', { name: /Ver ficha completa/ })).toHaveAttribute('href', '/paneles/servicio/');
     await page.keyboard.press('Escape');
     await expect(panelTrigger).toBeFocused();
     await panelTrigger.click();
@@ -184,7 +184,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await englishTrigger.click();
     await expect(page.locator('[data-commercial-preview-address]')).toHaveText('brasca.yourdomain.com');
     await expect(page.locator('[data-commercial-preview]').getByRole('link', { name: /I want a website like this/ })).toHaveAttribute('href', '/en/empezar/?theme=brasca');
-    await expect(page.locator('[data-commercial-preview]').getByRole('link', { name: /Open website/ })).toHaveAttribute('href', '/en/demos/brasca/');
+    await expect(page.locator('[data-commercial-preview]').getByRole('link', { name: /View full details/ })).toHaveAttribute('href', '/en/temas/brasca/');
     await page.getByRole('button', { name: 'Close preview' }).click();
     await expect(englishTrigger).toBeFocused();
 
@@ -694,7 +694,7 @@ test.describe('landing comercial Logic Reserva', () => {
     expect(writes).toEqual([]);
   });
 
-  test('el recorrido guiado atraviesa oferta, web, producto y solicitud sin escrituras', async ({ page }) => {
+  test('el recorrido guiado atraviesa oferta, web y producto sin escrituras', async ({ page }) => {
     const writes: string[] = [];
     page.on('request', (request) => { if (!['GET', 'HEAD'].includes(request.method())) writes.push(`${request.method()} ${request.url()}`); });
 
@@ -704,31 +704,33 @@ test.describe('landing comercial Logic Reserva', () => {
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('heading', { name: 'De la web al trabajo de sala.' })).toBeVisible();
-    await expect(dialog.getByText('6 hitos · menos de 3 minutos · datos ficticios')).toBeVisible();
+    await expect(dialog.getByText('9 hitos · menos de 4 minutos · datos ficticios')).toBeVisible();
     await expect(dialog.locator('[data-tour-step-actions]')).toBeHidden();
     await dialog.getByRole('link', { name: /Iniciar visita guiada/ }).click();
 
+    const dock = page.locator('[data-commercial-tour-dock], [data-commercial-tour-bridge]');
     const milestones = [
-      { url: /\/\?recorrido=1#planes$/, title: 'Tres puntos de partida útiles.', progress: '1' },
-      { url: /\/temas\/\?recorrido=2$/, title: 'Doce direcciones, una base de producto.', progress: '2' },
-      { url: /\/temas\/vedra\/\?recorrido=3$/, title: 'La web abre la conversación operativa.', progress: '3' },
-      { url: /\/paneles\/\?recorrido=4$/, title: 'Seis vistas alrededor de decisiones del equipo.', progress: '4' },
-      { url: /\/paneles\/plano\/\?recorrido=5$/, title: 'El evento también ocupa mesa.', progress: '5' },
-      { url: /\/empezar\/\?plan=gestion&recorrido=6$/, title: 'Tu proyecto empieza con contexto, no con una cuenta.', progress: '6' },
+      { url: /\/#planes$/, title: 'Tres puntos de partida útiles.' },
+      { url: /\/temas\/$/, title: 'Doce direcciones, una base de producto.' },
+      { url: /\/demos\/vedra\/$/, title: 'Vedra mantiene reconocible al restaurante.' },
+      { url: /\/demos\/vedra\/#reserva$/, title: 'El cliente reserva sin salir del restaurante.' },
+      { url: /\/demos\/vedra\/gestion\/\?vista=servicio$/, title: 'La solicitud llega al equipo con contexto.' },
+      { url: /\/demos\/vedra\/gestion\/\?vista=plano$/, title: 'El evento también ocupa mesa.' },
+      { url: /\/demos\/vedra\/gestion\/\?vista=reservas$/, title: 'Reservas, espera y clientes permanecen juntos.' },
+      { url: /\/demos\/vedra\/gestion\/\?vista=informes$/, title: 'El motivo permanece visible.' },
+      { url: /\/demos\/vedra\/gestion\/\?vista=ajustes$/, title: 'Las reglas operativas cierran el recorrido.' },
     ];
     for (const [index, milestone] of milestones.entries()) {
       await expect(page).toHaveURL(milestone.url);
-      await expect(dialog).toBeVisible();
-      await expect(dialog.getByRole('heading', { name: milestone.title })).toBeVisible();
-      await expect(dialog.getByRole('progressbar')).toHaveJSProperty('value', Number(milestone.progress));
-      await expect(dialog.locator('[data-tour-intro-actions]')).toBeHidden();
+      await expect(dock).toBeVisible();
+      await expect(dock.getByRole('heading', { name: milestone.title })).toBeVisible();
+      await expect(dock.locator('[data-tour-jump][aria-current="step"]')).toHaveAttribute('data-tour-jump', String(index));
       expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
-      if (index < milestones.length - 1) await dialog.getByRole('button', { name: /Siguiente hito/ }).click();
+      if (index < milestones.length - 1) await dock.getByRole('button', { name: /Siguiente hito/ }).click();
     }
-    await dialog.getByRole('button', { name: /Terminar en la solicitud de proyecto/ }).click();
-    await expect(dialog).toBeHidden();
-    await expect(page).toHaveURL(/\/empezar\/\?plan=gestion$/);
-    await expect(page.locator('[data-plan-selection-name]')).toHaveText('Gestión');
+    await dock.getByRole('button', { name: /Ver planes/ }).click();
+    await expect(dock).toBeHidden();
+    await expect(page).toHaveURL(/\/planes\/$/);
 
     await page.goto('/en/?recorrido=intro', { waitUntil: 'networkidle' });
     await expect(dialog.getByRole('heading', { name: 'From the website to the restaurant floor.' })).toBeVisible();
@@ -899,7 +901,7 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
       expect(await chapters.count(), slug).toBeGreaterThanOrEqual(3);
       await expect(page.locator('.guide-body li')).toHaveCount((await chapters.count()) * 3);
       await expect(page.getByRole('link', { name: 'Comparar planes' })).toHaveAttribute('href', '/planes/');
-      await expect(page.getByRole('link', { name: 'Explorar vistas de producto' })).toHaveAttribute('href', '/paneles/');
+      await expect(page.locator('main').getByRole('link', { name: 'Explorar vistas de producto' })).toHaveAttribute('href', '/paneles/');
       await expect(page.getByRole('link', { name: 'Hablar de mi implantación' })).toHaveAttribute('href', '/#contacto');
       const schemas = await page.locator('script[type="application/ld+json"]').allTextContents();
       expect(schemas.map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type'])).toContain('Article');
@@ -914,7 +916,7 @@ test.describe('F25 · planes, implantación y guías públicas', () => {
   test('planes, demos, paneles, guías y contacto forman un recorrido sin callejones', async ({ page }) => {
     await page.goto('/planes/', { waitUntil: 'networkidle' });
     await expect(page.locator('.plan-card[data-plan="basico"] .pricing-links a')).toBeVisible();
-    await expect(page.getByRole('link', { name: /Explorar vistas de producto/ })).toHaveAttribute('href', '/paneles/');
+    await expect(page.locator('main').getByRole('link', { name: /Explorar vistas de producto/ })).toHaveAttribute('href', '/paneles/');
     await expect(page.getByRole('link', { name: /Leer guías de implantación/ })).toHaveAttribute('href', '/docs/');
     await expect(page.getByRole('link', { name: /Hablar de mi alcance/ })).toHaveAttribute('href', '/#contacto');
 

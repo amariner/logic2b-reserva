@@ -85,7 +85,7 @@
       "width": 1366,
       "height": 900,
       "file": "04-vedra-grupo-desktop.png",
-      "sha256": "ddf2a20356f0358e873cf761179488559a72457a54a9d50cc11e2ac734fa5464"
+      "sha256": "4709f1e8c55496d3cbe0e25bbb2f328651308503f6eac46113af282090e9f752"
     },
     {
       "order": "04",
@@ -97,7 +97,7 @@
       "width": 375,
       "height": 812,
       "file": "04-vedra-grupo-mobile.png",
-      "sha256": "43b2c717e927e6e9a2a1b1aa57e520a113779e411ea45531e3bc2c457733320f"
+      "sha256": "77466b64d6daa5ecb8748d8802b1da9492e6dd1dc1b6d6d91fe334d2fbec0f54"
     },
     {
       "order": "05",
@@ -121,7 +121,7 @@
       "width": 375,
       "height": 812,
       "file": "05-solane-inventario-mobile.png",
-      "sha256": "2aef8c26e72451ce231e2aa40257d2444e6e31870b676381e7556900283fd981"
+      "sha256": "fe02130bb8e0cae81526f6675090e1f2dbdbcf74e64b8bfcb54576073230fbe9"
     },
     {
       "order": "06",
@@ -157,7 +157,7 @@
       "width": 1366,
       "height": 900,
       "file": "07-solane-privatizacion-desktop.png",
-      "sha256": "f89e6f8df850520e2b4e2b04e897da450b0c181de1db9803b8bb5dc098f50259"
+      "sha256": "ab77fbe61eb03225b7d84ba33553cbf7aeaab76d5ae8dedbc58eba862202b12a"
     },
     {
       "order": "07",
@@ -169,7 +169,7 @@
       "width": 375,
       "height": 812,
       "file": "07-solane-privatizacion-mobile.png",
-      "sha256": "9135916ac53ce7bbce7e6f8cd5ec5b1a0aeb6ce958c3587f1e2537e5532a515f"
+      "sha256": "12885356259686f9cf8998c76a49cffba781cb3bf18f7a61b010c6559264d402"
     },
     {
       "order": "08",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "584c4d2142d7787e49147e6aba3829544ccbe2b449f6c4e4a9704526d8e38a35"
+      "sha256": "4928f51765c47c150a23dff90dc334b50da64fde3d7ce5366f9bb6b3ef4aef64"
     },
     {
       "order": "08",
@@ -193,7 +193,7 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "bf3dda85c47612b199f22202dea93d305226f71f85d0c4bb34d6191e4b38d4fb"
+      "sha256": "6b4c90bed828cc18729a296f9a5692fb6ffcac19536ea4a0f5bae565e7d7202c"
     },
     {
       "order": "09",
