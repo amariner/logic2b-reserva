@@ -6,16 +6,16 @@ import CommercialHeader from './CommercialHeader.astro';
 import CommercialTour from './CommercialTour.astro';
 import CookiePreferences from './CookiePreferences.astro';
 
-interface Props { locale?: Locale; languageHref: string }
+interface Props { locale?: Locale; languageHref: string; closing?: boolean }
 
-const { locale = 'es', languageHref } = Astro.props;
+const { locale = 'es', languageHref, closing = true } = Astro.props;
 ---
 
 <CommercialHeader locale={locale} languageHref={languageHref} />
 
 <slot />
 
-<CommercialClosing locale={locale} />
+{closing && <CommercialClosing locale={locale} />}
 <CommercialFooter locale={locale} languageHref={languageHref} />
 <CookiePreferences locale={locale} />
 <CommercialTour locale={locale} />
