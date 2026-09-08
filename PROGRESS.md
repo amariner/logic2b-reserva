@@ -1,3 +1,12 @@
+## 2026-09-08 · Gráficos de plataforma, fotografía y vídeos Higgsfield ✅
+
+- Web incorpora una fotografía editorial original de OpenAI, carta de detalle, composición de escritorio/móvil y dos películas silenciosas de cinco segundos generadas con Higgsfield. Los uploads de la cuenta devolvieron HTTP 403; se usó la referencia Brasca ya existente y se documentaron los recursos nuevos, prompts y jobs en `apps/site/assets/platform/README.md`.
+- Los cinco momentos amplían su detalle operativo y disponen de zoom accionable centrado: solicitud, preferencias, mesa, capacidad de grupo y señales para una decisión humana. Etiquetas ES/EN, teclado, movimiento reducido, fallback sin JavaScript e identificación expresa de interfaces ilustradas con datos ficticios.
+- Los vídeos se descargan solo tras pulsar reproducir, alternan y se pausan al ocultar pestaña, documento o bloque. Se sirven localmente, sin embeds ni llamadas de runtime a proveedores. No cambia ningún backend ni se envía un lead.
+- `pnpm check` 28/28 con 161 tests. Regresión de **94 escenarios verificados**: 90 pasan en la ejecución integral de 12 minutos y cuatro aserciones obsoletas del cierre anterior pasan en repeticiones dirigidas tras actualizar selectores, sin modificar el producto fuera del bloque. Los dos E2E nuevos verifican reproducción, cambio de clip y zoom en los cinco momentos a 320/375/1366 px en ES/EN. Runtime local directo Miniflare/workerd ante el cierre conocido de ProxyWorker, con correo deshabilitado.
+- Dos pases del generador contractual coinciden **42/42 byte a byte**, comparación visual **42/42**; digest `15bb46a52800d154d7c6704f1a52781a178b3716a1e8ea65993c008dae4db4e3`. WebP anteriores preservados y capturas actualizadas. Dry-runs estrictos de preview/producción aceptan 469 assets y mantienen DEMO_MODE, transporte comercial y D1 cero.
+- El propietario ha autorizado explícitamente integración en GitHub y despliegue de producción. Publicación en curso; el resultado remoto se registrará tras los smoke GET/HEAD.
+
 ## 2026-09-07 · Cierre visual e interactivo del home solicitado ✅
 
 - El bloque «Bonita por fuera. Bien resuelta por dentro.» se reconstruye con cinco interfaces code-native —web, reservas, sala, grupos y operativa—, tabs con iconos y ampliaciones de los datos que explican cada decisión. El carrusel narrativo incorpora iconografía específica en sus siete momentos.

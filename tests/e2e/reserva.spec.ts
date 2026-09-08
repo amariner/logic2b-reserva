@@ -418,15 +418,22 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.locator('[data-platform-tab][data-platform-target="groups"]').click();
     await expect(page.locator('[data-platform-panel][data-platform-id="groups"]')).toBeVisible();
     await expect(page.locator('.platform-limit')).toHaveCount(5);
-    await expect(page.locator('.platform-evidence img')).toHaveCount(5);
+    await expect(page.locator('.platform-evidence .interface-art[role="img"]')).toHaveCount(5);
+    const detail = page.locator('[data-platform-id="groups"] [data-platform-zoom]');
+    await detail.click();
+    await expect(detail).toHaveAttribute('aria-pressed', 'true');
+    await expect(page.locator('[data-platform-id="groups"] .platform-artwork')).toHaveClass(/is-zoomed/);
+    await detail.click();
+    await expect(detail).toHaveAttribute('aria-pressed', 'false');
     for (const panel of await panels.all()) await expect(panel.locator('.platform-capabilities li')).toHaveCount(3);
 
     const connections = page.locator('#conexiones');
     await expect(connections.locator('.connection-family')).toHaveCount(3);
-    await expect(connections.getByText('Conectado', { exact: true })).toHaveCount(2);
-    await expect(connections.getByText('Demostrativo', { exact: true })).toHaveCount(2);
-    await expect(connections.getByText('Previsto', { exact: true })).toHaveCount(2);
-    await expect(connections.getByText('Por proyecto', { exact: true })).toHaveCount(3);
+    await expect(connections.getByRole('heading', { name: 'Comercio y web', exact: true })).toBeVisible();
+    await expect(connections.getByRole('heading', { name: 'Operativa diaria', exact: true })).toBeVisible();
+    await expect(connections.getByRole('heading', { name: 'Pagos y señales', exact: true })).toBeVisible();
+    await expect(connections.locator('.brand-cloud li')).toHaveCount(12);
+    await expect(connections.locator('.connections-boundary')).toHaveText('Las conexiones se activan solo tras validar técnica, permisos y pruebas de aceptación.');
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
     await expect(page.getByRole('heading', { level: 2, name: 'Your whole restaurant service, connected.' })).toBeVisible();
@@ -537,9 +544,9 @@ test.describe('landing comercial Logic Reserva', () => {
       '.eyebrow', '.brand-wordmark__product', '.hero-brand-card b', '.hero-brand-card small',
       '.demo-note', '.hero-entry strong', '.panel-teaser-card figcaption', '.guide-teaser-card > div',
       '.implementation-path p', '.implementation-path article > div', '.closing-copy > p:not(.eyebrow)',
-      '.journey-step--service .journey-step__body', '.platform-limit p', '.platform-evidence__bar',
-      '.maturity-status[data-tone="demo"]', '.maturity-status[data-tone="planned"]',
-      '.connection-family--assistants .connection-family__heading p', '.connection-family--assistants li div span',
+      '.journey-step--service .journey-step__body', '.platform-limit p', '.platform-evidence figcaption',
+      '.maturity-status[data-tone="demo"]', '.artwork-controls',
+      '.connection-family--operations .connection-family__heading p', '.connections-boundary',
       '.cookie-banner .cookie-button--ghost', '.privacy-check', '.footer-bottom',
     ];
     const ratios = await page.evaluate((targets) => {
@@ -979,10 +986,10 @@ test.describe('F24 · catálogo sectorial de paneles', () => {
     await expect(cards.locator('.panel-shot img')).toHaveCount(6);
     await expect(cards.locator('.panel-limit')).toHaveCount(6);
     await expect(cards.locator('form')).toHaveCount(0);
-    await expect(cards.getByRole('link', { name: 'Ver ficha del panel' })).toHaveCount(6);
+    await expect(cards.getByRole('link', { name: 'Ver ficha del panel', exact: true })).toHaveCount(6);
     await expect(cards.getByRole('link', { name: 'Probar el gestor' })).toHaveCount(6);
 
-    expect(await cards.getByRole('link', { name: 'Ver ficha del panel' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')))).toEqual(panelSlugs.map((slug) => `/paneles/${slug}/`));
+    expect(await cards.getByRole('link', { name: 'Ver ficha del panel', exact: true }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')))).toEqual(panelSlugs.map((slug) => `/paneles/${slug}/`));
 
     const links = await cards.getByRole('link', { name: 'Probar el gestor' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
     expect(links).toEqual(expectedLinks);
@@ -1055,7 +1062,7 @@ test.describe('F23 · doce direcciones web para restauración', () => {
     await laTrece.getByText('Por qué funciona esta dirección').click();
     await expect(laTrece.locator('dl')).toBeVisible();
     await expect(laTrece.getByRole('link', { name: 'Abrir web' })).toHaveAttribute('href', '/demos/la-trece/');
-    await expect(laTrece.getByRole('link', { name: 'Ver ficha completa' })).toHaveAttribute('href', '/temas/la-trece/');
+    await expect(laTrece.getByRole('link', { name: 'Ver ficha completa', exact: true })).toHaveAttribute('href', '/temas/la-trece/');
 
     const staticContext = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 375, height: 812 } });
     const staticPage = await staticContext.newPage();
