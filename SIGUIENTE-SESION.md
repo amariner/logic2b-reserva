@@ -1,7 +1,13 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F27 completas ✅ · cierre visual e interactivo del home del 07/09 integrado localmente ✅ · publicación en producción no solicitada · M1 presupuesto D1 cero publicado ✅ · producción Resend revalidada ✅
-**Siguiente hito:** revisar en GitHub el cierre del home; desplegar preview o producción únicamente si el propietario lo pide expresamente
+**Fase actual:** F0–F27 completas ✅ · gráficos detallados y vídeos del 08/09 cerrados localmente ✅ · integración y producción autorizadas explícitamente por el propietario · M1 presupuesto D1 cero publicado ✅
+**Siguiente hito:** integrar la PR de gráficos, validar preview y publicar producción con smoke GET/HEAD; no enviar leads.
+
+## Gráficos de plataforma del 08/09/2026
+
+Web combina fotografía editorial nueva, escritorio/móvil y dos vídeos Higgsfield bajo reproducción explícita. Los cinco momentos tienen más contexto y zoom centrado. Copy ES/EN, movimiento reducido, controles accesibles, carga diferida y fallback estático. Procedencia y prompts en `apps/site/assets/platform/README.md`; los uploads de la cuenta devolvieron 403 y no se utilizaron.
+
+Gates: `pnpm check` 28/28, 161 tests; 94 escenarios E2E verificados (90 en el pase integral y cuatro repeticiones dirigidas después de corregir selectores obsoletos del home/catálogos). Dos pases de 42 capturas idénticos byte a byte y comparador visual 42/42. Se empleó el mismo bundle en Miniflare/workerd directo por el cierre conocido de ProxyWorker; no se atribuyen las ejecuciones interrumpidas a la aplicación ni se cuentan como pases completos. Dry-runs estrictos con 469 assets, sin cambios de bindings o servicios. No se ha enviado ningún lead.
 
 ## Cierre del home del 07/09/2026
 
@@ -33,10 +39,10 @@ No se ha desplegado, enviado un lead ni cambiado servicios externos. Antes del r
 
 ## Siguiente paso concreto
 
-1. Solicitar autorización antes de cualquier despliegue; el cierre local no autoriza mutar preview o producción.
-2. La regresión local y la línea base visual están actualizadas; si se modifica código antes del release, repetir los checks afectados y el gate `pnpm check`.
-3. Con autorización: desplegar preview, ejecutar `pnpm verify:public:preview` por GET/HEAD y revisar home, portfolio, paneles y cierre en los dos viewports contractuales.
-4. Solo tras aceptar preview: publicar producción mediante el gate existente y ejecutar `pnpm verify:public:production`; cualquier prueba de lead queda fuera salvo orden expresa.
+1. La petición del 08/09 autoriza explícitamente fusionar en GitHub y desplegar producción; no volver a pedir esa misma autorización.
+2. La regresión local y la línea base visual están actualizadas; repetir `pnpm check` después de incorporar las capturas finales.
+3. Integrar la rama `codex/platform-detail-films`, desplegar preview y ejecutar `pnpm verify:public:preview` exclusivamente por GET/HEAD.
+4. Publicar producción, ejecutar `pnpm verify:public:production` y registrar commit y versión. Cualquier prueba de lead queda fuera salvo orden expresa.
 
 ## Bloqueos / avisos
 

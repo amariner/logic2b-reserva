@@ -529,6 +529,15 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Añadir 14 pruebas específicas, cerrar los 92 escenarios funcionales y documentar evidencias y limitaciones en `AUDITORIA-TEMAS.md`.
 - [x] Cerrar `pnpm check` 28/28 y auditar 3.774 referencias del build sin ausencias.
 
+## Gráficos de plataforma y películas · 08/09/2026
+
+- [x] Web con fotografía editorial original, composición responsive y dos clips Higgsfield optimizados.
+- [x] Cinco gráficos con más contexto operativo y zoom centrado sobre el detalle principal.
+- [x] Reproducción explícita, pausa fuera de vista, ES/EN, teclado, movimiento reducido y fallback sin JavaScript.
+- [x] Procedencia y prompts documentados, recursos locales e interfaces identificadas como ilustrativas.
+- [x] `pnpm check` 28/28, 94 escenarios E2E verificados por pase integral y repeticiones dirigidas; dos pases visuales idénticos 42/42.
+- [ ] Integración GitHub y publicación de producción autorizadas, con smoke GET/HEAD sin leads.
+
 ## Después (backlog, no fases)
 
 Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

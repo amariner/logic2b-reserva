@@ -85,7 +85,7 @@
       "width": 1366,
       "height": 900,
       "file": "04-vedra-grupo-desktop.png",
-      "sha256": "4709f1e8c55496d3cbe0e25bbb2f328651308503f6eac46113af282090e9f752"
+      "sha256": "5f99801a93321ff6fc8576c3b65d7ab226308d1a45633eb83bb05b3143036a80"
     },
     {
       "order": "04",
@@ -97,7 +97,7 @@
       "width": 375,
       "height": 812,
       "file": "04-vedra-grupo-mobile.png",
-      "sha256": "77466b64d6daa5ecb8748d8802b1da9492e6dd1dc1b6d6d91fe334d2fbec0f54"
+      "sha256": "43b2c717e927e6e9a2a1b1aa57e520a113779e411ea45531e3bc2c457733320f"
     },
     {
       "order": "05",
@@ -121,7 +121,7 @@
       "width": 375,
       "height": 812,
       "file": "05-solane-inventario-mobile.png",
-      "sha256": "fe02130bb8e0cae81526f6675090e1f2dbdbcf74e64b8bfcb54576073230fbe9"
+      "sha256": "2aef8c26e72451ce231e2aa40257d2444e6e31870b676381e7556900283fd981"
     },
     {
       "order": "06",
@@ -157,7 +157,7 @@
       "width": 1366,
       "height": 900,
       "file": "07-solane-privatizacion-desktop.png",
-      "sha256": "ab77fbe61eb03225b7d84ba33553cbf7aeaab76d5ae8dedbc58eba862202b12a"
+      "sha256": "f89e6f8df850520e2b4e2b04e897da450b0c181de1db9803b8bb5dc098f50259"
     },
     {
       "order": "07",
@@ -169,7 +169,7 @@
       "width": 375,
       "height": 812,
       "file": "07-solane-privatizacion-mobile.png",
-      "sha256": "12885356259686f9cf8998c76a49cffba781cb3bf18f7a61b010c6559264d402"
+      "sha256": "9135916ac53ce7bbce7e6f8cd5ec5b1a0aeb6ce958c3587f1e2537e5532a515f"
     },
     {
       "order": "08",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "4928f51765c47c150a23dff90dc334b50da64fde3d7ce5366f9bb6b3ef4aef64"
+      "sha256": "584c4d2142d7787e49147e6aba3829544ccbe2b449f6c4e4a9704526d8e38a35"
     },
     {
       "order": "08",
@@ -193,7 +193,7 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "6b4c90bed828cc18729a296f9a5692fb6ffcac19536ea4a0f5bae565e7d7202c"
+      "sha256": "6274fb34e3bb82feca8ac31c00e57c429ab99544c10a63b6f8c49afa4f9e71c3"
     },
     {
       "order": "09",
@@ -421,7 +421,7 @@
       "width": 1366,
       "height": 900,
       "file": "18-logic-reserva-home-desktop.png",
-      "sha256": "7bee37aaa280cca8fa0c1438ea28ac9e31e2eeb08ca27d77768b9b744d702f64"
+      "sha256": "c90519dd9eef9fb7382c0d6252e18a406f87a6f0342bfbe969708c8e9060d066"
     },
     {
       "order": "18",
@@ -445,7 +445,7 @@
       "width": 1366,
       "height": 900,
       "file": "19-logic-reserva-portfolio-desktop.png",
-      "sha256": "1e4bc901bd8effd68f5408d4f4886a502decbde0eef1f5358e7cbbe699a6f3ed"
+      "sha256": "63789f1b109c0e400d6c40a1f9e7715619fb1adc3a2fa6516c593452927a1a07"
     },
     {
       "order": "19",
@@ -457,7 +457,7 @@
       "width": 375,
       "height": 812,
       "file": "19-logic-reserva-portfolio-mobile.png",
-      "sha256": "049685eb2a4db234d6c52440bc3472c7b3620c3a0e4adb3e994a0639d1044dee"
+      "sha256": "5a870afc49dd0d1034a9cf4ecae9c085b6ab55a0eed694bd46f121cc5939e8ab"
     },
     {
       "order": "20",
@@ -469,7 +469,7 @@
       "width": 1366,
       "height": 900,
       "file": "20-logic-reserva-paneles-desktop.png",
-      "sha256": "6a1375e12aa3bda9c71dbf285c8d8353294a500d4b4c4df8ec239c1b63b75c03"
+      "sha256": "fcbeb9a4e9ab8d966859634af054936ff7e5ba2cf2dba18a343646ad095a7682"
     },
     {
       "order": "20",
@@ -481,7 +481,7 @@
       "width": 375,
       "height": 812,
       "file": "20-logic-reserva-paneles-mobile.png",
-      "sha256": "37bd8b722629033702ca677657d16c8b0d178cbbc77edfa2e425339ae8af5cb9"
+      "sha256": "193cb0643fd0cfece46dfb5b0a0b6c0d5e2b720163a896334c49e531feaa2042"
     },
     {
       "order": "21",
@@ -493,7 +493,7 @@
       "width": 1366,
       "height": 900,
       "file": "21-logic-reserva-cierre-desktop.png",
-      "sha256": "ee73722fe9e2b3bcf4a511af7b104f5b6b30f930d35f9d17cb434219d6b480f1"
+      "sha256": "6581178936343af432019f642425ce446b250eac17c5461cd5ded98087600156"
     },
     {
       "order": "21",
@@ -505,7 +505,7 @@
       "width": 375,
       "height": 812,
       "file": "21-logic-reserva-cierre-mobile.png",
-      "sha256": "6042fdfbe819d97af972bfc10cfe84fc7e4d05c24563e55cc58443eab99e28f9"
+      "sha256": "8e0faa28f96649d25b5bd0ed862aa42f206d0c47f9f713645f2dfb155e524353"
     }
   ]
 }

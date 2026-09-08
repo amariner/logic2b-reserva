@@ -1,10 +1,13 @@
 ---
 import InterfaceIcon from './InterfaceIcon.astro';
+import { PLATFORM_ART } from '../platform-content';
 
 interface Props { kind: string; label: string; alt: string; locale?: 'es' | 'en' }
 
 const { kind, label, alt, locale = 'es' } = Astro.props;
 const en = locale === 'en';
+const art = PLATFORM_ART[locale];
+const focusLabel = art.focusLabels[kind as keyof typeof art.focusLabels] ?? art.focus;
 const copy = en ? {
   live: 'Live demo', website: 'Restaurant website', headline: 'A table worth remembering.', book: 'Book a table', menu: 'View menu', direct: 'Direct booking', prepared: 'Request ready',
   booking: 'Booking #2841', confirmed: 'Confirmed', guest: 'Clara Vidal', dinner: 'Dinner', diners: '4 guests', date: 'Fri 18 Sep · 21:00', table: 'Table 12', menuName: 'Seasonal menu', notes: 'Birthday · nut allergy', deposit: 'Deposit secured', amount: '€100 received',
@@ -20,45 +23,109 @@ const copy = en ? {
 };
 ---
 
+<div class="platform-artwork" data-platform-artwork>
 <div class="interface-art" data-kind={kind} role="img" aria-label={alt}>
   <header class="interface-chrome" aria-hidden="true">
     <span class="chrome-dots"><i></i><i></i><i></i></span>
     <strong><InterfaceIcon name={kind} size={17} />{label}</strong>
-    <span><i></i>{copy.live}</span>
+    <span><i></i>{art.example}</span>
   </header>
 
   {kind === 'web' && <div class="interface-scene web-scene" aria-hidden="true">
-    <div class="web-nav"><b>SOLANE</b><span>{copy.menu}</span><button>{copy.book}</button></div>
-    <div class="web-hero"><div><small>{copy.website}</small><h4>{copy.headline}</h4><button>{copy.book}<span>→</span></button></div><span class="web-orb"></span></div>
-    <div class="zoom-card web-zoom"><small>{copy.detail}</small><div><i>✓</i><p><span>{copy.prepared}</span><strong>{copy.date}</strong></p></div><b>{copy.direct}</b></div>
+    <div class="web-desktop">
+      <div class="web-nav"><b>{art.brand}</b><span>{art.restaurant}</span><span>{art.menu}</span><span class="web-cta">{art.book} ↗</span></div>
+      <div class="web-hero">
+        <img class="web-photo" src="/images/platform/brasca-editorial.webp" width="1672" height="941" alt="" loading="lazy" />
+        <video class="web-film" data-platform-video preload="none" muted playsinline aria-hidden="true" data-src="/images/platform/brasca-atmosphere.mp4" data-next-src="/images/platform/brasca-cuisine.mp4"></video>
+        <div class="web-hero-copy"><small>{art.location}</small><h4>{art.cuisine}</h4><p>{art.story}</p><span class="web-cta">{art.book}<span>↗</span></span></div>
+        <span class="photo-caption">01 / 03 — {art.season}</span>
+      </div>
+      <div class="web-editorial"><div><small>{art.season}</small><strong>{art.dish}</strong><span>{art.dishMeta}</span></div><img src="/images/platform/brasca-detail.webp" width="320" height="200" alt="" loading="lazy" /></div>
+    </div>
+    <div class="web-phone"><div class="phone-speaker"></div><div class="phone-nav">{art.brand}<span>☰</span></div><img src="/images/platform/brasca-editorial.webp" width="1672" height="941" alt="" loading="lazy" /><div class="phone-copy"><small>{art.location}</small><strong>{art.cuisine}</strong><span>{art.book} ↗</span></div><div class="phone-bottom"></div></div>
+    <span class="web-mobile-label">{art.mobile}</span>
+    <svg class="focus-connector" viewBox="0 0 700 600" preserveAspectRatio="none"><path d="M250 248H355Q380 248 380 275V366Q380 386 405 386H452"/><circle cx="250" cy="248" r="5"/></svg>
+    <div class="zoom-card web-zoom"><small><span class="focus-index">01</span>{art.focus}</small><h4>{art.book}</h4><div class="request-fields"><p><span>{art.dateLabel}</span><strong>{art.day}</strong></p><p><span>{art.peopleLabel}</span><strong>{art.people}</strong></p></div><div class="time-options"><span>20:30</span><span class="chosen">21:00 ✓</span><span>21:30</span></div><b class="request-action">{art.request} ↗</b><p class="request-note">{art.requestNote}</p></div>
   </div>}
 
   {kind === 'bookings' && <div class="interface-scene booking-scene" aria-hidden="true">
     <div class="booking-steps"><span class="done">✓ <b>{copy.booking}</b></span><i></i><span class="done">✓ {copy.depositPaid}</span><i></i><span class="current">3 {copy.confirmed}</span></div>
     <article class="booking-sheet"><header><div><small>{copy.booking}</small><h4>{copy.guest}</h4></div><span>{copy.confirmed}</span></header><div class="booking-grid"><p><small>{copy.dinner}</small><strong>{copy.date}</strong><span>{copy.diners}</span></p><p><small>{copy.table}</small><strong>12</strong><span>{copy.menuName}</span></p><p><small>{copy.notes}</small><strong>{copy.notes}</strong><span>VIP · Web</span></p></div></article>
-    <div class="zoom-card booking-zoom"><small>{copy.detail}</small><div><i>✓</i><p><span>{copy.deposit}</span><strong>{copy.amount}</strong></p></div><b>Stripe · TEST</b></div>
+    <div class="booking-timeline"><small>{art.timeline}</small><p><i>✓</i><span>18:42</span>{art.requestReceived}</p><p><i>✓</i><span>18:45</span>{art.reviewed}</p><p><i>✓</i><span>18:46</span>{art.ready}</p></div>
+    <div class="zoom-card booking-zoom"><small><span class="focus-index">02</span>{art.focus}</small><h4>{copy.guest}</h4><div><i>!</i><p><span>{art.preference}</span><strong>{copy.notes}</strong></p></div><dl class="focus-data"><div><dt>{art.menuLabel}</dt><dd>{copy.menuName}</dd></div><div><dt>{art.assigned}</dt><dd>{copy.table} · {copy.diners}</dd></div></dl><b>✓ {art.ready}</b></div>
   </div>}
 
   {kind === 'floor' && <div class="interface-scene floor-scene" aria-hidden="true">
     <div class="floor-toolbar"><strong>{copy.floor}</strong><span><i class="free"></i>{copy.free}</span><span><i class="busy"></i>{copy.occupied}</span><span><i class="event"></i>{copy.event}</span></div>
-    <div class="floor-map"><span class="room-label">SALA</span>{['01','02','03','04','05','06','07','08','09','10','11','12'].map((table, index) => <span class:list={['table-dot', index < 4 && 'busy', index === 7 && 'event', index === 11 && 'selected']} style={`--x:${12 + (index % 4) * 24}%;--y:${18 + Math.floor(index / 4) * 31}%`}>{table}</span>)}<span class="service-line"></span></div>
-    <div class="zoom-card floor-zoom"><small>{copy.detail}</small><div><i>12</i><p><span>{copy.selected}</span><strong>{copy.selectedMeta}</strong></p></div><b>{copy.assign} →</b></div>
+    <div class="floor-map"><span class="room-label">{art.dining}</span>{['01','02','03','04','05','06','07','08','09','10','11','12'].map((table, index) => <span class:list={['table-dot', index < 4 && 'busy', index === 7 && 'event', index === 11 && 'selected']} style={`--x:${12 + (index % 4) * 24}%;--y:${20 + Math.floor(index / 4) * 28}%`}><i></i><b>{table}</b><small>{index < 4 ? '✓' : index === 7 ? '28' : '4'}</small></span>)}<span class="service-line"></span></div>
+    <div class="floor-summary"><span><b>12</b>{art.dining}</span><span><b>48</b>{art.covers}</span><span><b>04</b>{art.upcoming}</span></div>
+    <div class="zoom-card floor-zoom"><small><span class="focus-index">03</span>{art.focus}</small><div><i>12</i><p><span>{copy.selected}</span><strong>{copy.guest}</strong></p></div><dl class="focus-data"><div><dt>{art.timeLabel}</dt><dd>21:00 — 22:45</dd></div><div><dt>{art.peopleLabel}</dt><dd>{copy.diners}</dd></div><div><dt>{art.menuLabel}</dt><dd>{copy.menuName}</dd></div></dl><b>{copy.assign} →</b></div>
   </div>}
 
   {kind === 'groups' && <div class="interface-scene groups-scene" aria-hidden="true">
     <div class="pipeline-title"><strong>{copy.groups}</strong><span>28 sep — 18 oct</span></div>
     <div class="pipeline"><section><h5>{copy.newLead}<b>3</b></h5><article><small>18 OCT</small><strong>Cena de empresa</strong><span>42 personas</span></article></section><section><h5>{copy.proposal}<b>2</b></h5><article class="active"><small>28 SEP</small><strong>{copy.eventName}</strong><span>{copy.room}</span></article></section><section><h5>{copy.depositPaid}<b>1</b></h5></section><section><h5>{copy.ready}<b>4</b></h5></section></div>
-    <div class="zoom-card groups-zoom"><small>{copy.detail}</small><div><i>✓</i><p><span>{copy.proposalSent}</span><strong>{copy.eventName}</strong></p></div><b>{copy.block}</b></div>
+    <div class="group-capacity"><small>{art.capacity}</small><div>{Array.from({length:12},(_,i)=><span class:list={[i<8&&'blocked']}>{String(i+1).padStart(2,'0')}</span>)}</div></div>
+    <div class="zoom-card groups-zoom"><small><span class="focus-index">04</span>{art.focus}</small><h4>{art.event}</h4><p>{copy.eventName}</p><dl class="focus-data"><div><dt>{art.proposal}</dt><dd>✓ {art.accepted}</dd></div><div><dt>{art.simulation}</dt><dd>{art.noCharge}</dd></div><div><dt>{art.capacity}</dt><dd>{art.blocked}</dd></div></dl><b>✓ {copy.block}</b></div>
   </div>}
 
   {kind === 'operations' && <div class="interface-scene operations-scene" aria-hidden="true">
     <div class="metrics"><article><span>{copy.occupancy}</span><strong>84%</strong><i>+7%</i></article><article><span>{copy.directShare}</span><strong>61%</strong><i>+12%</i></article><article><span>{copy.noShows}</span><strong>4</strong><i>−2</i></article><article><span>{copy.revenue}</span><strong>126</strong><i>+18</i></article></div>
     <div class="chart-card"><header><strong>{copy.reports}</strong><span>7 días</span></header><svg viewBox="0 0 620 210" preserveAspectRatio="none"><defs><linearGradient id={`area-${locale}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18886d" stop-opacity=".3"/><stop offset="1" stop-color="#18886d" stop-opacity="0"/></linearGradient></defs><path class="grid" d="M0 42H620M0 84H620M0 126H620M0 168H620"/><path class="area" d="M0 178C55 170 74 124 124 134S202 163 250 108S327 84 372 101S451 128 496 67S560 42 620 24V210H0Z" fill={`url(#area-${locale})`}/><path class="line" d="M0 178C55 170 74 124 124 134S202 163 250 108S327 84 372 101S451 128 496 67S560 42 620 24"/><circle cx="496" cy="67" r="6"/></svg></div>
-    <div class="zoom-card operations-zoom"><small>{copy.decision}</small><h4>{copy.decisionTitle}</h4><p>{copy.signals}</p><div><span>◇ {copy.human}</span><b>{copy.review} →</b></div></div>
+    <div class="chart-axis">{art.days.map(day=><span>{day}</span>)}</div><p class="chart-legend"><i></i>{art.chartLegend}</p>
+    <div class="zoom-card operations-zoom"><small><span class="focus-index">05</span>{art.attention}</small><h4>{copy.decisionTitle}</h4><dl class="focus-data"><div><dt>{art.signalDetail}</dt><dd>12</dd></div><div><dt>{art.available}</dt><dd>6</dd></div></dl><p>{art.decisionNote}</p><div><span>◇ {copy.human}</span><b>{copy.review} →</b></div></div>
   </div>}
 </div>
+<div class="artwork-controls"><span>{focusLabel}</span><div>{kind === 'web' && <button type="button" data-platform-play data-play-label={art.play} data-pause-label={art.pause} aria-pressed="false">▷ {art.play}</button>}<button type="button" data-platform-zoom data-expand-label={art.expand} data-collapse-label={art.collapse} aria-pressed="false"><span aria-hidden="true">⤢</span> {art.expand}</button></div></div>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>('[data-platform-artwork]').forEach((artwork) => {
+    artwork.dataset.ready = 'true';
+    const zoom = artwork.querySelector<HTMLButtonElement>('[data-platform-zoom]');
+    zoom?.addEventListener('click', () => {
+      const expanded = artwork.classList.toggle('is-zoomed');
+      zoom.setAttribute('aria-pressed', String(expanded));
+      zoom.textContent = (expanded ? zoom.dataset.collapseLabel : zoom.dataset.expandLabel) ?? '';
+      if (expanded) artwork.querySelector('.interface-art')?.scrollIntoView({
+        block: 'center', behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+      });
+    });
+    const video = artwork.querySelector<HTMLVideoElement>('[data-platform-video]');
+    const play = artwork.querySelector<HTMLButtonElement>('[data-platform-play]');
+    if (!video || !play) return;
+    let secondClip = false;
+    const setPlaying = (playing: boolean) => {
+      play.setAttribute('aria-pressed', String(playing));
+      play.textContent = (playing ? play.dataset.pauseLabel : play.dataset.playLabel) ?? '';
+      video.classList.toggle('is-playing', playing);
+    };
+    video.addEventListener('ended', async () => {
+      secondClip = !secondClip;
+      video.src = (secondClip ? video.dataset.nextSrc : video.dataset.src) ?? '';
+      try { await video.play(); setPlaying(true); } catch { setPlaying(false); }
+    });
+    play.addEventListener('click', async () => {
+      if (!video.paused) { video.pause(); setPlaying(false); return; }
+      if (!video.getAttribute('src')) video.src = video.dataset.src ?? '';
+      try { await video.play(); setPlaying(true); } catch { setPlaying(false); }
+    });
+    new IntersectionObserver(([entry]) => {
+      if (!entry?.isIntersecting) { video.pause(); setPlaying(false); }
+    }, { threshold: 0.1 }).observe(artwork);
+    const panel = artwork.closest('[data-platform-panel]');
+    if (panel) new MutationObserver(() => {
+      if (panel.hasAttribute('hidden')) { video.pause(); setPlaying(false); }
+    }).observe(panel, { attributes: true, attributeFilter: ['hidden'] });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) { video.pause(); setPlaying(false); }
+    });
+  });
+</script>
 
 <style>
+  .platform-artwork:not([data-ready]) .artwork-controls{display:none}
+  .web-phone .phone-copy strong{font-size:18px}
   .interface-art{position:relative;min-height:560px;overflow:hidden;border:1px solid rgb(2 9 58 / 10%);border-radius:22px;background:#f7fafc;box-shadow:0 28px 70px rgb(18 48 72 / 14%)}
   .interface-chrome{display:flex;height:52px;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid rgb(2 9 58 / 9%);padding:0 18px;background:#fff;color:#526675;font-size:11px}.interface-chrome strong,.interface-chrome>span:last-child{display:flex;align-items:center;gap:7px}.interface-chrome>span:last-child i{width:7px;height:7px;border-radius:50%;background:#24a16b}.chrome-dots{display:flex;gap:5px}.chrome-dots i{width:7px;height:7px;border-radius:50%;background:#d7dee4}.interface-scene{position:relative;min-height:508px;overflow:hidden;padding:clamp(18px,2.8vw,34px)}
   .web-scene{background:linear-gradient(135deg,#e8d9ca,#f7efe7 58%,#c5dace)}.web-nav{display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:11px}.web-nav b{letter-spacing:.18em}.web-nav button,.web-hero button{border:0;border-radius:999px;padding:9px 13px;color:white;background:#16372f;font:inherit}.web-hero{display:grid;min-height:380px;place-items:center;isolation:isolate;text-align:center}.web-hero small{font-size:10px;letter-spacing:.15em;text-transform:uppercase}.web-hero h4{max-width:440px;margin:14px auto 23px;font:500 clamp(38px,5vw,68px)/.92 var(--serif);letter-spacing:-.06em}.web-hero button{padding:12px 18px}.web-hero button span{margin-left:18px}.web-orb{position:absolute;z-index:-1;width:330px;height:330px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff8,#c28d6288),linear-gradient(135deg,#d6a982,#7c4d35);box-shadow:0 30px 90px #4d2b1d30}
@@ -68,5 +135,56 @@ const copy = en ? {
   .operations-scene{background:#eaf0f6}.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.metrics article{display:grid;gap:7px;border-radius:12px;padding:14px;background:#fff}.metrics span{color:#778692;font-size:9px}.metrics strong{font-size:24px}.metrics i{width:fit-content;border-radius:99px;padding:3px 5px;color:#16714f;background:#e5f5ed;font-size:8px;font-style:normal}.chart-card{margin-top:14px;border-radius:14px;padding:18px;background:#fff}.chart-card header{display:flex;justify-content:space-between;font-size:11px}.chart-card header span{color:#71808b}.chart-card svg{width:100%;height:250px;margin-top:12px;overflow:visible}.chart-card .grid{fill:none;stroke:#e3e9ed;stroke-width:1}.chart-card .line{fill:none;stroke:#18886d;stroke-width:4;stroke-linecap:round}.chart-card circle{fill:#fff;stroke:#18886d;stroke-width:4}
   .zoom-card{position:absolute;z-index:3;right:clamp(14px,2vw,28px);bottom:clamp(14px,2vw,28px);width:min(300px,calc(100% - 28px));border:1px solid rgb(2 9 58 / 12%);border-radius:15px;padding:14px;background:#fff;box-shadow:0 24px 65px #142f4930;transform:rotate(-1.2deg)}.zoom-card>small{display:block;margin-bottom:9px;color:#697b88;font-size:8px;font-weight:750;letter-spacing:.12em;text-transform:uppercase}.zoom-card>div{display:flex;align-items:center;gap:10px}.zoom-card>div>i{display:grid;width:35px;height:35px;flex:none;place-items:center;border-radius:10px;color:#fff;background:#16866a;font-size:11px;font-style:normal}.zoom-card p{display:grid;gap:3px;margin:0}.zoom-card p span{color:#6d7c86;font-size:9px}.zoom-card p strong{font-size:11px}.zoom-card>b{display:block;margin-top:10px;border-top:1px solid #e5eaed;padding-top:9px;color:#176d59;font-size:9px}.floor-zoom>div>i{border-radius:50%;background:#176fbd}.operations-zoom{width:min(330px,calc(100% - 28px));color:#fff;background:#092943;transform:rotate(1deg)}.operations-zoom h4{margin:4px 0 8px;font-size:18px}.operations-zoom p{color:#a7c2d4;font-size:10px}.operations-zoom>div{justify-content:space-between;margin-top:15px;border-top:1px solid #ffffff26;padding-top:11px;font-size:9px}.operations-zoom>div span{color:#a7c2d4}.operations-zoom>div b{color:#fff}.web-zoom{transform:rotate(1.5deg)}
   @media(max-width:680px){.interface-art{min-height:480px}.interface-scene{min-height:428px;padding:14px}.interface-chrome>strong svg{display:none}.web-hero{min-height:340px}.web-orb{width:260px;height:260px}.booking-grid{grid-template-columns:1fr}.booking-grid p{border:0;border-bottom:1px solid #e6ebef;padding:10px 0}.booking-grid p:last-child{display:none}.booking-steps span b{display:none}.floor-map{height:335px}.table-dot{width:42px;height:42px;border-width:5px}.pipeline{grid-template-columns:repeat(4,145px);overflow:hidden}.metrics{grid-template-columns:repeat(2,1fr)}.metrics article:nth-child(n+3){display:none}.chart-card svg{height:205px}.zoom-card{right:12px;bottom:12px}.operations-zoom{right:12px}.interface-chrome{padding-inline:12px}}
-  @media(prefers-reduced-motion:reduce){.zoom-card{transform:none}}
+  .interface-art{border-radius:12px;min-height:640px;background:#eaf0f3}
+  .interface-scene{min-height:588px;padding:26px}
+  .interface-chrome{height:44px;font-size:10px;background:#fcfdfe}
+  .interface-chrome>span:last-child{font-size:9px}
+  .web-scene{background:#ece6de;padding:24px 26px 204px;min-height:650px}
+  .web-desktop{position:relative;overflow:hidden;border:1px solid #43312630;border-radius:8px;background:#f8f3e9;box-shadow:0 16px 35px #49332520}
+  .web-nav{height:48px;padding:0 17px;color:#483b30;background:#f8f3e9;font-size:9px;gap:10px}
+  .web-nav b{margin-right:auto;font:500 21px var(--serif);letter-spacing:.12em}
+  .web-cta{display:inline-flex;align-items:center;justify-content:space-between;gap:18px;padding:10px 13px;border-radius:4px;color:#fff6e8;background:#763c28;font-size:10px;font-weight:600}
+  .web-nav .web-cta{font-size:8px;padding:8px 10px}
+  .web-hero{display:block;position:relative;min-height:290px;text-align:left;isolation:isolate;overflow:hidden;background:#463024}
+  .web-photo,.web-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:58% 50%;z-index:-2}
+  .web-film{opacity:0;transition:opacity .3s}.web-film.is-playing{opacity:1}
+  .web-hero:after{content:'';position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,#21150fde,transparent 95%)}
+  .web-hero-copy{position:relative;width:65%;padding:37px 23px 38px;color:#fff7e9}
+  .web-hero small{font-size:7px;letter-spacing:.11em}
+  .web-hero h4{font:400 clamp(32px,3.2vw,47px)/1.02 var(--serif);letter-spacing:-.04em;margin:16px 0 11px;max-width:290px;color:#fff8ec}
+  .web-hero-copy p{font-size:9px;line-height:1.5;max-width:180px;margin:0 0 20px;color:#f5e5d0}
+  .web-hero .web-cta{background:#f4ebdc;color:#422d21;outline:1px dashed #ffdfab;outline-offset:5px}
+  .photo-caption{position:absolute;bottom:13px;right:13px;color:#fff7e6;font-size:7px;letter-spacing:.03em}
+  .web-editorial{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;gap:14px;color:#463b2d}
+  .web-editorial div{display:grid;gap:4px}.web-editorial small{font-size:7px;text-transform:uppercase;letter-spacing:.08em}.web-editorial strong{font:500 19px var(--serif)}.web-editorial span{font-size:8px;color:#726555}
+  .web-editorial img{width:86px;height:57px;object-fit:cover;border-radius:3px}
+  .web-phone{position:absolute;left:36px;bottom:30px;width:140px;height:267px;overflow:hidden;border:5px solid #292b29;border-radius:23px;background:#f9f3e8;box-shadow:0 20px 35px #33231930;transform:rotate(-6deg);z-index:2}
+  .phone-speaker{height:10px;width:44px;margin:auto;border-radius:0 0 8px 8px;background:#292b29}.phone-nav{display:flex;justify-content:space-between;padding:9px 10px;color:#4a3629;font:500 13px var(--serif)}.phone-nav span{font:11px var(--sans)}
+  .web-phone>img{width:100%;height:100px;object-fit:cover;object-position:80% center}.phone-copy{display:grid;gap:9px;padding:10px;color:#4a3629}.phone-copy small{font-size:5px}.phone-copy strong{font:500 20px/.99 var(--serif);letter-spacing:-.02em}.phone-copy>span{border-radius:3px;padding:8px;background:#763c28;color:#fff;font-size:7px}.phone-bottom{position:absolute;bottom:4px;left:42px;width:46px;height:3px;background:#292b29;border-radius:3px}
+  .web-mobile-label{position:absolute;bottom:12px;left:26px;color:#6d5a4c;font-size:8px}
+  .focus-connector{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1}.focus-connector path{fill:none;stroke:#b67544;stroke-width:1.5;stroke-dasharray:4 4}.focus-connector circle{fill:#fff2d6;stroke:#b67544;stroke-width:2}
+  .zoom-card{width:min(320px,calc(100% - 32px));border:1px solid #17354d24;border-radius:12px;padding:20px;transform:none;box-shadow:0 18px 45px #142f4926;transition:transform .25s,top .25s,left .25s}
+  .zoom-card>small{display:flex;align-items:center;gap:8px;font-size:8px;letter-spacing:.09em;color:#526675;margin-bottom:14px}.focus-index{display:inline-grid;place-items:center;width:22px;height:22px;border:1px solid #b8cbd7;border-radius:50%;font-size:8px;color:#275d86;letter-spacing:0}
+  .zoom-card h4{margin:0 0 16px;font-size:21px;letter-spacing:-.04em}.zoom-card p strong{font-size:12px;line-height:1.5}.zoom-card p span{font-size:10px}.zoom-card>b{font-size:10px}.zoom-card>div>i{width:40px;height:40px;font-size:16px;border-radius:8px}
+  .web-zoom{right:25px;bottom:26px;width:min(330px,calc(100% - 32px));background:#fffcf6;border-color:#c9bba8;transform:rotate(2deg);color:#41382b}
+  .web-zoom h4{font:500 28px var(--serif);letter-spacing:-.03em;margin:0 0 15px}.web-zoom>small{color:#75664f}.web-zoom .focus-index{color:#835237;border-color:#c6ad91}
+  .web-zoom .request-fields{display:grid;grid-template-columns:1.5fr 1fr;gap:8px}.request-fields p{min-width:0;gap:5px;border:1px solid #e2d8ca;padding:10px 9px;border-radius:5px}.request-fields p span{font-size:8px;color:#887660}.request-fields p strong{font-size:10px;color:#41382b}
+  .web-zoom .time-options{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}.time-options span{border:1px solid #e2d8ca;padding:8px;text-align:center;border-radius:5px;font-size:10px;color:#83735e}.time-options .chosen{color:#674426;background:#efe3d1;border-color:#aa8560;font-weight:650}
+  .web-zoom .request-action{margin-top:12px;padding:11px 12px;border:0;border-radius:5px;color:#fff9ef;background:#75462d;font-size:11px}.web-zoom .request-note{font-size:8px;color:#7a6e5c;margin-top:10px;line-height:1.5}
+  .focus-data{display:grid;gap:0;margin:14px 0 0;font-size:10px}.focus-data>div{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-top:1px solid #e5ebee}.focus-data dt{color:#687b88;line-height:1.5}.focus-data dd{text-align:right;margin:0;font-weight:650;line-height:1.5}
+  .booking-steps{margin-bottom:23px}.booking-sheet header{padding:20px}.booking-grid{padding:20px}.booking-grid p{padding:8px 10px}.booking-grid strong{line-height:1.55}
+  .booking-timeline{margin:26px 0 0 12px;max-width:270px;font-size:10px}.booking-timeline>small{display:block;margin-bottom:17px;font-weight:650;color:#4e6576}.booking-timeline p{display:flex;align-items:center;gap:9px;line-height:1.5;color:#587080}.booking-timeline p>span{color:#8796a2;font-size:9px}.booking-timeline i{display:grid;place-items:center;width:19px;height:19px;flex:none;border-radius:50%;color:#16714f;background:#d7eae0;font-style:normal}
+  .booking-zoom>div>i{background:#fff0d2;color:#8a5b10}.booking-zoom{bottom:25px}
+  .floor-map{height:392px;background:#f7fbf7;border:2px solid #c4d2c7;border-radius:8px}.room-label{top:13px;font-size:9px}.table-dot{display:flex;flex-direction:column;justify-content:center;width:51px;height:51px;border-radius:9px;border:1px solid #98bda6;overflow:visible;box-shadow:0 5px 12px #24482e10}.table-dot:before,.table-dot:after{content:'';position:absolute;left:10px;right:10px;height:5px;border:1px solid #9cb9a7;border-radius:3px;background:#e4ede6}.table-dot:before{top:-8px}.table-dot:after{bottom:-8px}.table-dot b{font-size:12px}.table-dot small{font-size:7px;opacity:.8;margin-top:2px}.table-dot.busy{background:#f8edd9;border-color:#d4b581}.table-dot.event{background:#ece2f4;border-color:#bca0d2}.table-dot.selected{background:#e1f0fb;outline:2px solid #257db5;outline-offset:8px;border-color:#6fa6cb}.service-line{top:49%;border-width:1px}.floor-summary{display:flex;gap:27px;margin:19px 3px;font-size:8px;color:#6c8173}.floor-summary span{display:grid;gap:5px}.floor-summary b{font-size:18px;color:#45604c}.floor-zoom{bottom:25px}
+  .pipeline{gap:8px}.pipeline section{min-height:275px;padding:8px}.pipeline h5{font-size:8px;align-items:center;gap:3px}.pipeline article{padding:11px 9px}.pipeline article.active{box-shadow:0 0 0 5px #167c7010}.group-capacity{margin:23px 0;max-width:250px}.group-capacity>small{font-size:10px;font-weight:600;color:#657775}.group-capacity>div{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:14px}.group-capacity span{display:grid;place-items:center;aspect-ratio:1;border:1px solid #d0d9d3;border-radius:5px;color:#7f9287;background:#fafbf9;font-size:9px}.group-capacity .blocked{background:#e4daf0;border-color:#bca4d0;color:#70568a}.groups-zoom{bottom:25px}.groups-zoom>p{color:#6b7d88;font-size:11px}
+  .metrics strong{font-size:27px}.metrics span{font-size:9px}.chart-card{border:1px solid #dce5eb}.chart-card svg{height:215px}.chart-axis{display:flex;justify-content:space-between;padding:0 22px;margin-top:-25px;position:relative;font-size:9px;color:#788c9b}.chart-legend{display:flex;align-items:center;gap:7px;margin:25px 10px;font-size:8px;color:#688091}.chart-legend i{width:7px;height:7px;border-radius:50%;background:#18886d}.operations-zoom{bottom:25px;background:#173c55;width:min(340px,calc(100% - 32px))}.operations-zoom>small{color:#c5dbe8}.operations-zoom .focus-index{color:#d5eafa;border-color:#9bc1d055}.operations-zoom .focus-data>div{border-color:#ffffff24}.operations-zoom dt{color:#bfd4e2}.operations-zoom dd{font-size:23px;color:#fff}.operations-zoom p{color:#bfd4e2}.operations-zoom h4{font-size:22px;line-height:1.15}
+  .artwork-controls{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0 0;color:#587184;font-size:10px}.artwork-controls>div{display:flex;gap:5px}.artwork-controls button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:44px;border:1px solid #bdceda;border-radius:8px;padding:8px 12px;color:#224f70;background:#f8fcff;font:600 10px var(--sans);cursor:pointer}.artwork-controls button:hover,.artwork-controls button[aria-pressed=true]{background:#224f70;color:white}.artwork-controls button:focus-visible{outline:3px solid #0075de;outline-offset:3px}
+  .is-zoomed .interface-scene{isolation:isolate}.is-zoomed .interface-scene:after{content:'';position:absolute;inset:0;background:#dbe5ebd9;backdrop-filter:blur(4px);z-index:2}.is-zoomed .zoom-card{left:50%;top:50%;right:auto;bottom:auto;transform:translate(-50%,-50%) scale(1.35);z-index:4;width:330px;max-width:70%}
+  @media(max-width:680px){
+    .interface-art{min-height:600px}.interface-scene{min-height:552px;padding:16px}.web-scene{min-height:680px;padding:14px 12px 285px}.web-nav{padding:0 10px;height:41px}.web-nav>span:not(.web-cta){display:none}.web-nav b{font-size:17px}.web-hero{min-height:245px}.web-hero-copy{width:84%;padding:28px 15px}.web-hero h4{font-size:36px;max-width:210px}.web-hero small{font-size:6px}.web-hero-copy p{font-size:8px;max-width:160px}.photo-caption{font-size:5px;bottom:9px}.web-editorial{padding:11px}.web-editorial strong{font-size:16px}.web-editorial span{font-size:6px}.web-editorial img{width:64px;height:49px}
+    .web-phone{left:19px;bottom:22px;width:103px;height:218px;border-width:4px;border-radius:17px;transform:rotate(-5deg)}.phone-nav{font-size:10px;padding:7px}.web-phone>img{height:72px}.phone-copy{padding:8px;gap:9px}.phone-copy strong{font-size:17px}.phone-copy small{font-size:4px}.phone-copy>span{padding:6px;font-size:5px}.phone-bottom{left:28px;width:36px}.web-mobile-label{display:none}
+    .web-zoom{width:calc(100% - 105px);right:12px;bottom:82px;padding:13px;transform:rotate(2deg)}.web-zoom h4{font-size:23px;margin-bottom:12px}.zoom-card>small{font-size:7px;gap:6px}.web-zoom .request-fields{grid-template-columns:1fr}.request-fields p{padding:7px;gap:3px}.request-fields p:last-child{display:none}.web-zoom .time-options{gap:4px}.time-options span{padding:7px 3px;font-size:8px}.web-zoom .request-action{font-size:9px;padding:10px}.web-zoom .request-note{font-size:7px}.focus-connector{display:none}
+    .booking-grid{grid-template-columns:1fr 1fr;padding:12px}.booking-grid p{border:0;padding:6px}.booking-grid strong{font-size:10px}.booking-sheet header{padding:16px}.booking-sheet h4{font-size:19px}.booking-steps{gap:5px;font-size:8px}.booking-timeline{margin:20px 0 0;font-size:8px}.booking-timeline p{gap:5px}.booking-timeline p:nth-last-child(-n+2){display:none}.booking-zoom{bottom:18px}.zoom-card:not(.web-zoom){width:calc(100% - 32px);padding:17px}.zoom-card h4{font-size:20px}.focus-data{font-size:9px}.floor-toolbar{gap:7px;padding:10px;font-size:7px}.floor-toolbar strong{font-size:9px}.floor-map{height:340px}.table-dot{width:36px;height:36px;border-width:1px}.table-dot b{font-size:10px}.floor-summary{display:none}.floor-zoom{bottom:18px}.pipeline{grid-template-columns:repeat(4,116px)}.pipeline section{min-height:235px}.group-capacity{margin-top:17px}.groups-zoom{bottom:18px}.metrics article{padding:13px}.metrics span{font-size:9px}.chart-card svg{height:195px}.operations-zoom{bottom:18px}.chart-legend{margin-top:21px}.artwork-controls{align-items:flex-start;flex-direction:column;font-size:10px}.artwork-controls>div{width:100%}.artwork-controls button{flex:1;padding-inline:8px;font-size:9px}.is-zoomed .zoom-card{max-width:calc(100% - 44px);width:calc(100% - 44px);transform:translate(-50%,-50%);padding:22px}.is-zoomed .web-zoom .request-fields{grid-template-columns:1fr}.is-zoomed .request-fields p:last-child{display:grid}.is-zoomed .zoom-card h4{font-size:27px}.is-zoomed .focus-data{font-size:11px}.is-zoomed .request-fields p strong{font-size:12px}.is-zoomed .time-options span{font-size:12px}.is-zoomed .request-action{font-size:12px}.is-zoomed .request-note{font-size:9px}
+  }
+  @media(prefers-reduced-motion:reduce){.zoom-card,.web-phone{transform:none;transition:none}.web-film{transition:none}}
 </style>
