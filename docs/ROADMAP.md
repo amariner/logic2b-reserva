@@ -485,7 +485,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Recorrido comercial guiado bilingüe que enlaza oferta, web, producto e inicio en seis hitos, conserva contexto entre páginas y no realiza escrituras
 - [x] Captación breve del hero que conserva el correo hasta `/empezar/` sin enviarlo al servidor, limpia la URL y mantiene fallback sin JavaScript
 - [x] Auditoría visual final a 320/375/430/1366 px, rendimiento, accesibilidad, consola y recursos
-- [ ] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
+- [x] Preview, smoke GET/HEAD y publicación de producción mediante los gates existentes; prueba de lead solo con autorización explícita
 
 **Hecho cuando:** Reserva ofrece una experiencia pública estructuralmente equivalente a Camp, específica de restauración, con todos los gates verdes y sin ampliar silenciosamente las capacidades reales.
 
@@ -517,7 +517,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Validar 12/12 pruebas UI del build, con las 68 páginas a 320/375/430/1366 px sin overflow ni consola.
 - [x] Completar la regresión contra Worker: 92 escenarios verificados por bloques, usando el runtime directo para evitar los cierres de ProxyWorker.
 - [x] Regenerar las 42 capturas contractuales y validar 42/42 comparaciones visuales con el protocolo documentado en `SALES-ASSETS.md`.
-- [ ] Publicación autorizada mediante el proceso existente.
+- [x] Publicación autorizada mediante el proceso existente (08/09/2026, merge `55fe9d6`).
 
 ## Auditoría del catálogo · 05–06/09/2026
 
@@ -536,7 +536,7 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Reproducción explícita, pausa fuera de vista, ES/EN, teclado, movimiento reducido y fallback sin JavaScript.
 - [x] Procedencia y prompts documentados, recursos locales e interfaces identificadas como ilustrativas.
 - [x] `pnpm check` 28/28, 94 escenarios E2E verificados por pase integral y repeticiones dirigidas; dos pases visuales idénticos 42/42.
-- [ ] Integración GitHub y publicación de producción autorizadas, con smoke GET/HEAD sin leads.
+- [x] Integración GitHub por PR #1 y producción `2d099435-9ab2-4f64-89de-1461ee7728bb`, con smoke GET/HEAD sin leads.
 
 ## Después (backlog, no fases)
 

@@ -28,9 +28,9 @@ Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindin
 ## Estado actual
 
 - Preview activa: `https://logic-reserva-preview.marinerandreu.workers.dev`.
-- Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados el 2026-08-18.
+- Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados en preview y producción el 2026-09-08, exclusivamente con GET/HEAD.
 - Producción activa: `https://reserva.logic2b.com`, enlazada a `logic-reserva` como dominio personalizado con DNS y TLS administrados por Cloudflare.
-- Producción sirve el commit `aebb1f0`, versión Cloudflare `9347ce30-858c-463d-ba96-ac26d46d0c6f`, desplegada el 2026-08-26. El dry-run aceptó 149 assets y el smoke posterior, incluidas las rutas de confirmación es/en, quedó verde exclusivamente con GET/HEAD, sin generar confirmaciones ni enviar leads.
+- Producción sirve el código del merge `55fe9d6` ([PR #1](https://github.com/amariner/logic2b-reserva/pull/1)), versión Cloudflare `2d099435-9ab2-4f64-89de-1461ee7728bb`, desplegada el 2026-09-08 con autorización expresa del propietario. Preview sirve el mismo código como `89167b5f-1de0-4efc-8b6d-d7bb024b5ff1`. Dry-runs estrictos con 469 assets, `pnpm check` 28/28, 94 E2E verificados por pase integral y repeticiones dirigidas y dos pases de 42 capturas idénticas. Se usaron los comandos manuales `pnpm deploy:preview` y `pnpm deploy` tras la fusión, sin cambiar variables habilitadoras de GitHub ni secretos. Smoke GET/HEAD verde en ambos entornos; no se enviaron leads.
 - Producción declara el secret cifrado `LEADS_RESEND_API_KEY` y quedó revalidada después de la rotación: `202 delivered` y replay idempotente para la referencia `4e13fdc8-d6fa-4125-b336-e7720b64e3d8`. Falta confirmar visualmente la llegada única en la bandeja.
 - Preview también declara `LEADS_RESEND_API_KEY` como secret cifrado, pero su entrega de correo no se valida ni forma parte del gate por decisión de producto del 2026-08-18. No probar ni rotar este transporte salvo nueva orden explícita.
 - Preview sirve la instrumentación sanitizada de diagnóstico: ante rechazo del proveedor registra solo estado HTTP y tipo de error, nunca el valor del secret ni datos del lead.

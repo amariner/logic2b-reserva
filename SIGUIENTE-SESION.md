@@ -1,13 +1,15 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F27 completas ✅ · gráficos detallados y vídeos del 08/09 cerrados localmente ✅ · integración y producción autorizadas explícitamente por el propietario · M1 presupuesto D1 cero publicado ✅
-**Siguiente hito:** integrar la PR de gráficos, validar preview y publicar producción con smoke GET/HEAD; no enviar leads.
+**Fase actual:** F0–F27 completas ✅ · gráficos detallados y vídeos del 08/09 fusionados y publicados en producción ✅ · M1 presupuesto D1 cero publicado ✅
+**Siguiente hito:** esperar la siguiente prioridad del propietario; la entrega pedida ya está publicada. No enviar leads ni ampliar integraciones sin autorización.
 
 ## Gráficos de plataforma del 08/09/2026
 
 Web combina fotografía editorial nueva, escritorio/móvil y dos vídeos Higgsfield bajo reproducción explícita. Los cinco momentos tienen más contexto y zoom centrado. Copy ES/EN, movimiento reducido, controles accesibles, carga diferida y fallback estático. Procedencia y prompts en `apps/site/assets/platform/README.md`; los uploads de la cuenta devolvieron 403 y no se utilizaron.
 
 Gates: `pnpm check` 28/28, 161 tests; 94 escenarios E2E verificados (90 en el pase integral y cuatro repeticiones dirigidas después de corregir selectores obsoletos del home/catálogos). Dos pases de 42 capturas idénticos byte a byte y comparador visual 42/42. Se empleó el mismo bundle en Miniflare/workerd directo por el cierre conocido de ProxyWorker; no se atribuyen las ejecuciones interrumpidas a la aplicación ni se cuentan como pases completos. Dry-runs estrictos con 469 assets, sin cambios de bindings o servicios. No se ha enviado ningún lead.
+
+Release: [PR #1](https://github.com/amariner/logic2b-reserva/pull/1) fusionada, código `55fe9d6`; preview `89167b5f-1de0-4efc-8b6d-d7bb024b5ff1` y producción `2d099435-9ab2-4f64-89de-1461ee7728bb`. Smoke GET/HEAD verde y reproducción/zoom ES/EN verificados en ambos entornos. Las notas históricas siguientes conservan el estado de sus sesiones; sus pendientes de integración y publicación quedan sustituidos por este release.
 
 ## Cierre del home del 07/09/2026
 
@@ -39,10 +41,10 @@ No se ha desplegado, enviado un lead ni cambiado servicios externos. Antes del r
 
 ## Siguiente paso concreto
 
-1. La petición del 08/09 autoriza explícitamente fusionar en GitHub y desplegar producción; no volver a pedir esa misma autorización.
-2. La regresión local y la línea base visual están actualizadas; repetir `pnpm check` después de incorporar las capturas finales.
-3. Integrar la rama `codex/platform-detail-films`, desplegar preview y ejecutar `pnpm verify:public:preview` exclusivamente por GET/HEAD.
-4. Publicar producción, ejecutar `pnpm verify:public:production` y registrar commit y versión. Cualquier prueba de lead queda fuera salvo orden expresa.
+1. La petición del 08/09 está completada: GitHub fusionado y producción desplegada. No repetir la publicación sin nuevos cambios o petición.
+2. Para nuevas mejoras, conservar las cinco interfaces ilustradas y los medios locales; fuentes y prompts están versionados.
+3. Repetir los gates afectados y `pnpm check` tras cualquier cambio. No reconstruir assets mientras Miniflare o Playwright estén comprobando su índice anterior: reiniciar el runtime después del build.
+4. Cualquier prueba de lead queda fuera salvo orden expresa. No rotar secretos ni tocar el transporte comercial.
 
 ## Bloqueos / avisos
 

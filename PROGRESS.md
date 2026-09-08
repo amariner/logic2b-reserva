@@ -5,7 +5,7 @@
 - Los vídeos se descargan solo tras pulsar reproducir, alternan y se pausan al ocultar pestaña, documento o bloque. Se sirven localmente, sin embeds ni llamadas de runtime a proveedores. No cambia ningún backend ni se envía un lead.
 - `pnpm check` 28/28 con 161 tests. Regresión de **94 escenarios verificados**: 90 pasan en la ejecución integral de 12 minutos y cuatro aserciones obsoletas del cierre anterior pasan en repeticiones dirigidas tras actualizar selectores, sin modificar el producto fuera del bloque. Los dos E2E nuevos verifican reproducción, cambio de clip y zoom en los cinco momentos a 320/375/1366 px en ES/EN. Runtime local directo Miniflare/workerd ante el cierre conocido de ProxyWorker, con correo deshabilitado.
 - Dos pases del generador contractual coinciden **42/42 byte a byte**, comparación visual **42/42**; digest `15bb46a52800d154d7c6704f1a52781a178b3716a1e8ea65993c008dae4db4e3`. WebP anteriores preservados y capturas actualizadas. Dry-runs estrictos de preview/producción aceptan 469 assets y mantienen DEMO_MODE, transporte comercial y D1 cero.
-- El propietario ha autorizado explícitamente integración en GitHub y despliegue de producción. Publicación en curso; el resultado remoto se registrará tras los smoke GET/HEAD.
+- Integrado en `main` mediante [PR #1](https://github.com/amariner/logic2b-reserva/pull/1), merge `55fe9d6`. Preview publicada como `89167b5f-1de0-4efc-8b6d-d7bb024b5ff1` y producción como `2d099435-9ab2-4f64-89de-1461ee7728bb` en `reserva.logic2b.com`: smoke GET/HEAD y los dos E2E de gráficos ES/EN verdes en ambos entornos. Publicaciones expresamente autorizadas; cero leads enviados y ningún cambio en secretos, reservas, cobros o integraciones.
 
 ## 2026-09-07 · Cierre visual e interactivo del home solicitado ✅
 
