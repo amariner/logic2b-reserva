@@ -1,3 +1,11 @@
+## 2026-09-18 · Publicación F28/F29 · GitHub y producción ✅
+
+- Publicación autorizada expresamente. [PR #2](https://github.com/amariner/logic2b-reserva/pull/2) fusionado en `main`: merge `d119b8023a88281183fefcc209d9e09838bdf581`, con el mismo árbol validado que `f0925aa`.
+- Paquete comercial actualizado: dos pases de 42 PNG idénticos byte a byte y comparación visual **42/42**; digest `2fac4ed01e8c9ab9e6e324bdfcbebd62a8eb371f50e173c5399e81750d90b62d`. Chromium 153.0.8010.48. Se conservan los doce WebP históricos y los inventarios separados de temas/paneles. Queda resuelto el pendiente de capturas previo a publicar.
+- Gate final del paquete publicado: **`pnpm check` 28/28, 165 tests; E2E 118/118 en un único pase de 3,8 minutos**, 120 HTML y 4.540 referencias sin ausencias. Dry-runs estrictos de preview/producción: 513 assets, 566,81 KiB de Worker (85,18 KiB gzip), configuración demo y presupuesto D1 cero intactos.
+- `pnpm deploy` publica producción como versión **`09f82d7d-1453-4788-a257-2bc53f3e70cb`**, en `https://reserva.logic2b.com`. Smoke GET/HEAD correcto y **16/16 archivos públicos idénticos al build validado**, incluidos home ES/EN, solicitud, scripts, manifiestos, previews y nueva imagen. No se envían leads ni se modifican secretos; preview permanece en su release anterior.
+- La siguiente prioridad es F30: observar dudas de propietarios antes de ampliar el flujo. Las entradas locales siguientes conservan su evidencia histórica; su estado «sin publicar» queda sustituido por este release.
+
 ## 2026-09-18 · F29 · De la elección a la conversación · cerrada en local ✅
 
 - Nueva comparación con los popups y la entrada al recorrido de Camp. El visor da más espacio a la captura, compacta el lateral y permite alternar entre escritorio y móvil con imágenes reales, scroll propio y selección accesible; conserva carga/error, teclado y foco.

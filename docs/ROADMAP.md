@@ -11,6 +11,9 @@ no obliga al visitante a recorrer todo el catálogo. El recorrido comercial tien
 cuatro pasos voluntarios (web → reserva → sala → opciones), y temas/paneles
 conservan su elección hasta el contacto. Decisión: ADR-020.
 
+**Publicada el 18/09/2026:** F28/F29 integradas mediante PR #2 y desplegadas en
+producción como `09f82d7d-1453-4788-a257-2bc53f3e70cb`. Próxima fase: F30.
+
 Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`: misma profundidad pública, tipos de bloques, rutas de producto y relación entre web, reserva, operativa, integraciones, planes, portfolio, guías y captación, traducidos al sector de restauración.
 
 No se copiará la estética de Camp ni su dashboard. Reserva conserva el contrato visual de `DESIGN.md` y sus gestores específicos de sala, grupos y eventos. La auditoría, el mapa de equivalencias y el contrato de 14 bloques del home viven en [`PARIDAD-CAMP.md`](PARIDAD-CAMP.md).
@@ -603,9 +606,9 @@ Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin aus
       como acción principal y alcance detallado disponible.
 - [x] Añadir una fotografía de servicio generada con OpenAI, optimizada y con
       procedencia. Cero vídeos nuevos en esta continuación.
-- [x] Cerrar el gate y dejar vista local revisable: `pnpm check` 28/28 con 165
-      tests; 118 escenarios E2E verificados por integral (115) y repeticiones
-      dirigidas tras corregir tres selectores. Detalle en `../PROGRESS.md`.
+- [x] Cerrar el gate de publicación: `pnpm check` 28/28 con 165 tests, E2E
+      118/118 en un pase final, 42 capturas reproducibles y smoke de producción
+      correcto. PR #2 fusionado y producción actualizada. Detalle en `../PROGRESS.md`.
 
 **Hecho cuando:** tema/panel → solicitud conserva elección; recorrido → tarjeta
  de plan conserva interés; móvil muestra acciones accesibles; el visitante puede

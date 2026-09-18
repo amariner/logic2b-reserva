@@ -1,8 +1,16 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F29 · De la elección a la conversación, cerrada y validada en local. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
-**Rama de trabajo:** `codex/ux-conversion-2026-09-18`. Los cambios del 18/09 no están publicados.
-**Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. La vista local está en `http://127.0.0.1:8791/`. Una publicación posterior conserva los gates del proyecto y requiere actualizar las 42 capturas comerciales históricas; no enviar leads reales para verificar la entrega.
+**Fase actual:** F29 publicada en producción; F30 es la siguiente prioridad. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
+**Rama de trabajo:** `main`, sincronizada con GitHub tras fusionar el [PR #2](https://github.com/amariner/logic2b-reserva/pull/2).
+**Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. Resultado publicado en `https://reserva.logic2b.com`. No repetir el despliegue sin nuevos cambios o petición ni enviar leads reales para verificarlo.
+
+## Publicación autorizada del 18/09/2026
+
+Merge de producto `d119b8023a88281183fefcc209d9e09838bdf581`; versión de producción **`09f82d7d-1453-4788-a257-2bc53f3e70cb`**. Smoke GET/HEAD correcto y 16 archivos públicos comparados por hash con el build validado, todos idénticos. Preview conserva su release anterior; no se tocaron secretos ni se enviaron leads.
+
+Gate definitivo: **`pnpm check` 28/28 con 165 tests; E2E 118/118 en un pase de 3,8 minutos** contra el Worker local con correo deshabilitado. 120 HTML, 4.540 referencias sin ausencias y dry-runs estrictos de 513 assets. Las **42 capturas comerciales ya están renovadas**, con dos pases idénticos y comparación visual 42/42; digest `2fac4ed01e8c9ab9e6e324bdfcbebd62a8eb371f50e173c5399e81750d90b62d`. Los doce WebP históricos se preservan.
+
+Las entregas locales siguientes son antecedentes de este release. Sus menciones a capturas pendientes y cambios sin publicar quedan sustituidas por el cierre anterior.
 
 ## Continuación del 18/09/2026 · F29
 
