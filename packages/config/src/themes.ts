@@ -56,17 +56,17 @@ const item = (es: string, en: string, detailEs: string, detailEn: string) => ({ 
 export const THEME_CATALOG = [
   {
     slug: 'brasca', name: 'Brasca', mark: 'BR', format: t('Bistró de barrio', 'Neighbourhood bistro'), location: t('Valencia', 'Valencia'),
-    promise: t('Fuego lento, mesa compartida.', 'Slow fire, shared table.'), tone: t('Cercano, táctil y sin ceremonia', 'Warm, tactile and informal'), level: t('Básico · recorrido profundo', 'Basic · deep journey'),
+    promise: t('Fuego lento, mesa compartida.', 'Slow fire, shared table.'), tone: t('Cercano, táctil y sin ceremonia', 'Warm, tactile and informal'), level: t('Básico', 'Basic'),
     depth: 'deep', layout: 'editorial', type: 'serif', palette: { primary: '#a3472c', accent: '#d27a3c', paper: '#fbf4eb', ink: '#2d1a13', muted: '#765d52' }, screenshotBase: '01-brasca-marca', imageBase: '/images/heroes/brasca-v2',
   },
   {
     slug: 'vedra', name: 'Vedra', mark: 'VE', format: t('Restaurante mediterráneo', 'Mediterranean restaurant'), location: t('Madrid', 'Madrid'),
-    promise: t('Cada mesa encuentra su momento.', 'Every table finds its moment.'), tone: t('Natural, luminoso y ordenado', 'Natural, bright and composed'), level: t('Gestión · recorrido profundo', 'Management · deep journey'),
+    promise: t('Cada mesa encuentra su momento.', 'Every table finds its moment.'), tone: t('Natural, luminoso y ordenado', 'Natural, bright and composed'), level: t('Gestión', 'Management'),
     depth: 'deep', layout: 'split', type: 'sans', palette: { primary: '#53613b', accent: '#9aa66b', paper: '#f6f7ee', ink: '#1d2417', muted: '#626b55' }, screenshotBase: '03-vedra-reserva', imageBase: '/images/heroes/vedra-v2',
   },
   {
     slug: 'solane', name: 'Solane', mark: 'SO', format: t('Gastronómico contemporáneo', 'Contemporary fine dining'), location: t('Barcelona', 'Barcelona'),
-    promise: t('Una noche que empieza antes de sentarse.', 'An evening that begins before you sit down.'), tone: t('Preciso, nocturno y ceremonial', 'Precise, nocturnal and ceremonial'), level: t('Inteligente · recorrido profundo', 'Intelligent · deep journey'),
+    promise: t('Una noche que empieza antes de sentarse.', 'An evening that begins before you sit down.'), tone: t('Preciso, nocturno y ceremonial', 'Precise, nocturnal and ceremonial'), level: t('Inteligente', 'Intelligent'),
     depth: 'deep', layout: 'minimal', type: 'serif', palette: { primary: '#202b50', accent: '#bd913b', paper: '#f4f5f8', ink: '#11182b', muted: '#5b6274' }, screenshotBase: '05-solane-inventario', imageBase: '/images/heroes/solane-v2',
   },
   {

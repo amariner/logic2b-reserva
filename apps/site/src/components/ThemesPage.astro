@@ -17,29 +17,35 @@ const ui = locale === 'en' ? {
   title: 'A website worthy of your restaurant.',
   description: 'Explore twelve fictional restaurant website directions by format, tone and product depth. Three include the full Logic Reserva journey.',
   eyebrow: 'Restaurant websites',
-  intro: 'Bistro, terrace, fine dining or events venue. Explore twelve example designs and find the one that fits your brand.',
+  intro: 'Find a style that feels like you. We adapt it to your menu, your space and the way you take bookings.',
   back: 'Back to Logic Reserva', language: 'ES', contact: 'Discuss my website',
   searchLabel: 'Search by brand, format, location or tone', searchPlaceholder: 'Try “terrace” or “Bilbao”',
   depthLabel: 'Demo type', all: 'All', deep: 'Full journey', webOnly: 'Website only',
   formatLabel: 'Restaurant format', allFormats: 'All formats', reset: 'Clear filters',
   count: 'directions shown', oneCount: 'direction shown', noResults: 'No direction matches those filters.',
-  expand: 'Why this direction works', promise: 'Commercial promise', tone: 'Visual tone', level: 'Product depth',
+  expand: 'Style and features', promise: 'Commercial promise', tone: 'Visual tone', level: 'Product depth',
   details: 'View full details', open: 'Open website', deepNote: 'Navigable website, booking journey and manager.', webNote: 'Navigable website direction; no booking engine or manager.',
   fictional: 'Fictional concept', catalogue: 'Restaurant website directions', footer: 'Commercial exploration · No real restaurants or bookings',
+  scope: 'What you can explore', catalogueNote: 'Fictional restaurants. Each design explains what you can try.',
+  nextTitle: 'Have another style in mind?', nextBody: 'These are starting points. Your restaurant sets the direction.',
+  nextAction: 'Discuss my website',
 } : {
   metaTitle: 'Webs para restaurantes | Logic Reserva',
   title: 'Tu restaurante, con una web a su altura.',
   description: 'Explora doce direcciones web ficticias para restaurantes por formato, tono y profundidad de producto. Tres incluyen el recorrido completo de Logic Reserva.',
   eyebrow: 'Webs para restaurantes',
-  intro: 'Bistró, terraza, gastronómico o espacio de eventos. Explora doce diseños de ejemplo y encuentra el que encaja con tu marca.',
+  intro: 'Encuentra un estilo que vaya contigo. Lo adaptamos a tu carta, tu espacio y tu forma de recibir reservas.',
   back: 'Volver a Logic Reserva', language: 'EN', contact: 'Hablar de mi web',
   searchLabel: 'Buscar por marca, formato, ubicación o tono', searchPlaceholder: 'Prueba “terraza” o “Bilbao”',
   depthLabel: 'Tipo de demo', all: 'Todas', deep: 'Recorrido completo', webOnly: 'Solo web',
   formatLabel: 'Formato de restaurante', allFormats: 'Todos los formatos', reset: 'Limpiar filtros',
   count: 'webs disponibles', oneCount: 'web disponible', noResults: 'Ninguna dirección coincide con esos filtros.',
-  expand: 'Por qué funciona esta dirección', promise: 'Promesa comercial', tone: 'Tono visual', level: 'Profundidad de producto',
+  expand: 'Estilo y funciones', promise: 'Promesa comercial', tone: 'Tono visual', level: 'Profundidad de producto',
   details: 'Ver ficha completa', open: 'Abrir web', deepNote: 'Web, reserva y gestor navegables.', webNote: 'Dirección web navegable; sin motor de reservas ni gestor.',
   fictional: 'Concepto ficticio', catalogue: 'Direcciones web para restauración', footer: 'Exploración comercial · Sin restaurantes ni reservas reales',
+  scope: 'Qué puedes explorar', catalogueNote: 'Restaurantes ficticios. Cada ficha indica qué puedes probar.',
+  nextTitle: '¿Tienes otro estilo en mente?', nextBody: 'Estos diseños son un punto de partida. Tu restaurante marca la dirección.',
+  nextAction: 'Hablar de mi web',
 };
 const formats = [...new Map(THEME_CATALOG.map((theme) => [local(theme.format), theme.format.es])).entries()]
   .sort(([a], [b]) => a.localeCompare(b, locale));
@@ -103,7 +109,7 @@ const itemList = {
 
       <div class="results-heading">
         <p><strong data-theme-count>{THEME_CATALOG.length}</strong> <span data-count-label data-one={ui.oneCount} data-many={ui.count}>{ui.count}</span></p>
-        <span aria-hidden="true">01—12</span>
+        <span>{ui.catalogueNote}</span>
       </div>
 
       <div class="theme-grid" data-theme-grid>
@@ -126,14 +132,14 @@ const itemList = {
                 <small>{local(theme.format)}</small>
               </a>
               <div class="theme-card__body">
-                <div class="theme-meta"><span>{local(theme.location)}</span><span>{ui.fictional}</span></div>
+                <div class="theme-meta"><span>{local(theme.location)}</span><span>{local(theme.format)}</span></div>
                 <h3>{theme.name}</h3>
                 <p class="theme-promise">{local(theme.promise)}</p>
-                <div class="theme-depth"><span data-depth={theme.depth}>{theme.depth === 'deep' ? ui.deep : ui.webOnly}</span><p>{themeDemoScope(theme, locale)}</p></div>
+                <div class="theme-depth"><span data-depth={theme.depth}>{theme.depth === 'deep' ? ui.deep : ui.webOnly}</span></div>
                 <details>
                   <summary>{ui.expand}<span aria-hidden="true">+</span></summary>
                   <dl>
-                    <div><dt>{ui.promise}</dt><dd>{local(theme.promise)}</dd></div>
+                    <div><dt>{ui.scope}</dt><dd>{themeDemoScope(theme, locale)}</dd></div>
                     <div><dt>{ui.tone}</dt><dd>{local(theme.tone)}</dd></div>
                     <div><dt>{ui.level}</dt><dd>{local(theme.level)}</dd></div>
                   </dl>
@@ -149,6 +155,10 @@ const itemList = {
       </div>
       <p class="empty-state" data-theme-empty hidden>{ui.noResults}</p>
       <p class="sr-only" role="status" aria-live="polite" aria-atomic="true" data-theme-status></p>
+    </section>
+    <section class="shell catalogue-next" aria-labelledby="catalogue-next-title">
+      <div><h2 id="catalogue-next-title">{ui.nextTitle}</h2><p>{ui.nextBody}</p></div>
+      <a class="pill" href={`${prefix}/empezar/`}>{ui.nextAction}<span aria-hidden="true">→</span></a>
     </section>
     </main>
   </CommercialChrome>
@@ -184,6 +194,7 @@ const itemList = {
       if (status && label) status.textContent = `${visible} ${label.textContent}`;
     };
     form?.addEventListener('input', apply);
+    form?.addEventListener('submit', (event) => { event.preventDefault(); apply(); });
     form?.addEventListener('reset', () => requestAnimationFrame(apply));
   }
 </script>
@@ -222,4 +233,31 @@ const itemList = {
   .theme-visual small { font-size: .72rem; }
   .theme-visual .theme-mark, .theme-visual .theme-index { background: rgb(0 0 0 / 65%); }
   .theme-card h3, .theme-card strong { overflow-wrap: anywhere; }
+  .theme-card { display: flex; flex-direction: column; }
+  .theme-visual { min-height: 230px; }
+  .theme-card__body { display: flex; flex: 1; flex-direction: column; }
+  .theme-meta { flex-wrap: wrap; row-gap: 5px; line-height: 1.5; font-size: .65rem; }
+  .theme-card h3 { margin-top: 16px; }
+  .theme-promise { min-height: 0; color: var(--ink); }
+  .theme-depth { display: flex; margin-block: 16px; border-top: 0; padding-top: 0; }
+  .theme-depth > span { color: var(--slate); background: var(--paper); }
+  .theme-card details { margin-top: auto; }
+  .theme-card dl div { grid-template-columns: 96px minmax(0, 1fr); }
+  .theme-details { background: var(--ink); }
+  .theme-open { border-color: var(--line); color: var(--ink); }
+  .theme-card__actions a:hover { background: var(--color-notion-blue-strong); }
+  .results-heading { gap: 16px; align-items: baseline; }
+  .results-heading > span { max-width: 44ch; font-size: .72rem; text-align: right; line-height: 1.5; }
+  .catalogue-next { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-top: 48px; border-top: 1px solid var(--line); padding-top: 32px; }
+  .catalogue-next h2 { margin: 0; font-family: var(--serif); font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 500; line-height: 1.2; }
+  .catalogue-next p { max-width: 52ch; margin: 12px 0 0; color: var(--slate); font-size: .9rem; line-height: 1.6; }
+  .catalogue-next a { flex-shrink: 0; gap: 24px; }
+  @media (max-width: 680px) {
+    .results-heading { align-items: flex-start; flex-direction: column; gap: 6px; }
+    .results-heading > span { text-align: left; }
+    .theme-visual { min-height: 230px; }
+    .theme-card__actions { grid-template-columns: 1fr 1fr; }
+    .theme-card__actions a { padding-inline: 10px; font-size: .73rem; }
+    .catalogue-next { align-items: flex-start; flex-direction: column; }
+  }
 </style>

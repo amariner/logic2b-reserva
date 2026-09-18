@@ -4,6 +4,13 @@ Cada fase cabe en una sesión de trabajo y tiene criterio de hecho **verificable
 
 ## Norte de producto desde F20
 
+**Prioridad vigente · 18/09/2026 · F29:** ayudar a elegir y abrir una conversación con
+menos fricción. La secuencia de decisión es ver → probar si hace falta → contactar;
+ninguna visita obliga a terminar un recorrido o comparar los doce temas. La paridad con Camp aporta orientación, visores y continuidad;
+no obliga al visitante a recorrer todo el catálogo. El recorrido comercial tiene
+cuatro pasos voluntarios (web → reserva → sala → opciones), y temas/paneles
+conservan su elección hasta el contacto. Decisión: ADR-020.
+
 Logic Reserva debe alcanzar paridad estructural y comercial con `camp.logic2b.com`: misma profundidad pública, tipos de bloques, rutas de producto y relación entre web, reserva, operativa, integraciones, planes, portfolio, guías y captación, traducidos al sector de restauración.
 
 No se copiará la estética de Camp ni su dashboard. Reserva conserva el contrato visual de `DESIGN.md` y sus gestores específicos de sala, grupos y eventos. La auditoría, el mapa de equivalencias y el contrato de 14 bloques del home viven en [`PARIDAD-CAMP.md`](PARIDAD-CAMP.md).
@@ -537,6 +544,88 @@ Guion comercial que todo esto construye (el "demo de 5 pasos" de Solane, validad
 - [x] Procedencia y prompts documentados, recursos locales e interfaces identificadas como ilustrativas.
 - [x] `pnpm check` 28/28, 94 escenarios E2E verificados por pase integral y repeticiones dirigidas; dos pases visuales idénticos 42/42.
 - [x] Integración GitHub por PR #1 y producción `2d099435-9ab2-4f64-89de-1461ee7728bb`, con smoke GET/HEAD sin leads.
+
+## F28 · Elegir sin perderse · 18/09/2026 · cerrada en local ✅
+
+**Objetivo:** hacer el producto más fácil de explorar y reducir la fricción antes
+ de contactar, sin convertir el home en una explicación del proyecto.
+
+- [x] Revisar Camp vivo y su ruta de producto: visor grande, acción contextual,
+      navegación opcional y detalle a demanda.
+- [x] Unificar los popups desde hero, portfolio y paneles; captura protagonista,
+      acción visible, detalle plegable, carga/error, cierre y retorno de foco.
+- [x] Dar controles visibles y teclado a las galerías del home.
+- [x] Reducir el recorrido comercial a cuatro pasos con contexto y retorno,
+      manteniendo los guiones operativos completos de Vedra y Solane.
+- [x] Distinguir las nueve composiciones web y simplificar su reserva/contacto;
+      catálogo con búsqueda, filtros, limpiar y acceso contextual.
+- [x] Permitir continuar desde el hero sin correo y mantener el formulario único;
+      teléfono/comentario opcionales bajo despliegue, sin cambiar el transporte.
+- [x] Crear una fotografía editorial con OpenAI, versiones responsive y
+      procedencia registrada; cero vídeos nuevos.
+- [x] Regenerar vistas reales: doce temas y seis paneles en ambos idiomas.
+- [x] Validar bundle, enlaces, teclado, móvil, contexto y regresión completa.
+- [x] Dejar una vista local revisable y documentación de continuidad actualizada.
+
+**Hecho cuando:** una persona puede ver un tema o panel, entender la experiencia,
+ probar el recorrido o pedir información sin repetir su elección; todo verificado
+ en ES/EN, móvil y escritorio. La mejora se describe como reducción de fricción,
+ no como aumento de conversión medido.
+
+Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin ausencias. 104 escenarios E2E verificados por pase integral y cierre dirigido 19/19 tras actualizar dos expectativas antiguas. QA visual final de móvil y escritorio. Trabajo local, sin publicación ni leads reales.
+
+### Siguiente evidencia de producto
+
+1. Validar el recorrido con propietarios de restaurantes: qué quieren ver antes
+   de contactar y dónde abandonan. No sumar pantallas sin un problema observado.
+2. Si se autoriza medición, acordar eventos mínimos y consentimiento antes de
+   activar analítica: explorar → probar → abrir solicitud → entrega aceptada.
+3. Priorizar la primera implantación por necesidad real. Pagos, multiusuario,
+   mensajería y proveedores conservan sus gates; no se ofrecen como ya activos.
+
+## F29 · De la elección a la conversación · 18/09/2026
+
+**Objetivo:** resolver las fricciones que aún quedan entre una vista de producto
+ y la solicitud, sin añadir pasos al visitante.
+
+- [x] Contrastar los popups y la entrada al recorrido con el Camp publicado.
+- [x] Ampliar el visor, compactar el lateral y comparar escritorio/móvil con
+      capturas reales, scroll propio y navegación accesible.
+- [x] Dar acceso al contacto desde cualquier paso y conservar tema/panel al
+      elegir un plan; navegación funcional cuando sessionStorage está bloqueado.
+- [x] Volver desde la solicitud al tema/panel elegido y ofrecer WhatsApp en móvil.
+- [x] Proteger el formulario sin JavaScript con contacto alternativo, sin datos
+      personales en URL; evitar el aviso automático sobre la solicitud sin
+      registrar ni suponer consentimiento.
+- [x] Afinar nueve composiciones: CTA y foto primero en móvil, cartas con identidad
+      y menos decoración; renovar las 48 capturas de temas ES/EN.
+- [x] Usar lenguaje del restaurante en el cierre y la puesta en marcha; contacto
+      como acción principal y alcance detallado disponible.
+- [x] Añadir una fotografía de servicio generada con OpenAI, optimizada y con
+      procedencia. Cero vídeos nuevos en esta continuación.
+- [x] Cerrar el gate y dejar vista local revisable: `pnpm check` 28/28 con 165
+      tests; 118 escenarios E2E verificados por integral (115) y repeticiones
+      dirigidas tras corregir tres selectores. Detalle en `../PROGRESS.md`.
+
+**Hecho cuando:** tema/panel → solicitud conserva elección; recorrido → tarjeta
+ de plan conserva interés; móvil muestra acciones accesibles; el visitante puede
+ contactar antes de completar la guía. ES/EN, teclado y fallback verificados.
+ No se atribuye un aumento de conversión sin datos.
+
+## F30 · Validar antes de ampliar
+
+**Siguiente prioridad de producto:** observar la decisión de propietarios de
+ restaurantes con una tarea concreta: «encuentra una web o panel que te encaje y
+ pide información». Registrar dudas, pasos innecesarios y puntos de abandono.
+
+- [ ] Contrastar si el hero debe priorizar explorar o consultar; cambiar su
+      jerarquía con evidencia, sin sumar llamadas a la acción.
+- [ ] Definir «Aún no lo tengo claro» para la solicitud sin asignar un plan no
+      elegido. Revisar el contrato del lead antes de cambiar el enum actual.
+- [ ] Si se decide medir, acordar solo exploración, demo, apertura de solicitud y
+      entrega aceptada; definir consentimiento antes de activar analítica.
+- [ ] Priorizar la primera implantación por necesidad observada. Mantener las
+      conexiones y capacidades futuras fuera de las promesas activas.
 
 ## Después (backlog, no fases)
 

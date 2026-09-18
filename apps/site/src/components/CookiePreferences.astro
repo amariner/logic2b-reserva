@@ -97,7 +97,10 @@ const ui = locale === 'en'
     if (cookieBanner) cookieBanner.hidden = true;
   };
 
-  if (cookieBanner && readCookieChoice() === null) cookieBanner.hidden = false;
+  // The enquiry stays focused; preferences remain available from its footer.
+  // This changes no saved choice and grants no permission for analytics.
+  const isEnquiryPage = /^\/(?:en\/)?empezar\/$/.test(window.location.pathname);
+  if (cookieBanner && readCookieChoice() === null && !isEnquiryPage) cookieBanner.hidden = false;
 
   document.querySelectorAll<HTMLButtonElement>('[data-cookie-choice]').forEach((button) => {
     button.addEventListener('click', () => saveCookieChoice(button.dataset.cookieChoice === 'analytics' ? 'analytics' : 'necessary'));

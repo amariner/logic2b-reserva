@@ -11,25 +11,25 @@ const web = theme.web;
 const local = (value: ThemeEntry['format']) => localizedThemeText(value, locale);
 const prefix = locale === 'en' ? '/en' : '';
 const otherLocale: Locale = locale === 'en' ? 'es' : 'en';
+const isVenue = theme.slug === 'nave-nueve';
+const isGroup = theme.slug === 'trama';
 const ui = locale === 'en' ? {
-  menu: 'Menu', story: 'Our place', visit: 'Visit', book: 'Start a booking',
+  menu: isVenue ? 'The space' : isGroup ? 'Our venues' : 'Menu', story: 'Our place', visit: 'Visit', book: isVenue ? 'Your event' : 'Bookings',
   location: 'Location', hours: 'Opening hours', fictional: 'Fictional restaurant',
-  today: 'Today at the restaurant', available: 'Website direction open to explore',
+  today: 'Plan your visit', visitDetails: 'Location & hours',
   menuEyebrow: 'A short menu', storyEyebrow: 'Our way of welcoming', visitEyebrow: 'Before you arrive',
-  bookingEyebrow: 'How booking would begin', bookingTitle: 'Your next table starts here.',
-  bookingBody: 'This web-only direction does not include an active booking engine, availability, messages or payments. In a real project, those rules would be agreed with Logic2B around the restaurant operation.',
-  bookingPoints: ['Party size and occasion', 'Service or venue choice', 'Terms shown before confirmation'],
-  discuss: 'Discuss this direction', allThemes: 'View all 12 websites', powered: 'A fictional website direction by Logic Reserva',
+  bookingEyebrow: isVenue ? 'Your event' : 'Bookings', bookingTitle: isVenue ? 'Room for your next occasion.' : 'A place at the table.',
+  bookingBody: 'This is a fictional restaurant. Bookings, messages and payments are not enabled in this example.',
+  discuss: 'I want a website like this', allThemes: 'Explore other websites', powered: 'A fictional website by Logic Reserva',
   language: 'ES', navigation: 'Restaurant navigation', backLabel: 'Logic Reserva website catalogue',
 } : {
-  menu: 'Carta', story: 'La casa', visit: 'Visita', book: 'Empezar reserva',
+  menu: isVenue ? 'El espacio' : isGroup ? 'Nuestras casas' : 'Carta', story: 'La casa', visit: 'Visita', book: isVenue ? 'Tu evento' : 'Reservas',
   location: 'Ubicación', hours: 'Horario', fictional: 'Restaurante ficticio',
-  today: 'Hoy en el restaurante', available: 'Dirección web abierta para explorar',
+  today: 'Prepara tu visita', visitDetails: 'Ubicación y horario',
   menuEyebrow: 'Una carta corta', storyEyebrow: 'Nuestra forma de recibir', visitEyebrow: 'Antes de llegar',
-  bookingEyebrow: 'Cómo empezaría la reserva', bookingTitle: 'Tu próxima mesa empieza aquí.',
-  bookingBody: 'Esta dirección solo web no incluye motor activo, disponibilidad, mensajes ni pagos. En un proyecto real, esas reglas se acordarían con Logic2B alrededor de la operativa del restaurante.',
-  bookingPoints: ['Tamaño del grupo y ocasión', 'Servicio o local elegido', 'Condiciones antes de confirmar'],
-  discuss: 'Hablar de esta dirección', allThemes: 'Ver las 12 webs', powered: 'Una dirección web ficticia de Logic Reserva',
+  bookingEyebrow: isVenue ? 'Tu evento' : 'Reservas', bookingTitle: isVenue ? 'Un lugar para tu próximo encuentro.' : 'Un lugar en la mesa.',
+  bookingBody: 'Este restaurante es ficticio. Las reservas, los mensajes y los pagos no están activados en este ejemplo.',
+  discuss: 'Quiero una web así', allThemes: 'Explorar otras webs', powered: 'Una web ficticia de Logic Reserva',
   language: 'EN', navigation: 'Navegación del restaurante', backLabel: 'Catálogo de webs de Logic Reserva',
 };
 ---
@@ -44,26 +44,27 @@ const ui = locale === 'en' ? {
   <main id="contenido" tabindex="-1">
     <section class="restaurant-hero" aria-labelledby="restaurant-title">
       <div class="hero-copy">
-        <p class="restaurant-kicker"><span>{local(theme.format)}</span><span>{local(theme.location)}</span></p>
-        <h1 id="restaurant-title">{theme.name}</h1>
-        <p class="restaurant-promise">{local(theme.promise)}</p>
+        <div class="hero-identity">
+          <p class="restaurant-kicker"><span>{local(theme.format)}</span><span>{local(theme.location)}</span></p>
+          <h1 id="restaurant-title">{theme.name}</h1>
+          <p class="restaurant-promise">{local(theme.promise)}</p>
+        </div>
         <p class="restaurant-body">{local(web.body)}</p>
         <div class="hero-actions"><a href="#reservar">{ui.book}<span aria-hidden="true">↘</span></a><a href="#carta">{ui.menu}<span aria-hidden="true">↓</span></a></div>
       </div>
       <figure class="hero-art">
         <picture>
-          <source type="image/avif" srcset={`${theme.imageBase}-640.avif 640w, ${theme.imageBase}-960.avif 960w, ${theme.imageBase}-1600.avif 1600w`} sizes="(max-width: 900px) 100vw, 50vw" />
+          <source type="image/avif" srcset={`${theme.imageBase}-640.avif 640w, ${theme.imageBase}-960.avif 960w, ${theme.imageBase}-1600.avif 1600w`} sizes={theme.layout === 'panorama' ? '100vw' : '(max-width: 900px) 100vw, 50vw'} />
           <img src={`${theme.imageBase}-960.avif`} alt={theme.imageAlt ? local(theme.imageAlt) : `${theme.name} · ${local(theme.format)}`} width="1536" height="1024" loading="eager" fetchpriority="high" decoding="async" />
         </picture>
         <figcaption><span>{theme.name}</span><span>{local(theme.location)}</span></figcaption>
       </figure>
-      <p class="hero-side-note">{ui.fictional} · {local(theme.tone)}</p>
     </section>
 
-    <aside class="restaurant-status" aria-label={ui.today}><strong>{ui.today}</strong><span>{web.hours[locale]}</span><span>{ui.available}</span></aside>
+    <aside class="restaurant-status" aria-label={ui.today}><strong>{local(theme.location)}</strong><span>{web.hours[locale]}</span><a href="#visita">{ui.visitDetails}<span aria-hidden="true">↗</span></a></aside>
 
     <section id="carta" class="restaurant-menu restaurant-section" aria-labelledby="menu-title">
-      <div class="section-heading"><p>{ui.menuEyebrow}</p><h2 id="menu-title">{local(web.menuTitle)}</h2><span>02 / 04</span></div>
+      <div class="section-heading"><p>{isVenue || isGroup ? ui.menu : ui.menuEyebrow}</p><h2 id="menu-title">{local(web.menuTitle)}</h2></div>
       <div class="menu-body">
         <p>{local(web.menuIntro)}</p>
         <ol>{web.menu.map((item, index) => <li><span>0{index + 1}</span><div><h3>{local(item.name)}</h3><p>{local(item.detail)}</p></div></li>)}</ol>
@@ -82,7 +83,7 @@ const ui = locale === 'en' ? {
 
     <section id="reservar" class="restaurant-booking" aria-labelledby="booking-title">
       <div class="booking-title"><p>{ui.bookingEyebrow}</p><h2 id="booking-title">{ui.bookingTitle}</h2></div>
-      <div class="booking-explainer"><p>{ui.bookingBody}</p><ol>{ui.bookingPoints.map((point, index) => <li><span>0{index + 1}</span>{point}</li>)}</ol><div><a href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.discuss}<span aria-hidden="true">↗</span></a><a href={`${prefix}/temas/`}>{ui.allThemes}</a></div></div>
+      <div class="booking-explainer"><p>{ui.bookingBody}</p><div><a href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.discuss}<span aria-hidden="true">↗</span></a><a href={`${prefix}/temas/`}>{ui.allThemes}</a></div></div>
     </section>
   </main>
 

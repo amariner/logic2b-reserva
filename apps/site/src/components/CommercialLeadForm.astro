@@ -1,5 +1,6 @@
 ---
-import type { Locale } from '@logic-reserva/config';
+import { PRODUCT, type Locale } from '@logic-reserva/config';
+import { logic2bContact } from '@logic-reserva/config/contact';
 import { COMMERCIAL_PLANS, localizedCommercialText } from '@logic-reserva/config/commercial';
 import { PANEL_CATALOG, localizedPanelText } from '@logic-reserva/config/panels';
 import { THEME_CATALOG } from '@logic-reserva/config/themes';
@@ -10,6 +11,7 @@ interface Props { locale?: Locale; id?: string; variant?: 'default' | 'dialog' }
 const { locale = 'es', id = 'lead-form', variant = 'default' } = Astro.props;
 const c = SITE_CONTENT[locale];
 const prefix = locale === 'en' ? '/en' : '';
+const contact = logic2bContact(locale, 'commercial');
 const localCommercial = (value: Parameters<typeof localizedCommercialText>[0]) => localizedCommercialText(value, locale);
 const localPanel = (value: Parameters<typeof localizedPanelText>[0]) => localizedPanelText(value, locale);
 const commercialPlanName = (slug: string) => {
@@ -28,15 +30,19 @@ const panelInterests = PANEL_CATALOG.map((panel) => ({
 }));
 const ui = locale === 'en' ? {
   selectedPlan: 'Selected starting point', selectedInterest: 'Selected interest', preparedEmail: 'Email ready to complete',
-  themeInterest: 'Website', panelInterest: 'Product view', sending: 'Sending…',
+  optionalDetails: 'Add a phone number or a note (optional)', themeInterest: 'Website', panelInterest: 'Product view', sending: 'Sending…',
+  fallback: 'You can contact us directly.', fallbackEmail: 'Write by email',
 } : {
   selectedPlan: 'Punto de partida seleccionado', selectedInterest: 'Interés seleccionado', preparedEmail: 'Correo preparado para completar',
-  themeInterest: 'Web', panelInterest: 'Vista de producto', sending: 'Enviando…',
+  optionalDetails: 'Añadir teléfono o un comentario (opcional)', themeInterest: 'Web', panelInterest: 'Vista de producto', sending: 'Enviando…',
+  fallback: 'Puedes hablar con nosotros directamente.', fallbackEmail: 'Escribir por correo',
 };
 ---
 
 <form
   id={id}
+  action="/api/leads"
+  method="post"
   class:list={['lead-form', 'card', variant === 'dialog' && 'lead-form--dialog']}
   data-lead-form
   data-full-lead-form
@@ -47,6 +53,12 @@ const ui = locale === 'en' ? {
   data-panel-interest-label={ui.panelInterest}
   novalidate
 >
+  <div class="lead-fallback" data-lead-fallback>
+    <p>{ui.fallback}</p>
+    <a href={contact.href} target="_blank" rel="noreferrer">{c.lead.whatsapp}<span aria-hidden="true">↗</span></a>
+    <a href={`mailto:${PRODUCT.email}`}>{ui.fallbackEmail}<span aria-hidden="true">→</span></a>
+  </div>
+  <fieldset class="lead-fields" data-lead-fields disabled hidden>
   <div class="lead-selections" data-lead-selections hidden>
     <p class="lead-email-selection" data-email-selection hidden><span>{ui.preparedEmail}</span><strong data-email-selection-value></strong></p>
     <p class="lead-plan-selection" data-plan-selection hidden><span>{ui.selectedPlan}</span><strong data-plan-selection-name></strong></p>
@@ -56,19 +68,23 @@ const ui = locale === 'en' ? {
     <label>{c.lead.fields.name}<input name="name" required autocomplete="name" /></label>
     <label>{c.lead.fields.restaurant}<input name="restaurant" required autocomplete="organization" /></label>
   </div>
-  <div class="field-row">
-    <label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label>
-    <label>{c.lead.fields.phone}<input name="phone" type="tel" autocomplete="tel" inputmode="tel" /></label>
-  </div>
+  <label>{c.lead.fields.email}<input name="email" type="email" required autocomplete="email" /></label>
   <label>{c.lead.fields.level}<select name="level">{c.lead.priorities.map((priority) => <option value={priority.value} data-plan-name={commercialPlanName(priority.value)} selected={priority.value === 'gestion'}>{priority.label}</option>)}</select></label>
-  <label>{c.lead.fields.message}<textarea name="message" rows={variant === 'dialog' ? 3 : 4}></textarea></label>
+  <details class="lead-optional" data-lead-optional>
+    <summary>{ui.optionalDetails}<span aria-hidden="true">＋</span></summary>
+    <label>{c.lead.fields.phone}<input name="phone" type="tel" autocomplete="tel" inputmode="tel" /></label>
+    <label>{c.lead.fields.message}<textarea name="message" rows="3"></textarea></label>
+  </details>
   <label class="privacy-check"><input name="privacyAccepted" type="checkbox" required /><span>{c.lead.fields.privacy} <a href={`${prefix}/privacidad/`}>{c.footer.privacy}</a>.</span></label>
   <input name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
   <button class="lead-submit" type="submit" data-idle-label={c.lead.submit} data-sending-label={ui.sending}><span data-lead-submit-label>{c.lead.submit}</span><span aria-hidden="true">→</span></button>
   <p class="lead-status" data-lead-status data-disabled={c.lead.disabled} data-invalid={c.lead.invalid} data-failure={c.lead.failure} data-success={c.lead.success} data-limited={c.lead.limited} role="status" aria-live="polite"></p>
+  </fieldset>
 </form>
 
 <script>
+  import { commercialDetailInterest } from '../commercial-context';
+
   const validPlans = new Set(['basico', 'gestion', 'inteligente']);
   type InterestKind = 'theme' | 'panel';
   type InterestOption = { slug: string; name: string; plan: string };
@@ -86,6 +102,7 @@ const ui = locale === 'en' ? {
   };
 
   const searchParams = new URLSearchParams(window.location.search);
+  const detailInterest = commercialDetailInterest(new URL(window.location.href));
   const hashParams = window.location.hash.startsWith('#') ? new URLSearchParams(window.location.hash.slice(1)) : new URLSearchParams();
   const requestedPlan = searchParams.get('plan');
   const requestedEmail = (hashParams.get('email') ?? searchParams.get('email') ?? '').trim();
@@ -94,18 +111,13 @@ const ui = locale === 'en' ? {
   emailProbe.value = requestedEmail;
   const validRequestedEmail = requestedEmail.length > 0 && requestedEmail.length <= 254 && emailProbe.checkValidity();
 
-  if (validRequestedEmail && hashParams.has('email')) {
-    document.querySelectorAll<HTMLAnchorElement>('[data-context-language-link]').forEach((link) => {
-      const destination = new URL(link.href, window.location.origin);
-      destination.hash = new URLSearchParams({ email: requestedEmail }).toString();
-      link.href = `${destination.pathname}${destination.search}${destination.hash}`;
-    });
-  }
   if (hashParams.has('email')) window.history.replaceState({}, '', `${window.location.pathname}${window.location.search}`);
 
   document.querySelectorAll<HTMLFormElement>('[data-full-lead-form]').forEach((fullLeadForm) => {
     if (fullLeadForm.dataset.leadInitialised === 'true') return;
-    fullLeadForm.dataset.leadInitialised = 'true';
+    const leadFields = fullLeadForm.querySelector<HTMLFieldSetElement>('[data-lead-fields]');
+    const fallbackContact = fullLeadForm.querySelector<HTMLElement>('[data-lead-fallback]');
+    if (!leadFields) return;
 
     const planSelect = fullLeadForm.querySelector<HTMLSelectElement>('select[name="level"]');
     const emailInput = fullLeadForm.querySelector<HTMLInputElement>('input[name="email"]');
@@ -119,11 +131,29 @@ const ui = locale === 'en' ? {
     const interestSelectionName = interestSelection?.querySelector<HTMLElement>('[data-interest-selection-name]');
     const themeOptions = parseInterestOptions(fullLeadForm.dataset.themeInterests);
     const panelOptions = parseInterestOptions(fullLeadForm.dataset.panelInterests);
-    const requestedTheme = themeOptions.find(({ slug }) => slug === searchParams.get('theme'));
-    const requestedPanel = panelOptions.find(({ slug }) => slug === searchParams.get('panel'));
+    const themeSlug = detailInterest?.kind === 'theme' ? detailInterest.slug : detailInterest ? null : searchParams.get('theme');
+    const panelSlug = detailInterest?.kind === 'panel' ? detailInterest.slug : detailInterest ? null : searchParams.get('panel');
+    const requestedTheme = themeOptions.find(({ slug }) => slug === themeSlug);
+    const requestedPanel = panelOptions.find(({ slug }) => slug === panelSlug);
     const selectedInterest: SelectedInterest | null = requestedTheme && !requestedPanel
       ? { ...requestedTheme, kind: 'theme' }
       : requestedPanel && !requestedTheme ? { ...requestedPanel, kind: 'panel' } : null;
+    let planSelectionChanged = false;
+
+    const syncLanguageContext = () => {
+      if (!window.location.pathname.endsWith('/empezar/') && !selectedInterest && !requestedPlan && !validRequestedEmail) return;
+      const value = emailInput?.value.trim() ?? '';
+      const emailIsValid = value.length > 0 && value.length <= 254 && emailInput?.checkValidity();
+      document.querySelectorAll<HTMLAnchorElement>('[data-context-language-link]').forEach((link) => {
+        const destination = new URL(link.href, window.location.origin);
+        destination.search = '';
+        if (selectedInterest && !detailInterest) destination.searchParams.set(selectedInterest.kind, selectedInterest.slug);
+        const hasExplicitPlan = Boolean(requestedPlan && validPlans.has(requestedPlan)) || planSelectionChanged;
+        if (planSelect && validPlans.has(planSelect.value) && (!detailInterest || hasExplicitPlan)) destination.searchParams.set('plan', planSelect.value);
+        destination.hash = emailIsValid ? new URLSearchParams({ email: value }).toString() : '';
+        link.href = `${destination.pathname}${destination.search}${destination.hash}`;
+      });
+    };
 
     const syncPlanSelection = () => {
       if (planSelectionName && planSelect) planSelectionName.textContent = planSelect.selectedOptions[0]?.dataset.planName ?? planSelect.selectedOptions[0]?.textContent ?? '';
@@ -133,7 +163,7 @@ const ui = locale === 'en' ? {
       if (validRequestedEmail && emailInput && emailSelection && emailSelectionValue) {
         emailInput.value = requestedEmail;
         emailSelectionValue.textContent = requestedEmail;
-        emailSelection.hidden = false;
+        emailSelection.hidden = true;
         hasSelection = true;
       } else if (emailSelection) emailSelection.hidden = true;
       const plan = requestedPlan && validPlans.has(requestedPlan) ? requestedPlan : selectedInterest?.plan;
@@ -152,7 +182,9 @@ const ui = locale === 'en' ? {
       if (leadSelections) leadSelections.hidden = !hasSelection;
     };
     applyRequestedContext();
-    planSelect?.addEventListener('change', syncPlanSelection);
+    syncLanguageContext();
+    planSelect?.addEventListener('change', () => { planSelectionChanged = true; syncPlanSelection(); syncLanguageContext(); });
+    emailInput?.addEventListener('input', syncLanguageContext);
 
     fullLeadForm.addEventListener('submit', async (event) => {
       event.preventDefault();
@@ -196,6 +228,7 @@ const ui = locale === 'en' ? {
         if (response.status === 202) {
           fullLeadForm.reset();
           applyRequestedContext();
+          syncLanguageContext();
         }
       } catch {
         if (leadStatus) leadStatus.textContent = leadStatus.dataset.failure ?? '';
@@ -204,10 +237,25 @@ const ui = locale === 'en' ? {
         if (submitLabel) submitLabel.textContent = submit?.dataset.idleLabel ?? '';
       }
     });
+    // Keep the direct contact fallback until the safe JSON handler is installed.
+    leadFields.disabled = false;
+    leadFields.hidden = false;
+    if (fallbackContact) fallbackContact.hidden = true;
+    fullLeadForm.dataset.leadInitialised = 'true';
   });
 </script>
 
 <style>
+  .lead-fields { min-width: 0; margin: 0; border: 0; padding: 0; }
+  .lead-fields[hidden], .lead-fallback[hidden] { display: none; }
+  .lead-fallback p { margin: 0 0 12px; color: var(--slate); font-size: .85rem; line-height: 1.5; }
+  .lead-fallback a { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 16px; color: var(--color-notion-blue-strong); font-size: .85rem; text-underline-offset: 4px; }
+  .lead-optional { margin: 4px 0 16px; border-block: 1px solid var(--line); }
+  .lead-optional summary { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 12px; cursor: pointer; list-style: none; color: var(--slate); font-size: .78rem; line-height: 1.5; }
+  .lead-optional summary::-webkit-details-marker { display: none; }
+  .lead-optional summary span { flex: none; font-size: 1rem; }
+  .lead-optional[open] summary span { transform: rotate(45deg); }
+  .lead-optional label { margin-bottom: 16px; }
   .lead-form { border-radius: 6px; padding: clamp(22px, 4vw, 36px); background: white; }
   .lead-form--dialog { border: 0; border-radius: 0; padding: 0; }
   .field-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
@@ -216,13 +264,13 @@ const ui = locale === 'en' ? {
   textarea { resize: vertical; }
   input:hover, select:hover, textarea:hover { border-color: rgb(0 0 0 / 28%); }
   input:focus, select:focus, textarea:focus { border-color: var(--color-notion-blue); box-shadow: 0 0 0 3px rgb(0 117 222 / 10%); }
-  .lead-selections { display: grid; gap: 8px; margin: 0 0 18px; }
-  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 18px; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 4px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
+  .lead-selections { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+  .lead-email-selection, .lead-plan-selection, .lead-interest-selection { display: grid; gap: 5px; flex: 1 1 140px; min-width: 0; margin: 0; border: 1px solid rgb(0 117 222 / 24%); border-radius: 4px; padding: 10px 13px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .76rem; }
   .lead-selections[hidden], .lead-email-selection[hidden], .lead-plan-selection[hidden], .lead-interest-selection[hidden] { display: none; }
   .lead-email-selection span, .lead-plan-selection span, .lead-interest-selection > span { font-weight: 650; }
-  .lead-email-selection strong, .lead-plan-selection strong, .lead-interest-selection strong { min-width: 0; overflow-wrap: anywhere; color: var(--ink); font-size: .82rem; text-align: right; }
+  .lead-email-selection strong, .lead-plan-selection strong, .lead-interest-selection strong { min-width: 0; overflow-wrap: anywhere; color: var(--ink); font-size: .82rem; text-align: left; }
   .lead-interest-selection i { font-style: normal; }
-  .lead-form > label, .lead-form .field-row { margin-bottom: 14px; }
+  .lead-fields > label, .lead-form .field-row { margin-bottom: 14px; }
   .privacy-check { display: flex; align-items: flex-start; gap: 10px; margin-block: 18px !important; border: 1px solid var(--line); border-radius: 4px; padding: 12px; font-weight: 500; line-height: 1.35; }
   .privacy-check input { min-height: auto; width: auto; margin-top: 2px; accent-color: var(--color-notion-blue); }
   .privacy-check a { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; vertical-align: middle; text-underline-offset: 3px; }

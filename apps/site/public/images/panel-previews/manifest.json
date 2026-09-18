@@ -1,0 +1,230 @@
+{
+  "version": 1,
+  "fixedNow": "2026-09-18T10:00:00+02:00",
+  "captures": [
+    {
+      "file": "es/servicio-desktop.webp",
+      "route": "/demos/vedra/gestion/?vista=servicio",
+      "view": "servicio",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "c9fb8eb929dda5810e27b431c9f953004547139eee9ed14254d0a1f83a4b57ea"
+    },
+    {
+      "file": "es/servicio-mobile.webp",
+      "route": "/demos/vedra/gestion/?vista=servicio",
+      "view": "servicio",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "147661367bcdd0b4e87234c016711b7d0d82e9602d9294ec54f9ab4c8ad43952"
+    },
+    {
+      "file": "es/plano-desktop.webp",
+      "route": "/demos/solane/gestion/?vista=plano",
+      "view": "plano",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "fc3ed4f8a977ad57fb5c8d8096f568480699f397ea8f579b560182594850570d"
+    },
+    {
+      "file": "es/plano-mobile.webp",
+      "route": "/demos/solane/gestion/?vista=plano",
+      "view": "plano",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "01a5d0e6e745e6461e55bfe80258a01f9804fa49bed018e250450876be28f0a5"
+    },
+    {
+      "file": "es/reservas-espera-desktop.webp",
+      "route": "/demos/vedra/gestion/?vista=espera",
+      "view": "espera",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "8e3c3dfbc2eabcad977e8dc11118ab2b3da770621d981c6531c3402aea373096"
+    },
+    {
+      "file": "es/reservas-espera-mobile.webp",
+      "route": "/demos/vedra/gestion/?vista=espera",
+      "view": "espera",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "988abdf43bb697f732ceec26a9e31d9d5ac91db575cbf3ca44af6b7b15ab796a"
+    },
+    {
+      "file": "es/grupos-eventos-desktop.webp",
+      "route": "/demos/solane/gestion/?vista=privatizaciones",
+      "view": "privatizaciones",
+      "prepare": [
+        "private-tour-mode:free"
+      ],
+      "width": 1366,
+      "height": 900,
+      "sha256": "5bfb05bba5f475d89af0f3a1ed539a44964aa53ae6c419d88ed5b66bcbbdec48"
+    },
+    {
+      "file": "es/grupos-eventos-mobile.webp",
+      "route": "/demos/solane/gestion/?vista=privatizaciones",
+      "view": "privatizaciones",
+      "prepare": [
+        "private-tour-mode:free"
+      ],
+      "width": 375,
+      "height": 812,
+      "sha256": "611b0be0292da50db83d799af9a56136bdf633e4aa4825c8b4b9070960a42730"
+    },
+    {
+      "file": "es/informes-desktop.webp",
+      "route": "/demos/vedra/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "79507f27bcf899512bca4477e6710515ac063c6f853005191aed8ef8baee2e95"
+    },
+    {
+      "file": "es/informes-mobile.webp",
+      "route": "/demos/vedra/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "db3436b123b4f82b707278d24df5b6b536e1c8ab228621162fa2597b2f84fa58"
+    },
+    {
+      "file": "es/inteligente-desktop.webp",
+      "route": "/demos/solane/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "137f797bb42410303b8d3476e1dfcd5c1697ebd7540b4adecf484eb28bad5e85"
+    },
+    {
+      "file": "es/inteligente-mobile.webp",
+      "route": "/demos/solane/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "998e1c6c4ad1dd240f1b7231aec828d6e2da3ef1df71d4c54644393bd6342019"
+    },
+    {
+      "file": "en/servicio-desktop.webp",
+      "route": "/en/demos/vedra/gestion/?vista=servicio",
+      "view": "servicio",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "e4e0d4516ce335ec58ae38e36e5961b91950caad291976584ab8e901b8dc99e9"
+    },
+    {
+      "file": "en/servicio-mobile.webp",
+      "route": "/en/demos/vedra/gestion/?vista=servicio",
+      "view": "servicio",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "9bcbf30512f0f665bfaa04e785e8d385a98482bc57f56b2fa03e7289d44ce6de"
+    },
+    {
+      "file": "en/plano-desktop.webp",
+      "route": "/en/demos/solane/gestion/?vista=plano",
+      "view": "plano",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "08ff375a06cdc05d82d6c63813d9f8a22648c1a4eb13dea45c49decd71ac5f20"
+    },
+    {
+      "file": "en/plano-mobile.webp",
+      "route": "/en/demos/solane/gestion/?vista=plano",
+      "view": "plano",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "b4313861e45d1895aa62de5edaabfc093f0c8a178a80bbe90dd32b5ed9ae94ed"
+    },
+    {
+      "file": "en/reservas-espera-desktop.webp",
+      "route": "/en/demos/vedra/gestion/?vista=espera",
+      "view": "espera",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "947c2891fe7783d43b3bbcd60b292afcf7be20d49437c94e97d7de9776bf8968"
+    },
+    {
+      "file": "en/reservas-espera-mobile.webp",
+      "route": "/en/demos/vedra/gestion/?vista=espera",
+      "view": "espera",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "6dccdac0a9b8df995299e8e75c3e4f560e51ea46ddf758c36c15b17fda86c9ba"
+    },
+    {
+      "file": "en/grupos-eventos-desktop.webp",
+      "route": "/en/demos/solane/gestion/?vista=privatizaciones",
+      "view": "privatizaciones",
+      "prepare": [
+        "private-tour-mode:free"
+      ],
+      "width": 1366,
+      "height": 900,
+      "sha256": "19029c51935376fcf6da969a570ef093dc20ff3185d3d23ca88593f73735c577"
+    },
+    {
+      "file": "en/grupos-eventos-mobile.webp",
+      "route": "/en/demos/solane/gestion/?vista=privatizaciones",
+      "view": "privatizaciones",
+      "prepare": [
+        "private-tour-mode:free"
+      ],
+      "width": 375,
+      "height": 812,
+      "sha256": "a2e0df0f194c17f581a3f7d19fff46496003bb5d93f3b64b0937a153396af061"
+    },
+    {
+      "file": "en/informes-desktop.webp",
+      "route": "/en/demos/vedra/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "6b961ea2d1ba1b7b722b76e538be03b78dae419a454b3831c174369c6d38f85c"
+    },
+    {
+      "file": "en/informes-mobile.webp",
+      "route": "/en/demos/vedra/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "c155dbfe1c625438e91607edffd8353fcb2caf8111de78233cfa8f21982d0784"
+    },
+    {
+      "file": "en/inteligente-desktop.webp",
+      "route": "/en/demos/solane/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 1366,
+      "height": 900,
+      "sha256": "4ba6837ced82ddff05fbcabfef02101e2d20d35ebf2a6713c24adc4117fe7ccf"
+    },
+    {
+      "file": "en/inteligente-mobile.webp",
+      "route": "/en/demos/solane/gestion/?vista=informes",
+      "view": "informes",
+      "prepare": [],
+      "width": 375,
+      "height": 812,
+      "sha256": "6e0c7db714be8030ba51d32e1243fdd6b094ce75485907c4fac1ed699abdccd0"
+    }
+  ]
+}

@@ -1,347 +1,98 @@
 ---
 import type { Locale } from '@logic-reserva/config';
-
+import { tourCopy, tourSteps, tourStepUrl } from '@logic-reserva/config/tour';
 interface Props { locale?: Locale }
-
 const { locale = 'es' } = Astro.props;
-const prefix = locale === 'en' ? '/en' : '';
-const ui = locale === 'en' ? {
-  close: 'Exit journey', eyebrow: 'Logic Reserva guided journey',
-  introTitle: 'From the website to the restaurant floor.',
-  introBody: 'In under four minutes, follow the offer, the restaurant identity, a direct booking and the decisions that reach the floor.',
-  introMeta: '9 milestones · under 4 minutes · fictional data', start: 'Start guided journey', explore: 'Explore freely',
-  progress: 'Journey progress', visible: 'What you are seeing', next: 'Next milestone',
-  finish: 'View plans', exit: 'Exit',
-} : {
-  close: 'Salir del recorrido', eyebrow: 'Recorrido guiado de Logic Reserva',
-  introTitle: 'De la web al trabajo de sala.',
-  introBody: 'En menos de cuatro minutos recorrerás la oferta, la identidad del restaurante, una reserva directa y las decisiones que llegan a sala.',
-  introMeta: '9 hitos · menos de 4 minutos · datos ficticios', start: 'Iniciar visita guiada', explore: 'Explorar libremente',
-  progress: 'Progreso del recorrido', visible: 'Qué estás viendo', next: 'Siguiente hito',
-  finish: 'Ver planes', exit: 'Salir',
-};
-const finishHref = `${prefix}/planes/`;
-const steps = locale === 'en' ? [
-  {
-    label: 'The offer', title: 'Three useful starting points.',
-    body: 'Basic begins with an owned website, Management joins bookings and the floor, and Intelligent adds events and explainable decision support.',
-    visible: 'The three plans compare fit, first capabilities, current boundary and evidence.',
-    href: `${prefix}/?recorrido=1#planes`,
-  },
-  {
-    label: 'The identity', title: 'Twelve directions, one product foundation.',
-    body: 'Each fictional restaurant changes voice, rhythm and visual direction while the shared catalogue keeps scope and level consistent.',
-    visible: 'The complete website catalogue can be searched and filtered without hiding product depth.',
-    href: `${prefix}/temas/?recorrido=2`,
-  },
-  {
-    label: 'The website', title: 'Vedra keeps the restaurant recognisable.',
-    body: 'A Mediterranean identity, its menu and its own call to book open the journey before the manager appears.',
-    visible: 'The complete Vedra website, using fictional content and a responsive restaurant identity.',
-    href: `${prefix}/demos/vedra/?recorrido=3`,
-  },
-  {
-    label: 'The booking', title: 'The guest books without leaving the restaurant.',
-    body: 'Date, party size, service, time and menu enter one branded journey before any operational decision is made.',
-    visible: 'Vedra’s booking widget with date, party size, service, time and menu.',
-    href: `${prefix}/demos/vedra/?recorrido=4#reserva`,
-  },
-  {
-    label: 'The service', title: 'The request reaches the team with context.',
-    body: 'The daily service brings together bookings, covers, state and the tasks that need attention now.',
-    visible: 'The real demonstrative daily-service view used by the front-of-house team.',
-    href: `${prefix}/demos/vedra/gestion/?vista=servicio&recorrido=5`,
-  },
-  {
-    label: 'Shared capacity', title: 'The event takes up tables too.',
-    body: 'Ordinary bookings, groups and events read and consume the same table capacity instead of competing in separate lists.',
-    visible: 'Vedra’s shared floor plan, where reservations and free tables are read together.',
-    href: `${prefix}/demos/vedra/gestion/?vista=plano&recorrido=6`,
-  },
-  {
-    label: 'Bookings and guests', title: 'Bookings, waitlist and guests stay together.',
-    body: 'The enquiry source, booking state and guest context remain visible while the team decides what happens next.',
-    visible: 'Vedra’s operational bookings list, with fictional entries that can be reviewed safely.',
-    href: `${prefix}/demos/vedra/gestion/?vista=reservas&recorrido=7`,
-  },
-  {
-    label: 'Reports and control', title: 'The reason remains visible.',
-    body: 'Reports turn the fictional service into an explainable operational reading before the team acts.',
-    visible: 'Vedra’s reports, calculated only from the scenario data available in this browser.',
-    href: `${prefix}/demos/vedra/gestion/?vista=informes&recorrido=8`,
-  },
-  {
-    label: 'Rules and settings', title: 'The operating rules close the loop.',
-    body: 'Notifications, policies and team settings belong to the same context, while real providers remain an implementation decision.',
-    visible: 'Vedra’s settings view: demonstrative configuration, without connected messages, payments or accounts.',
-    href: `${prefix}/demos/vedra/gestion/?vista=ajustes&recorrido=9`,
-  },
-] : [
-  {
-    label: 'La oferta', title: 'Tres puntos de partida útiles.',
-    body: 'Básico empieza por la web propia, Gestión une reservas y sala, e Inteligente añade eventos y apoyo explicable a la decisión.',
-    visible: 'Los tres planes comparan encaje, primeras capacidades, límite actual y evidencia.',
-    href: `${prefix}/?recorrido=1#planes`,
-  },
-  {
-    label: 'La identidad', title: 'Doce direcciones, una base de producto.',
-    body: 'Cada restaurante ficticio cambia voz, ritmo y dirección visual mientras el catálogo compartido mantiene coherentes el alcance y el nivel.',
-    visible: 'El catálogo completo de webs permite buscar y filtrar sin ocultar la profundidad de producto.',
-    href: `${prefix}/temas/?recorrido=2`,
-  },
-  {
-    label: 'La web', title: 'Vedra mantiene reconocible al restaurante.',
-    body: 'Una identidad mediterránea, su carta y su propia llamada a reservar abren el recorrido antes de que aparezca el gestor.',
-    visible: 'La web completa de Vedra, con contenido ficticio e identidad responsive de restaurante.',
-    href: `${prefix}/demos/vedra/?recorrido=3`,
-  },
-  {
-    label: 'La reserva', title: 'El cliente reserva sin salir del restaurante.',
-    body: 'Fecha, comensales, servicio, hora y menú entran en un recorrido de marca antes de cualquier decisión operativa.',
-    visible: 'El widget de reserva de Vedra con fecha, comensales, servicio, hora y menú.',
-    href: `${prefix}/demos/vedra/?recorrido=4#reserva`,
-  },
-  {
-    label: 'El servicio', title: 'La solicitud llega al equipo con contexto.',
-    body: 'El servicio del día reúne reservas, cubiertos, estado y las tareas que necesitan atención ahora.',
-    visible: 'La vista demostrativa real del servicio del día que utiliza el equipo de sala.',
-    href: `${prefix}/demos/vedra/gestion/?vista=servicio&recorrido=5`,
-  },
-  {
-    label: 'Capacidad compartida', title: 'El evento también ocupa mesa.',
-    body: 'Reservas ordinarias, grupos y eventos leen y consumen la misma capacidad de mesas en lugar de competir en listas separadas.',
-    visible: 'El plano compartido de Vedra, donde reservas y mesas libres se leen juntas.',
-    href: `${prefix}/demos/vedra/gestion/?vista=plano&recorrido=6`,
-  },
-  {
-    label: 'Reservas y clientes', title: 'Reservas, espera y clientes permanecen juntos.',
-    body: 'El origen de la solicitud, el estado de la reserva y el contexto del cliente siguen visibles mientras el equipo decide el siguiente movimiento.',
-    visible: 'La lista operativa de reservas de Vedra, con entradas ficticias que se pueden revisar de forma segura.',
-    href: `${prefix}/demos/vedra/gestion/?vista=reservas&recorrido=7`,
-  },
-  {
-    label: 'Informes y control', title: 'El motivo permanece visible.',
-    body: 'Los informes convierten el servicio ficticio en una lectura operativa explicable antes de que el equipo actúe.',
-    visible: 'Los informes de Vedra, calculados solo con los datos del escenario disponibles en este navegador.',
-    href: `${prefix}/demos/vedra/gestion/?vista=informes&recorrido=8`,
-  },
-  {
-    label: 'Reglas y ajustes', title: 'Las reglas operativas cierran el recorrido.',
-    body: 'Notificaciones, políticas y ajustes de equipo pertenecen al mismo contexto, mientras los proveedores reales siguen siendo una decisión de implantación.',
-    visible: 'Los ajustes de Vedra: configuración demostrativa, sin mensajes, pagos ni cuentas conectadas.',
-    href: `${prefix}/demos/vedra/gestion/?vista=ajustes&recorrido=9`,
-  },
-];
+const ui = tourCopy(locale);
+const steps = tourSteps(locale);
 ---
 
-<dialog
-  class="commercial-tour-intro"
-  data-commercial-tour-intro
-  data-tour-steps={JSON.stringify(steps)}
-  data-tour-storage-key="logic2b:reserva-tour:v1"
-  data-tour-finish-href={finishHref}
-  aria-labelledby="commercial-tour-intro-title"
->
+<dialog class="commercial-tour-intro" data-commercial-tour-intro aria-labelledby="commercial-tour-intro-title" aria-describedby="commercial-tour-intro-body">
   <article>
-    <button class="commercial-tour-intro__close" type="button" data-tour-exit aria-label={ui.close}>×</button>
-    <p class="commercial-tour__eyebrow">{ui.eyebrow}</p>
-    <h2 id="commercial-tour-intro-title">{ui.introTitle}</h2>
-    <p class="commercial-tour-intro__body">{ui.introBody}</p>
-    <p class="commercial-tour-intro__meta">{ui.introMeta}</p>
+    <button class="commercial-tour-intro__close" type="button" data-tour-exit aria-label={ui.exit}>×</button>
+    <p class="commercial-tour-intro__eyebrow">{ui.eyebrow}</p>
+    <h2 id="commercial-tour-intro-title">{ui.title}</h2>
+    <p id="commercial-tour-intro-body" class="commercial-tour-intro__body">{ui.body}</p>
+    <ol class="commercial-tour-intro__steps" aria-label={ui.progress}>{steps.map((step, index) => <li><span>{String(index + 1).padStart(2, '0')}</span>{step.label}</li>)}</ol>
+    <p class="commercial-tour-intro__meta">{ui.meta}</p>
     <div class="commercial-tour-intro__actions">
-      <a href={steps[0].href} data-tour-start>{ui.start}<span aria-hidden="true">→</span></a>
+      <a href={tourStepUrl(steps[0])} data-tour-start><span data-tour-start-text>{ui.start}</span><span aria-hidden="true">→</span></a>
       <button type="button" data-tour-explore>{ui.explore}</button>
     </div>
   </article>
 </dialog>
 
-<aside class="commercial-tour-dock" data-commercial-tour-dock aria-live="polite" hidden>
-  <div class="commercial-tour-dock__progress" data-tour-segments aria-label={ui.progress}>
-    {steps.map((step, index) => <button type="button" data-tour-jump={index} aria-label={`${index + 1}. ${step.label}`}><span></span></button>)}
+<style>
+  .commercial-tour-intro { inset: 0; width: min(550px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; overflow: auto; border: 1px solid var(--line); border-radius: 22px; padding: 0; color: var(--ink); background: var(--paper); box-shadow: 0 24px 90px rgb(2 9 58 / 25%); }
+  .commercial-tour-intro::backdrop { background: rgb(2 9 58 / 56%); backdrop-filter: blur(5px); }
+  .commercial-tour-intro > article { position: relative; padding: clamp(28px, 5vw, 42px); }
+  .commercial-tour-intro__close { position: absolute; top: 12px; right: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--slate); background: transparent; cursor: pointer; font-size: 1.25rem; }
+  .commercial-tour-intro__eyebrow { margin: 0 48px 18px 0; color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 750; }
+  .commercial-tour-intro h2 { max-width: 400px; margin: 0; font-size: clamp(2.5rem, 6vw, 3.5rem); letter-spacing: -.055em; line-height: 1; text-wrap: balance; }
+  .commercial-tour-intro__body { margin: 18px 0 0; color: var(--slate); font-size: .9rem; line-height: 1.6; }
+  .commercial-tour-intro__steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 26px 0 0; padding: 0; list-style: none; }
+  .commercial-tour-intro__steps li { display: grid; gap: 9px; border-top: 1px solid var(--line); padding-top: 10px; font-size: .73rem; font-weight: 600; }
+  .commercial-tour-intro__steps span { color: var(--color-notion-blue-strong); font-size: .64rem; }
+  .commercial-tour-intro__meta { margin: 24px 0 0; color: var(--slate); font-size: .7rem; }
+  .commercial-tour-intro__actions { display: grid; gap: 4px; margin-top: 18px; }
+  .commercial-tour-intro__actions a, .commercial-tour-intro__actions button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; border: 0; border-radius: 999px; padding: 10px 17px; color: var(--slate); background: transparent; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 650; text-decoration: none; }
+  .commercial-tour-intro__actions a { justify-content: space-between; color: white; background: var(--color-notion-blue-strong); }
+  .commercial-tour-intro :is(button, a):focus-visible { outline: 2px solid var(--color-notion-blue-strong); outline-offset: 3px; }
+  @media (max-width: 380px) { .commercial-tour-intro > article { padding: 28px 22px 20px; } .commercial-tour-intro__steps { gap: 8px; } .commercial-tour-intro__steps li { font-size: .67rem; } }
+  @media (prefers-reduced-motion: reduce) { .commercial-tour-intro::backdrop { backdrop-filter: none; } }
+</style>
+
+<aside class="reserva-tour" data-tour-dock data-commercial-tour-dock aria-label={ui.tour} hidden>
+  <div class="reserva-tour__heading">
+    <p data-tour-eyebrow aria-live="polite"></p>
+    <div class="reserva-tour__controls">
+      <button type="button" data-tour-toggle aria-label={ui.collapse} aria-expanded="true" aria-controls="commercial-tour-content">−</button>
+      <button type="button" data-tour-exit aria-label={ui.exit}>×</button>
+    </div>
   </div>
-  <div class="commercial-tour-dock__heading">
-    <p data-tour-dock-eyebrow></p>
-    <button type="button" data-tour-exit>{ui.exit}<span aria-hidden="true">×</span></button>
-  </div>
-  <h2 data-tour-dock-title></h2>
-  <p class="commercial-tour-dock__body" data-tour-dock-body></p>
-  <div class="commercial-tour-dock__context"><strong>{ui.visible}</strong><p data-tour-dock-visible></p></div>
-  <div class="commercial-tour-dock__actions">
-    <button class="commercial-tour-dock__next" type="button" data-tour-next data-next-label={ui.next} data-finish-label={ui.finish}><span data-tour-next-text>{ui.next}</span><span aria-hidden="true">→</span></button>
+  <div id="commercial-tour-content" data-tour-content>
+    <h2 data-tour-title tabindex="-1"></h2>
+    <p class="reserva-tour__body" data-tour-body></p>
+    <nav class="reserva-tour__progress" aria-label={ui.progress}>
+      {steps.map((step, index) => <button type="button" data-tour-jump={index} aria-label={`${index + 1}. ${step.label}`}><span></span><small>{step.label}</small></button>)}
+    </nav>
+    <div class="reserva-tour__actions">
+      <button type="button" data-tour-back>{ui.back}</button>
+      <a href={tourStepUrl(steps[1])} data-tour-next><span data-tour-next-text></span><span aria-hidden="true">→</span></a>
+    </div>
+    <a class="reserva-tour__return" href={locale === 'en' ? '/en/empezar/' : '/empezar/'} data-tour-contact>{ui.contact}<span aria-hidden="true">↗</span></a>
+    <a class="reserva-tour__return" href={locale === 'en' ? '/en/' : '/'} data-tour-return hidden>{ui.return}</a>
   </div>
 </aside>
 
 <script>
-  const tourIntro = document.querySelector<HTMLDialogElement>('[data-commercial-tour-intro]');
-  const tourDock = document.querySelector<HTMLElement>('[data-commercial-tour-dock]');
-  if (tourIntro && tourDock) {
-    type TourStep = { label: string; title: string; body: string; visible: string; href: string };
-    type TourStatus = 'idle' | 'intro' | 'active' | 'complete';
-    type TourState = { status: TourStatus; stepIndex: number };
-    const storageKey = tourIntro.dataset.tourStorageKey ?? 'logic2b:reserva-tour:v1';
-    const finishHref = tourIntro.dataset.tourFinishHref ?? '/planes/';
-    const parseSteps = (): TourStep[] => {
-      try {
-        const parsed: unknown = JSON.parse(tourIntro.dataset.tourSteps ?? '[]');
-        return Array.isArray(parsed) ? parsed.filter((step): step is TourStep => Boolean(step && typeof step === 'object'
-          && 'label' in step && typeof step.label === 'string'
-          && 'title' in step && typeof step.title === 'string'
-          && 'body' in step && typeof step.body === 'string'
-          && 'visible' in step && typeof step.visible === 'string'
-          && 'href' in step && typeof step.href === 'string')) : [];
-      } catch { return []; }
-    };
-    const steps = parseSteps();
-    const statuses = new Set<TourStatus>(['idle', 'intro', 'active', 'complete']);
-    const fallbackState: TourState = { status: 'idle', stepIndex: 0 };
-    const readState = (): TourState => {
-      try {
-        const parsed: unknown = JSON.parse(sessionStorage.getItem(storageKey) ?? 'null');
-        if (!parsed || typeof parsed !== 'object' || !('status' in parsed) || !('stepIndex' in parsed)) return fallbackState;
-        const candidate = parsed as { status: unknown; stepIndex: unknown };
-        if (typeof candidate.status !== 'string' || !statuses.has(candidate.status as TourStatus) || typeof candidate.stepIndex !== 'number') return fallbackState;
-        return { status: candidate.status as TourStatus, stepIndex: Math.min(Math.max(Math.trunc(candidate.stepIndex), 0), Math.max(steps.length - 1, 0)) };
-      } catch { return fallbackState; }
-    };
-    const writeState = (state: TourState) => {
-      try { sessionStorage.setItem(storageKey, JSON.stringify(state)); } catch { /* Session storage can be unavailable. */ }
-      return state;
-    };
-    let state = readState();
-    const dockEyebrow = tourDock.querySelector<HTMLElement>('[data-tour-dock-eyebrow]');
-    const dockTitle = tourDock.querySelector<HTMLElement>('[data-tour-dock-title]');
-    const dockBody = tourDock.querySelector<HTMLElement>('[data-tour-dock-body]');
-    const dockVisible = tourDock.querySelector<HTMLElement>('[data-tour-dock-visible]');
-    const next = tourDock.querySelector<HTMLButtonElement>('[data-tour-next]');
-    const nextText = next?.querySelector<HTMLElement>('[data-tour-next-text]');
-    const segments = [...tourDock.querySelectorAll<HTMLButtonElement>('[data-tour-jump]')];
-
-    const cleanTourUrl = () => {
-      const url = new URL(window.location.href);
-      if (!url.searchParams.has('recorrido')) return;
-      url.searchParams.delete('recorrido');
-      window.history.replaceState({}, '', `${url.pathname}${url.search}${url.hash}`);
-    };
-    const scrollToHash = () => {
-      if (!window.location.hash) return;
-      const target = document.getElementById(decodeURIComponent(window.location.hash.slice(1)));
-      if (target) requestAnimationFrame(() => target.scrollIntoView({ block: 'start' }));
-    };
-    const setUiMode = (mode: 'idle' | 'active') => {
-      tourDock.hidden = mode !== 'active';
-    };
-    const showDock = (index: number) => {
-      const step = steps[index];
-      if (!step) return;
-      state = writeState({ status: 'active', stepIndex: index });
-      if (dockEyebrow) dockEyebrow.textContent = `${index + 1}/${steps.length} · ${step.label}`;
-      if (dockTitle) dockTitle.textContent = step.title;
-      if (dockBody) dockBody.textContent = step.body;
-      if (dockVisible) dockVisible.textContent = step.visible;
-      segments.forEach((segment, segmentIndex) => {
-        const current = segmentIndex === index;
-        segment.toggleAttribute('data-current', current);
-        segment.toggleAttribute('data-complete', segmentIndex < index);
-        segment.setAttribute('aria-current', current ? 'step' : 'false');
-      });
-      if (nextText && next) nextText.textContent = index === steps.length - 1 ? next.dataset.finishLabel ?? '' : next.dataset.nextLabel ?? '';
-      setUiMode('active');
-    };
-    const showIntro = () => {
-      state = writeState({ status: 'intro', stepIndex: state.stepIndex });
-      setUiMode('idle');
-      if (!tourIntro.open) tourIntro.showModal();
-    };
-    const exitTour = () => {
-      state = writeState({ status: 'idle', stepIndex: 0 });
-      cleanTourUrl();
-      setUiMode('idle');
-      if (tourIntro.open) tourIntro.close();
-    };
-    const navigateTo = (index: number) => {
-      const step = steps[index];
-      if (!step) return;
-      state = writeState({ status: 'active', stepIndex: index });
-      window.location.assign(step.href);
-    };
-
-    document.querySelectorAll<HTMLAnchorElement>('[data-tour-trigger], [data-camp-tour-trigger]').forEach((trigger) => {
-      trigger.addEventListener('click', (event) => {
-        event.preventDefault();
-        showIntro();
-      });
-    });
-    tourIntro.querySelector<HTMLElement>('[data-tour-start]')?.addEventListener('click', (event) => { event.preventDefault(); navigateTo(0); });
-    tourIntro.querySelector<HTMLElement>('[data-tour-explore]')?.addEventListener('click', exitTour);
-    tourIntro.querySelectorAll<HTMLElement>('[data-tour-exit]').forEach((control) => control.addEventListener('click', exitTour));
-    tourIntro.addEventListener('click', (event) => { if (event.target === tourIntro) exitTour(); });
-    tourIntro.addEventListener('cancel', () => { state = writeState({ status: 'idle', stepIndex: 0 }); });
-    tourDock.querySelectorAll<HTMLElement>('[data-tour-exit]').forEach((control) => control.addEventListener('click', exitTour));
-    next?.addEventListener('click', () => {
-      if (state.stepIndex < steps.length - 1) navigateTo(state.stepIndex + 1);
-      else {
-        state = writeState({ status: 'complete', stepIndex: state.stepIndex });
-        window.location.assign(finishHref);
-      }
-    });
-    segments.forEach((segment) => segment.addEventListener('click', () => navigateTo(Number(segment.dataset.tourJump ?? 0))));
-    document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !tourDock.hidden) exitTour(); });
-    window.addEventListener('hashchange', scrollToHash);
-
-    const requested = new URLSearchParams(window.location.search).get('recorrido');
-    if (requested === 'intro') {
-      cleanTourUrl();
-      showIntro();
-    } else if (requested && /^\d+$/.test(requested)) {
-      const requestedIndex = Number(requested) - 1;
-      cleanTourUrl();
-      showDock(requestedIndex);
-      scrollToHash();
-    } else if (state.status === 'active') showDock(state.stepIndex);
-    else if (state.status === 'intro') showIntro();
-    else setUiMode('idle');
-  }
+  import { initCommercialTour } from '@logic-reserva/config/tour-client';
+  initCommercialTour();
 </script>
 
 <style>
-  .commercial-tour-intro { inset: 0; width: min(670px, calc(100vw - 28px)); max-height: min(760px, calc(100dvh - 28px)); margin: auto; overflow: visible; border: 0; border-radius: 22px; padding: 0; color: var(--ink); background: transparent; }
-  .commercial-tour-intro::backdrop { background: rgb(2 9 58 / 76%); backdrop-filter: blur(8px); }
-  .commercial-tour-intro > article { position: relative; overflow: auto; max-height: min(760px, calc(100dvh - 28px)); border-radius: 22px; padding: clamp(30px, 6vw, 58px); background: var(--paper); box-shadow: 0 34px 110px rgb(0 0 0 / 38%); }
-  .commercial-tour-intro__close { position: absolute; top: 16px; right: 16px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--slate); background: white; cursor: pointer; font-size: 1.35rem; }
-  .commercial-tour__eyebrow { margin: 0 60px 15px 0; color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
-  .commercial-tour-intro h2 { max-width: 590px; margin: 0; font-size: clamp(2.8rem, 6.5vw, 5rem); letter-spacing: -.062em; line-height: .89; text-wrap: balance; }
-  .commercial-tour-intro__body { margin: 26px 0 0; color: var(--slate); font-family: var(--serif); font-size: 1.05rem; line-height: 1.6; }
-  .commercial-tour-intro__meta { width: fit-content; margin: 26px 0 0; border-radius: 999px; padding: 9px 13px; color: var(--slate); background: var(--color-sky-tint); font-size: .72rem; font-weight: 700; }
-  .commercial-tour-intro__actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 34px; }
-  .commercial-tour-intro__actions a, .commercial-tour-intro__actions button { display: inline-flex; min-height: 50px; align-items: center; justify-content: center; gap: 20px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--slate); background: white; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 720; text-decoration: none; }
-  .commercial-tour-intro__actions a { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
-  .commercial-tour-dock { position: fixed; z-index: 82; right: 20px; bottom: 20px; width: min(440px, calc(100vw - 40px)); border: 1px solid rgb(255 255 255 / 14%); border-radius: 20px; padding: 22px; color: white; background: var(--color-midnight-ink); box-shadow: 0 28px 90px rgb(2 9 58 / 38%); }
-  .commercial-tour-dock[hidden] { display: none; }
-  .commercial-tour-dock__progress { display: grid; grid-template-columns: repeat(9, 1fr); gap: 4px; margin-bottom: 20px; }
-  .commercial-tour-dock__progress button { height: 18px; border: 0; padding: 7px 0; background: transparent; cursor: pointer; }
-  .commercial-tour-dock__progress button span { display: block; height: 3px; border-radius: 999px; background: rgb(255 255 255 / 20%); }
-  .commercial-tour-dock__progress button[data-complete] span { background: var(--color-sky-wash); }
-  .commercial-tour-dock__progress button[data-current] span { background: var(--color-marigold); }
-  .commercial-tour-dock__heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-  .commercial-tour-dock__heading p { margin: 0; color: var(--color-sky-wash); font-size: .67rem; font-weight: 760; letter-spacing: .075em; text-transform: uppercase; }
-  .commercial-tour-dock__heading button { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; border: 0; padding: 0; color: rgb(255 255 255 / 58%); background: transparent; cursor: pointer; font-size: .7rem; }
-  .commercial-tour-dock__heading button span { font-size: 1.1rem; }
-  .commercial-tour-dock h2 { margin: 9px 0 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -.055em; line-height: .94; }
-  .commercial-tour-dock__body { margin: 16px 0 0; color: rgb(255 255 255 / 68%); font-family: var(--serif); font-size: .9rem; line-height: 1.52; }
-  .commercial-tour-dock__context { margin-top: 17px; border-left: 2px solid var(--color-marigold); padding-left: 13px; }
-  .commercial-tour-dock__context strong { color: rgb(255 255 255 / 46%); font-size: .61rem; letter-spacing: .07em; text-transform: uppercase; }
-  .commercial-tour-dock__context p { margin: 5px 0 0; font-size: .73rem; line-height: 1.45; }
-  .commercial-tour-dock__actions { display: flex; gap: 8px; margin-top: 20px; }
-  .commercial-tour-dock__actions button { display: inline-flex; min-height: 46px; align-items: center; justify-content: center; gap: 16px; border: 1px solid rgb(255 255 255 / 16%); border-radius: 999px; padding: 9px 14px; color: white; background: transparent; cursor: pointer; font: inherit; font-size: .73rem; font-weight: 720; }
-  .commercial-tour-dock__actions .commercial-tour-dock__next { width: 100%; flex: 1; justify-content: space-between; color: var(--color-midnight-ink); border-color: white; background: white; }
-  @media (max-width: 620px) {
-    .commercial-tour-intro { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); }
-    .commercial-tour-intro > article { max-height: calc(100dvh - 16px); border-radius: 17px; padding: 32px 22px 24px; }
-    .commercial-tour-intro h2 { font-size: clamp(2.8rem, 14vw, 4rem); }
-    .commercial-tour-intro__actions { display: grid; }
-    .commercial-tour-dock { right: 8px; bottom: 8px; left: 8px; width: auto; max-height: calc(100dvh - 16px); overflow-y: auto; border-radius: 18px; padding: 18px; }
-    .commercial-tour-dock__body { font-size: .86rem; }
-  }
-  @media (max-width: 380px) { .commercial-tour-dock__context { display: none; } }
-  @media (prefers-reduced-motion: reduce) { .commercial-tour-intro::backdrop { backdrop-filter: none; } }
+  .reserva-tour { position: fixed; z-index: 82; right: 20px; bottom: max(20px, env(safe-area-inset-bottom)); width: min(360px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); overflow: auto; border: 1px solid rgb(2 9 58 / 14%); border-radius: 18px; padding: 12px 18px 18px; color: var(--ink, #02093a); background: var(--paper, #faf8f3); box-shadow: 0 12px 48px rgb(2 9 58 / 15%); font-family: var(--sans, 'Inter Variable', sans-serif); }
+  .reserva-tour[hidden], .reserva-tour [hidden] { display: none; }
+  .reserva-tour__heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .reserva-tour__heading > p { margin: 0; color: var(--color-notion-blue-strong, #1557a5); font-size: .69rem; font-weight: 700; }
+  .reserva-tour__controls { display: flex; }
+  .reserva-tour__controls button { display: grid; place-items: center; width: 44px; height: 44px; border: 0; padding: 0; color: var(--slate, #41546b); background: transparent; font: inherit; font-size: 1.25rem; cursor: pointer; }
+  .reserva-tour h2 { margin: 4px 0 0; color: inherit; font-family: var(--sans, 'Inter Variable', sans-serif); font-size: 1.3rem; line-height: 1.18; font-weight: 650; letter-spacing: -.035em; }
+  .reserva-tour__body { margin: 10px 0 4px; color: var(--slate, #41546b); font-size: .78rem; line-height: 1.6; }
+  .reserva-tour__progress { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 6px 0 8px; }
+  .reserva-tour__progress button { min-height: 44px; border: 0; padding: 9px 0; text-align: left; color: var(--slate, #41546b); background: transparent; cursor: pointer; font: inherit; }
+  .reserva-tour__progress button span { display: block; height: 3px; margin-bottom: 6px; border-radius: 4px; background: rgb(2 9 58 / 12%); }
+  .reserva-tour__progress button small { display: block; font-size: .61rem; line-height: 1.3; }
+  .reserva-tour__progress button[aria-current='step'] { color: var(--color-notion-blue-strong, #1557a5); font-weight: 750; }
+  .reserva-tour__progress button[aria-current='step'] span { background: var(--color-notion-blue, #1871e3); }
+  .reserva-tour__progress button[data-complete] span { background: var(--color-sky-wash, #9ed8ff); }
+  .reserva-tour__actions { display: flex; gap: 8px; }
+  .reserva-tour__actions > * { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgb(2 9 58 / 15%); border-radius: 999px; padding: 10px 14px; color: inherit; background: transparent; cursor: pointer; font: inherit; font-size: .71rem; font-weight: 680; text-decoration: none; }
+  .reserva-tour__actions > a { flex: 1; justify-content: space-between; color: white; background: var(--color-notion-blue-strong, #1557a5); border-color: transparent; }
+  .reserva-tour__return { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; color: var(--slate, #41546b); font-size: .69rem; text-underline-offset: 3px; }
+  .reserva-tour :is(button, a):focus-visible { outline: 2px solid var(--color-notion-blue-strong, #1557a5); outline-offset: 3px; }
+  .reserva-tour [data-tour-title]:focus { outline: none; }
+  .reserva-tour[data-collapsed] { width: min(280px, calc(100vw - 24px)); padding: 4px 8px 4px 16px; }
+  @media (max-width: 620px) { .reserva-tour { right: 10px; bottom: max(10px, env(safe-area-inset-bottom)); width: calc(100vw - 20px); max-height: min(55dvh, 380px); padding: 7px 15px 15px; border-radius: 16px; } .reserva-tour h2 { font-size: 1.2rem; } }
+  @media (prefers-reduced-motion: reduce) { .reserva-tour { scroll-behavior: auto; } }
 </style>

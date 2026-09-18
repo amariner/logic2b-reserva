@@ -132,37 +132,37 @@ export const IMPLEMENTATION_PATH = [
   {
     slug: 'inputs',
     title: text('Datos de partida', 'Starting inputs'),
-    summary: text('Revisamos mesas, espacios, turnos, menús, canales, dominio y responsables.', 'We review tables, spaces, shifts, menus, channels, domain and owners.'),
+    summary: text('Nos cuentas cómo trabajáis: mesas, turnos, carta y reservas.', 'Tell us how you work: tables, shifts, menus and bookings.'),
     owner: text('Restaurante + Logic2B', 'Restaurant + Logic2B'),
   },
   {
     slug: 'configuration',
     title: text('Configuración', 'Configuration'),
-    summary: text('Configuramos identidad, disponibilidad, reglas, permisos y recorridos sobre el alcance aprobado.', 'We configure identity, availability, rules, permissions and journeys around the approved scope.'),
+    summary: text('Preparamos la web con tu marca y las funciones que hayamos acordado.', 'We prepare your branded website and the features we have agreed.'),
     owner: text('Logic2B, con validación del restaurante', 'Logic2B, with restaurant validation'),
   },
   {
     slug: 'validation',
     title: text('Validación', 'Validation'),
-    summary: text('El equipo prueba reservas, grupos, bloqueos, datos y roles con criterios de aceptación claros.', 'The team tests bookings, groups, blocks, data and roles against clear acceptance criteria.'),
+    summary: text('Tu equipo prueba el recorrido completo antes de abrirlo a los clientes.', 'Your team tries the full journey before guests start using it.'),
     owner: text('Equipo operativo del restaurante', 'Restaurant operations team'),
   },
   {
     slug: 'publication',
     title: text('Publicación', 'Publication'),
-    summary: text('Comprobamos dominio, contenidos, proveedores y reversión antes de abrir tráfico real.', 'We check the domain, content, providers and rollback before opening real traffic.'),
+    summary: text('Revisamos los últimos detalles y acordamos contigo cuándo publicar.', 'We check the final details and agree the launch date with you.'),
     owner: text('Responsables acordados por proyecto', 'Owners agreed per project'),
   },
   {
     slug: 'maintenance',
     title: text('Mantenimiento', 'Maintenance'),
-    summary: text('La propuesta fija canal, horario, prioridades, mantenimiento, copias y continuidad.', 'The proposal sets the support channel, hours, priorities, maintenance, backups and continuity.'),
+    summary: text('Dejamos claros el soporte, los horarios y el mantenimiento incluidos.', 'We make the included support, hours and maintenance clear.'),
     owner: text('Alcance de servicio aprobado', 'Approved service scope'),
   },
   {
     slug: 'boundaries',
     title: text('Límites y mejoras', 'Boundaries and improvements'),
-    summary: text('Integraciones, cobros, mensajería y nuevas funciones se estiman y aprueban por separado.', 'Integrations, payments, messaging and new features are estimated and approved separately.'),
+    summary: text('Si necesitas algo más, lo valoramos contigo antes de añadirlo.', 'If you need more, we agree the scope and cost with you first.'),
     owner: text('Propuesta y backlog compartido', 'Proposal and shared backlog'),
   },
 ] as const satisfies readonly ImplementationStep[];

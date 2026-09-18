@@ -7,6 +7,7 @@ import {
   panelContactUrl,
   panelDemoUrl,
   panelDetailUrl,
+  panelPreviewBase,
   type PanelSlug,
   type PanelText,
 } from '@logic-reserva/config/panels';
@@ -59,7 +60,7 @@ const structuredData = [{
   locale={locale}
   title={`${local(panel.title)}${ui.titleSuffix}`}
   description={local(panel.metaDescription)}
-  image={`/images/screens/${panel.screenshot.base}-desktop.png`}
+  image={`${panelPreviewBase(panel, locale)}-desktop.webp`}
   imageAlt={local(panel.screenshot.alt)}
   imageWidth={1366}
   imageHeight={900}
@@ -88,8 +89,8 @@ const structuredData = [{
             <figure class="panel-detail__preview">
               <div class="panel-detail__browser"><code>{address}</code><span aria-hidden="true">×</span></div>
               <picture>
-                <source media="(max-width: 680px)" srcset={`/images/screens/${panel.screenshot.base}-mobile.png`} />
-                <img src={`/images/screens/${panel.screenshot.base}-desktop.png`} alt={local(panel.screenshot.alt)} width="1366" height="900" decoding="async" fetchpriority="high" />
+                <source media="(max-width: 680px)" srcset={`${panelPreviewBase(panel, locale)}-mobile.webp`} />
+                <img src={`${panelPreviewBase(panel, locale)}-desktop.webp`} alt={local(panel.screenshot.alt)} width="1366" height="900" decoding="async" fetchpriority="high" />
               </picture>
               <figcaption>{local(panel.screenshot.caption)}</figcaption>
             </figure>
@@ -125,6 +126,11 @@ const structuredData = [{
     </main>
   </CommercialChrome>
 </Base>
+
+<script>
+  import { preserveDetailContactPlan } from '../commercial-context';
+  preserveDetailContactPlan();
+</script>
 
 <style>
   .panel-detail { overflow: clip; padding-bottom: clamp(90px, 11vw, 160px); }

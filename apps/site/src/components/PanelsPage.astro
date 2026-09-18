@@ -1,6 +1,6 @@
 ---
 import { PRODUCT, type Locale } from '@logic-reserva/config';
-import { PANEL_CATALOG, localizedPanelText, panelDemoUrl, panelDetailUrl, type PanelEntry } from '@logic-reserva/config/panels';
+import { PANEL_CATALOG, localizedPanelText, panelDemoUrl, panelDetailUrl, panelPreviewBase, type PanelEntry } from '@logic-reserva/config/panels';
 import { logic2bContact } from '@logic-reserva/config/contact';
 import Base from '../layouts/Base.astro';
 import CommercialChrome from './CommercialChrome.astro';
@@ -67,7 +67,7 @@ const itemList = {
   locale={locale}
   title={ui.metaTitle}
   description={ui.description}
-  image="/images/screens/05-solane-inventario-desktop.png"
+  image={`${panelPreviewBase(PANEL_CATALOG[1], locale)}-desktop.webp`}
   imageAlt={local(PANEL_CATALOG[1].screenshot.alt)}
   imageWidth={1366}
   imageHeight={900}
@@ -115,8 +115,8 @@ const itemList = {
               <a class="panel-shot-link" href={panelDetailUrl(panel, locale)} aria-label={`${ui.details}: ${local(panel.title)}`}><figure class="panel-shot">
                 <div class="panel-shot__bar"><span>{ui.screenshot}</span><span>{String(index + 1).padStart(2, '0')} / 06</span></div>
                 <picture>
-                  <source media="(max-width: 680px)" srcset={`/images/screens/${panel.screenshot.base}-mobile.png`} />
-                  <img src={`/images/screens/${panel.screenshot.base}-desktop.png`} width="1366" height="900" loading="eager" fetchpriority={index < 2 ? 'high' : 'auto'} decoding="async" alt={local(panel.screenshot.alt)} />
+                  <source media="(max-width: 680px)" srcset={`${panelPreviewBase(panel, locale)}-mobile.webp`} />
+                  <img src={`${panelPreviewBase(panel, locale)}-desktop.webp`} width="1366" height="900" loading="eager" fetchpriority={index < 2 ? 'high' : 'auto'} decoding="async" alt={local(panel.screenshot.alt)} />
                 </picture>
                 <figcaption><span>{local(panel.screenshot.caption)}</span><span>{ui.fictional}</span></figcaption>
               </figure></a>

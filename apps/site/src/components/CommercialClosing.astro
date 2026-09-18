@@ -1,7 +1,7 @@
 ---
 import type { Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
-import { SITE_CONTENT } from '../content';
+import { SITE_CONTENT, closingContent } from '../content';
 import CommercialLeadForm from './CommercialLeadForm.astro';
 
 interface Props { locale?: Locale; home?: boolean }
@@ -10,29 +10,7 @@ const { locale = 'es', home = false } = Astro.props;
 const c = SITE_CONTENT[locale];
 const prefix = locale === 'en' ? '/en' : '';
 const contact = logic2bContact(locale, 'commercial');
-const ui = locale === 'en' ? {
-  eyebrow: 'See the operation before defining scope',
-  title: 'Open a real product view. Then tell us what needs ordering.',
-  body: 'The screens use fictional data and local state, but the decisions are specific: service, floor, groups, events and explainable reports.',
-  action: 'Discuss my project', demo: 'Open the guided demo',
-  proofs: ['Website under your own brand', 'One view of service capacity', 'Implementation defined with Logic2B'],
-  desktop: 'Solane · shared inventory', mobile: 'Vedra · group journey',
-  visualAlt: 'Logic Reserva workspace for shared restaurant capacity',
-  dialogEyebrow: 'A first step, without commitment', dialogTitle: 'Tell us what you want to organise.',
-  dialogBody: 'Share the essentials. Logic2B will review your operation before defining scope, integrations or price.',
-  direct: 'Prefer WhatsApp?', close: 'Close project enquiry',
-} : {
-  eyebrow: 'Ver la operativa antes de definir alcance',
-  title: 'Abre una vista real de producto. Después, cuéntanos qué necesitas ordenar.',
-  body: 'Las pantallas usan datos ficticios y estado local, pero las decisiones son específicas: servicio, plano, grupos, eventos e informes explicables.',
-  action: 'Hablar de mi proyecto', demo: 'Abrir la demo guiada',
-  proofs: ['Web bajo tu propia marca', 'Una sola capacidad de servicio', 'Implantación definida con Logic2B'],
-  desktop: 'Solane · inventario compartido', mobile: 'Vedra · recorrido de grupo',
-  visualAlt: 'Espacio de trabajo de Logic Reserva para la capacidad compartida del restaurante',
-  dialogEyebrow: 'Un primer paso, sin compromiso', dialogTitle: 'Cuéntanos qué quieres ordenar.',
-  dialogBody: 'Comparte lo esencial. Logic2B revisará tu operativa antes de concretar alcance, integraciones o precio.',
-  direct: '¿Prefieres WhatsApp?', close: 'Cerrar solicitud de proyecto',
-};
+const ui = closingContent(locale);
 ---
 
 <section
@@ -48,7 +26,7 @@ const ui = locale === 'en' ? {
       <p>{ui.body}</p>
       <div class="commercial-closing__actions">
         <a class="commercial-closing__primary" href={`${prefix}/empezar/`} data-project-request-open aria-haspopup="dialog">{ui.action}<span aria-hidden="true">→</span></a>
-        <a href={`${prefix}/demos/solane/gestion/?vista=plano`}>{ui.demo}<span aria-hidden="true">↗</span></a>
+        <a href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{ui.demo}<span aria-hidden="true">↗</span></a>
       </div>
       <ul>{ui.proofs.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
     </div>
