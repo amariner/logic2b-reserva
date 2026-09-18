@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { PANEL_CATALOG, getPanel, panelContactUrl, panelDemoUrl, panelDetailUrl } from './panels';
+import { PANEL_CATALOG, getPanel, panelContactUrl, panelDemoUrl, panelDetailUrl, panelPreviewBase } from './panels';
 
 describe('panel catalogue', () => {
   it('defines the six agreed restaurant product doors once', () => {
@@ -26,10 +26,13 @@ describe('panel catalogue', () => {
     }
   });
 
-  it('links only to reproducible manager states and existing F18 captures', () => {
+  it('links each preview to its own manager state and locale', () => {
     for (const panel of PANEL_CATALOG) {
       expect(panel.demoPath).toMatch(/^\/demos\/(vedra|solane)\/gestion\/\?vista=/);
-      expect(panel.screenshot.base).toMatch(/^(04-vedra-grupo|05-solane-inventario|07-solane-privatizacion|08-solane-riesgo)$/);
+      expect(panel.screenshot.base).toBe(panel.slug);
+      for (const locale of ['es', 'en'] as const) {
+        expect(panelPreviewBase(panel, locale)).toBe(`/images/panel-previews/${locale}/${panel.slug}`);
+      }
     }
   });
 

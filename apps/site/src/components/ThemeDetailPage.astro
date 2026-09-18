@@ -170,6 +170,11 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
   </CommercialChrome>
 </Base>
 
+<script>
+  import { preserveDetailContactPlan } from '../commercial-context';
+  preserveDetailContactPlan();
+</script>
+
 <style>
   .theme-detail { color: var(--ink); background: var(--paper); }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
   .theme-detail__hero { padding-top: 28px; }.theme-detail__heading { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: clamp(44px, 8vw, 130px); align-items: end; padding: clamp(38px, 6vw, 78px) 0 34px; }

@@ -1,43 +1,72 @@
 ---
 import type { Locale } from '@logic-reserva/config';
+import { previewUi } from '../content';
 
 interface Props { locale?: Locale }
 
 const { locale = 'es' } = Astro.props;
-const ui = locale === 'en'
-  ? { close: 'Close preview', eyebrow: 'Product preview', fallback: 'Open full experience', detail: 'View full details', contact: 'Discuss this starting point', context: 'Preview context', frame: 'Navigable product demonstration' }
-  : { close: 'Cerrar vista previa', eyebrow: 'Vista previa de producto', fallback: 'Abrir experiencia completa', detail: 'Ver ficha completa', contact: 'Hablar de este punto de partida', context: 'Contexto de la muestra', frame: 'Demostración navegable del producto' };
+const ui = previewUi[locale];
 ---
 
 <dialog id="commercial-preview-dialog" class="commercial-preview" data-commercial-preview aria-labelledby="commercial-preview-title" aria-describedby="commercial-preview-body">
   <div class="commercial-preview__frame">
-    <button class="commercial-preview__close" type="button" data-commercial-preview-close aria-label={ui.close}><span aria-hidden="true">×</span></button>
+    <button class="commercial-preview__close" type="button" data-commercial-preview-close aria-label={ui.close} autofocus>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+    </button>
     <figure class="commercial-preview__visual">
-      <iframe data-commercial-preview-frame src="about:blank" title={ui.frame} loading="lazy" referrerpolicy="strict-origin-when-cross-origin" hidden></iframe>
-      <img data-commercial-preview-image alt="" width="1366" height="900" decoding="async" />
-      <figcaption data-commercial-preview-caption></figcaption>
+      <div class="commercial-preview__browser-bar">
+        <span class="commercial-preview__browser-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <code data-commercial-preview-address></code>
+        <span class="commercial-preview__demo-label">{ui.demonstration}</span>
+      </div>
+      <div id="commercial-preview-screen" class="commercial-preview__screen" data-commercial-preview-screen tabindex="0" role="region" aria-label={ui.viewport}>
+        <picture>
+          <img data-commercial-preview-image alt="" width="1366" height="900" decoding="async" />
+        </picture>
+        <div class="commercial-preview__status" data-commercial-preview-status role="status" aria-live="polite">
+          <span data-commercial-preview-loading>{ui.loading}</span>
+          <span data-commercial-preview-unavailable hidden>{ui.unavailable}</span>
+        </div>
+      </div>
+      <figcaption class="commercial-preview__toolbar">
+        <span data-commercial-preview-caption></span>
+        <div class="commercial-preview__viewports" data-commercial-preview-viewports role="group" aria-label={ui.viewport}>
+          <button type="button" data-commercial-preview-viewport="desktop" aria-pressed="true" aria-controls="commercial-preview-screen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2" /><path d="M8 21h8M12 16v5" /></svg>
+            <span>{ui.desktop}</span>
+          </button>
+          <button type="button" data-commercial-preview-viewport="mobile" aria-pressed="false" aria-controls="commercial-preview-screen">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="6" y="2" width="12" height="20" rx="2.5" /><path d="M10 18h4" /></svg>
+            <span>{ui.mobile}</span>
+          </button>
+        </div>
+      </figcaption>
     </figure>
     <div class="commercial-preview__copy">
-      <div class="commercial-preview__context">
-        <code data-commercial-preview-address></code>
-        <ul aria-label={ui.context}>
-          <li data-commercial-preview-tag-one></li>
-          <li data-commercial-preview-tag-two></li>
-          <li data-commercial-preview-tag-three></li>
-        </ul>
+      <div class="commercial-preview__description" data-commercial-preview-description>
+        <p class="eyebrow" data-commercial-preview-kind>{ui.eyebrow}</p>
+        <h2 id="commercial-preview-title" data-commercial-preview-title></h2>
+        <p id="commercial-preview-body" data-commercial-preview-body></p>
+        <details class="commercial-preview__more" data-commercial-preview-more>
+          <summary>{ui.more}<span aria-hidden="true">+</span></summary>
+          <div class="commercial-preview__context">
+            <ul aria-label={ui.context}>
+              <li data-commercial-preview-tag-one></li>
+              <li data-commercial-preview-tag-two></li>
+              <li data-commercial-preview-tag-three></li>
+            </ul>
+          </div>
+          <dl class="commercial-preview__facts">
+            <div><dt data-commercial-preview-detail-label></dt><dd data-commercial-preview-detail></dd></div>
+            <div><dt data-commercial-preview-evidence-label></dt><dd data-commercial-preview-evidence></dd></div>
+            <div class="commercial-preview__boundary"><dt data-commercial-preview-limit-label></dt><dd data-commercial-preview-limit></dd></div>
+          </dl>
+        </details>
       </div>
-      <p class="eyebrow" data-commercial-preview-kind>{ui.eyebrow}</p>
-      <h2 id="commercial-preview-title" data-commercial-preview-title></h2>
-      <p id="commercial-preview-body" data-commercial-preview-body></p>
-      <dl class="commercial-preview__facts">
-        <div><dt data-commercial-preview-detail-label></dt><dd data-commercial-preview-detail></dd></div>
-        <div><dt data-commercial-preview-evidence-label></dt><dd data-commercial-preview-evidence></dd></div>
-        <div class="commercial-preview__boundary"><dt data-commercial-preview-limit-label></dt><dd data-commercial-preview-limit></dd></div>
-      </dl>
       <div class="commercial-preview__actions">
-        <a data-commercial-preview-contact href="#contacto"><span data-commercial-preview-contact-label>{ui.contact}</span><span aria-hidden="true">→</span></a>
-        <a data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.fallback}</span><span aria-hidden="true">↗</span></a>
-        <a data-commercial-preview-detail-link href="/"><span>{ui.detail}</span><span aria-hidden="true">→</span></a>
+        <a class="commercial-preview__primary" data-commercial-preview-contact href="#contacto"><span data-commercial-preview-contact-label>{ui.contact}</span><span aria-hidden="true">→</span></a>
+        <a class="commercial-preview__secondary" data-commercial-preview-link href="/"><span data-commercial-preview-link-label>{ui.fallback}</span><span aria-hidden="true">↗</span></a>
+        <a class="commercial-preview__detail-link" data-commercial-preview-detail-link href="/"><span>{ui.detail}</span><span aria-hidden="true">→</span></a>
       </div>
     </div>
   </div>
@@ -48,28 +77,36 @@ const ui = locale === 'en'
   const triggers = [...document.querySelectorAll<HTMLElement>('[data-commercial-preview-trigger], [data-theme-preview-open], [data-panel-preview-open]')];
   if (preview && typeof preview.showModal === 'function' && triggers.length > 0) {
     document.documentElement.classList.add('commercial-preview-ready');
-    const frame = preview.querySelector<HTMLIFrameElement>('[data-commercial-preview-frame]');
     const image = preview.querySelector<HTMLImageElement>('[data-commercial-preview-image]');
-    const caption = preview.querySelector<HTMLElement>('[data-commercial-preview-caption]');
-    const address = preview.querySelector<HTMLElement>('[data-commercial-preview-address]');
-    const tagOne = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-one]');
-    const tagTwo = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-two]');
-    const tagThree = preview.querySelector<HTMLElement>('[data-commercial-preview-tag-three]');
-    const kind = preview.querySelector<HTMLElement>('[data-commercial-preview-kind]');
-    const title = preview.querySelector<HTMLElement>('[data-commercial-preview-title]');
-    const body = preview.querySelector<HTMLElement>('[data-commercial-preview-body]');
-    const detailLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-detail-label]');
-    const detail = preview.querySelector<HTMLElement>('[data-commercial-preview-detail]');
-    const evidenceLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-evidence-label]');
-    const evidence = preview.querySelector<HTMLElement>('[data-commercial-preview-evidence]');
-    const limitLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-limit-label]');
-    const limit = preview.querySelector<HTMLElement>('[data-commercial-preview-limit]');
+    const mobileViewport = window.matchMedia('(max-width: 600px)');
+    const viewportControls = preview.querySelector<HTMLElement>('[data-commercial-preview-viewports]');
+    const viewportButtons = [...preview.querySelectorAll<HTMLButtonElement>('[data-commercial-preview-viewport]')];
+    const screen = preview.querySelector<HTMLElement>('[data-commercial-preview-screen]');
+    const loading = preview.querySelector<HTMLElement>('[data-commercial-preview-loading]');
+    const unavailable = preview.querySelector<HTMLElement>('[data-commercial-preview-unavailable]');
+    const more = preview.querySelector<HTMLDetailsElement>('[data-commercial-preview-more]');
+    const description = preview.querySelector<HTMLElement>('[data-commercial-preview-description]');
     const contact = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]');
     const contactLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-contact-label]');
     const link = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]');
     const linkLabel = preview.querySelector<HTMLElement>('[data-commercial-preview-link-label]');
     const detailLink = preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-detail-link]');
+    const fallbackContactLabel = contactLabel?.textContent ?? '';
+    const fallbackLinkLabel = linkLabel?.textContent ?? '';
     let returnFocus: HTMLElement | null = null;
+    let imageVersion = 0;
+    let desktopSource = '';
+    let mobileSource = '';
+    let selectedViewport: 'desktop' | 'mobile' | null = null;
+
+    const textFields = [
+      ['caption', 'previewCaption'], ['address', 'previewAddress'],
+      ['tag-one', 'previewTagOne'], ['tag-two', 'previewTagTwo'], ['tag-three', 'previewTagThree'],
+      ['kind', 'previewKind'], ['title', 'previewTitle'], ['body', 'previewBody'],
+      ['detail-label', 'previewDetailLabel'], ['detail', 'previewDetail'],
+      ['evidence-label', 'previewEvidenceLabel'], ['evidence', 'previewEvidence'],
+      ['limit-label', 'previewLimitLabel'], ['limit', 'previewLimit'],
+    ].map(([selector, key]) => ({ node: preview.querySelector<HTMLElement>(`[data-commercial-preview-${selector}]`), key }));
 
     const detailUrlFor = (trigger: HTMLElement) => {
       if (trigger.dataset.previewDetailUrl) return trigger.dataset.previewDetailUrl;
@@ -82,65 +119,101 @@ const ui = locale === 'en'
       return trigger.dataset.previewUrl ?? '/';
     };
 
-    const frameUrlFor = (trigger: HTMLElement) => {
-      const candidate = trigger.dataset.previewFrame ?? '';
-      if (!candidate) return '';
-      const url = new URL(candidate, window.location.href);
-      return /^\/(?:en\/)?demos\//.test(url.pathname) ? `${url.pathname}${url.search}${url.hash}` : '';
+    const setImageState = (state: 'loading' | 'ready' | 'unavailable') => {
+      if (screen) {
+        screen.dataset.state = state;
+        screen.setAttribute('aria-busy', String(state === 'loading'));
+      }
+      if (loading) loading.hidden = state !== 'loading';
+      if (unavailable) unavailable.hidden = state !== 'unavailable';
     };
+    const revealImage = async () => {
+      if (!image) return;
+      const version = imageVersion;
+      const source = image.currentSrc || image.src;
+      try {
+        await image.decode();
+        if (version === imageVersion && (image.currentSrc || image.src) === source) setImageState('ready');
+      } catch {
+        // A responsive source change can abort decoding without failing the new image.
+        if (version === imageVersion && (image.currentSrc || image.src) === source && image.complete && image.naturalWidth === 0) setImageState('unavailable');
+      }
+    };
+    const updateViewport = () => {
+      if (!image) return;
+      const viewport = mobileSource && (selectedViewport ?? (mobileViewport.matches ? 'mobile' : 'desktop')) === 'mobile' ? 'mobile' : 'desktop';
+      const source = viewport === 'mobile' ? mobileSource : desktopSource;
+      if (screen) {
+        screen.dataset.viewport = viewport;
+        screen.scrollTo(0, 0);
+      }
+      for (const button of viewportButtons) button.setAttribute('aria-pressed', String(button.dataset.commercialPreviewViewport === viewport));
+      imageVersion += 1;
+      setImageState('loading');
+      if (source) {
+        image.src = source;
+        requestAnimationFrame(() => { void revealImage(); });
+      } else {
+        image.removeAttribute('src');
+        setImageState('unavailable');
+      }
+    };
+    image?.addEventListener('load', () => { void revealImage(); });
+    image?.addEventListener('error', () => setImageState('unavailable'));
+    mobileViewport.addEventListener('change', () => {
+      if (preview.open && selectedViewport === null) updateViewport();
+    });
+    for (const button of viewportButtons) {
+      button.addEventListener('click', () => {
+        selectedViewport = button.dataset.commercialPreviewViewport === 'mobile' ? 'mobile' : 'desktop';
+        updateViewport();
+      });
+    }
 
     for (const trigger of triggers) {
       trigger.setAttribute('aria-controls', preview.id);
       trigger.setAttribute('aria-haspopup', 'dialog');
       trigger.addEventListener('click', (event) => {
+        // Keep native link actions (new tab, copy address) available.
+        if (event instanceof MouseEvent && (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0)) return;
         event.preventDefault();
         returnFocus = trigger;
-        const frameUrl = frameUrlFor(trigger);
-        if (frame) {
-          if (frameUrl) {
-            if (frame.getAttribute('src') !== frameUrl) frame.src = frameUrl;
-            frame.title = trigger.dataset.previewAlt ?? trigger.dataset.previewTitle ?? frame.title;
-            frame.hidden = false;
-          } else {
-            frame.hidden = true;
-          }
+        for (const { node, key } of textFields) {
+          if (node) node.textContent = trigger.dataset[key] ?? '';
         }
-        if (image) {
-          image.src = trigger.dataset.previewImage ?? '';
-          image.alt = trigger.dataset.previewAlt ?? '';
-          image.hidden = Boolean(frameUrl);
-        }
-        if (caption) caption.textContent = trigger.dataset.previewCaption ?? '';
-        if (address) address.textContent = trigger.dataset.previewAddress ?? '';
-        if (tagOne) tagOne.textContent = trigger.dataset.previewTagOne ?? '';
-        if (tagTwo) tagTwo.textContent = trigger.dataset.previewTagTwo ?? '';
-        if (tagThree) tagThree.textContent = trigger.dataset.previewTagThree ?? '';
-        if (kind) kind.textContent = trigger.dataset.previewKind ?? '';
-        if (title) title.textContent = trigger.dataset.previewTitle ?? '';
-        if (body) body.textContent = trigger.dataset.previewBody ?? '';
-        if (detailLabel) detailLabel.textContent = trigger.dataset.previewDetailLabel ?? '';
-        if (detail) detail.textContent = trigger.dataset.previewDetail ?? '';
-        if (evidenceLabel) evidenceLabel.textContent = trigger.dataset.previewEvidenceLabel ?? '';
-        if (evidence) evidence.textContent = trigger.dataset.previewEvidence ?? '';
-        if (limitLabel) limitLabel.textContent = trigger.dataset.previewLimitLabel ?? '';
-        if (limit) limit.textContent = trigger.dataset.previewLimit ?? '';
         if (contact) contact.href = trigger.dataset.previewContactUrl ?? '#contacto';
-        if (contactLabel) contactLabel.textContent = trigger.dataset.previewContactAction ?? contactLabel.textContent ?? '';
+        if (contactLabel) contactLabel.textContent = trigger.dataset.previewContactAction ?? fallbackContactLabel;
         if (link) link.href = trigger.dataset.previewUrl ?? '/';
-        if (linkLabel) linkLabel.textContent = trigger.dataset.previewAction ?? linkLabel.textContent ?? '';
+        if (linkLabel) linkLabel.textContent = trigger.dataset.previewAction ?? fallbackLinkLabel;
         if (detailLink) detailLink.href = detailUrlFor(trigger);
+        if (more) more.open = false;
+        description?.scrollTo(0, 0);
+        if (image) {
+          image.alt = trigger.dataset.previewAlt ?? '';
+          desktopSource = trigger.dataset.previewImage ?? '';
+          mobileSource = /^\/images\/(?:theme|panel)-previews\/(?:es|en)\/[a-z0-9-]+-desktop\.webp$/.test(desktopSource)
+            ? desktopSource.replace(/-desktop\.webp$/, '-mobile.webp') : '';
+          if (viewportControls) viewportControls.hidden = !mobileSource;
+          selectedViewport = null;
+          updateViewport();
+        }
+        document.documentElement.classList.add('commercial-preview-open');
         preview.showModal();
       });
     }
 
     preview.querySelector<HTMLButtonElement>('[data-commercial-preview-close]')?.addEventListener('click', () => preview.close());
-    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-contact]')?.addEventListener('click', () => preview.close());
-    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-link]')?.addEventListener('click', () => preview.close());
-    preview.querySelector<HTMLAnchorElement>('[data-commercial-preview-detail-link]')?.addEventListener('click', () => preview.close());
+    preview.querySelectorAll<HTMLAnchorElement>('.commercial-preview__actions a').forEach((action) => {
+      action.addEventListener('click', () => preview.close());
+    });
+    let backdropPointerDown = false;
+    preview.addEventListener('pointerdown', (event) => { backdropPointerDown = event.target === preview; });
     preview.addEventListener('click', (event) => {
-      if (event.target === preview) preview.close();
+      if (event.target === preview && backdropPointerDown) preview.close();
+      backdropPointerDown = false;
     });
     preview.addEventListener('close', () => {
+      document.documentElement.classList.remove('commercial-preview-open');
       returnFocus?.focus({ preventScroll: true });
       returnFocus = null;
     });
@@ -151,56 +224,100 @@ const ui = locale === 'en'
   button[data-commercial-preview-trigger], button[data-theme-preview-open], button[data-panel-preview-open] { display: none; }
   .commercial-preview-ready button[data-commercial-preview-trigger], .commercial-preview-ready button[data-theme-preview-open], .commercial-preview-ready button[data-panel-preview-open] { display: inline-flex; }
   .commercial-preview-ready .theme-rail-card > [data-commercial-preview-trigger] { display: block; }
-  .commercial-preview { inset: 0; width: min(1080px, calc(100% - 32px)); max-width: none; max-height: min(820px, calc(100dvh - 32px)); margin: auto; overflow: visible; border: 0; border-radius: 14px; padding: 0; color: var(--ink); background: white; box-shadow: 0 28px 90px rgb(7 14 43 / 34%); }
-  .commercial-preview::backdrop { background: rgb(7 14 43 / 72%); backdrop-filter: blur(5px); }
-  .commercial-preview__frame { display: grid; height: min(720px, calc(100dvh - 32px)); min-height: 0; grid-template-columns: minmax(0, 1.2fr) minmax(360px, .8fr); overflow: hidden; border-radius: inherit; }
-  .commercial-preview__close { position: absolute; z-index: 3; top: -12px; right: -12px; display: grid; width: 48px; height: 48px; place-items: center; border: 1px solid rgb(0 0 0 / 12%); border-radius: 50%; color: var(--ink); background: white; box-shadow: 0 10px 24px rgb(7 14 43 / 18%); cursor: pointer; font-size: 1.55rem; }
-  .commercial-preview__visual { display: grid; min-width: 0; margin: 0; grid-template-rows: minmax(0, 1fr) auto; background: #edf0f4; }
-  .commercial-preview__visual iframe, .commercial-preview__visual img { display: block; width: 100%; height: 100%; min-height: 0; border: 0; object-fit: cover; object-position: center top; background: white; }
-  .commercial-preview__visual iframe[hidden], .commercial-preview__visual img[hidden] { display: none; }
-  .commercial-preview__visual figcaption { min-height: 46px; padding: 14px 18px; color: rgb(255 255 255 / 76%); background: var(--color-midnight-ink); font-size: .72rem; line-height: 1.35; }
-  .commercial-preview__copy { display: flex; min-width: 0; min-height: 0; flex-direction: column; justify-content: safe center; overflow-y: auto; padding: clamp(28px, 3.5vw, 48px); }
-  .commercial-preview__context { display: grid; gap: 10px; margin-bottom: 22px; }
-  .commercial-preview__context code { overflow: hidden; color: var(--slate); font-family: var(--sans); font-size: .69rem; font-weight: 650; letter-spacing: .01em; text-overflow: ellipsis; white-space: nowrap; }
+  html.commercial-preview-open { overflow: hidden; overscroll-behavior: none; }
+  .commercial-preview { inset: 0; width: min(1600px, calc(100% - 32px)); max-width: none; max-height: calc(100dvh - 32px); margin: auto; overflow: hidden; border: 1px solid var(--line); border-radius: 16px; padding: 0; color: var(--ink); background: var(--paper); box-shadow: 0 28px 90px rgb(7 14 43 / 28%); }
+  .commercial-preview::backdrop { background: rgb(7 14 43 / 62%); backdrop-filter: blur(6px); }
+  .commercial-preview__frame { position: relative; display: grid; height: min(900px, calc(100dvh - 32px)); min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(260px, 23vw, 310px); }
+  .commercial-preview__close { position: absolute; z-index: 3; top: 10px; right: 10px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 8px; color: var(--ink); background: white; cursor: pointer; touch-action: manipulation; }
+  .commercial-preview__close svg { width: 19px; height: 19px; }
+  .commercial-preview__close:hover { background: var(--color-sky-tint); }
+  .commercial-preview :is(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--color-notion-blue); outline-offset: 3px; }
+  .commercial-preview__visual { display: grid; min-width: 0; min-height: 0; margin: 14px 0 14px 14px; grid-template-rows: 44px minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--line); border-radius: 8px; background: white; }
+  .commercial-preview__browser-bar { display: flex; min-width: 0; align-items: center; gap: 12px; padding: 0 14px; border-bottom: 1px solid var(--line); background: white; }
+  .commercial-preview__browser-dots { display: flex; gap: 5px; }
+  .commercial-preview__browser-dots i { width: 7px; height: 7px; border-radius: 50%; background: var(--line); }
+  .commercial-preview__browser-bar code { min-width: 0; flex: 1; overflow: hidden; color: var(--slate); font-family: var(--sans); font-size: .67rem; text-overflow: ellipsis; white-space: nowrap; }
+  .commercial-preview__demo-label { color: var(--slate); font-size: .6rem; }
+  .commercial-preview__screen { position: relative; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; background: var(--paper); }
+  .commercial-preview__screen:focus-visible { outline-offset: -3px; }
+  .commercial-preview__screen picture { display: block; width: 100%; height: 100%; min-height: 0; margin-inline: auto; }
+  .commercial-preview__screen img { display: block; width: 100%; height: 100%; min-height: 0; object-fit: contain; object-position: center top; }
+  .commercial-preview__screen[data-viewport="mobile"] picture { width: min(100%, 375px); height: auto; min-height: 100%; background: white; box-shadow: 0 0 0 1px var(--line), 0 8px 28px rgb(7 14 43 / 8%); }
+  .commercial-preview__screen[data-viewport="mobile"] img { height: auto; }
+  .commercial-preview__screen[data-state="loading"] img, .commercial-preview__screen[data-state="unavailable"] img { visibility: hidden; }
+  .commercial-preview__status { position: absolute; inset: 0; display: grid; align-content: center; padding: 24px; color: var(--slate); text-align: center; font-size: .85rem; line-height: 1.6; }
+  .commercial-preview__status [hidden], .commercial-preview__screen[data-state="ready"] .commercial-preview__status { display: none; }
+  .commercial-preview__toolbar { display: flex; min-width: 0; align-items: center; justify-content: space-between; gap: 14px; padding: 4px 10px 4px 14px; border-top: 1px solid var(--line); color: var(--slate); background: white; font-size: .62rem; line-height: 1.45; }
+  .commercial-preview__toolbar > span { max-width: 52ch; }
+  .commercial-preview__viewports { display: flex; flex-shrink: 0; align-items: center; gap: 2px; }
+  .commercial-preview__viewports[hidden] { display: none; }
+  .commercial-preview__viewports button { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 6px; padding: 0 10px; color: var(--slate); background: transparent; font: inherit; font-size: .68rem; font-weight: 600; cursor: pointer; touch-action: manipulation; }
+  .commercial-preview__viewports button:hover { background: var(--paper); }
+  .commercial-preview__viewports button[aria-pressed="true"] { color: var(--ink); background: var(--color-sky-tint); }
+  .commercial-preview__viewports svg { width: 16px; height: 16px; }
+  .commercial-preview__copy { display: flex; min-width: 0; min-height: 0; flex-direction: column; padding: 72px 22px 18px; }
+  .commercial-preview__description { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .commercial-preview__description > .eyebrow { margin: 0 0 12px; color: var(--slate); }
+  .commercial-preview__copy h2 { margin: 0 0 16px; font-family: var(--serif); font-weight: 500; font-size: clamp(2rem, 3vw, 2.8rem); letter-spacing: -.055em; line-height: 1.04; }
+  .commercial-preview__description > p:not(.eyebrow) { margin: 0; color: var(--slate); font-size: .85rem; line-height: 1.6; }
+  .commercial-preview__context { margin: 4px 0 18px; }
   .commercial-preview__context ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
-  .commercial-preview__context li { border: 1px solid rgb(0 117 222 / 20%); border-radius: 999px; padding: 5px 8px; color: var(--color-notion-blue-strong); background: var(--color-sky-tint); font-size: .65rem; font-weight: 700; line-height: 1.2; }
-  .commercial-preview__copy .eyebrow { color: var(--color-notion-blue-strong); }
-  .commercial-preview__copy h2 { margin: 12px 0 18px; font-size: clamp(2.35rem, 4.5vw, 4.7rem); letter-spacing: -.06em; line-height: .92; }
-  .commercial-preview__copy > p:not(.eyebrow) { margin: 0; color: var(--slate); font-family: var(--serif); font-size: 1.02rem; line-height: 1.58; }
-  .commercial-preview__facts { display: grid; margin: 24px 0 0; border-top: 1px solid var(--line); }
-  .commercial-preview__facts > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; border-bottom: 1px solid var(--line); padding: 12px 0; }
-  .commercial-preview__facts dt { color: var(--slate); font-size: .67rem; font-weight: 750; letter-spacing: .04em; text-transform: uppercase; }
-  .commercial-preview__facts dd { margin: 0; font-size: .78rem; line-height: 1.45; }
+  .commercial-preview__context li { border: 1px solid var(--line); border-radius: 6px; padding: 5px 7px; color: var(--slate); background: white; font-size: .64rem; font-weight: 500; line-height: 1.3; }
+  .commercial-preview__context li:empty { display: none; }
+  .commercial-preview__more { margin-top: 20px; border-block: 1px solid var(--line); }
+  .commercial-preview__more summary { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 12px; padding: 8px 2px; color: var(--ink); font-size: .72rem; font-weight: 600; cursor: pointer; list-style: none; }
+  .commercial-preview__more summary::-webkit-details-marker { display: none; }
+  .commercial-preview__more summary span { font-size: 1rem; font-weight: 400; }
+  .commercial-preview__more[open] summary span { transform: rotate(45deg); }
+  .commercial-preview__facts { display: grid; gap: 14px; margin: 0; padding: 4px 0 18px; }
+  .commercial-preview__facts > div { display: grid; gap: 5px; }
+  .commercial-preview__facts dt { color: var(--slate); font-size: .61rem; font-weight: 650; letter-spacing: .03em; text-transform: uppercase; }
+  .commercial-preview__facts dd { margin: 0; font-size: .73rem; line-height: 1.5; }
   .commercial-preview__boundary dd { color: var(--slate); }
-  .commercial-preview__actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 24px; }
-  .commercial-preview__actions a { display: flex; min-height: 48px; align-items: center; justify-content: space-between; gap: 14px; border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; color: var(--ink); background: white; font-size: .75rem; font-weight: 750; text-decoration: none; }
-  .commercial-preview__actions a:first-child { grid-column: 1 / -1; color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
-  @media (min-width: 761px) and (max-height: 780px) {
-    .commercial-preview__copy { justify-content: flex-start; padding: 28px 34px; }
-    .commercial-preview__context { margin-bottom: 14px; }
-    .commercial-preview__copy h2 { margin: 8px 0 12px; font-size: clamp(2.3rem, 4vw, 3.2rem); }
-    .commercial-preview__copy > p:not(.eyebrow) { line-height: 1.45; }
-    .commercial-preview__facts { margin-top: 16px; }
-    .commercial-preview__facts > div { padding: 8px 0; }
-    .commercial-preview__actions { margin-top: 16px; }
+  .commercial-preview__actions { display: grid; flex-shrink: 0; gap: 6px; margin-top: auto; padding-top: 24px; }
+  .commercial-preview__actions a { display: flex; min-height: 44px; align-items: center; justify-content: space-between; gap: 10px; border-radius: 8px; padding: 10px 12px; color: var(--ink); font-size: .72rem; font-weight: 600; line-height: 1.4; text-decoration: none; }
+  .commercial-preview__actions .commercial-preview__primary { color: white; background: var(--color-notion-blue); }
+  .commercial-preview__primary:hover { background: var(--color-notion-blue-strong); }
+  .commercial-preview__actions .commercial-preview__secondary { border: 1px solid var(--line); background: white; }
+  .commercial-preview__secondary:hover { background: var(--color-sky-tint); }
+  .commercial-preview__actions .commercial-preview__detail-link { padding-inline: 2px; color: var(--slate); font-size: .67rem; font-weight: 500; }
+  .commercial-preview__detail-link:hover { text-decoration: underline; }
+  @media (min-width: 761px) and (max-height: 650px) {
+    .commercial-preview__copy { padding-top: 60px; }
+    .commercial-preview__copy h2 { font-size: 2rem; margin-bottom: 12px; }
+    .commercial-preview__more { margin-top: 12px; }
+    .commercial-preview__actions { padding-top: 12px; }
   }
   @media (max-width: 760px) {
-    .commercial-preview { width: calc(100% - 24px); max-height: calc(100dvh - 24px); overflow: auto; }
-    .commercial-preview__frame { height: auto; min-height: 0; grid-template-columns: 1fr; }
-    .commercial-preview__visual { min-height: 0; }
-    .commercial-preview__visual iframe, .commercial-preview__visual img { aspect-ratio: 16 / 9; }
-    .commercial-preview__copy { padding: 26px 22px 30px; }
-    .commercial-preview__copy h2 { font-size: clamp(2.2rem, 11vw, 3.4rem); }
-    .commercial-preview__facts > div { grid-template-columns: 92px minmax(0, 1fr); gap: 10px; }
-    .commercial-preview__actions { grid-template-columns: 1fr; }
-    .commercial-preview__actions a:first-child { grid-column: auto; }
-    .commercial-preview__close { position: fixed; top: 18px; right: 18px; }
+    .commercial-preview { width: calc(100% - 24px); max-height: calc(100dvh - 24px); }
+    .commercial-preview__frame { height: min(760px, calc(100dvh - 24px)); grid-template-columns: 1fr; grid-template-rows: minmax(160px, 1fr) minmax(0, auto); }
+    .commercial-preview__visual { margin: 0; grid-template-rows: 52px minmax(0, 1fr) auto; border-width: 0 0 1px; border-radius: 0; }
+    .commercial-preview__browser-bar { gap: 8px; padding: 0 58px 0 12px; }
+    .commercial-preview__browser-dots { display: none; }
+    .commercial-preview__demo-label { font-size: .57rem; }
+    .commercial-preview__toolbar { justify-content: center; padding: 0 8px; }
+    .commercial-preview__toolbar > span { display: none; }
+    .commercial-preview__viewports { width: 100%; justify-content: center; }
+    .commercial-preview__viewports button { min-width: 104px; }
+    .commercial-preview__close { top: 4px; right: 4px; border-color: transparent; }
+    .commercial-preview__copy { max-height: 360px; padding: 16px 18px 10px; }
+    .commercial-preview__description > .eyebrow { display: none; }
+    .commercial-preview__copy h2 { margin-bottom: 8px; font-size: 1.8rem; }
+    .commercial-preview__description > p:not(.eyebrow) { font-size: .79rem; line-height: 1.5; }
+    .commercial-preview__context li { font-size: .6rem; }
+    .commercial-preview__more { margin-top: 12px; }
+    .commercial-preview__actions { grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 4px 8px; padding-top: 12px; }
+    .commercial-preview__actions a { font-size: .67rem; padding-inline: 10px; }
+    .commercial-preview__actions .commercial-preview__detail-link { grid-column: 1 / -1; justify-content: center; min-height: 44px; padding: 8px; font-size: .65rem; }
   }
-  @media (max-width: 420px) {
-    .commercial-preview-ready .panel-teaser-card__actions { grid-template-columns: 1fr; }
+  @media (max-width: 760px) and (max-height: 600px) {
+    .commercial-preview__frame { grid-template-rows: minmax(100px, 1fr) minmax(0, 1.25fr); }
+    .commercial-preview__copy { padding-top: 12px; }
+    .commercial-preview__actions { padding-top: 8px; }
   }
-  @media (max-width: 350px) {
-    .commercial-preview__facts > div { grid-template-columns: 1fr; gap: 5px; }
+  @media (min-width: 761px) and (max-width: 1100px) {
+    .commercial-preview__toolbar > span { display: none; }
+    .commercial-preview__toolbar { justify-content: center; }
   }
   @media (prefers-reduced-motion: reduce) {
     .commercial-preview::backdrop { backdrop-filter: none; }

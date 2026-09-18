@@ -143,12 +143,12 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
   test('previsualiza webs y paneles sin perder idioma ni enlaces directos', async ({ page, browser }) => {
     await page.goto('/', { waitUntil: 'networkidle' });
     const dialog = page.locator('[data-commercial-preview]');
-    const themeTrigger = page.getByRole('link', { name: 'Previsualizar web: Brasca' });
+    const themeTrigger = page.locator('.hero-mosaic').getByRole('link', { name: 'Previsualizar web: Brasca' });
     await themeTrigger.click();
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('heading', { name: 'Brasca' })).toBeVisible();
     await expect(dialog.locator('[data-commercial-preview-address]')).toHaveText('brasca.tudominio.com');
-    await expect(dialog.locator('.commercial-preview__context li')).toHaveText(['Básico · recorrido profundo', 'Responsive', 'Bistró de barrio']);
+    await expect(dialog.locator('.commercial-preview__context li')).toHaveText(['Básico', 'Responsive', 'Bistró de barrio']);
     await expect(dialog.locator('[data-commercial-preview-image]')).toHaveAttribute('src', '/images/theme-previews/es/brasca-desktop.webp');
     await expect(dialog.locator('[data-commercial-preview-detail]')).toHaveText('Cercano, táctil y sin ceremonia');
     await expect(dialog.locator('[data-commercial-preview-evidence]')).toHaveText('Web y formulario de solicitud local');
@@ -163,18 +163,18 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await panelTrigger.click();
     await expect(dialog.getByRole('heading', { name: 'Servicio del día' })).toBeVisible();
     await expect(dialog.locator('[data-commercial-preview-address]')).toHaveText('panel.tudominio.com/servicio');
-    await expect(dialog.locator('.commercial-preview__context li')).toHaveText(['Sala y responsable de reservas', 'Gestión', 'Estado reproducible']);
-    await expect(dialog.locator('[data-commercial-preview-image]')).toHaveAttribute('src', '/images/screens/04-vedra-grupo-desktop.png');
+    await expect(dialog.locator('.commercial-preview__context li')).toHaveText(['Sala y responsable de reservas', 'Gestión', 'Demo interactiva']);
+    await expect(dialog.locator('[data-commercial-preview-image]')).toHaveAttribute('src', '/images/panel-previews/es/servicio-desktop.webp');
     await expect(dialog.locator('[data-commercial-preview-detail]')).toContainText('Qué atender ahora');
     await expect(dialog.locator('[data-commercial-preview-evidence]')).toContainText('servicio del 18 de septiembre');
     await expect(dialog.locator('[data-commercial-preview-limit]')).toContainText('no hay operación multiusuario');
-    await expect(dialog.getByRole('link', { name: /Quiero esta vista de producto/ })).toHaveAttribute('href', '/empezar/?panel=servicio');
+    await expect(dialog.getByRole('link', { name: /Quiero un panel así/ })).toHaveAttribute('href', '/empezar/?panel=servicio');
     await expect(dialog.getByRole('link', { name: /Abrir vista/ })).toHaveAttribute('href', '/demos/vedra/gestion/?vista=servicio');
     await expect(dialog.getByRole('link', { name: /Ver ficha completa/ })).toHaveAttribute('href', '/paneles/servicio/');
     await page.keyboard.press('Escape');
     await expect(panelTrigger).toBeFocused();
     await panelTrigger.click();
-    await dialog.getByRole('link', { name: /Quiero esta vista de producto/ }).click();
+    await dialog.getByRole('link', { name: /Quiero un panel así/ }).click();
     await expect(dialog).not.toBeVisible();
     await expect(page).toHaveURL(/\/empezar\/\?panel=servicio$/);
     await expect(page.locator('#lead-form')).toBeInViewport();
@@ -182,7 +182,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('gestion');
 
     await page.goto('/en/', { waitUntil: 'networkidle' });
-    const englishTrigger = page.getByRole('link', { name: 'Preview website: Brasca' });
+    const englishTrigger = page.locator('.hero-mosaic').getByRole('link', { name: 'Preview website: Brasca' });
     await englishTrigger.click();
     await expect(page.locator('[data-commercial-preview-address]')).toHaveText('brasca.yourdomain.com');
     await expect(page.locator('[data-commercial-preview]').getByRole('link', { name: /I want a website like this/ })).toHaveAttribute('href', '/en/empezar/?theme=brasca');
@@ -194,7 +194,7 @@ test.describe('F26 · home comercial con paridad estructural Camp', () => {
     const mobilePage = await mobileContext.newPage();
     await mobilePage.goto('/', { waitUntil: 'networkidle' });
     await mobilePage.getByRole('link', { name: 'Previsualizar panel: Servicio del día' }).click();
-    const mobileContact = mobilePage.locator('[data-commercial-preview]').getByRole('link', { name: /Quiero esta vista de producto/ });
+    const mobileContact = mobilePage.locator('[data-commercial-preview]').getByRole('link', { name: /Quiero un panel así/ });
     await mobileContact.scrollIntoViewIfNeeded();
     await expect(mobileContact).toBeInViewport();
     expect(await mobilePage.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(375);
@@ -233,8 +233,9 @@ test.describe('F27 · cierre de paridad comercial', () => {
           `${prefix}/temas/`, `${prefix}/paneles/`, `${prefix}/planes/`,
         ]);
         await expect(page.locator('.site-footer nav')).toHaveCount(4);
-        await expect(page.locator('.site-header a[hreflang]')).toHaveAttribute('href', counterpart);
-        await expect(page.locator('.site-footer a[hreflang]')).toHaveAttribute('href', counterpart);
+        const languageHref = path.endsWith('/empezar/') ? `${counterpart}?plan=gestion` : counterpart;
+        await expect(page.locator('.site-header a[hreflang]')).toHaveAttribute('href', languageHref);
+        await expect(page.locator('.site-footer a[hreflang]')).toHaveAttribute('href', languageHref);
         await expect(page.locator('.info-nav, .info-footer, .themes-nav, .themes-footer, .panels-nav, .panels-footer')).toHaveCount(0);
       }
     }
@@ -483,8 +484,9 @@ test.describe('landing comercial Logic Reserva', () => {
     await expect(form).toHaveAttribute('action', '/empezar/');
     await expect(form).toHaveAttribute('method', 'get');
     await expect(form.getByRole('checkbox')).toHaveCount(0);
-    await expect(form).toContainText('El correo no se envía a Logic2B en este paso');
-    await form.getByLabel('Correo profesional').fill('brief@example.test');
+    await expect(page.locator('.brief-boundary')).toContainText('Sin compromiso. Te ayudamos a elegir.');
+    await expect(form.getByLabel('Tu email (opcional)')).not.toHaveAttribute('required');
+    await form.getByLabel('Tu email (opcional)').fill('brief@example.test');
     await form.getByRole('button', { name: 'Solicitar información' }).click();
     await expect(page).toHaveURL(/\/empezar\/$/);
     await expect(page.locator('#lead-form input[name="email"]')).toHaveValue('brief@example.test');
@@ -494,7 +496,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.goto('/en/', { waitUntil: 'networkidle' });
     const englishForm = page.locator('#brief-lead-form');
     await expect(englishForm).toHaveAttribute('action', '/en/empezar/');
-    await englishForm.getByLabel('Work email').fill('hello@example.test');
+    await englishForm.getByLabel('Your email (optional)').fill('hello@example.test');
     await englishForm.getByRole('button', { name: 'Request information' }).click();
     await expect(page).toHaveURL(/\/en\/empezar\/$/);
     await expect(page.locator('#lead-form input[name="email"]')).toHaveValue('hello@example.test');
@@ -504,7 +506,7 @@ test.describe('landing comercial Logic Reserva', () => {
     const staticContext = await browser.newContext({ javaScriptEnabled: false });
     const staticPage = await staticContext.newPage();
     await staticPage.goto('/', { waitUntil: 'networkidle' });
-    await staticPage.locator('#brief-lead-form').getByLabel('Correo profesional').fill('fallback@example.test');
+    await staticPage.locator('#brief-lead-form').getByLabel('Tu email (opcional)').fill('fallback@example.test');
     await staticPage.locator('#brief-lead-form').getByRole('button', { name: 'Solicitar información' }).click();
     await expect.poll(() => new URL(staticPage.url()).pathname).toBe('/empezar/');
     expect(new URL(staticPage.url()).search).toBe('');
@@ -684,70 +686,24 @@ test.describe('landing comercial Logic Reserva', () => {
     page.on('request', (request) => { if (!['GET', 'HEAD'].includes(request.method())) writes.push(`${request.method()} ${request.url()}`); });
 
     await page.goto('/empezar/?plan=basico', { waitUntil: 'networkidle' });
-    await expect(page.getByRole('heading', { level: 1, name: 'Veamos qué necesita tu restaurante.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Tu próximo servicio empieza aquí.' })).toBeVisible();
     await expect(page.locator('.start-copy li')).toHaveCount(3);
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('basico');
     await expect(page.locator('[data-plan-selection-name]')).toHaveText('Básico');
     await expect(page.locator('[data-interest-selection]')).toBeHidden();
-    await expect(page.locator('.start-copy a[href^="https://wa.me/"]')).toHaveCount(1);
+    await expect(page.locator('.start-direct a[href^="https://wa.me/"]')).toBeVisible();
 
     await page.goto('/empezar/?theme=la-trece', { waitUntil: 'networkidle' });
     await expect(page.locator('[data-interest-selection]')).toContainText('Web · La Trece');
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('basico');
 
     await page.goto('/en/empezar/?panel=inteligente', { waitUntil: 'networkidle' });
-    await expect(page.getByRole('heading', { level: 1, name: 'Let’s understand what your restaurant needs.' })).toBeVisible();
+    await expect(page.getByRole('heading', { level: 1, name: 'Your next service starts here.' })).toBeVisible();
     await expect(page.locator('[data-interest-selection]')).toContainText('Product view · Intelligent view');
     await expect(page.locator('#lead-form select[name="level"]')).toHaveValue('inteligente');
-    await expect(page.locator('.language-link')).toHaveAttribute('href', '/empezar/');
+    await expect(page.locator('.language-link')).toHaveAttribute('href', '/empezar/?panel=inteligente&plan=inteligente');
     const schemaTypes = (await page.locator('script[type="application/ld+json"]').allTextContents()).map((schema) => (JSON.parse(schema) as { '@type'?: string })['@type']);
     expect(schemaTypes).toEqual(expect.arrayContaining(['WebPage', 'BreadcrumbList']));
-    expect(writes).toEqual([]);
-  });
-
-  test('el recorrido guiado atraviesa oferta, web y producto sin escrituras', async ({ page }) => {
-    const writes: string[] = [];
-    page.on('request', (request) => { if (!['GET', 'HEAD'].includes(request.method())) writes.push(`${request.method()} ${request.url()}`); });
-
-    await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto('/', { waitUntil: 'networkidle' });
-    await page.getByRole('link', { name: /Recorrido guiado/ }).click();
-    const dialog = page.getByRole('dialog');
-    await expect(dialog).toBeVisible();
-    await expect(dialog.getByRole('heading', { name: 'De la web al trabajo de sala.' })).toBeVisible();
-    await expect(dialog.getByText('9 hitos · menos de 4 minutos · datos ficticios')).toBeVisible();
-    await expect(dialog.locator('[data-tour-step-actions]')).toBeHidden();
-    await dialog.getByRole('link', { name: /Iniciar visita guiada/ }).click();
-
-    const dock = page.locator('[data-commercial-tour-dock], [data-commercial-tour-bridge]');
-    const milestones = [
-      { url: /\/#planes$/, title: 'Tres puntos de partida útiles.' },
-      { url: /\/temas\/$/, title: 'Doce direcciones, una base de producto.' },
-      { url: /\/demos\/vedra\/$/, title: 'Vedra mantiene reconocible al restaurante.' },
-      { url: /\/demos\/vedra\/#reserva$/, title: 'El cliente reserva sin salir del restaurante.' },
-      { url: /\/demos\/vedra\/gestion\/\?vista=servicio$/, title: 'La solicitud llega al equipo con contexto.' },
-      { url: /\/demos\/vedra\/gestion\/\?vista=plano$/, title: 'El evento también ocupa mesa.' },
-      { url: /\/demos\/vedra\/gestion\/\?vista=reservas$/, title: 'Reservas, espera y clientes permanecen juntos.' },
-      { url: /\/demos\/vedra\/gestion\/\?vista=informes$/, title: 'El motivo permanece visible.' },
-      { url: /\/demos\/vedra\/gestion\/\?vista=ajustes$/, title: 'Las reglas operativas cierran el recorrido.' },
-    ];
-    for (const [index, milestone] of milestones.entries()) {
-      await expect(page).toHaveURL(milestone.url);
-      await expect(dock).toBeVisible();
-      await expect(dock.getByRole('heading', { name: milestone.title })).toBeVisible();
-      await expect(dock.locator('[data-tour-jump][aria-current="step"]')).toHaveAttribute('data-tour-jump', String(index));
-      expect(await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth)).toBe(false);
-      if (index < milestones.length - 1) await dock.getByRole('button', { name: /Siguiente hito/ }).click();
-    }
-    await dock.getByRole('button', { name: /Ver planes/ }).click();
-    await expect(dock).toBeHidden();
-    await expect(page).toHaveURL(/\/planes\/$/);
-
-    await page.goto('/en/?recorrido=intro', { waitUntil: 'networkidle' });
-    await expect(dialog.getByRole('heading', { name: 'From the website to the restaurant floor.' })).toBeVisible();
-    await dialog.getByRole('button', { name: 'Explore freely' }).click();
-    await expect(dialog).toBeHidden();
-    await expect(page).toHaveURL(/\/en\/$/);
     expect(writes).toEqual([]);
   });
 
@@ -770,6 +726,7 @@ test.describe('landing comercial Logic Reserva', () => {
     await page.locator('#lead-form input[name="name"]').fill('Ada Lovelace');
     await page.locator('#lead-form input[name="restaurant"]').fill('Mesa de prueba');
     await page.locator('#lead-form input[name="email"]').fill('ada@example.test');
+    await page.locator('[data-lead-optional] summary').click();
     await page.locator('#lead-form input[name="phone"]').fill('+34 600 123 456');
     await expect(page.locator('#lead-form textarea[name="message"]')).not.toHaveAttribute('required');
     await page.locator('#lead-form input[name="privacyAccepted"]').check();
@@ -994,7 +951,7 @@ test.describe('F24 · catálogo sectorial de paneles', () => {
     const links = await cards.getByRole('link', { name: 'Probar el gestor' }).evaluateAll((anchors) => anchors.map((anchor) => anchor.getAttribute('href')));
     expect(links).toEqual(expectedLinks);
     const imageSources = await cards.locator('.panel-shot img').evaluateAll((images) => images.map((image) => image.getAttribute('src')));
-    expect(imageSources.every((source) => /^\/images\/screens\/(04-vedra-grupo|05-solane-inventario|07-solane-privatizacion|08-solane-riesgo)-desktop\.png$/.test(source ?? ''))).toBe(true);
+    expect(imageSources).toEqual(panelSlugs.map((slug) => `/images/panel-previews/es/${slug}-desktop.webp`));
 
     for (const link of expectedLinks) {
       await page.goto(link, { waitUntil: 'networkidle' });
@@ -1059,7 +1016,7 @@ test.describe('F23 · doce direcciones web para restauración', () => {
     await page.getByLabel('Formato de restaurante').selectOption('Bar de barrio');
     await expect(page.locator('[data-theme-card]:visible')).toHaveCount(1);
     const laTrece = page.locator('[data-theme-card]:visible');
-    await laTrece.getByText('Por qué funciona esta dirección').click();
+    await laTrece.getByText('Estilo y funciones').click();
     await expect(laTrece.locator('dl')).toBeVisible();
     await expect(laTrece.getByRole('link', { name: 'Abrir web' })).toHaveAttribute('href', '/demos/la-trece/');
     await expect(laTrece.getByRole('link', { name: 'Ver ficha completa', exact: true })).toHaveAttribute('href', '/temas/la-trece/');
@@ -1125,7 +1082,7 @@ test.describe('F23 · doce direcciones web para restauración', () => {
       await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex, nofollow');
       await expect(page.locator('h1')).toHaveCount(1);
       await expect(page.locator('.menu-body li')).toHaveCount(3);
-      await expect(page.locator('#reservar')).toContainText('no incluye motor activo');
+      await expect(page.locator('#reservar')).toContainText('Las reservas, los mensajes y los pagos no están activados en este ejemplo.');
       await expect(page.locator('form')).toHaveCount(0);
     }
     expect(writes).toEqual([]);

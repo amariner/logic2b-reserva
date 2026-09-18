@@ -1,7 +1,11 @@
 ---
 import { PRODUCT, type Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
+import { COMMERCIAL_PLANS } from '@logic-reserva/config/commercial';
+import { PANEL_CATALOG, localizedPanelText, panelDetailUrl } from '@logic-reserva/config/panels';
+import { THEME_CATALOG, themeDetailUrl } from '@logic-reserva/config/themes';
 import Base from '../layouts/Base.astro';
+import { startContent } from '../content';
 import CommercialChrome from './CommercialChrome.astro';
 import CommercialLeadForm from './CommercialLeadForm.astro';
 
@@ -12,29 +16,11 @@ const prefix = locale === 'en' ? '/en' : '';
 const contact = logic2bContact(locale, 'commercial');
 const languagePath = locale === 'en' ? '/empezar/' : '/en/empezar/';
 const languageHref = `${languagePath}${Astro.url.search}`;
-const ui = locale === 'en' ? {
-  metaTitle: 'Discuss your restaurant project | Logic Reserva',
-  description: 'Tell Logic2B what your restaurant needs and keep the selected Logic Reserva plan, website or product view in one focused project enquiry.',
-  back: 'Review plans and scope', eyebrow: 'A first step, without commitment',
-  title: 'Let’s understand what your restaurant needs.',
-  intro: 'Tell us how you work and what you would like to improve. We will reply with a proposal for your restaurant.',
-  proofs: ['A personal reply from Logic2B', 'Scope, boundaries and next steps stated clearly', 'No card, payment or commitment'],
-  formEyebrow: 'Project enquiry', formTitle: 'Tell us the essentials.',
-  formBody: 'A few details will help us prepare our conversation. Your selection stays attached to the form.',
-  direct: 'Prefer to start with a conversation?', whatsapp: 'Write to Logic2B on WhatsApp',
-  boundary: 'Submitting this form requests a conversation. It does not activate a service or create a restaurant account.',
-} : {
-  metaTitle: 'Habla de tu proyecto de restaurante | Logic Reserva',
-  description: 'Cuéntale a Logic2B qué necesita tu restaurante y conserva el plan, la web o la vista de Logic Reserva elegidos en una solicitud enfocada.',
-  back: 'Revisar planes y alcance', eyebrow: 'Un primer paso, sin compromiso',
-  title: 'Veamos qué necesita tu restaurante.',
-  intro: 'Cuéntanos cómo trabajáis y qué te gustaría mejorar. Te responderemos con una propuesta adaptada a tu restaurante.',
-  proofs: ['Respuesta personal de Logic2B', 'Alcance, límites y próximos pasos claros', 'Sin tarjeta, pago ni compromiso'],
-  formEyebrow: 'Solicitud de proyecto', formTitle: 'Cuéntanos lo esencial.',
-  formBody: 'Solo necesitamos unos datos para preparar la conversación. Tu selección se conserva en el formulario.',
-  direct: '¿Prefieres empezar conversando?', whatsapp: 'Escribir a Logic2B por WhatsApp',
-  boundary: 'Enviar este formulario solicita una conversación. No activa un servicio ni crea una cuenta de restaurante.',
-};
+const ui = startContent(locale);
+const backOptions = [
+  ...THEME_CATALOG.map((theme) => ({ kind: 'theme', slug: theme.slug, label: theme.name, href: themeDetailUrl(theme.slug, locale) })),
+  ...PANEL_CATALOG.map((panel) => ({ kind: 'panel', slug: panel.slug, label: localizedPanelText(panel.title, locale), href: panelDetailUrl(panel, locale) })),
+];
 const path = `${prefix}/empezar/`;
 const structuredData = [{
   '@context': 'https://schema.org', '@type': 'WebPage', name: ui.metaTitle, description: ui.description,
@@ -52,50 +38,103 @@ const structuredData = [{
     <main id="contenido" class="start-main" tabindex="-1">
       <section class="shell start-grid" aria-labelledby="start-title">
         <div class="start-copy">
-          <a class="back" href={`${prefix}/planes/`}><span aria-hidden="true">←</span>{ui.back}</a>
+          <a class="back" href={`${prefix}/`} data-start-back data-back-options={JSON.stringify(backOptions)} data-back-prefix={ui.backSelection} data-back-plans={ui.backPlans} data-plans-url={`${prefix}/planes/`} data-plan-slugs={JSON.stringify(COMMERCIAL_PLANS.map((plan) => plan.slug))}><span aria-hidden="true">←</span><span data-start-back-label>{ui.back}</span></a>
           <p class="eyebrow">{ui.eyebrow}</p>
           <h1 id="start-title">{ui.title}</h1>
           <p class="start-intro">{ui.intro}</p>
           <ul>{ui.proofs.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
-          <aside><strong>{ui.direct}</strong><a href={contact.href} target="_blank" rel="noreferrer">{ui.whatsapp}<span aria-hidden="true">↗</span></a></aside>
+          <picture class="start-photo">
+            <source type="image/avif" srcset="/images/editorial/mesa-preparada-640.avif 640w, /images/editorial/mesa-preparada-960.avif 960w" sizes="(max-width: 900px) 1px, 440px" />
+            <img src="/images/editorial/mesa-preparada-960.webp" alt={ui.photoAlt} width="960" height="640" loading="lazy" decoding="async" />
+          </picture>
         </div>
         <div id="solicitud" class="start-form">
           <div class="start-form__heading"><p class="eyebrow">{ui.formEyebrow}</p><h2>{ui.formTitle}</h2><p>{ui.formBody}</p></div>
           <CommercialLeadForm locale={locale} />
           <p class="start-boundary">{ui.boundary}</p>
+          <aside class="start-direct"><strong>{ui.direct}</strong><a href={contact.href} target="_blank" rel="noreferrer">{ui.whatsapp}<span aria-hidden="true">↗</span></a></aside>
         </div>
       </section>
     </main>
   </CommercialChrome>
 </Base>
 
-<style>
-  .start-main { overflow: clip; padding-bottom: clamp(80px, 10vw, 140px); background: linear-gradient(90deg, var(--paper) 0 48%, var(--color-sky-tint) 48% 100%); }
-  .start-grid { display: grid; min-height: calc(100vh - 72px); grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: clamp(54px, 9vw, 140px); align-items: start; padding-top: clamp(46px, 7vw, 96px); }
-  .start-copy { position: sticky; top: 116px; padding-bottom: 70px; }
-  .back { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; color: var(--slate); font-size: .8rem; font-weight: 650; text-decoration: none; }
-  .start-copy > .eyebrow { margin-top: clamp(56px, 8vw, 104px); }
-  h1 { max-width: 690px; margin: 18px 0 0; font-size: clamp(3.2rem, 5.7vw, 5.8rem); font-weight: 600; letter-spacing: -.06em; line-height: .91; text-wrap: balance; }
-  .start-intro { max-width: 590px; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.04rem, 1.5vw, 1.2rem); line-height: 1.58; }
-  .start-copy ul { display: grid; gap: 11px; margin: 30px 0 0; padding: 0; list-style: none; }
-  .start-copy li { display: flex; align-items: center; gap: 11px; font-size: .82rem; font-weight: 680; line-height: 1.35; }
-  .start-copy li span { display: grid; width: 24px; height: 24px; flex: 0 0 auto; place-items: center; border-radius: 50%; color: white; background: var(--color-notion-blue); font-size: .7rem; }
-  .start-copy aside { display: grid; justify-items: start; gap: 4px; margin-top: 42px; border-top: 1px solid var(--line); padding-top: 20px; }
-  .start-copy aside strong { color: var(--slate); font-size: .72rem; letter-spacing: .035em; text-transform: uppercase; }
-  .start-copy aside a { display: inline-flex; min-height: 44px; align-items: center; gap: 14px; color: var(--ink); font-size: .86rem; font-weight: 700; text-decoration: none; }
-  .start-form { min-width: 0; padding-bottom: 70px; }
-  .start-form__heading { padding: clamp(30px, 5vw, 58px) clamp(22px, 4vw, 36px) 22px; }
-  .start-form__heading h2 { margin: 12px 0 0; font-size: clamp(2.4rem, 4.2vw, 4.5rem); letter-spacing: -.055em; line-height: .92; }
-  .start-form__heading > p:last-child { max-width: 620px; margin: 19px 0 0; color: var(--slate); font-family: var(--serif); line-height: 1.55; }
-  .start-form :global(.lead-form) { box-shadow: 0 24px 60px rgb(9 25 55 / 10%); }
-  .start-boundary { margin: 16px clamp(22px, 4vw, 36px) 0; color: var(--slate); font-family: var(--serif); font-size: .78rem; line-height: 1.5; }
-  @media (max-width: 900px) {
-    .start-main { background: var(--paper); }
-    .start-grid { min-height: 0; grid-template-columns: 1fr; gap: 20px; padding-top: 28px; }
-    .start-copy { position: static; padding-bottom: 16px; }
-    .start-copy > .eyebrow { margin-top: 42px; }
-    .start-form { margin-inline: -14px; padding: 8px 14px 50px; background: var(--color-sky-tint); }
-    .start-form__heading { padding-top: 44px; }
+<script>
+  const back = document.querySelector<HTMLAnchorElement>('[data-start-back]');
+  const label = back?.querySelector<HTMLElement>('[data-start-back-label]');
+  if (back && label) {
+    type BackOption = { kind: 'theme' | 'panel'; slug: string; label: string; href: string };
+    const options = JSON.parse(back.dataset.backOptions ?? '[]') as BackOption[];
+    const plans = JSON.parse(back.dataset.planSlugs ?? '[]') as string[];
+    const params = new URLSearchParams(window.location.search);
+    const theme = options.find((option) => option.kind === 'theme' && option.slug === params.get('theme'));
+    const panel = options.find((option) => option.kind === 'panel' && option.slug === params.get('panel'));
+    const selected = theme && !panel ? theme : panel && !theme ? panel : null;
+    const requestedPlan = params.get('plan');
+    const initialHref = back.getAttribute('href') ?? '/';
+    const initialLabel = label.textContent;
+    const syncBack = (requested: string | null) => {
+      const plan = requested && plans.includes(requested) ? requested : null;
+      if (selected) {
+        back.href = `${selected.href}${plan ? `?plan=${encodeURIComponent(plan)}` : ''}`;
+        label.textContent = `${back.dataset.backPrefix} ${selected.label}`;
+      } else if (plan) {
+        back.href = back.dataset.plansUrl ?? initialHref;
+        label.textContent = back.dataset.backPlans ?? initialLabel;
+      } else {
+        back.href = initialHref;
+        label.textContent = initialLabel;
+      }
+    };
+    syncBack(requestedPlan);
+    const planSelect = document.querySelector<HTMLSelectElement>('#lead-form select[name="level"]');
+    planSelect?.addEventListener('change', () => syncBack(planSelect.value));
   }
-  @media (max-width: 520px) { h1 { font-size: clamp(2.9rem, 13vw, 4.2rem); }.start-form :global(.lead-form) { border-radius: 10px; } }
+</script>
+
+<style>
+  .start-main { overflow: clip; padding-bottom: 72px; background: var(--paper); }
+  .start-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(420px, 1.1fr); gap: 64px; align-items: start; padding-top: 36px; }
+  .start-copy { min-width: 0; padding-bottom: 20px; }
+  .back { display: inline-flex; min-height: 44px; align-items: center; gap: 9px; color: var(--slate); font-size: .8rem; text-decoration: none; }
+  .start-copy > .eyebrow { margin-top: 24px; }
+  .start-copy h1 { max-width: 520px; margin: 16px 0 0; font: 500 clamp(2.5rem, 4vw, 3.65rem)/1.06 var(--serif); letter-spacing: -.045em; text-wrap: balance; }
+  .start-intro { max-width: 490px; margin: 22px 0 0; color: var(--slate); font: 400 1rem/1.65 var(--sans); }
+  .start-copy ul { display: grid; gap: 8px; margin: 22px 0 0; padding: 0; list-style: none; }
+  .start-copy li { display: flex; align-items: center; gap: 10px; font-size: .8rem; line-height: 1.4; }
+  .start-copy li span { display: grid; width: 22px; height: 22px; flex: none; place-items: center; border-radius: 50%; color: white; background: var(--color-notion-blue); font-size: .7rem; }
+  .start-photo { display: block; margin-top: 28px; border-radius: 12px; overflow: hidden; }
+  .start-photo img { display: block; width: 100%; height: 200px; object-fit: cover; }
+  .start-direct { display: grid; justify-items: start; gap: 4px; margin: 20px 30px 0; border-top: 1px solid var(--line); padding-top: 16px; }
+  .start-direct strong { color: var(--slate); font-size: .7rem; font-weight: 500; }
+  .start-direct a { display: inline-flex; min-height: 44px; align-items: center; gap: 14px; color: var(--ink); font-size: .82rem; text-underline-offset: 4px; }
+  .start-form { min-width: 0; padding-bottom: 20px; border: 1px solid var(--line); border-radius: 20px; background: white; }
+  .start-form__heading { padding: 26px 30px 8px; }
+  .start-form__heading h2 { margin: 12px 0 0; font: 500 2rem/1.15 var(--serif); letter-spacing: -.035em; }
+  .start-form__heading > p:last-child { margin: 12px 0 0; color: var(--slate); font: 400 .85rem/1.6 var(--sans); }
+  .start-form :global(.lead-form) { border: 0; padding: 20px 30px 4px; }
+  .start-boundary { margin: 8px 30px 0; color: var(--slate); font-size: .72rem; line-height: 1.5; }
+  @media (max-width: 900px) {
+    .start-grid { grid-template-columns: 1fr; gap: 24px; padding-top: 20px; }
+    .start-photo { display: none; }
+    .start-copy { padding-bottom: 0; }
+    .start-copy > .eyebrow { margin-top: 16px; }
+    .start-copy h1 { max-width: 600px; font-size: clamp(2.25rem, 8vw, 3rem); }
+    .start-intro { margin-top: 16px; }
+    .start-copy ul { display: flex; flex-wrap: wrap; gap: 8px 18px; margin-top: 18px; }
+    .start-copy li { font-size: .72rem; }
+    .start-form__heading { padding: 24px 22px 8px; }
+    .start-form :global(.lead-form) { padding: 18px 22px 4px; }
+    .start-boundary { margin-inline: 22px; }
+    .start-direct { margin-inline: 22px; }
+  }
+  @media (max-width: 600px) {
+    .start-grid { gap: 22px; padding-top: 12px; }
+    .start-copy > .eyebrow, .start-copy ul, .start-form__heading > .eyebrow { display: none; }
+    .start-copy h1 { margin-top: 12px; font-size: 2rem; }
+    .start-intro { margin-top: 12px; font-size: .93rem; }
+    .start-form__heading { padding-top: 22px; }
+    .start-form__heading h2 { margin-top: 0; font-size: 1.6rem; }
+    .start-form__heading > p:last-child { margin-top: 8px; }
+  }
 </style>

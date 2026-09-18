@@ -40,9 +40,9 @@ export const PANEL_CATALOG = [
     level: 'management',
     demoPath: '/demos/vedra/gestion/?vista=servicio',
     screenshot: {
-      base: '04-vedra-grupo',
-      caption: text('Vedra · El grupo confirmado entra en el mismo gestor que el servicio.', 'Vedra · The confirmed group enters the same workspace as service.'),
-      alt: text('Gestor de Vedra con grupo, mesas combinables y navegación hacia Servicio', 'Vedra workspace with a group, combinable tables and navigation to Service'),
+      base: 'servicio',
+      caption: text('Vedra · Llegadas, mesas y reservas en la agenda del día.', 'Vedra · Arrivals, tables and bookings in the daily agenda.'),
+      alt: text('Agenda del servicio de Vedra con reservas y asignación de mesas', 'Vedra service agenda with bookings and table assignments'),
     },
   },
   {
@@ -59,9 +59,9 @@ export const PANEL_CATALOG = [
     level: 'management',
     demoPath: '/demos/solane/gestion/?vista=plano',
     screenshot: {
-      base: '05-solane-inventario',
-      caption: text('Solane · Reservas y evento consumen mesas del mismo plano.', 'Solane · Bookings and an event consume tables from the same floor plan.'),
-      alt: text('Plano de Solane con mesas libres, reservadas y bloqueadas por un evento', 'Solane floor plan with free, booked and event-blocked tables'),
+      base: 'plano',
+      caption: text('Solane · Mesas, reservas y eventos en el mismo plano.', 'Solane · Tables, bookings and events on one floor plan.'),
+      alt: text('Plano de sala de Solane con espacios, capacidad y estado de las mesas', 'Solane floor plan with rooms, capacity and table status'),
     },
   },
   {
@@ -78,9 +78,9 @@ export const PANEL_CATALOG = [
     level: 'management',
     demoPath: '/demos/vedra/gestion/?vista=espera',
     screenshot: {
-      base: '04-vedra-grupo',
-      caption: text('Vedra · Reserva de grupo con mesas y menú trazables antes del servicio.', 'Vedra · Group booking with traceable tables and menu before service.'),
-      alt: text('Gestor de Vedra con una reserva de grupo y dos mesas seleccionadas', 'Vedra workspace with a group booking and two selected tables'),
+      base: 'reservas-espera',
+      caption: text('Vedra · Lista de espera conectada con la capacidad de sala.', 'Vedra · Waitlist connected to floor capacity.'),
+      alt: text('Lista de espera de Vedra con registro de llegadas y disponibilidad de sala', 'Vedra waitlist with arrival registration and floor availability'),
     },
   },
   {
@@ -97,9 +97,9 @@ export const PANEL_CATALOG = [
     level: 'management',
     demoPath: '/demos/solane/gestion/?vista=privatizaciones',
     screenshot: {
-      base: '07-solane-privatizacion',
-      caption: text('Solane · Propuesta y señal simulada terminan en un espacio bloqueado.', 'Solane · Proposal and simulated deposit end in a blocked room.'),
-      alt: text('Privatización de Solane confirmada con propuesta, señal simulada y espacio bloqueado', 'Confirmed Solane private hire with proposal, simulated deposit and blocked room'),
+      base: 'grupos-eventos',
+      caption: text('Solane · Solicitudes, propuestas y seguimiento de espacios privados.', 'Solane · Enquiries, proposals and private-room follow-up.'),
+      alt: text('Panel de privatizaciones de Solane con solicitudes y propuestas de eventos', 'Solane private hire panel with event enquiries and proposals'),
     },
   },
   {
@@ -116,9 +116,9 @@ export const PANEL_CATALOG = [
     level: 'management',
     demoPath: '/demos/vedra/gestion/?vista=informes',
     screenshot: {
-      base: '08-solane-riesgo',
-      caption: text('Solane · La misma base de informes admite una capa inteligente explicable.', 'Solane · The same reporting base supports an explainable intelligent layer.'),
-      alt: text('Informe ficticio de Solane con reservas, señales visibles y coste comparativo hipotético', 'Fictional Solane report with bookings, visible signals and hypothetical comparative cost'),
+      base: 'informes',
+      caption: text('Vedra · Cubiertos, ocupación y origen del servicio.', 'Vedra · Service covers, occupancy and source.'),
+      alt: text('Informes de Vedra con cubiertos, ocupación y origen de las reservas', 'Vedra reports with covers, occupancy and booking sources'),
     },
   },
   {
@@ -135,9 +135,9 @@ export const PANEL_CATALOG = [
     level: 'intelligent',
     demoPath: '/demos/solane/gestion/?vista=informes',
     screenshot: {
-      base: '08-solane-riesgo',
-      caption: text('Solane · Factores visibles, recomendación local y decisión humana.', 'Solane · Visible factors, local recommendation and human decision.'),
-      alt: text('Vista inteligente de Solane con dos reservas priorizadas y factores explicables', 'Solane intelligent view with two prioritised bookings and explainable factors'),
+      base: 'inteligente',
+      caption: text('Solane · Asistente de decisiones y automatizaciones demostrativas.', 'Solane · Decision assistant and demonstration automations.'),
+      alt: text('Informes de Solane con ocupación, origen y asistente de decisiones', 'Solane reports with occupancy, booking sources and a decision assistant'),
     },
   },
 ] as const satisfies readonly PanelEntry[];
@@ -165,3 +165,9 @@ export const panelContactUrl = (panel: PanelEntry | PanelSlug, locale: Locale = 
 };
 
 export const getPanel = (slug: string): PanelEntry | undefined => PANEL_CATALOG.find((panel) => panel.slug === slug);
+
+export const panelPreviewBase = (panel: PanelEntry | PanelSlug, locale: Locale = 'es'): string => {
+  const entry = typeof panel === 'string' ? getPanel(panel) : panel;
+  if (!entry) throw new Error(`Unknown panel: ${panel}`);
+  return `/images/panel-previews/${locale}/${entry.screenshot.base}`;
+};

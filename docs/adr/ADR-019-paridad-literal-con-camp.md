@@ -2,7 +2,7 @@
 
 ## Estado
 
-Aceptada · 2026-09-04.
+Aceptada · 2026-09-04. El número de hitos del §7 queda sustituido por ADR-020 (18/09/2026).
 
 ## Contexto
 

@@ -1,7 +1,34 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F0–F27 completas ✅ · gráficos detallados y vídeos del 08/09 fusionados y publicados en producción ✅ · M1 presupuesto D1 cero publicado ✅
-**Siguiente hito:** esperar la siguiente prioridad del propietario; la entrega pedida ya está publicada. No enviar leads ni ampliar integraciones sin autorización.
+**Fase actual:** F29 · De la elección a la conversación, cerrada y validada en local. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
+**Rama de trabajo:** `codex/ux-conversion-2026-09-18`. Los cambios del 18/09 no están publicados.
+**Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. La vista local está en `http://127.0.0.1:8791/`. Una publicación posterior conserva los gates del proyecto y requiere actualizar las 42 capturas comerciales históricas; no enviar leads reales para verificar la entrega.
+
+## Continuación del 18/09/2026 · F29
+
+Los popups dejan más espacio a la captura y permiten comparar escritorio y móvil con scroll propio. El recorrido ofrece contacto desde el primer paso, conserva interés al elegir plan y funciona con almacenamiento de sesión bloqueado, incluida recarga y vuelta atrás. Un enlace con una elección nueva sustituye la anterior. Solicitud, ficha, popup y cambio de idioma conservan el plan explícito; los enlaces a otros temas o paneles no lo heredan.
+
+La solicitud tiene vuelta contextual y WhatsApp móvil. Sin JavaScript mantiene contacto alternativo y evita serializar datos personales. El aviso de cookies no se muestra automáticamente sobre `/empezar/`; sigue accesible desde el footer, sin asumir consentimiento ni activar medición. Las nueve webs priorizan foto y acción en móvil; cartas, cierre y puesta en marcha usan una presentación más breve.
+
+Esta continuación añade **una imagen OpenAI, cero vídeos nuevos**, además de la imagen F28. Original y prompt en `apps/site/assets/editorial/`. Se regeneran las **48 previews de temas**, digest `98009b690b8f0980dfed4988588700f73c1dd3f311805170a4319385ee8b739b`; las 24 de paneles mantienen los hashes F28. Las 42 capturas contractuales quedan históricas y pendientes antes de publicar.
+
+Gates F29: **`pnpm check` 28/28, 165 tests**; **120 HTML**, **4.540 referencias internas, cero ausencias**. QA responsive de 108 combinaciones de webs y revisión visual de home, foto, solicitud y visor. **118 escenarios E2E verificados**: 115 pasan en el integral (10 minutos), y tres fallos de selectores —dos ambiguos y una ubicación antigua de WhatsApp— se corrigen y pasan en las ejecuciones dirigidas **14/14 de conversión y 1/1 de inicio comercial**, sin cambiar el producto ni el bundle. No se declara un único pase 118/118. El runtime es Miniflare/workerd directo con correo deshabilitado; no se han desplegado cambios ni enviado leads. No reconstruir los assets mientras corre una suite: reiniciar el runtime después del build.
+
+F30 pide validar dudas y abandono antes de ampliar: jerarquía del hero, opción de plan aún no decidido (requiere revisar el contrato actual) y medición solo con alcance y consentimiento acordados. No atribuir mejora de conversión a una entrega sin datos.
+
+## Entrega local del 18/09/2026 · F28
+
+Popups unificados desde hero, portfolio y paneles: captura real, acción contextual, detalle a demanda, carga/error y cierre con retorno de foco. Galerías con controles y teclado. El recorrido voluntario tiene cuatro pasos —web, reserva, sala y siguiente paso—, permite minimizar/salir, conserva origen, idioma y elección de tema o panel más plan explícito, y mantiene utilizables los enlaces anteriores. Contrato en `docs/adr/ADR-020-recorrido-y-conversion-progresiva.md`.
+
+Las nueve webs compartidas diferencian su composición y acortan el recorrido móvil hasta carta, visita y reservas. El catálogo reduce repetición. El hero puede continuar sin correo; el formulario compartido despliega teléfono/comentario opcionales y conserva los valores cerrados. Se mantienen las fronteras ficticias y el único transporte comercial existente.
+
+Recursos: **una imagen nueva de OpenAI y cero vídeos nuevos**, con procedencia en `apps/site/assets/editorial/README.md`. **72 previews reales actualizadas**: 48 de temas y 24 de paneles, por slug, idioma y viewport. `pnpm fotos:temas` y el nuevo `pnpm fotos:paneles` requieren un origen local del build compuesto mediante `CAPTURE_ORIGIN`; recompilar después de incorporarlas y reiniciar el runtime antes de validar. Protocolo y límites de comparación en `docs/SALES-ASSETS.md`.
+
+La comparación de paneles entre primer Worker y pase final estático conserva 13/24 hashes; cuatro cambian por abrir Grupos y eventos en modo libre y siete móviles difieren por rasterizado. Las escenas finales exigen dos capturas consecutivas estables. No se afirma equivalencia byte a byte entre los dos pases ni regeneración de las 42 capturas contractuales de `pnpm fotos`.
+
+Gate final ya realizado: **`pnpm check` 28/28, 164 tests**. Build de **120 HTML** —68 site y 52 web—, con **4.360 referencias y cero ausencias**. Validación dirigida: 108 combinaciones responsive de las nueve webs, seis comprobaciones de filtros y revisión de foco/campos plegados. **104 escenarios E2E verificados** por integral (102 pasan, dos expectativas antiguas corregidas) y cierre dirigido **19/19** sobre el bundle final. Incluye popup responsive, los cuatro pasos, contexto/idioma y todas las páginas públicas a 320/375/430/1366 px. No fue un único pase 104/104. QA visual conjunta completada en navegador: contacto compacto, capturas móviles sin corte horizontal y visor de escritorio. Se usa Miniflare/workerd directo con el bundle exacto y correo deshabilitado para evitar el cierre conocido de Wrangler/ProxyWorker. No se ha desplegado ni enviado ningún lead.
+
+Las secciones siguientes son históricas. Su estado publicado y sus «siguientes pasos» no sustituyen la prioridad F29/F30 ni el cierre local descrito arriba.
 
 ## Gráficos de plataforma del 08/09/2026
 

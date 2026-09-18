@@ -2,6 +2,68 @@
 
 Contrato canónico de F18/F23/F27 para generar un paquete comercial de Logic Reserva a partir del producto real, sin mantener composiciones manuales ni un segundo juego de datos. Este documento define el inventario v3; el script solo lo ejecuta.
 
+## Paquete de publicación F28/F29 · 18/09/2026
+
+La autorización de publicación cierra el pendiente de capturas históricas:
+**42 PNG regenerados en dos pases completos, 42/42 hashes idénticos y 42/42
+comparaciones visuales correctas**. Chromium 153.0.8010.48, mismo binario en ambos
+pases, captura secuencial sobre el Worker local con correo deshabilitado.
+Digest contractual vigente:
+`2fac4ed01e8c9ab9e6e324bdfcbebd62a8eb371f50e173c5399e81750d90b62d`.
+Los doce WebP históricos se conservan. El home y el cierre se han revisado
+visualmente en escritorio/móvil; no hay recursos sin cargar ni acciones tapadas.
+Los inventarios de 48 temas y 24 paneles permanecen separados y verificados.
+
+Las referencias a las 42 capturas pendientes en los apartados F28/F29 siguientes
+describen sus entregas locales anteriores y quedan resueltas por este paquete.
+
+## Afinado F29 · 18/09/2026
+
+Se renuevan las **48 previews de temas** después de mejorar las nueve webs
+compartidas. Se capturan sobre el Worker local con los dos idiomas y ambos
+viewports; los 48 hashes coinciden con el manifiesto. Digest del inventario:
+`98009b690b8f0980dfed4988588700f73c1dd3f311805170a4319385ee8b739b`.
+Es un pase completo; no se afirma reproducibilidad entre dos ejecuciones.
+
+Las 24 capturas de paneles de F28 se conservan y verifican con su manifiesto.
+El nuevo selector Escritorio/Móvil consume esos recursos. La fotografía
+`preparar-servicio-v1.png` de OpenAI y sus derivados AVIF/WebP acompañan la puesta
+en marcha del home; prompt y procedencia en `apps/site/assets/editorial/README.md`.
+Cero vídeos nuevos. Las 42 capturas comerciales históricas aún deben actualizarse
+antes de una publicación: no se presentan como capturas del nuevo home.
+
+## Previews de navegación F28 · 18/09/2026
+
+Las previews que utilizan home, popups, catálogos y fichas forman dos inventarios independientes del paquete contractual `images/screens/`:
+
+| Inventario | Comando | Combinaciones | Destino |
+| --- | --- | --- | --- |
+| Webs | `pnpm fotos:temas` | 12 slugs × ES/EN × escritorio/móvil = 48 | `apps/site/public/images/theme-previews/` |
+| Paneles | `pnpm fotos:paneles` | 6 slugs × ES/EN × escritorio/móvil = 24 | `apps/site/public/images/panel-previews/` |
+
+Son capturas de la aplicación navegable, no imágenes generadas ni composiciones manuales. Cada inventario escribe `{locale}/{slug}-{desktop|mobile}.webp` y un `manifest.json` con ruta, dimensiones y SHA-256. Los paneles añaden la vista y su preparación. El catálogo servido determina los slugs y las rutas para evitar una segunda lista en el generador. Las 72 previews del 18/09 coinciden con los hashes de sus manifiestos; ese chequeo de integridad no prueba igualdad entre dos generaciones.
+
+Los comandos no reconstruyen ni arrancan el servidor. Se ejecutan sobre el build compuesto ya servido en un origen local, por defecto `http://127.0.0.1:8791`; `CAPTURE_ORIGIN` solo admite `localhost` o `127.0.0.1`. Para repetir la captura de paneles:
+
+```bash
+CAPTURE_ORIGIN=http://127.0.0.1:8791 pnpm fotos:paneles
+```
+
+Después se recompone el build para incorporar las previews y se reinicia el runtime que vaya a validarlo. El Worker local verifica los recorridos y sus fronteras; un servidor estático del mismo bundle puede utilizarse para la captura visual, pero no acredita los endpoints ni las cabeceras del Worker. No se captura preview remota ni producción.
+
+El generador de paneles recorre las 24 combinaciones en serie, con un contexto limpio para cada una, viewport de 1366×900 o 375×812, escala 1, idioma correspondiente, zona `Europe/Madrid`, movimiento reducido, service workers bloqueados y reloj `2026-09-18T10:00:00+02:00`. Solo permite GET/HEAD del origen local; registra como fallo las peticiones prohibidas de cada escena. Espera la vista hidratada, fuentes e imágenes, comprueba idioma, aviso ficticio y ausencia de overflow, y exige dos screenshots consecutivos idénticos antes de guardar el WebP. Usa Chrome del sistema o el binario explícito de `CHROMIUM_PATH`, con GPU desactivada. Se deben fijar el mismo navegador y protocolo para comparar pases.
+
+En Grupos y eventos, la preparación pulsa el control público `private-tour-mode:free` y abre la propuesta existente; la solicitud sigue en estado `requested`. No acepta propuestas, genera señales ni bloquea inventario. El resto de vistas se captura en su estado inicial. El paquete se escribe primero en una carpeta temporal y solo reemplaza el anterior al completar sus 24 escenas.
+
+En esta entrega, la comparación del primer pase sobre Worker con el pase final sobre servidor estático conserva **13/24 hashes exactos**. Las cuatro combinaciones de Grupos y eventos cambian por la preparación en modo libre incorporada entre pases; otras siete capturas móviles presentan diferencias de rasterizado. No se declara 24/24 reproducible entre ejecuciones ni equivalencia visual contractual entre esos pases. La estabilidad de dos screenshots consecutivos se comprueba dentro de cada escena final y tiene un alcance distinto.
+
+Digests del inventario final, calculados con SHA-256 sobre `JSON.stringify(manifest.captures)`:
+
+- Temas, 48 previews: `2320699086639f1e4375723739dc3c4fda44ae8a7b89718ec9a41805786d4d4b`.
+- Paneles, 24 previews: `e2b6bbb74e0a6c087164ed355a5d3b08953e0a9d617c24beb7b48edf947adb63`.
+
+**Las 42 capturas de venta de `pnpm fotos` no se han regenerado en F28.** El contrato v3 y la evidencia histórica siguientes se conservan separados de estas 72 previews. La validación funcional final de F28 se registra en `PROGRESS.md`; no se infiere de haber completado las capturas.
+
 ## Alcance v3
 
 - Idioma canónico: español (`es-ES`). El inglés podrá añadirse como otro catálogo, no como una bifurcación dentro de estas escenas.
@@ -100,11 +162,11 @@ La regeneración escribe primero en un directorio temporal y solo sustituye el p
 - el catálogo no contiene datos personales reales ni afirma entrega, cobro, IA o automatización conectada;
 - `pnpm check && pnpm e2e` continúan verdes después de incorporar el paquete.
 
-Línea base vigente del 08/09/2026: versión 3, 42 capturas con Chromium Headless Shell 151.0.7922.34 y digest agregado `15bb46a52800d154d7c6704f1a52781a178b3716a1e8ea65993c008dae4db4e3`. Incluye el cierre interactivo del home y sus recursos gráficos nuevos. Los dos pases de esta sesión coinciden **42/42 byte a byte** y pasan **42/42 comparaciones visuales**. Se ejecutó el generador mediante `CAPTURE_ORIGIN` sobre el mismo Worker local en Miniflare/workerd directo, evitando el cierre conocido de ProxyWorker. Los doce WebP derivados existentes se conservan: el generador de PNG sustituye su carpeta, por lo que deben recuperarse antes del build. El digest se calcula aplicando SHA-256 a la concatenación, sin separadores, de los 42 valores `sha256` del manifiesto en su orden declarado.
+Línea base histórica del 08/09/2026: versión 3, 42 capturas con Chromium Headless Shell 151.0.7922.34 y digest agregado `15bb46a52800d154d7c6704f1a52781a178b3716a1e8ea65993c008dae4db4e3`. Incluye el cierre interactivo del home y sus recursos gráficos de aquella entrega. Los dos pases de esa sesión coinciden **42/42 byte a byte** y pasan **42/42 comparaciones visuales**. Se ejecutó el generador mediante `CAPTURE_ORIGIN` sobre el mismo Worker local en Miniflare/workerd directo, evitando el cierre conocido de ProxyWorker. Los doce WebP derivados existentes se conservan: el generador de PNG sustituye su carpeta, por lo que deben recuperarse antes del build. El digest se calcula aplicando SHA-256 a la concatenación, sin separadores, de los 42 valores `sha256` del manifiesto en su orden declarado.
 
 En la auditoría anterior del 06/09, los dos pases coincidían en 40/42 hashes. Los dos restantes diferían en 57 píxeles de los bordes del catálogo de paneles y 6 píxeles de la imagen reducida del cierre móvil; el comparador estándar de Playwright confirmó **42/42 sin diferencias perceptuales** con tolerancia de color 0.1 y cero píxeles de diferencia admitidos tras esa comparación. Se mantiene esta comparación explícita para distinguir ruido de rasterizado de una regresión visual. Los PNG se conservan sin retoques ni cuantización de color.
 
-Para repetir la comprobación: conservar el directorio completo del primer pase, ejecutar el segundo y lanzar `CAPTURE_BASELINE_DIR=/ruta/al/primer-pase pnpm fotos:comparar`. El comparador exige el mismo inventario, nunca actualiza las imágenes de referencia y genera diferencias en `test-results/visual/` si falla. Las 48 portadas comerciales independientes sí coinciden byte a byte; su manifest está en `images/theme-previews/`.
+Para repetir la comprobación: conservar el directorio completo del primer pase, ejecutar el segundo y lanzar `CAPTURE_BASELINE_DIR=/ruta/al/primer-pase pnpm fotos:comparar`. El comparador exige el mismo inventario, nunca actualiza las imágenes de referencia y genera diferencias en `test-results/visual/` si falla. Las 48 portadas comerciales independientes de la auditoría del 06/09 coincidían byte a byte; ese resultado histórico no acredita dos pases del inventario F28 actualizado en `images/theme-previews/`.
 
 Un cambio de escena, ruta, viewport, convención de nombre o frontera de red exige actualizar primero este documento y después el script y el manifiesto en el mismo cambio.
 

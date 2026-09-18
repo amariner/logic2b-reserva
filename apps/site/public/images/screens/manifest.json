@@ -13,7 +13,7 @@
       "width": 1366,
       "height": 900,
       "file": "01-brasca-marca-desktop.png",
-      "sha256": "cce380de5731aaa68d0b428c56688eede68e7350582024516d229f4e1413a0d0"
+      "sha256": "41e6304485661141734906b2907eb558d38109a9b8991f171191dfc0cd6c04ef"
     },
     {
       "order": "01",
@@ -25,7 +25,7 @@
       "width": 375,
       "height": 812,
       "file": "01-brasca-marca-mobile.png",
-      "sha256": "6491ec6c0b77687ef4c993dcaeccd73928f60b40a1efb031aa6a92a8c5528e1d"
+      "sha256": "d7ddf23e78da02ec82b42d61848b2df61ded114eeac111e1c54a5192a0e9d632"
     },
     {
       "order": "02",
@@ -37,7 +37,7 @@
       "width": 1366,
       "height": 900,
       "file": "02-brasca-solicitud-desktop.png",
-      "sha256": "68673b9efad7c702f442b99e905b3c75ac19ca87d4def71869d0946d4b242ca4"
+      "sha256": "83ac18e453a8f7b551ab82d01ac8ef2f6bb96e55201255a91759a09ba2dabf31"
     },
     {
       "order": "02",
@@ -49,7 +49,7 @@
       "width": 375,
       "height": 812,
       "file": "02-brasca-solicitud-mobile.png",
-      "sha256": "f99190046d1a4c0c064165a96ccc3a50fc945cb4f0aa354d4c4cdc1ff80875f7"
+      "sha256": "3bd931cc3c7815163fa836b9a7a840fc1bf4481cdef0ea0bb5e975468348ce90"
     },
     {
       "order": "03",
@@ -61,7 +61,7 @@
       "width": 1366,
       "height": 900,
       "file": "03-vedra-reserva-desktop.png",
-      "sha256": "a7e5f1324db2981de86ecd50da4f698aafd23171f2e9fa1c8b51dc698c6ff88c"
+      "sha256": "c1c6494e9b33a9019c3e4be9d89166c9d86e130e259751e7092eefea43e5e96d"
     },
     {
       "order": "03",
@@ -73,7 +73,7 @@
       "width": 375,
       "height": 812,
       "file": "03-vedra-reserva-mobile.png",
-      "sha256": "688e0569256a50b6abcb033e944aea90af6d5684acc4a6738b8fdd4a5a2333e6"
+      "sha256": "7ac01cb384ed80f3312ef9a5ee262a26a0823dccf4d34baa216e10348cc49156"
     },
     {
       "order": "04",
@@ -85,7 +85,7 @@
       "width": 1366,
       "height": 900,
       "file": "04-vedra-grupo-desktop.png",
-      "sha256": "5f99801a93321ff6fc8576c3b65d7ab226308d1a45633eb83bb05b3143036a80"
+      "sha256": "4709f1e8c55496d3cbe0e25bbb2f328651308503f6eac46113af282090e9f752"
     },
     {
       "order": "04",
@@ -97,7 +97,7 @@
       "width": 375,
       "height": 812,
       "file": "04-vedra-grupo-mobile.png",
-      "sha256": "43b2c717e927e6e9a2a1b1aa57e520a113779e411ea45531e3bc2c457733320f"
+      "sha256": "77466b64d6daa5ecb8748d8802b1da9492e6dd1dc1b6d6d91fe334d2fbec0f54"
     },
     {
       "order": "05",
@@ -109,7 +109,7 @@
       "width": 1366,
       "height": 900,
       "file": "05-solane-inventario-desktop.png",
-      "sha256": "261d5e20af60065ae8c2c8e4350a7351dae12a149ccb0cde4317e81a9d2b05a8"
+      "sha256": "668248925847a8c01341ee0165e85dfc58f3992508651f417374e07949b06ef7"
     },
     {
       "order": "05",
@@ -121,7 +121,7 @@
       "width": 375,
       "height": 812,
       "file": "05-solane-inventario-mobile.png",
-      "sha256": "2aef8c26e72451ce231e2aa40257d2444e6e31870b676381e7556900283fd981"
+      "sha256": "fe02130bb8e0cae81526f6675090e1f2dbdbcf74e64b8bfcb54576073230fbe9"
     },
     {
       "order": "06",
@@ -133,7 +133,7 @@
       "width": 1366,
       "height": 900,
       "file": "06-solane-deposito-desktop.png",
-      "sha256": "da74c351f58fb2b82228e19e5d2908ad039f563c8e489b44b12899f33517228d"
+      "sha256": "7356e015cff22eb24ae3b5b020c3e50a31e83627e32e8cb04fd88f82520c3758"
     },
     {
       "order": "06",
@@ -145,7 +145,7 @@
       "width": 375,
       "height": 812,
       "file": "06-solane-deposito-mobile.png",
-      "sha256": "20fee74f23de89a65704439eb64a8c300065d9f8b8d47a39cfe83e30f8ca4e66"
+      "sha256": "4acd6564de76e558984d17dc62d4c58ec8bd750fe0eb530c04906118589f693f"
     },
     {
       "order": "07",
@@ -157,7 +157,7 @@
       "width": 1366,
       "height": 900,
       "file": "07-solane-privatizacion-desktop.png",
-      "sha256": "f89e6f8df850520e2b4e2b04e897da450b0c181de1db9803b8bb5dc098f50259"
+      "sha256": "ab77fbe61eb03225b7d84ba33553cbf7aeaab76d5ae8dedbc58eba862202b12a"
     },
     {
       "order": "07",
@@ -169,7 +169,7 @@
       "width": 375,
       "height": 812,
       "file": "07-solane-privatizacion-mobile.png",
-      "sha256": "9135916ac53ce7bbce7e6f8cd5ec5b1a0aeb6ce958c3587f1e2537e5532a515f"
+      "sha256": "12885356259686f9cf8998c76a49cffba781cb3bf18f7a61b010c6559264d402"
     },
     {
       "order": "08",
@@ -181,7 +181,7 @@
       "width": 1366,
       "height": 900,
       "file": "08-solane-riesgo-desktop.png",
-      "sha256": "584c4d2142d7787e49147e6aba3829544ccbe2b449f6c4e4a9704526d8e38a35"
+      "sha256": "4928f51765c47c150a23dff90dc334b50da64fde3d7ce5366f9bb6b3ef4aef64"
     },
     {
       "order": "08",
@@ -193,7 +193,7 @@
       "width": 375,
       "height": 812,
       "file": "08-solane-riesgo-mobile.png",
-      "sha256": "6274fb34e3bb82feca8ac31c00e57c429ab99544c10a63b6f8c49afa4f9e71c3"
+      "sha256": "6b4c90bed828cc18729a296f9a5692fb6ffcac19536ea4a0f5bae565e7d7202c"
     },
     {
       "order": "09",
@@ -205,7 +205,7 @@
       "width": 1366,
       "height": 900,
       "file": "09-la-trece-web-desktop.png",
-      "sha256": "d009a0cd1b0654c68713ea87892c75e0242cb1900b6f39bd81e1fdc77345827a"
+      "sha256": "e14cd3f07741f990e118891e30912e8a3f9cf555cc1f87e868b6ff7a3462d0ae"
     },
     {
       "order": "09",
@@ -217,7 +217,7 @@
       "width": 375,
       "height": 812,
       "file": "09-la-trece-web-mobile.png",
-      "sha256": "ccfc3abee0fb552bc37861034e5665e0d887854df6c8da86df17e3863dce6aae"
+      "sha256": "bcdafa5ec955c8189f79e63908286e3ec497e5b52ce2ee4a99e479397c6725c5"
     },
     {
       "order": "10",
@@ -229,7 +229,7 @@
       "width": 1366,
       "height": 900,
       "file": "10-salobre-web-desktop.png",
-      "sha256": "7fd159c79368b4e7986ee67fd8c535b874108251621653f66192e85b39d4be20"
+      "sha256": "c33e9cce4c97e769c8f7dffd8aed3006eb1eb4ff4d1dd58cabe8978b4b42083b"
     },
     {
       "order": "10",
@@ -241,7 +241,7 @@
       "width": 375,
       "height": 812,
       "file": "10-salobre-web-mobile.png",
-      "sha256": "e3e433b3acf377a602b9ab9f46709a811086eb304c8b83331d39c151286fc00f"
+      "sha256": "b157ae562aab3e558dea84f4fea6099fe35515e7b802c171bde6b5375e1f40a8"
     },
     {
       "order": "11",
@@ -253,7 +253,7 @@
       "width": 1366,
       "height": 900,
       "file": "11-trama-web-desktop.png",
-      "sha256": "40de70eb67b6f9110bb528dd4c28000bc828f7ee1192492516f749ad76d5bf97"
+      "sha256": "549d0cd9688e05cb8121c05bed3e730c43f35bdd49f05d956157a01d7fdf39db"
     },
     {
       "order": "11",
@@ -265,7 +265,7 @@
       "width": 375,
       "height": 812,
       "file": "11-trama-web-mobile.png",
-      "sha256": "74ff728f44b23037c83798003d820662fa0d2ebfebe5a7c0687683accd416117"
+      "sha256": "f3467e98a0bdbe03fdb0214e6efedc7430954ac0ad360557b29fcfe9a15bd18a"
     },
     {
       "order": "12",
@@ -277,7 +277,7 @@
       "width": 1366,
       "height": 900,
       "file": "12-umbral-web-desktop.png",
-      "sha256": "fd12035de40bbfcb17a51eef574973a54d811cc7ff75d13f2faba7a9fff54a14"
+      "sha256": "d800af156dd8f0e10b88e33f49ee31442642c1be7fd415d671978f0a75629b77"
     },
     {
       "order": "12",
@@ -289,7 +289,7 @@
       "width": 375,
       "height": 812,
       "file": "12-umbral-web-mobile.png",
-      "sha256": "5b00488285a4cf314121380fe182d2afe02bc600eee8720486d1a6dbdea07019"
+      "sha256": "0a13510628db92e445cbc2e0a4c6f512cc918b7c96f81854dbdea1b7e63dd86c"
     },
     {
       "order": "13",
@@ -301,7 +301,7 @@
       "width": 1366,
       "height": 900,
       "file": "13-nacre-web-desktop.png",
-      "sha256": "c632d1c6608c7c6d2e2c2de4967a1b9855e90cbfd32cbe86e78318bc1dc0fd2f"
+      "sha256": "d33ee3d93305906370b43c8f6c7a8110835dac8eba5194af70b5ff42e85fee65"
     },
     {
       "order": "13",
@@ -313,7 +313,7 @@
       "width": 375,
       "height": 812,
       "file": "13-nacre-web-mobile.png",
-      "sha256": "c50e25d63a37f5735ea6d74c4ef819b241fb6d32c5db74ebe0c84095cb4e19ee"
+      "sha256": "2a6286717159365726f87bf0c1ee29d3c79feb2c0e5d4c008a94b052968704aa"
     },
     {
       "order": "14",
@@ -325,7 +325,7 @@
       "width": 1366,
       "height": 900,
       "file": "14-brisa-alta-web-desktop.png",
-      "sha256": "741ce791adbccad199553b2e24d7dfcda256c7966f750705877b8f8fe221dbc4"
+      "sha256": "acdfaaf6356a13c8e98b1151d2fb884b8f92b4e16fe884a1318c74f19502a631"
     },
     {
       "order": "14",
@@ -337,7 +337,7 @@
       "width": 375,
       "height": 812,
       "file": "14-brisa-alta-web-mobile.png",
-      "sha256": "6279bc480b84aad35ccee504cf8bac99c11b1ca85d2c28e505de97a8946f473b"
+      "sha256": "df1e7ff36e46be621e5ac4d96c0eb45c869d3a511b000eda25894c0ad74906fe"
     },
     {
       "order": "15",
@@ -349,7 +349,7 @@
       "width": 1366,
       "height": 900,
       "file": "15-nave-nueve-web-desktop.png",
-      "sha256": "c573969d65043b15365293b5ca2a02e33cb7584d8a523f6d79e50549e9d3aece"
+      "sha256": "4b6455ee9077f9936260d84d5490668ef72eee869fd8c5987d3c03a2abf70337"
     },
     {
       "order": "15",
@@ -361,7 +361,7 @@
       "width": 375,
       "height": 812,
       "file": "15-nave-nueve-web-mobile.png",
-      "sha256": "b38950eb9fc84eaecb51766115064b3ec482a61ec475b4709efb2f56080f1dcf"
+      "sha256": "a4d36355e27734bbdd180fd536212542c694dc3bbb529567b3aada47789c9ebc"
     },
     {
       "order": "16",
@@ -373,7 +373,7 @@
       "width": 1366,
       "height": 900,
       "file": "16-miga-club-web-desktop.png",
-      "sha256": "ba5c65ac577ce612fcf9ac09e67d72e462a72d5c20ba58e9841b7787c2e143ec"
+      "sha256": "17c0cf7eee9c2a3d340eded044b665107bac164ab79aa93dd15ee31fececb1ee"
     },
     {
       "order": "16",
@@ -385,7 +385,7 @@
       "width": 375,
       "height": 812,
       "file": "16-miga-club-web-mobile.png",
-      "sha256": "8089382f983342a370f35a61fc532a66010f16eeb4f2ab77450bf97b1643d464"
+      "sha256": "ca690b59ba7ff5cc47c8417ae63f6a307979c249513ef5305b91ca6eadc4a1c0"
     },
     {
       "order": "17",
@@ -397,7 +397,7 @@
       "width": 1366,
       "height": 900,
       "file": "17-mercat-33-web-desktop.png",
-      "sha256": "9d246c9bbbb8adbfaa92d9d2990efe5dee1b7bc33be36dc1a8a723960bad7cb7"
+      "sha256": "80805c4fd8722f5d30b9285e50d25ee24071ef200f6194aeaf9efa8918e41895"
     },
     {
       "order": "17",
@@ -409,7 +409,7 @@
       "width": 375,
       "height": 812,
       "file": "17-mercat-33-web-mobile.png",
-      "sha256": "c0e51231bd4a76faec215ca6794c13d686b037c5e93e60d6488d5d64a6600fb4"
+      "sha256": "25e548e244638dd8448c923c7d724c6d534979144baf4daa263ee6a389b4009d"
     },
     {
       "order": "18",
@@ -421,7 +421,7 @@
       "width": 1366,
       "height": 900,
       "file": "18-logic-reserva-home-desktop.png",
-      "sha256": "c90519dd9eef9fb7382c0d6252e18a406f87a6f0342bfbe969708c8e9060d066"
+      "sha256": "06d65de8f52dce8745ecd87d9fe107a262ab6c2739f23c4c556cc8f6ee24c427"
     },
     {
       "order": "18",
@@ -433,7 +433,7 @@
       "width": 375,
       "height": 812,
       "file": "18-logic-reserva-home-mobile.png",
-      "sha256": "d5a3dee4b068bb3a653cda27b130648dd4822c922b4e95d65c391ef9cab03145"
+      "sha256": "58a398945e7535797968636f8af91fecbd08f883e81bf44a21f9706fb56ea0bd"
     },
     {
       "order": "19",
@@ -445,7 +445,7 @@
       "width": 1366,
       "height": 900,
       "file": "19-logic-reserva-portfolio-desktop.png",
-      "sha256": "63789f1b109c0e400d6c40a1f9e7715619fb1adc3a2fa6516c593452927a1a07"
+      "sha256": "fc85b653d6addc477027276364f734fc9645550168b2142f1846abc4edff69f9"
     },
     {
       "order": "19",
@@ -457,7 +457,7 @@
       "width": 375,
       "height": 812,
       "file": "19-logic-reserva-portfolio-mobile.png",
-      "sha256": "5a870afc49dd0d1034a9cf4ecae9c085b6ab55a0eed694bd46f121cc5939e8ab"
+      "sha256": "883adab74f1acc52950dda3544449371d6b7327562ebede519d085d8c954b36b"
     },
     {
       "order": "20",
@@ -469,7 +469,7 @@
       "width": 1366,
       "height": 900,
       "file": "20-logic-reserva-paneles-desktop.png",
-      "sha256": "fcbeb9a4e9ab8d966859634af054936ff7e5ba2cf2dba18a343646ad095a7682"
+      "sha256": "d5f558a0b2e8e2213ad93d60d5ec9b9426b9068633d9a77fecf5fb025a3867f9"
     },
     {
       "order": "20",
@@ -481,7 +481,7 @@
       "width": 375,
       "height": 812,
       "file": "20-logic-reserva-paneles-mobile.png",
-      "sha256": "193cb0643fd0cfece46dfb5b0a0b6c0d5e2b720163a896334c49e531feaa2042"
+      "sha256": "86b0388354cef39349329b1d9837a112dc35b7e3c23d3f3bc83a87b235e2ce20"
     },
     {
       "order": "21",
@@ -493,7 +493,7 @@
       "width": 1366,
       "height": 900,
       "file": "21-logic-reserva-cierre-desktop.png",
-      "sha256": "6581178936343af432019f642425ce446b250eac17c5461cd5ded98087600156"
+      "sha256": "0ec234db9841dc24714799c8eaaa0e05f61c4b09304c7ecf607f02c787a67351"
     },
     {
       "order": "21",
@@ -505,7 +505,7 @@
       "width": 375,
       "height": 812,
       "file": "21-logic-reserva-cierre-mobile.png",
-      "sha256": "8e0faa28f96649d25b5bd0ed862aa42f206d0c47f9f713645f2dfb155e524353"
+      "sha256": "fe58a6a5b4541b41bb87fc0b495f5f4bc9e8f539452d734be6e5fc839d0ecd90"
     }
   ]
 }
