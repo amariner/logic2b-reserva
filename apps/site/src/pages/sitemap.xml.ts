@@ -16,12 +16,13 @@ const paths = [
   ...GUIDE_CATALOG.map(({ slug }) => ({ es: `/docs/${slug}/`, en: `/en/docs/${slug}/`, priority: '0.7', changefreq: 'monthly' })),
   { es: '/soluciones/restaurantes/', en: '/en/soluciones/restaurantes/', priority: '0.9', changefreq: 'monthly' },
   { es: '/soluciones/grupos-y-eventos/', en: '/en/soluciones/grupos-y-eventos/', priority: '0.9', changefreq: 'monthly' },
+  { es: '/dentistas/', en: '/en/dentistas/', priority: '0.8', changefreq: 'monthly' },
   { es: '/legal/', en: '/en/legal/', priority: '0.2', changefreq: 'yearly' },
   { es: '/privacidad/', en: '/en/privacidad/', priority: '0.2', changefreq: 'yearly' },
   { es: '/cookies/', en: '/en/cookies/', priority: '0.2', changefreq: 'yearly' },
 ];
 
-const lastmod = '2026-09-04';
+const lastmod = '2026-09-26';
 const renderUrl = (path: string, alternate: string, locale: 'es' | 'en', priority: string, changefreq: string) => `<url>
   <loc>${new URL(path, PRODUCT.url).href}</loc>
   <xhtml:link rel="alternate" hreflang="${locale}" href="${new URL(path, PRODUCT.url).href}" />

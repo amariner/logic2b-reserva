@@ -1,3 +1,18 @@
+## 2026-09-26 · Primera pasada del nicho dentistas
+
+- Recuperado el diff original de Codex Cloud (`task_e_6ab80368a534833388829fb625abfe35`, commit indicado `b46cd2e`) y aplicado sin conflictos sobre `main` actualizado.
+- Validación local: `pnpm check` **28/28**, comprobación de tipos de Astro sin errores ni advertencias y build comercial de **70 páginas**. Verificados idioma, canonical, cambio ES/EN, tres CTA de WhatsApp, anclas y sitemap de ambas rutas.
+
+- Nueva landing bilingüe `/dentistas/`, aislada del producto de restauración,
+  para validar una propuesta centrada en solicitudes de cita, agenda de
+  recepción, preparación y seguimiento.
+- La interfaz es code-native, usa datos ficticios y declara expresamente los
+  límites: sin historia clínica, diagnóstico, mensajería, cobro ni integración
+  real. El contacto reutiliza WhatsApp con contexto específico y no modifica el
+  contrato del endpoint de leads.
+- ADR-020 registra la decisión de validar la propuesta antes de construir un
+  dominio o una demo dental. Las rutas es/en quedan incluidas en el sitemap.
+
 ## 2026-09-18 · Publicación F28/F29 · GitHub y producción ✅
 
 - Publicación autorizada expresamente. [PR #2](https://github.com/amariner/logic2b-reserva/pull/2) fusionado en `main`: merge `d119b8023a88281183fefcc209d9e09838bdf581`, con el mismo árbol validado que `f0925aa`.
