@@ -632,4 +632,11 @@ Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin aus
 
 ## Después (backlog, no fases)
 
+### Exploración de nicho · Dentistas
+
+- [x] Primera landing bilingüe aislada, con propuesta, recorrido de cita,
+      interfaz ficticia y límites explícitos.
+- [ ] Contrastar la página con responsables de clínica antes de diseñar una
+      demo operativa, precios, integraciones o un formulario específico.
+
 Ver `../BACKLOG.md`: WhatsApp de confirmaciones, ca/fr, Google Reserve, propuesta nominal para prospecto real y vídeos de venta.

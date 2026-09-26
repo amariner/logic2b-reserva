@@ -1,6 +1,12 @@
 # SIGUIENTE SESIÓN
 
 **Fase actual:** F29 publicada en producción; F30 es la siguiente prioridad. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
+
+**Exploración paralela:** primera pasada del nicho dentistas disponible en
+`/dentistas/` y `/en/dentistas/`. Antes de ampliar, contrastar con responsables
+de clínica el problema, el recorrido y los límites registrados en ADR-020. No
+crear historia clínica, automatizaciones, precios ni integraciones sin esa
+evidencia.
 **Rama de trabajo:** `main`, sincronizada con GitHub tras fusionar el [PR #2](https://github.com/amariner/logic2b-reserva/pull/2).
 **Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. Resultado publicado en `https://reserva.logic2b.com`. No repetir el despliegue sin nuevos cambios o petición ni enviar leads reales para verificarlo.
 
