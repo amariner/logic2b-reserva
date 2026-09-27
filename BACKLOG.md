@@ -20,3 +20,4 @@ Lo que surge durante las sesiones y no pertenece a la fase en curso. Nada de aqu
 
 - Extraer el copy de demos a `content.ts` si los ternarios de locale crecen (regla: con 3+ idiomas es obligatorio).
 - Tour guiado reutilizable entre gestores (hoy se duplicará entre Vedra y Solane).
+- Estabilizar el runtime E2E: Wrangler 4.128 / workerd se cierra a mitad de la suite (26/09/2026, también en sesiones previas). Valorar actualizar Wrangler (4.141 disponible) o versionar un lanzador Miniflare directo compatible con miniflare 5 alpha para declarar pases únicos 118/118.

@@ -1,8 +1,12 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F29 publicada en producción; F30 es la siguiente prioridad. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
-**Rama de trabajo:** `main`, sincronizada con GitHub tras fusionar el [PR #2](https://github.com/amariner/logic2b-reserva/pull/2).
-**Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. Resultado publicado en `https://reserva.logic2b.com`. No repetir el despliegue sin nuevos cambios o petición ni enviar leads reales para verificarlo.
+**Fase actual:** F29 publicada en producción; rediseño del home y de las páginas comerciales en la rama `redesign/home-awwwards` (subida a GitHub, sin PR ni despliegue). F30 sigue siendo la siguiente prioridad de producto.
+**Rama de trabajo:** `redesign/home-awwwards`, creada desde `main` (`5758e02`).
+**Siguiente hito:** repetir `pnpm check` y la suite E2E completa sobre la rama (las páginas interiores aún no tienen pase E2E); decidir si se retoma el rediseño de los temas Brasca, Vedra y Solane (trabajo parcial en `.claude/worktrees/agent-*`, sin integrar); regenerar las 42 capturas (`pnpm fotos`) y abrir PR. No desplegar ni enviar leads reales sin petición expresa.
+
+## Rediseño del home del 26/09/2026
+
+Pasada UX/UI y de conversión del home ES/EN en `apps/site/src/components/Landing.astro`, `PricingCards.astro` y `content.ts`: hero editorial con accesos «Pruébalo antes de decidir», escenario con parallax ligado al scroll y rejilla estática por debajo de 900 px, cabeceras indexadas 01–11, microilustraciones del recorrido, pestañas con indicador, bento de conexiones, plan Gestión destacado, línea temporal de implantación y cierre oscuro. Mismos catorce bloques y ganchos de test. Gates: `pnpm check` 28/28 y E2E 118/118 en dos bloques (54 + 64) por el cierre conocido de workerd. Las 42 capturas comerciales quedan desactualizadas hasta regenerarlas.
 
 ## Publicación autorizada del 18/09/2026
 

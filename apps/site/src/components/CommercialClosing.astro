@@ -89,29 +89,34 @@ const ui = closingContent(locale);
 </script>
 
 <style>
-  .commercial-closing { position: relative; overflow: hidden; padding: clamp(52px, 7vw, 96px) 0; background: linear-gradient(115deg, #dfff68 0 18%, #b5ef75 58%, #8de8c8 100%); }
-  .commercial-closing::before { position: absolute; inset: 0; opacity: .23; background-image: radial-gradient(circle at 12% 18%, white 0 1px, transparent 1.5px); background-size: 18px 18px; content: ''; }
-  .commercial-closing__panel { position: relative; display: grid; min-height: 650px; grid-template-columns: minmax(0, .9fr) minmax(520px, 1.1fr); gap: clamp(35px, 6vw, 92px); overflow: hidden; border-radius: 28px; padding: clamp(34px, 6vw, 78px); background: white; box-shadow: 0 35px 100px rgb(3 29 49 / 15%); }
-  .commercial-closing__copy { position: relative; z-index: 2; display: flex; max-width: 670px; flex-direction: column; justify-content: center; }
-  .commercial-closing__copy .eyebrow { color: var(--color-notion-blue-strong); }
-  .commercial-closing__copy h2 { margin: 0; font-size: clamp(3.1rem, 6vw, 6.5rem); font-weight: 620; letter-spacing: -.068em; line-height: .88; text-wrap: balance; }
-  .commercial-closing__copy > p:not(.eyebrow) { max-width: 58ch; margin: 28px 0 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1rem, 1.3vw, 1.15rem); line-height: 1.58; }
-  .commercial-closing__actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 30px; }
-  .commercial-closing__actions a { display: inline-flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 24px; border: 1px solid var(--line); border-radius: 999px; padding: 10px 17px; color: var(--ink); background: white; font-size: .78rem; font-weight: 720; text-decoration: none; }
-  .commercial-closing__actions .commercial-closing__primary { color: white; border-color: var(--color-notion-blue); background: var(--color-notion-blue); }
-  .commercial-closing__copy ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 34px 0 0; padding: 0; list-style: none; }
-  .commercial-closing__copy li { display: inline-flex; min-height: 34px; align-items: center; gap: 7px; border-radius: 999px; padding: 7px 10px; color: var(--slate); background: var(--color-sky-tint); font-size: .69rem; font-weight: 680; }
-  .commercial-closing__copy li span { display: grid; width: 18px; height: 18px; place-items: center; border-radius: 50%; color: white; background: var(--color-notion-blue); font-size: .57rem; }
-  .commercial-closing__visual { position: relative; min-height: 500px; align-self: stretch; }
-  .commercial-closing__photo { position: absolute; inset: 0 0 auto auto; width: 78%; height: 100%; border-radius: 24px; object-fit: cover; filter: saturate(.88); }
-  .commercial-closing__desktop { position: absolute; top: 20%; right: 9%; width: 84%; overflow: hidden; margin: 0; border: 7px solid var(--color-midnight-ink); border-radius: 15px; background: white; box-shadow: 0 28px 70px rgb(2 9 58 / 30%); transform: rotate(-2deg); }
-  .commercial-closing__desktop > div { display: flex; height: 30px; align-items: center; gap: 5px; padding: 0 10px; color: white; background: var(--color-midnight-ink); }
-  .commercial-closing__desktop > div span { width: 6px; height: 6px; border-radius: 50%; background: rgb(255 255 255 / 38%); }
-  .commercial-closing__desktop > div small { margin-left: auto; font-size: .55rem; }
-  .commercial-closing__desktop img { display: block; width: 100%; }
-  .commercial-closing__desktop figcaption, .commercial-closing__mobile figcaption { position: absolute; right: 8px; bottom: 8px; border-radius: 999px; padding: 5px 8px; color: white; background: rgb(2 9 58 / 74%); font-size: .55rem; font-weight: 700; }
-  .commercial-closing__mobile { position: absolute; z-index: 2; right: 0; bottom: 3%; width: 27%; overflow: hidden; margin: 0; border: 6px solid var(--color-midnight-ink); border-radius: 22px; background: white; box-shadow: 0 22px 55px rgb(2 9 58 / 30%); transform: rotate(3deg); }
-  .commercial-closing__mobile img { display: block; width: 100%; }
+  .commercial-closing { position: relative; padding: clamp(40px, 6vw, 88px) 0 clamp(64px, 8vw, 120px); background: var(--paper); }
+  .commercial-closing__panel { position: relative; display: grid; min-height: 620px; grid-template-columns: minmax(0, .92fr) minmax(480px, 1.08fr); align-items: center; gap: clamp(35px, 6vw, 88px); overflow: hidden; border-radius: 36px; padding: clamp(36px, 6vw, 88px); color: white; background: #10263b; }
+  .commercial-closing__panel::before { position: absolute; inset: 0; background-image: linear-gradient(#ffffff0d 1px, transparent 1px), linear-gradient(90deg, #ffffff0d 1px, transparent 1px); background-size: 44px 44px; content: ''; pointer-events: none; }
+  .commercial-closing__copy { position: relative; z-index: 2; display: flex; max-width: 620px; flex-direction: column; justify-content: center; }
+  .commercial-closing__copy .eyebrow { color: #a9c6dc; }
+  .commercial-closing__copy h2 { margin: 18px 0 0; color: white; font-family: var(--serif); font-size: clamp(2.8rem, 4.8vw, 5rem); font-weight: 460; letter-spacing: -.05em; line-height: 1; text-wrap: balance; }
+  .commercial-closing__copy > p:not(.eyebrow) { max-width: 52ch; margin: 26px 0 0; color: #cbdae6; font-size: 1rem; line-height: 1.7; }
+  .commercial-closing__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 32px; }
+  .commercial-closing__actions a { display: inline-flex; min-height: 52px; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #ffffff40; border-radius: 999px; padding: 14px 24px; color: white; background: transparent; font-size: .86rem; font-weight: 650; text-decoration: none; transition: background-color 200ms ease, color 200ms ease; }
+  .commercial-closing__actions a span { transition: transform 260ms cubic-bezier(.2,.7,.2,1); }
+  .commercial-closing__actions a:hover { background: #ffffff14; }
+  .commercial-closing__actions a:hover span { transform: translateX(3px); }
+  .commercial-closing__actions .commercial-closing__primary { color: #142b43; border-color: white; background: white; }
+  .commercial-closing__actions .commercial-closing__primary:hover { background: #dce9f3; }
+  .commercial-closing__copy ul { display: flex; flex-wrap: wrap; gap: 10px; margin: 30px 0 0; padding: 0; list-style: none; }
+  .commercial-closing__copy li { display: inline-flex; min-height: 34px; align-items: center; gap: 8px; border: 1px solid #ffffff26; border-radius: 999px; padding: 7px 14px; color: #dbe6ef; font-size: .74rem; }
+  .commercial-closing__copy li span { color: #9fd1b8; }
+  .commercial-closing__visual { position: relative; z-index: 1; min-height: 480px; align-self: stretch; }
+  .commercial-closing__photo { position: absolute; inset: 0 0 auto auto; width: 70%; height: 86%; border-radius: 24px; object-fit: cover; opacity: .35; filter: saturate(.6) brightness(.8); }
+  .commercial-closing__desktop { position: absolute; top: 14%; right: 12%; width: 84%; overflow: hidden; margin: 0; border: 1px solid #ffffff26; border-radius: 18px; background: white; box-shadow: 0 50px 90px -40px #000000a6; transform: perspective(1600px) rotateY(-7deg) rotateX(3deg); transition: transform 900ms cubic-bezier(.2,.7,.2,1); }
+  .commercial-closing__panel:hover .commercial-closing__desktop { transform: perspective(1600px) rotateY(-2deg) rotateX(1deg); }
+  .commercial-closing__desktop > div { display: flex; height: 30px; align-items: center; gap: 5px; padding: 0 12px; color: #4f5f6d; background: #f4f6f8; }
+  .commercial-closing__desktop > div span { width: 7px; height: 7px; border-radius: 50%; background: #cdd5dc; }
+  .commercial-closing__desktop > div small { margin-left: auto; font-size: .58rem; }
+  .commercial-closing__desktop img { display: block; width: 100%; height: auto; }
+  .commercial-closing__desktop figcaption, .commercial-closing__mobile figcaption { position: absolute; right: 8px; bottom: 8px; border-radius: 999px; padding: 5px 9px; color: white; background: rgb(12 29 47 / 82%); font-size: .56rem; font-weight: 650; }
+  .commercial-closing__mobile { position: absolute; z-index: 2; right: 0; bottom: 2%; width: 26%; overflow: hidden; margin: 0; border: 6px solid #050f1a; border-radius: 24px; background: white; box-shadow: 0 30px 60px -24px #000000b3; }
+  .commercial-closing__mobile img { display: block; width: 100%; height: auto; }
   .project-request-dialog { inset: 0; width: min(1040px, calc(100vw - 28px)); max-width: none; max-height: min(850px, calc(100dvh - 28px)); margin: auto; overflow: visible; border: 0; border-radius: 22px; padding: 0; color: var(--ink); background: transparent; }
   .project-request-dialog::backdrop { background: rgb(2 9 58 / 76%); backdrop-filter: blur(8px); }
   .project-request-dialog__frame { position: relative; display: grid; max-height: min(850px, calc(100dvh - 28px)); grid-template-columns: minmax(300px, .72fr) minmax(480px, 1.28fr); overflow: auto; border-radius: 22px; background: white; box-shadow: 0 35px 110px rgb(0 0 0 / 38%); }
@@ -133,8 +138,8 @@ const ui = closingContent(locale);
   @media (max-width: 760px) {
     .commercial-closing { padding-block: 24px; }
     .commercial-closing .shell { width: min(100% - 20px, var(--page-max-width)); }
-    .commercial-closing__panel { gap: 34px; border-radius: 20px; padding: 30px 22px 22px; }
-    .commercial-closing__copy h2 { font-size: clamp(3.1rem, 15vw, 5rem); }
+    .commercial-closing__panel { gap: 34px; border-radius: 28px; padding: 36px 22px 24px; }
+    .commercial-closing__copy h2 { font-size: clamp(2.4rem, 10vw, 3.4rem); }
     .commercial-closing__copy li:nth-child(3) { display: none; }
     .commercial-closing__actions { display: grid; }
     .commercial-closing__visual { min-height: 390px; }
@@ -150,5 +155,5 @@ const ui = closingContent(locale);
     .project-request-dialog__form { padding: 26px 20px 30px; }
   }
   @media (max-width: 460px) { .commercial-closing__visual { min-height: 320px; }.commercial-closing__mobile { border-width: 4px; }.commercial-closing__desktop { border-width: 5px; } }
-  @media (prefers-reduced-motion: reduce) { .project-request-dialog::backdrop { backdrop-filter: none; } }
+  @media (prefers-reduced-motion: reduce) { .project-request-dialog::backdrop { backdrop-filter: none; }.commercial-closing__desktop, .commercial-closing__actions a span { transition: none; } }
 </style>

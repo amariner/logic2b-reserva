@@ -19,3 +19,32 @@ const { locale = 'es', languageHref, closing = true } = Astro.props;
 <CommercialFooter locale={locale} languageHref={languageHref} />
 <CookiePreferences locale={locale} />
 <CommercialTour locale={locale} />
+
+<script>
+  // Inner pages share the home's scroll reveal. Content stays visible without JS,
+  // with reduced motion and in automated captures.
+  const motionAllowed = !window.matchMedia('(prefers-reduced-motion: reduce)').matches && navigator.webdriver !== true;
+  const main = document.querySelector<HTMLElement>('main#contenido');
+  if (motionAllowed && main && 'IntersectionObserver' in window) {
+    const groups = [...main.querySelectorAll<HTMLElement>(':scope > section:not(:first-child), :scope > * > section:not(:first-child), .theme-card, .panel-card, .guide-card, .pricing-card, .commercial-closing__panel')];
+    const targets = groups.filter((element) => groups.findIndex((candidate) => candidate !== element && candidate.contains(element)) === -1);
+    document.querySelectorAll<HTMLElement>('.commercial-closing__panel').forEach((panel) => { if (!targets.includes(panel)) targets.push(panel); });
+    const siblingsDelay = new Map<Element, number>();
+    targets.forEach((target) => {
+      const parent = target.parentElement;
+      const order = parent ? (siblingsDelay.get(parent) ?? 0) : 0;
+      if (parent) siblingsDelay.set(parent, order + 1);
+      target.dataset.reveal = '';
+      target.style.setProperty('--reveal-delay', `${Math.min(order, 5) * 60}ms`);
+    });
+    document.documentElement.classList.add('reveal-ready');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+    targets.forEach((target) => observer.observe(target));
+  }
+</script>
