@@ -1,3 +1,10 @@
+## 2026-09-30 · Rama actualizada con `main` (PR #3 dentistas)
+
+- `main` (`6d11d6d`) fusionado en `redesign/home-awwwards`. Conflictos solo en `PROGRESS.md` y `SIGUIENTE-SESION.md`, resueltos conservando ambas entradas.
+- La landing `/dentistas/` conserva su identidad propia: se fija su fondo crema frente al papel frío v2 y se corrige el contraste del botón de su cabecera (texto oscuro sobre verde, heredado de `main`).
+- El test «todas las rutas públicas y recursos SEO responden» esperaba `lastmod` 2026-09-04; la PR #3 lo cambió a 2026-09-26 sin actualizarlo. Se alinea el test y se comprueba `/dentistas/` en el sitemap.
+- Nota: `main` introduce `ADR-020-piloto-dentistas.md`, que repite el número de `ADR-020-recorrido-y-conversion-progresiva.md`; no se renumera sin decisión expresa.
+
 ## 2026-09-30 · Lenguaje v2 «producto preciso», diagramas, gestor unificado y fichas de tema · rama `redesign/home-awwwards`
 
 - **Decisión:** ADR-021. Nueva capa `.lr-product` en `packages/ui/src/theme.css` compartida por la web comercial y el gestor: titulares Inter semibold, etiquetas y datos en JetBrains Mono (nueva dependencia `@fontsource-variable/jetbrains-mono` en site y web), tinta `#0f1d2d`, azul de producto `#1d5c96`, papel frío, retícula técnica, botones de 8 px y tarjetas de 12 px. La serif queda como acento. `docs/DESIGN.md` documenta la capa.
@@ -27,6 +34,21 @@
 - Copy nuevo en `content.ts` (es/en); las familias de conexión dejan de estar escritas en el componente. Sin imágenes ni vídeos nuevos, sin cambios de backend ni leads enviados.
 - Gates: **`pnpm check` 28/28**; **E2E 118/118** en dos bloques sobre el mismo bundle (54 + 64) con Wrangler local y correo deshabilitado: el runtime de workerd se cerró a mitad del primer pase (fallo conocido), el segundo bloque se ejecutó con supervisor de reinicio y no necesitó reintentos. No se declara un único pase 118/118. QA visual a 1440, 1280×720, 375 px y en inglés sin overflow ni errores de consola.
 - Pendiente antes de publicar: regenerar las 42 capturas comerciales (`pnpm fotos`), ya que el home cambia; y revisar el resultado con la persona responsable del proyecto. Sin commit ni despliegue en esta sesión.
+
+## 2026-09-26 · Primera pasada del nicho dentistas
+
+- Recuperado el diff original de Codex Cloud (`task_e_6ab80368a534833388829fb625abfe35`, commit indicado `b46cd2e`) y aplicado sin conflictos sobre `main` actualizado.
+- Validación local: `pnpm check` **28/28**, comprobación de tipos de Astro sin errores ni advertencias y build comercial de **70 páginas**. Verificados idioma, canonical, cambio ES/EN, tres CTA de WhatsApp, anclas y sitemap de ambas rutas.
+
+- Nueva landing bilingüe `/dentistas/`, aislada del producto de restauración,
+  para validar una propuesta centrada en solicitudes de cita, agenda de
+  recepción, preparación y seguimiento.
+- La interfaz es code-native, usa datos ficticios y declara expresamente los
+  límites: sin historia clínica, diagnóstico, mensajería, cobro ni integración
+  real. El contacto reutiliza WhatsApp con contexto específico y no modifica el
+  contrato del endpoint de leads.
+- ADR-020 registra la decisión de validar la propuesta antes de construir un
+  dominio o una demo dental. Las rutas es/en quedan incluidas en el sitemap.
 
 ## 2026-09-18 · Publicación F28/F29 · GitHub y producción ✅
 

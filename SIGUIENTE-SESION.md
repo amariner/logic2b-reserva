@@ -1,7 +1,13 @@
 # SIGUIENTE SESIÓN
 
 **Fase actual:** F29 publicada en producción; rediseño v2 «producto preciso» (ADR-021) en la rama `redesign/home-awwwards`: lenguaje común web + gestor, seis diagramas explicativos y fichas de tema nuevas. Sin PR ni despliegue. F30 sigue siendo la siguiente prioridad de producto.
-**Rama de trabajo:** `redesign/home-awwwards`, creada desde `main` (`5758e02`).
+
+**Exploración paralela:** primera pasada del nicho dentistas disponible en
+`/dentistas/` y `/en/dentistas/`. Antes de ampliar, contrastar con responsables
+de clínica el problema, el recorrido y los límites registrados en ADR-020. No
+crear historia clínica, automatizaciones, precios ni integraciones sin esa
+evidencia.
+**Rama de trabajo:** `redesign/home-awwwards`, creada desde `main` (`5758e02`) y actualizada con `main` (`6d11d6d`, PR #3 dentistas).
 **Siguiente hito:** revisar el rediseño v2 con la persona responsable; regenerar las 42 capturas (`pnpm fotos`, requiere Chrome con H.264 o `CHROMIUM_PATH`); repetir `tests/e2e/platform-visual.spec.ts` en un navegador con H.264; decidir si se retoma el rediseño de los temas Brasca, Vedra y Solane (worktrees antiguos sin integrar) y abrir PR. No desplegar ni enviar leads reales sin petición expresa.
 
 ## Rediseño v2 del 30/09/2026
