@@ -55,15 +55,16 @@ const mobileNavItems = [
 <style>
   .site-header { position: sticky; z-index: 50; top: 0; right: 0; left: 0; height: 96px; padding-top: 14px; background: transparent; pointer-events: none; }
   .site-header--home { position: fixed; }
-  .nav-shell { display: flex; height: 68px; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid rgb(2 9 58 / 8%); border-radius: 999px; padding: 0 16px 0 20px; background: rgb(255 255 255 / 92%); box-shadow: 0 12px 34px rgb(2 9 58 / 8%); backdrop-filter: blur(16px); pointer-events: auto; }
+  .nav-shell { display: flex; height: 64px; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--lr-line); border-radius: 14px; padding: 0 10px 0 18px; background: rgb(255 255 255 / 94%); box-shadow: 0 1px 2px rgb(15 29 45 / 5%), 0 14px 34px -18px rgb(15 29 45 / 22%); backdrop-filter: blur(16px) saturate(1.2); pointer-events: auto; }
   .main-nav { display: flex; align-items: center; gap: 2px; }
-  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 11px; color: rgb(0 0 0 / 58%); font-size: .78rem; font-weight: 500; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
+  .main-nav a, .language-link { display: inline-flex; min-width: 44px; min-height: 44px; align-items: center; justify-content: center; border-radius: 8px; padding: 10px 12px; color: var(--lr-slate); font-size: .8rem; font-weight: 540; text-decoration: none; transition: color 200ms ease, background-color 200ms ease; }
   .main-nav a:hover, .language-link:hover { color: var(--ink); background: rgb(0 0 0 / 4%); }
   .nav-actions { display: flex; flex: 0 0 auto; align-items: center; gap: 4px; }
-  .nav-contact { display: inline-flex; min-height: 44px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 8px 16px; color: var(--slate); font-size: .78rem; font-weight: 600; text-decoration: none; }
+  .nav-contact { display: inline-flex; min-height: 44px; align-items: center; border: 1px solid var(--lr-line-strong); border-radius: 8px; padding: 8px 14px; color: var(--slate); font-size: .78rem; font-weight: 600; text-decoration: none; }
   .nav-contact svg { width: 17px; height: 17px; margin-right: 7px; fill: none; stroke: currentColor; stroke-width: 1.45; stroke-linecap: round; stroke-linejoin: round; }
   .nav-contact:hover { color: var(--ink); border-color: rgb(0 0 0 / 20%); background: white; }
-  .nav-cta { min-height: 44px; border-radius: 999px; padding-inline: 17px; }
+  .nav-cta { min-height: 44px; border-radius: 8px; padding-inline: 16px; }
+  .language-link { font-family: var(--mono); font-size: .72rem; }
   .mobile-menu { position: relative; display: none; width: max-content; flex: 0 0 auto; }
   .mobile-menu summary { display: flex; min-height: 44px; align-items: center; gap: 8px; border-radius: 8px; padding: 8px 10px; color: var(--slate); cursor: pointer; font-size: .8rem; font-weight: 600; list-style: none; }
   .mobile-menu summary::-webkit-details-marker { display: none; }

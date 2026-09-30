@@ -443,7 +443,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
   const confirmationHref = `${websiteHref}confirmacion/`;
 
   return (
-    <div className="rd-app rd-app--solane" data-dashboard-demo data-dashboard-brand="solane">
+    <div className="rd-app rd-app--solane lr-product" data-dashboard-demo data-dashboard-brand="solane">
       <aside className="rd-sidebar">
         <a className="rd-lockup" href={websiteHref} aria-label={restaurant.name}><span>S</span><strong>{restaurant.name}</strong></a>
         <p className="rd-product">{local(COPY.product, locale)}</p>

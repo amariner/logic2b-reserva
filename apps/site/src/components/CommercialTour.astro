@@ -23,10 +23,10 @@ const steps = tourSteps(locale);
 </dialog>
 
 <style>
-  .commercial-tour-intro { inset: 0; width: min(550px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; overflow: auto; border: 1px solid var(--line); border-radius: 22px; padding: 0; color: var(--ink); background: var(--paper); box-shadow: 0 24px 90px rgb(2 9 58 / 25%); }
+  .commercial-tour-intro { inset: 0; width: min(550px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); margin: auto; overflow: auto; border: 1px solid var(--line); border-radius: 16px; padding: 0; color: var(--ink); background: var(--paper); box-shadow: 0 24px 90px rgb(2 9 58 / 25%); }
   .commercial-tour-intro::backdrop { background: rgb(2 9 58 / 56%); backdrop-filter: blur(5px); }
   .commercial-tour-intro > article { position: relative; padding: clamp(28px, 5vw, 42px); }
-  .commercial-tour-intro__close { position: absolute; top: 12px; right: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: 50%; color: var(--slate); background: transparent; cursor: pointer; font-size: 1.25rem; }
+  .commercial-tour-intro__close { position: absolute; top: 12px; right: 12px; display: grid; width: 44px; height: 44px; place-items: center; border: 1px solid var(--line); border-radius: var(--lr-radius-sm); color: var(--slate); background: transparent; cursor: pointer; font-size: 1.25rem; }
   .commercial-tour-intro__eyebrow { margin: 0 48px 18px 0; color: var(--color-notion-blue-strong); font-size: .7rem; font-weight: 750; }
   .commercial-tour-intro h2 { max-width: 400px; margin: 0; font-size: clamp(2.5rem, 6vw, 3.5rem); letter-spacing: -.055em; line-height: 1; text-wrap: balance; }
   .commercial-tour-intro__body { margin: 18px 0 0; color: var(--slate); font-size: .9rem; line-height: 1.6; }
@@ -35,7 +35,7 @@ const steps = tourSteps(locale);
   .commercial-tour-intro__steps span { color: var(--color-notion-blue-strong); font-size: .64rem; }
   .commercial-tour-intro__meta { margin: 24px 0 0; color: var(--slate); font-size: .7rem; }
   .commercial-tour-intro__actions { display: grid; gap: 4px; margin-top: 18px; }
-  .commercial-tour-intro__actions a, .commercial-tour-intro__actions button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; border: 0; border-radius: 999px; padding: 10px 17px; color: var(--slate); background: transparent; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 650; text-decoration: none; }
+  .commercial-tour-intro__actions a, .commercial-tour-intro__actions button { display: inline-flex; min-height: 48px; align-items: center; justify-content: center; gap: 20px; border: 0; border-radius: var(--lr-radius-sm); padding: 10px 17px; color: var(--slate); background: transparent; cursor: pointer; font: inherit; font-size: .78rem; font-weight: 650; text-decoration: none; }
   .commercial-tour-intro__actions a { justify-content: space-between; color: white; background: var(--color-notion-blue-strong); }
   .commercial-tour-intro :is(button, a):focus-visible { outline: 2px solid var(--color-notion-blue-strong); outline-offset: 3px; }
   @media (max-width: 380px) { .commercial-tour-intro > article { padding: 28px 22px 20px; } .commercial-tour-intro__steps { gap: 8px; } .commercial-tour-intro__steps li { font-size: .67rem; } }
@@ -71,7 +71,7 @@ const steps = tourSteps(locale);
 </script>
 
 <style>
-  .reserva-tour { position: fixed; z-index: 82; right: 20px; bottom: max(20px, env(safe-area-inset-bottom)); width: min(360px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); overflow: auto; border: 1px solid rgb(2 9 58 / 14%); border-radius: 18px; padding: 12px 18px 18px; color: var(--ink, #02093a); background: var(--paper, #faf8f3); box-shadow: 0 12px 48px rgb(2 9 58 / 15%); font-family: var(--sans, 'Inter Variable', sans-serif); }
+  .reserva-tour { position: fixed; z-index: 82; right: 20px; bottom: max(20px, env(safe-area-inset-bottom)); width: min(360px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); overflow: auto; border: 1px solid rgb(2 9 58 / 14%); border-radius: 14px; padding: 12px 14px 14px; color: var(--ink, #02093a); background: var(--paper, #faf8f3); box-shadow: 0 12px 48px rgb(2 9 58 / 15%); font-family: var(--sans, 'Inter Variable', sans-serif); }
   .reserva-tour[hidden], .reserva-tour [hidden] { display: none; }
   .reserva-tour__heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .reserva-tour__heading > p { margin: 0; color: var(--color-notion-blue-strong, #1557a5); font-size: .69rem; font-weight: 700; }
@@ -87,7 +87,7 @@ const steps = tourSteps(locale);
   .reserva-tour__progress button[aria-current='step'] span { background: var(--color-notion-blue, #1871e3); }
   .reserva-tour__progress button[data-complete] span { background: var(--color-sky-wash, #9ed8ff); }
   .reserva-tour__actions { display: flex; gap: 8px; }
-  .reserva-tour__actions > * { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgb(2 9 58 / 15%); border-radius: 999px; padding: 10px 14px; color: inherit; background: transparent; cursor: pointer; font: inherit; font-size: .71rem; font-weight: 680; text-decoration: none; }
+  .reserva-tour__actions > * { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: 12px; border: 1px solid rgb(2 9 58 / 15%); border-radius: var(--lr-radius-sm); padding: 10px 14px; color: inherit; background: transparent; cursor: pointer; font: inherit; font-size: .71rem; font-weight: 680; text-decoration: none; }
   .reserva-tour__actions > a { flex: 1; justify-content: space-between; color: white; background: var(--color-notion-blue-strong, #1557a5); border-color: transparent; }
   .reserva-tour__return { display: flex; min-height: 44px; align-items: center; justify-content: center; gap: 8px; margin-top: 5px; color: var(--slate, #41546b); font-size: .69rem; text-underline-offset: 3px; }
   .reserva-tour :is(button, a):focus-visible { outline: 2px solid var(--color-notion-blue-strong, #1557a5); outline-offset: 3px; }

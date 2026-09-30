@@ -1,6 +1,7 @@
 ---
 import '@fontsource-variable/inter';
 import '@fontsource-variable/source-serif-4';
+import '@fontsource-variable/jetbrains-mono';
 import '@logic-reserva/ui/theme.css';
 import '../styles/demos.css';
 import type { DemoSlug, Locale } from '@logic-reserva/config';
@@ -10,9 +11,11 @@ interface Props {
   slug: DemoSlug | 'theme';
   locale?: Locale;
   title: string;
+  /** manager: gestor de producto Logic Reserva (lenguaje v2, ADR-021). */
+  surface?: 'web' | 'manager';
 }
 
-const { slug, locale = 'es', title } = Astro.props;
+const { slug, locale = 'es', title, surface = 'web' } = Astro.props;
 const notice =
   locale === 'en'
     ? 'Fictional demonstration by Logic Reserva · No real bookings or charges'
@@ -29,7 +32,7 @@ const skipLabel = locale === 'en' ? 'Skip to main content' : 'Saltar al contenid
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <title>{title}</title>
   </head>
-  <body class={`demo-body ${slug}`}>
+  <body class:list={['demo-body', slug, surface === 'manager' && 'demo-body--manager lr-product']}>
     <a class="demo-skip-link" href="#contenido">{skipLabel}</a>
     <p class="demo-notice">{notice}</p>
     <slot />
@@ -62,5 +65,6 @@ const skipLabel = locale === 'en' ? 'Skip to main content' : 'Saltar al contenid
     font-size: 0.78rem;
     text-align: center;
   }
+  .demo-body--manager .demo-notice { background: var(--lr-night); color: #d5e1ec; font-family: var(--mono); font-size: .7rem; letter-spacing: .01em; }
   @media (prefers-reduced-motion: reduce) { .demo-skip-link { transition: none; } }
 </style>

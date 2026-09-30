@@ -1,0 +1,132 @@
+/* Capa comercial compartida · lenguaje v2 "producto preciso" (ADR-021).
+   El home define el idioma —titulares Inter, etiquetas mono, reglas
+   indexadas, retícula técnica, botones rectangulares— y las páginas
+   interiores lo heredan desde aquí. Los tokens viven en .lr-product. */
+
+.commercial-site {
+  --r-ink: var(--lr-ink);
+  --r-ink-deep: var(--lr-night);
+  --r-blue: var(--lr-blue);
+  --r-blue-ink: var(--lr-blue-strong);
+  --r-mist: var(--lr-blue-soft);
+  --r-green: var(--state-success);
+  --r-line-strong: var(--lr-line-strong);
+  --r-ease: var(--lr-ease);
+}
+
+/* Reveal: content stays visible until JS confirms motion is welcome. */
+html.reveal-ready .commercial-site [data-reveal] { opacity: 0; translate: 0 22px; transition: opacity 650ms var(--r-ease) var(--reveal-delay, 0ms), translate 800ms var(--r-ease) var(--reveal-delay, 0ms), transform 300ms var(--r-ease), box-shadow 300ms var(--r-ease), background-color 300ms var(--r-ease), color 300ms var(--r-ease); }
+html.reveal-ready .commercial-site [data-reveal].is-revealed { opacity: 1; translate: 0 0; }
+
+/* Indexed rule used by section heads on every page. */
+.section-rule { display: flex; align-items: center; gap: 14px; margin: 0 0 22px; color: var(--lr-mute); font-family: var(--mono); font-size: .68rem; font-weight: 500; letter-spacing: .04em; font-variant-numeric: tabular-nums; }
+.section-rule i { flex: 1; height: 1px; background: var(--r-line-strong); }
+
+/* Technical grid used behind stages, diagrams and dark panels. */
+.lr-grid-bg { background-image: linear-gradient(var(--lr-grid) 1px, transparent 1px), linear-gradient(90deg, var(--lr-grid) 1px, transparent 1px); background-size: 24px 24px; }
+
+/* ---------- Inner pages ---------- */
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main, .start-main) {
+  --sub-heading: 620 clamp(2rem, 3.4vw, 3.3rem) / 1.04 var(--display);
+}
+
+/* One heading voice: Inter semibold, tight tracking. Serif only as an accent. */
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main, .start-main) h1 {
+  font-family: var(--display);
+  font-weight: 640;
+  letter-spacing: -.05em;
+  line-height: 1;
+}
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main, .start-main) h2:not(.sr-only) {
+  font-family: var(--display);
+  font-weight: 620;
+  letter-spacing: -.04em;
+  line-height: 1.05;
+  text-wrap: balance;
+}
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main, .start-main) :is(h1, h2) em {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 420;
+  letter-spacing: -.03em;
+  color: var(--lr-blue);
+}
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main, .start-main) .eyebrow {
+  color: var(--lr-blue-strong);
+}
+
+/* Intro eyebrows carry a short rule and a status square, like the home. */
+.commercial-site.commercial-site :is(.plans-hero, .themes-intro, .panels-intro, .guides-hero, .theme-detail__heading, .panel-detail__intro, .info-grid, .start-copy) .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.commercial-site.commercial-site :is(.plans-hero, .themes-intro, .panels-intro, .guides-hero, .theme-detail__heading, .panel-detail__intro, .info-grid, .start-copy) .eyebrow::before {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  background: currentColor;
+  content: '';
+}
+
+/* Back links: quiet outlined buttons with mono label. */
+.commercial-site.commercial-site :is(.back, .back-link) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  border: 1px solid var(--r-line-strong);
+  border-radius: var(--lr-radius-sm);
+  padding: 8px 14px;
+  color: var(--r-ink);
+  background: #fff;
+  text-decoration: none;
+  transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease;
+}
+.commercial-site.commercial-site :is(.back, .back-link):hover { border-color: var(--r-ink); color: #fff; background: var(--r-ink); }
+
+/* Cards: precise radius, hairline border, a restrained lift on hover. */
+.commercial-site.commercial-site :is(.theme-card, .panel-card, .guide-card, .plan-card) {
+  border-radius: var(--lr-radius);
+  transition: transform 300ms var(--r-ease), box-shadow 300ms var(--r-ease), border-color 300ms var(--r-ease);
+}
+.commercial-site.commercial-site :is(.theme-card, .panel-card, .guide-card):hover {
+  transform: translateY(-3px);
+  border-color: var(--lr-line-strong);
+  box-shadow: var(--lr-shadow-product);
+}
+.commercial-site.commercial-site :is(.theme-card, .panel-card) img { transition: transform 700ms var(--r-ease); }
+.commercial-site.commercial-site :is(.theme-card, .panel-card):hover img { transform: scale(1.025); }
+.commercial-site.commercial-site :is(.theme-filters, .panel-filters) { border: 1px solid var(--line); border-radius: var(--lr-radius); }
+
+/* Primary buttons share the home's ink and hover. */
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main) .pill {
+  min-height: 48px;
+  padding-inline: 20px;
+  background: var(--r-ink);
+  transition: background-color 200ms ease;
+}
+.commercial-site.commercial-site :is(.plans-main, .themes-main, .theme-detail, .panels-main, .panel-detail, .guides-main, .guide-main, .info-main) .pill:hover { background: var(--r-blue-ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .commercial-site.commercial-site :is(.theme-card, .panel-card, .guide-card, .plan-card, .back, .back-link),
+  .commercial-site.commercial-site :is(.theme-card, .panel-card) img { transition: none; }
+}
+
+/* Actions: every button-like link on the commercial site is a precise button. */
+.commercial-site.commercial-site :is(.panel-card__actions a, .panel-detail__actions a, .theme-card__actions a, .theme-detail__actions a, .theme-detail__included > a) { border-radius: var(--lr-radius-sm); padding-inline: 16px; }
+.commercial-site.commercial-site .lead-submit { min-height: 52px; border-radius: var(--lr-radius-sm); padding-inline: 22px; background: var(--r-ink); }
+.commercial-site.commercial-site .lead-submit:hover { background: var(--r-blue-ink); }
+.commercial-site.commercial-site .commercial-preview__actions .commercial-preview__primary { border-radius: var(--lr-radius-sm); background: var(--r-ink); }
+
+/* Numbers, indices and data read as instrument labels. */
+.commercial-site.commercial-site :is(.info-points span, .chapter-list article > span, .faq-list__index, .implementation-path__num, .portfolio-card__index, .journey-step__index, .platform-panel__count, .section-head__rule, .catalogue-controls [data-catalogue-position], [data-journey-position]) {
+  font-family: var(--mono);
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+/* Explanatory diagrams placed between sections of inner pages. */
+.commercial-site.commercial-site .diagram-section { margin-top: clamp(64px, 8vw, 112px); }
+.commercial-site.commercial-site .info-main .diagram-section + .detail-section { margin-top: clamp(72px, 9vw, 120px); }

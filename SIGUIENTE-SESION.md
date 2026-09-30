@@ -1,14 +1,22 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F29 publicada en producción; F30 es la siguiente prioridad. F0–F28 y la publicación del 08/09 permanecen como antecedentes.
+**Fase actual:** F29 publicada en producción; rediseño v2 «producto preciso» (ADR-021) en la rama `redesign/home-awwwards`: lenguaje común web + gestor, seis diagramas explicativos y fichas de tema nuevas. Sin PR ni despliegue. F30 sigue siendo la siguiente prioridad de producto.
 
 **Exploración paralela:** primera pasada del nicho dentistas disponible en
 `/dentistas/` y `/en/dentistas/`. Antes de ampliar, contrastar con responsables
 de clínica el problema, el recorrido y los límites registrados en ADR-020. No
 crear historia clínica, automatizaciones, precios ni integraciones sin esa
 evidencia.
-**Rama de trabajo:** `main`, sincronizada con GitHub tras fusionar el [PR #2](https://github.com/amariner/logic2b-reserva/pull/2).
-**Siguiente hito:** F30, revisar el resultado con propietarios de restaurantes y contrastar dónde dudan antes de contactar, según `docs/ROADMAP.md`. Resultado publicado en `https://reserva.logic2b.com`. No repetir el despliegue sin nuevos cambios o petición ni enviar leads reales para verificarlo.
+**Rama de trabajo:** `redesign/home-awwwards`, creada desde `main` (`5758e02`) y actualizada con `main` (`6d11d6d`, PR #3 dentistas).
+**Siguiente hito:** revisar el rediseño v2 con la persona responsable; regenerar las 42 capturas (`pnpm fotos`, requiere Chrome con H.264 o `CHROMIUM_PATH`); repetir `tests/e2e/platform-visual.spec.ts` en un navegador con H.264; decidir si se retoma el rediseño de los temas Brasca, Vedra y Solane (worktrees antiguos sin integrar) y abrir PR. No desplegar ni enviar leads reales sin petición expresa.
+
+## Rediseño v2 del 30/09/2026
+
+Capa `.lr-product` en `packages/ui/src/theme.css` (Inter + JetBrains Mono, tinta y azul de producto, retícula, radios contenidos) aplicada a todas las páginas comerciales y al gestor. `ServiceDiagram.astro` dibuja seis explicaciones (cómo funciona, inventario único, anti no-show, privatización, planes, roles) con copy en `DIAGRAM_CONTENT`. Vedra y Solane comparten cromo; la marca del restaurante queda como `--rd-client`. Fichas de tema con ficha técnica, escaparate anotado, sistema visual y alcance comparado. 24 previews de paneles regeneradas. Gates: `pnpm check` 28/28; E2E 116/118 con los dos fallos de vídeo atribuidos al entorno (sin H.264), comprobado sobre el commit base.
+
+## Rediseño del home del 26/09/2026
+
+Pasada UX/UI y de conversión del home ES/EN en `apps/site/src/components/Landing.astro`, `PricingCards.astro` y `content.ts`: hero editorial con accesos «Pruébalo antes de decidir», escenario con parallax ligado al scroll y rejilla estática por debajo de 900 px, cabeceras indexadas 01–11, microilustraciones del recorrido, pestañas con indicador, bento de conexiones, plan Gestión destacado, línea temporal de implantación y cierre oscuro. Mismos catorce bloques y ganchos de test. Gates: `pnpm check` 28/28 y E2E 118/118 en dos bloques (54 + 64) por el cierre conocido de workerd. Las 42 capturas comerciales quedan desactualizadas hasta regenerarlas.
 
 ## Publicación autorizada del 18/09/2026
 

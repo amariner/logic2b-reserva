@@ -1,4 +1,5 @@
 ---
+import '@fontsource-variable/source-serif-4/wght-italic.css';
 import type { Locale } from '@logic-reserva/config';
 import { logic2bContact } from '@logic-reserva/config/contact';
 import { IMPLEMENTATION_PATH, localizedCommercialText, type CommercialText } from '@logic-reserva/config/commercial';
@@ -33,8 +34,11 @@ import CommercialTour from './CommercialTour.astro';
 import CookiePreferences from './CookiePreferences.astro';
 import InterfaceIcon from './InterfaceIcon.astro';
 import RestaurantPlatformVisual from './RestaurantPlatformVisual.astro';
+import ServiceDiagram from './ServiceDiagram.astro';
 
 interface Props { locale?: Locale }
+
+type Theme = (typeof THEME_CATALOG)[number];
 
 const { locale = 'es' } = Astro.props;
 const c = SITE_CONTENT[locale];
@@ -46,9 +50,12 @@ const localTheme = (value: ThemeText) => localizedThemeText(value, locale);
 const localPanel = (value: PanelText) => localizedPanelText(value, locale);
 const localGuide = (value: GuideText) => localizedGuideText(value, locale);
 const demoDomain = locale === 'en' ? 'yourdomain.com' : 'tudominio.com';
-const themePreview = (slug: (typeof THEME_CATALOG)[number]['slug']) => `${themePreviewBase(slug, locale)}-desktop.webp`;
+const themePreview = (slug: Theme['slug']) => `${themePreviewBase(slug, locale)}-desktop.webp`;
 const ui = homeContent(locale);
 const heroThemes = [THEME_CATALOG[0], THEME_CATALOG[2], THEME_CATALOG[1], THEME_CATALOG[8], THEME_CATALOG[7], THEME_CATALOG[4]];
+// Two offset columns; Brasca stays first so it keeps the first preview trigger.
+const heroColumns = [[0, 2, 4], [1, 3, 5]];
+const pad = (value: number) => String(value).padStart(2, '0');
 const brandIcons: Record<string, SimpleIcon> = {
   Resend: siResend,
   Cloudflare: siCloudflare,
@@ -60,79 +67,128 @@ const brandIcons: Record<string, SimpleIcon> = {
 const commerceBrands = [siShopify, siWoocommerce, siPrestashop, siSquarespace, siWix, siWordpress];
 const operationsBrands = [siGooglecalendar, siWhatsapp, siMailchimp, siResend, siZapier, siOdoo];
 const paymentBrands = [siStripe];
+const guideIcons: Record<string, string> = { sala: 'floor', gestion: 'bookings', direccion: 'decision', propietario: 'guarantee', tecnica: 'web' };
+const floorDots = [
+  [18, 30, 'busy'], [42, 30, 'busy'], [66, 30, ''], [86, 30, 'event'],
+  [18, 70, ''], [42, 70, 'selected'], [66, 70, 'busy'], [86, 70, 'event'],
+] as const;
+const decisionBars = [38, 54, 46, 72, 88, 64];
+const loadBars = [32, 44, 40, 58, 66, 74, 82, 78, 70, 62, 48, 36];
+
+const themePreviewData = (theme: Theme) => ({
+  'data-commercial-preview-trigger': true,
+  'data-preview-kind': theme.depth === 'deep' ? ui.portfolioDeep : ui.portfolioWeb,
+  'data-preview-address': `${theme.slug}.${demoDomain}`,
+  'data-preview-tag-one': localTheme(theme.level),
+  'data-preview-tag-two': ui.previewResponsive,
+  'data-preview-tag-three': localTheme(theme.format),
+  'data-preview-title': theme.name,
+  'data-preview-body': localTheme(theme.promise),
+  'data-preview-image': themePreview(theme.slug),
+  'data-preview-alt': `${theme.name} · ${localTheme(theme.format)}`,
+  'data-preview-caption': `${localTheme(theme.format)} · ${localTheme(theme.location)}`,
+  'data-preview-url': themeUrl(theme.slug, locale),
+  'data-preview-detail-url': themeDetailUrl(theme.slug, locale),
+  'data-preview-action': ui.portfolioOpen,
+  'data-preview-detail-label': ui.previewThemeTone,
+  'data-preview-detail': localTheme(theme.tone),
+  'data-preview-evidence-label': ui.previewThemeJourney,
+  'data-preview-evidence': themeDemoScope(theme, locale),
+  'data-preview-limit-label': ui.previewBoundary,
+  'data-preview-limit': ui.previewThemeBoundary,
+  'data-preview-contact-action': ui.previewWantWebsite,
+  'data-preview-contact-url': themeContactUrl(theme.slug, locale),
+});
 ---
 
 <div class="landing">
   <CommercialHeader locale={locale} home />
 
   <main id="contenido" tabindex="-1">
-    <section class="hero shell" aria-labelledby="hero-title" data-home-block="hero">
+    <section class="hero shell" aria-labelledby="hero-title" data-home-block="hero" data-hero>
       <div class="hero-grid">
         <div class="hero-copy">
-          <p class="eyebrow">{c.hero.eyebrow}</p>
+          <p class="eyebrow hero-eyebrow"><span class="live-dot" aria-hidden="true"></span>{c.hero.eyebrow}<span class="hero-eyebrow__meta">{ui.heroLive}</span></p>
           <h1 id="hero-title" class="hero-title">
-            {c.hero.beforeHighlight}<span>{c.hero.highlight}</span>{c.hero.afterHighlight}
+            <span class="hero-title__line">{c.hero.beforeHighlight}</span><span class="hero-title__highlight">{c.hero.highlight}<svg viewBox="0 0 400 24" preserveAspectRatio="none" aria-hidden="true"><path d="M4 17C72 7 160 4 238 7c58 2 110 6 158 11" /></svg></span><span class="hero-title__line">{c.hero.afterHighlight}</span>
           </h1>
           <p class="hero-promise">{c.hero.promise}</p>
           <form id="brief-lead-form" class="hero-lead-form" action={`${prefix}/empezar/`} method="get" data-brief-transition data-brief-target={`${prefix}/empezar/`}>
             <div class="hero-lead-form__copy"><strong>{c.hero.briefTitle}</strong><span id={`brief-help-${locale}`}>{c.hero.briefBody}</span></div>
-            <div class="hero-lead-form__field"><label for={`brief-email-${locale}`}>{c.hero.briefEmail}</label><input id={`brief-email-${locale}`} data-brief-email type="email" autocomplete="email" placeholder={c.hero.briefEmail} aria-describedby={`brief-help-${locale} brief-note-${locale}`} /><button type="submit">{c.hero.briefSubmit}<span aria-hidden="true">→</span></button></div>
-            </form>
+            <div class="hero-lead-form__field">
+              <label for={`brief-email-${locale}`}>{c.hero.briefEmail}</label>
+              <svg class="hero-lead-form__icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z" /><path d="m4 7 8 6 8-6" /></svg>
+              <input id={`brief-email-${locale}`} data-brief-email type="email" autocomplete="email" placeholder={c.hero.briefEmail} aria-describedby={`brief-help-${locale} brief-note-${locale}`} />
+              <button type="submit">{c.hero.briefSubmit}<span aria-hidden="true">→</span></button>
+            </div>
+          </form>
           <p id={`brief-note-${locale}`} class="brief-boundary">{c.hero.briefBoundary}</p>
-          <p class="hero-proof-label">{c.hero.proofLabel}</p>
-          <div class="hero-actions">
-            <a class="hero-entry hero-entry--web" href={`${prefix}/demos/vedra/`}><span aria-hidden="true">✓</span><strong>{c.hero.webAction}</strong></a>
-            <a class="hero-entry hero-entry--guided" href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog"><span aria-hidden="true">✓</span><strong>{c.hero.guidedAction}</strong></a>
-            <a class="hero-entry hero-entry--manager" href={`${prefix}/demos/solane/gestion/?vista=plano`}><span aria-hidden="true">✓</span><strong>{c.hero.primary}</strong></a>
+          <div class="hero-proof">
+            <p class="hero-proof-label">{c.hero.proofLabel}</p>
+            <div class="hero-actions">
+              <a class="hero-entry hero-entry--web" href={`${prefix}/demos/vedra/`}><span class="hero-entry__icon" aria-hidden="true"><InterfaceIcon name="web" size={18} /></span><span class="hero-entry__text"><strong>{c.hero.webAction}</strong><small>{ui.heroEntryHints.web}</small></span></a>
+              <a class="hero-entry hero-entry--guided" href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog"><span class="hero-entry__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M8 5.5v13l10.5-6.5z" /></svg></span><span class="hero-entry__text"><strong>{c.hero.guidedAction}</strong><small>{ui.heroEntryHints.guided}</small></span></a>
+              <a class="hero-entry hero-entry--manager" href={`${prefix}/demos/solane/gestion/?vista=plano`}><span class="hero-entry__icon" aria-hidden="true"><InterfaceIcon name="floor" size={18} /></span><span class="hero-entry__text"><strong>{c.hero.primary}</strong><small>{ui.heroEntryHints.manager}</small></span></a>
+            </div>
           </div>
-          <p class="hero-support"><span aria-hidden="true">2B</span><span>{c.hero.support} <a href={`${prefix}/planes/`}>{c.hero.secondary} →</a></span></p>
         </div>
 
-        <div class="hero-product" aria-label={c.hero.portfolioLabel}>
-          <div class="hero-mosaic">
-            {heroThemes.map((theme, index) => (
-              <a class="hero-brand-card" href={themeDetailUrl(theme.slug, locale)} aria-label={`${ui.portfolioPreview}: ${theme.name}`}
-              data-commercial-preview-trigger
-              data-preview-kind={theme.depth === 'deep' ? ui.portfolioDeep : ui.portfolioWeb}
-              data-preview-address={`${theme.slug}.${demoDomain}`}
-              data-preview-tag-one={localTheme(theme.level)}
-              data-preview-tag-two={ui.previewResponsive}
-              data-preview-tag-three={localTheme(theme.format)}
-              data-preview-title={theme.name}
-              data-preview-body={localTheme(theme.promise)}
-              data-preview-image={themePreview(theme.slug)}
-              data-preview-alt={`${theme.name} · ${localTheme(theme.format)}`}
-              data-preview-caption={`${localTheme(theme.format)} · ${localTheme(theme.location)}`}
-              data-preview-url={themeUrl(theme.slug, locale)}
-              data-preview-detail-url={themeDetailUrl(theme.slug, locale)}
-              data-preview-action={ui.portfolioOpen}
-              data-preview-detail-label={ui.previewThemeTone}
-              data-preview-detail={localTheme(theme.tone)}
-              data-preview-evidence-label={ui.previewThemeJourney}
-              data-preview-evidence={themeDemoScope(theme, locale)}
-              data-preview-limit-label={ui.previewBoundary}
-              data-preview-limit={ui.previewThemeBoundary}
-              data-preview-contact-action={ui.previewWantWebsite}
-              data-preview-contact-url={themeContactUrl(theme.slug, locale)}
-              >
-                <img src={themePreview(theme.slug)} alt={`${theme.name} · ${localTheme(theme.format)}`} width="800" height="527" loading={index < 4 ? 'eager' : 'lazy'} decoding="async" />
-                <span><b>{theme.name}</b><small>{localTheme(theme.format)}</small><i aria-hidden="true">↗</i></span>
-              </a>
-            ))}
+        <div class="hero-product" role="group" aria-label={c.hero.portfolioLabel}>
+          <div class="hero-stage">
+            <svg class="hero-stage__pattern" aria-hidden="true"><defs><pattern id={`hero-dots-${locale}`} width="22" height="22" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1.1" /></pattern></defs><rect width="100%" height="100%" fill={`url(#hero-dots-${locale})`} /></svg>
+            <div class="hero-mosaic">
+              {heroColumns.map((column, columnIndex) => (
+                <div class="hero-column" data-hero-column={columnIndex}>
+                  {column.map((themeIndex) => {
+                    const theme = heroThemes[themeIndex]!;
+                    return (
+                      <a class="hero-brand-card" href={themeDetailUrl(theme.slug, locale)} aria-label={`${ui.portfolioPreview}: ${theme.name}`} style={`--theme-primary:${theme.palette.primary};--theme-accent:${theme.palette.accent}`} {...themePreviewData(theme)}>
+                        <span class="hero-brand-card__chrome" aria-hidden="true"><i></i><i></i><i></i><em>{theme.slug}.{demoDomain}</em></span>
+                        <img src={themePreview(theme.slug)} alt={`${theme.name} · ${localTheme(theme.format)}`} width="800" height="527" loading={themeIndex < 4 ? 'eager' : 'lazy'} decoding="async" />
+                        <span class="hero-brand-card__label"><b>{theme.name}</b><small>{localTheme(theme.format)}</small><i aria-hidden="true">↗</i></span>
+                      </a>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
           </div>
+
+          <div class="hero-float hero-float--request" aria-hidden="true">
+            <span class="hero-float__check"><svg viewBox="0 0 24 24"><path d="m6 12.5 4 4 8-9" /></svg></span>
+            <div><strong>{ui.heroFloat.request}</strong><small>{ui.heroFloat.requestMeta}</small></div>
+            <b>{ui.heroFloat.requestTag}</b>
+          </div>
+          <div class="hero-float hero-float--load" aria-hidden="true">
+            <div class="hero-float__head"><small>{ui.heroFloat.load}</small><em>{ui.heroFloat.demo}</em></div>
+            <strong>{ui.heroFloat.loadValue}</strong>
+            <span class="hero-float__bars">{loadBars.map((height, index) => <i style={`--h:${height}%`} class={index === 6 ? 'is-now' : undefined}></i>)}</span>
+          </div>
+          <div class="hero-float hero-float--event" aria-hidden="true">
+            <span class="hero-float__swatch"></span>
+            <div><strong>{ui.heroFloat.event}</strong><small>{ui.heroFloat.eventMeta}</small></div>
+          </div>
+
           <a class="demo-note" href={pageHref('/temas/')}>{ui.portfolioAll}<span aria-hidden="true">→</span></a>
         </div>
+      </div>
+
+      <div class="hero-baseline">
+        <dl class="hero-stats">
+          {ui.heroStats.map((stat) => <div><dt>{stat.label}</dt><dd>{stat.value}</dd></div>)}
+        </dl>
+        <p class="hero-support"><span aria-hidden="true">2B</span><span>{c.hero.support} <a href={`${prefix}/planes/`}>{c.hero.secondary} →</a></span></p>
       </div>
     </section>
 
     <section id="ecosistema" class="ecosystem-section" aria-labelledby="ecosystem-title" data-home-block="ecosystem">
-      <div class="shell ecosystem-intro"><p id="ecosystem-title">{c.ecosystem.eyebrow}</p></div>
-      <div class="ecosystem-rail" role="list" aria-label={c.ecosystem.label}>
-        <div class="ecosystem-track">
+      <div class="shell ecosystem-shell">
+        <p id="ecosystem-title" class="ecosystem-label">{c.ecosystem.eyebrow}</p>
+        <div class="ecosystem-rail" role="list" aria-label={c.ecosystem.label}>
           {c.ecosystem.items.map((item) => (
             <article role="listitem" class="ecosystem-item" data-tone={item.tone}>
               {brandIcons[item.name] && <span class="ecosystem-mark" style={`--brand:#${brandIcons[item.name].hex}`}><svg viewBox="0 0 24 24" role="img" aria-label={brandIcons[item.name].title}><path d={brandIcons[item.name].path} /></svg></span>}
-              <div><strong>{item.name}</strong><small>{item.detail}</small></div>
+              <div class="ecosystem-item__copy"><strong>{item.name}</strong><small>{item.detail}</small></div>
               <span class="ecosystem-status">{item.status}</span>
             </article>
           ))}
@@ -141,24 +197,34 @@ const paymentBrands = [siStripe];
     </section>
 
     <section id="recorrido" class="section shell journey-section" aria-labelledby="journey-title" data-home-block="journey">
-      <div class="journey-intro">
-        <div>
-          <p class="eyebrow">{c.productFlow.eyebrow}</p>
-          <h2 id="journey-title" class="heading">{c.productFlow.title}</h2>
-        </div>
+      <div class="section-head" data-reveal>
+        <div class="section-head__rule" aria-hidden="true"><span>01</span><i></i><span>{ui.sectionTotal}</span></div>
+        <div class="section-head__title"><p class="eyebrow">{c.productFlow.eyebrow}</p><h2 id="journey-title" class="heading">{c.productFlow.title}</h2></div>
         <p class="editorial">{c.productFlow.intro}</p>
       </div>
-      <div class="journey-controls" data-journey-controls hidden>
-        <button type="button" data-journey-previous aria-label={c.productFlow.previous}><span aria-hidden="true">←</span></button>
-        <span aria-hidden="true">01—07</span>
-        <button type="button" data-journey-next aria-label={c.productFlow.next}><span aria-hidden="true">→</span></button>
+      <div class="home-diagram" data-reveal><ServiceDiagram kind="system" locale={locale} heading={false} /></div>
+      <div class="journey-toolbar">
+        <div class="journey-progress" aria-hidden="true"><span data-journey-progress></span></div>
+        <div class="journey-controls" data-journey-controls hidden>
+          <span data-journey-position aria-hidden="true">01 — 07</span>
+          <button type="button" data-journey-previous aria-label={c.productFlow.previous}><span aria-hidden="true">←</span></button>
+          <button type="button" data-journey-next aria-label={c.productFlow.next}><span aria-hidden="true">→</span></button>
+        </div>
       </div>
       <div class="journey-viewport" data-journey-viewport tabindex="0" aria-label={c.productFlow.label}>
         <ol class="journey-track">
           {c.productFlow.steps.map((step, index) => (
-            <li class={`journey-step journey-step--${step.id}`} data-journey-step>
-              <div class="journey-step__icon"><InterfaceIcon name={step.id} size={36} /></div>
-              <div class="journey-step__top"><span>0{index + 1}</span><i aria-hidden="true">→</i></div>
+            <li class={`journey-step journey-step--${step.id}`} data-journey-step data-reveal style={`--reveal-delay:${index * 70}ms`}>
+              <div class="journey-step__top"><span class="journey-step__index">{pad(index + 1)}</span><span class="journey-step__icon"><InterfaceIcon name={step.id} size={20} /></span></div>
+              <div class={`journey-visual journey-visual--${step.id}`} aria-hidden="true">
+                {step.id === 'web' && <div class="jv-browser"><span class="jv-browser__bar"><i></i><i></i><i></i></span><span class="jv-browser__photo"></span><span class="jv-line jv-line--title"></span><span class="jv-line"></span><span class="jv-pill"></span></div>}
+                {step.id === 'availability' && <div class="jv-slots">{['13:30', '14:00', '14:30', '20:30', '21:00', '21:30'].map((time) => <span class:list={[time === '21:00' && 'is-chosen', time === '14:30' && 'is-full']}>{time}</span>)}</div>}
+                {step.id === 'booking' && <div class="jv-form">{[0, 1, 2].map((row) => <span class="jv-form__row"><i>✓</i><b style={`--w:${[72, 56, 64][row]}%`}></b></span>)}<span class="jv-form__submit"></span></div>}
+                {step.id === 'service' && <div class="jv-floor">{floorDots.map(([x, y, state]) => <span class={state || undefined} style={`--x:${x}%;--y:${y}%`}></span>)}</div>}
+                {step.id === 'guarantee' && <div class="jv-ring"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="26" /><circle class="jv-ring__value" cx="32" cy="32" r="26" pathLength="100" /></svg><b>25 %</b></div>}
+                {step.id === 'communication' && <div class="jv-chat"><span class="jv-chat__in"><b></b><b></b></span><span class="jv-chat__out"><b></b><i>✓✓</i></span></div>}
+                {step.id === 'decision' && <div class="jv-bars">{decisionBars.map((height, barIndex) => <i style={`--h:${height}%`} class={barIndex === 4 ? 'is-peak' : undefined}></i>)}</div>}
+              </div>
               <p>{step.label}</p>
               <h3>{step.title}</h3>
               <div class="journey-step__body">{step.body}</div>
@@ -170,17 +236,17 @@ const paymentBrands = [siStripe];
 
     <section id="plataforma" class="section platform-section" aria-labelledby="platform-title" data-home-block="platform">
       <div class="shell platform-shell">
-        <div class="platform-intro">
-          <div>
-            <p class="eyebrow">{c.platform.eyebrow}</p>
-            <h2 id="platform-title" class="heading">{c.platform.title}</h2>
-          </div>
+        <div class="section-head" data-reveal>
+          <div class="section-head__rule" aria-hidden="true"><span>02</span><i></i><span>{ui.sectionTotal}</span></div>
+          <div class="section-head__title"><p class="eyebrow">{c.platform.eyebrow}</p><h2 id="platform-title" class="heading">{c.platform.title}</h2></div>
           <p class="editorial">{c.platform.intro}</p>
         </div>
+        <div class="home-diagram home-diagram--inventory" data-reveal><ServiceDiagram kind="inventory" locale={locale} /></div>
         <nav class="platform-tabs" data-platform-tabs aria-label={c.platform.tabsLabel}>
+          <span class="platform-tabs__indicator" data-platform-indicator aria-hidden="true"></span>
           {c.platform.items.map((moment, index) => (
             <button type="button" data-platform-tab data-platform-target={moment.id} class={index === 0 ? 'is-active' : undefined}>
-              <InterfaceIcon name={moment.id} size={20} /><span>{moment.label}</span>
+              <InterfaceIcon name={moment.id} size={18} /><span>{moment.label}</span>
             </button>
           ))}
         </nav>
@@ -188,14 +254,14 @@ const paymentBrands = [siStripe];
           {c.platform.items.map((moment, index) => (
             <article id={`moment-${moment.id}`} class="platform-panel" data-platform-panel data-platform-id={moment.id} data-active={index === 0 ? '' : undefined}>
               <div class="platform-panel__copy">
-                <div class="platform-panel__meta"><span>{c.platform.resultLabel}</span><span class="maturity-status" data-tone={moment.tone}>{moment.status}</span></div>
+                <div class="platform-panel__meta"><span class="platform-panel__count">{pad(index + 1)} / {pad(c.platform.items.length)}</span><span>{c.platform.resultLabel}</span><span class="maturity-status" data-tone={moment.tone}>{moment.status}</span></div>
                 <h3>{moment.result}</h3>
                 <div class="platform-capabilities">
                   <p>{c.platform.capabilitiesLabel}</p>
                   <ul>{moment.capabilities.map((capability) => <li>{capability}</li>)}</ul>
                 </div>
-                <details class="platform-limit"><summary>{c.platform.limitLabel}</summary><p>{moment.limit}</p></details>
                 <a class="platform-action" href={pageHref(moment.href)}>{moment.action}<span aria-hidden="true">↗</span></a>
+                <details class="platform-limit"><summary>{c.platform.limitLabel}</summary><p>{moment.limit}</p></details>
               </div>
               <figure class="platform-evidence">
                 <RestaurantPlatformVisual kind={moment.id} label={moment.label} alt={moment.alt} locale={locale} />
@@ -208,39 +274,54 @@ const paymentBrands = [siStripe];
     </section>
 
     <section id="conexiones" class="section shell connections-section" aria-labelledby="connections-title" data-home-block="connections">
-      <div class="connections-intro">
-        <div>
-          <p class="eyebrow">{c.connections.eyebrow}</p>
-          <h2 id="connections-title" class="heading">{c.connections.title}</h2>
-        </div>
+      <div class="section-head" data-reveal>
+        <div class="section-head__rule" aria-hidden="true"><span>03</span><i></i><span>{ui.sectionTotal}</span></div>
+        <div class="section-head__title"><p class="eyebrow">{c.connections.eyebrow}</p><h2 id="connections-title" class="heading">{c.connections.title}</h2></div>
         <p class="editorial">{c.connections.intro}</p>
       </div>
       <div class="connections-grid" role="list" aria-label={c.connections.label}>
-        <article class="connection-family connection-family--commerce" role="listitem">
-          <div class="connection-family__heading"><span>01</span><div><h3>{locale === 'en' ? 'Commerce and website' : 'Comercio y web'}</h3><p>{locale === 'en' ? 'Connect catalogues, gift cards and customer context without rebuilding the tools you already use.' : 'Conecta catálogos, bonos y contexto del cliente sin rehacer las herramientas que ya utilizas.'}</p></div></div>
-          <ul class="brand-cloud" aria-label={locale === 'en' ? 'E-commerce platforms' : 'Plataformas de ecommerce'}>
+        <article class="connection-family connection-family--commerce" role="listitem" data-reveal>
+          <div class="connection-family__heading"><span>01</span><div><h3>{ui.connectionFamilies.commerce.title}</h3><p>{ui.connectionFamilies.commerce.body}</p></div></div>
+          <ul class="brand-cloud" aria-label={ui.connectionFamilies.commerce.label}>
             {commerceBrands.map((brand) => <li style={`--brand:#${brand.hex}`}><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d={brand.path} /></svg></span><strong>{brand.title}</strong></li>)}
           </ul>
-          <div class="connection-route" aria-hidden="true"><span>Catálogo</span><i>→</i><b>Logic Reserva</b><i>→</i><span>Reserva</span></div>
+          <div class="connection-route" aria-hidden="true">
+            <span class="route-node">{ui.connectionFlow.source}</span>
+            <span class="route-wire"><i></i></span>
+            <b class="route-core"><img src="/logo-mark.svg" alt="" width="18" height="18" />{ui.connectionFlow.core}</b>
+            <span class="route-wire"><i></i></span>
+            <span class="route-node route-node--target"><em>✓</em>{ui.connectionFlow.target}</span>
+            <small>{ui.connectionFlow.caption}</small>
+          </div>
         </article>
-        <article class="connection-family connection-family--operations" role="listitem">
-          <div class="connection-family__heading"><span>02</span><div><h3>{locale === 'en' ? 'Daily operations' : 'Operativa diaria'}</h3><p>{locale === 'en' ? 'Calendar, messages, email and automation can receive the right booking context.' : 'Calendario, mensajería, correo y automatización pueden recibir el contexto correcto de cada reserva.'}</p></div></div>
-          <ul class="brand-cloud brand-cloud--compact" aria-label={locale === 'en' ? 'Operations platforms' : 'Plataformas de operativa'}>
+        <article class="connection-family connection-family--operations" role="listitem" data-reveal style="--reveal-delay:80ms">
+          <div class="connection-family__heading"><span>02</span><div><h3>{ui.connectionFamilies.operations.title}</h3><p>{ui.connectionFamilies.operations.body}</p></div></div>
+          <ul class="brand-cloud brand-cloud--compact" aria-label={ui.connectionFamilies.operations.label}>
             {operationsBrands.map((brand) => <li style={`--brand:#${brand.hex}`}><span><svg viewBox="0 0 24 24" aria-hidden="true"><path d={brand.path} /></svg></span><strong>{brand.title}</strong></li>)}
           </ul>
+          <div class="connection-feed">
+            <p>{ui.connectionFeedLabel}</p>
+            <ol>{ui.connectionFeed.map((entry) => <li><time>{entry.time}</time><span>{entry.text}</span></li>)}</ol>
+          </div>
         </article>
-        <article class="connection-family connection-family--payments" role="listitem">
-          <div class="connection-family__heading"><span>03</span><div><h3>{locale === 'en' ? 'Payments and deposits' : 'Pagos y señales'}</h3><p>{locale === 'en' ? 'The amount, policy and booking status travel together, with the provider agreed per project.' : 'Importe, política y estado de la reserva viajan juntos, con el proveedor acordado por proyecto.'}</p></div></div>
+        <article class="connection-family connection-family--payments" role="listitem" data-reveal style="--reveal-delay:160ms">
+          <div class="connection-family__heading"><span>03</span><div><h3>{ui.connectionFamilies.payments.title}</h3><p>{ui.connectionFamilies.payments.body}</p></div></div>
           <div class="payment-cloud"><span class="redsys-wordmark" role="img" aria-label="Redsys"><i>red</i><b>sys</b></span>{paymentBrands.map((brand) => <span style={`--brand:#${brand.hex}`} role="img" aria-label={brand.title}><svg viewBox="0 0 24 24" aria-hidden="true"><path d={brand.path} /></svg><strong>{brand.title}</strong></span>)}</div>
-          <p class="connections-boundary">{locale === 'en' ? 'Connections are activated only after technical validation, permissions and acceptance tests.' : 'Las conexiones se activan solo tras validar técnica, permisos y pruebas de aceptación.'}</p>
+          <dl class="deposit-ticket">
+            <div class="deposit-ticket__head"><dt>{ui.depositTicket.title}</dt><dd>{ui.depositTicket.note}</dd></div>
+            <div><dt>{ui.depositTicket.rule}</dt><dd><strong>{ui.depositTicket.amount}</strong></dd></div>
+            <div><dt><span aria-hidden="true">✓</span> {ui.depositTicket.status}</dt></div>
+          </dl>
+          <p class="connections-boundary">{ui.connectionsBoundary}</p>
         </article>
       </div>
     </section>
 
     <section id="planes" class="section offers-section" aria-labelledby="offers-title" data-home-block="plans">
       <div class="shell">
-        <div class="offers-intro">
-          <div><p class="eyebrow">{ui.offersEyebrow}</p><h2 id="offers-title" class="heading">{ui.offersTitle}</h2></div>
+        <div class="section-head" data-reveal>
+          <div class="section-head__rule" aria-hidden="true"><span>04</span><i></i><span>{ui.sectionTotal}</span></div>
+          <div class="section-head__title"><p class="eyebrow">{ui.offersEyebrow}</p><h2 id="offers-title" class="heading">{ui.offersTitle}</h2></div>
           <p class="editorial">{ui.offersIntro}</p>
         </div>
         <PricingCards locale={locale} />
@@ -249,8 +330,9 @@ const paymentBrands = [siStripe];
     </section>
 
     <section id="portfolio" class="section shell portfolio-section" aria-labelledby="portfolio-title" data-home-block="portfolio">
-      <div class="catalogue-intro">
-        <div><p class="eyebrow">{ui.portfolioEyebrow}</p><h2 id="portfolio-title" class="heading">{ui.portfolioTitle}</h2></div>
+      <div class="section-head" data-reveal>
+        <div class="section-head__rule" aria-hidden="true"><span>05</span><i></i><span>{ui.sectionTotal}</span></div>
+        <div class="section-head__title"><p class="eyebrow">{ui.portfolioEyebrow}</p><h2 id="portfolio-title" class="heading">{ui.portfolioTitle}</h2></div>
         <p class="editorial">{ui.portfolioIntro}</p>
       </div>
       <div class="catalogue-controls" data-catalogue-controls="theme-rail" hidden>
@@ -265,36 +347,16 @@ const paymentBrands = [siStripe];
             role="listitem"
             style={`--portfolio-primary:${theme.palette.primary};--portfolio-accent:${theme.palette.accent};--portfolio-paper:${theme.palette.paper}`}
           >
-            <a
-              class="portfolio-card__surface"
-              href={themeDetailUrl(theme.slug, locale)}
-              aria-label={`${ui.portfolioPreview}: ${theme.name}`}
-              data-commercial-preview-trigger
-              data-preview-kind={theme.depth === 'deep' ? ui.portfolioDeep : ui.portfolioWeb}
-              data-preview-address={`${theme.slug}.${demoDomain}`}
-              data-preview-tag-one={localTheme(theme.level)}
-              data-preview-tag-two={ui.previewResponsive}
-              data-preview-tag-three={localTheme(theme.format)}
-              data-preview-title={theme.name}
-              data-preview-body={localTheme(theme.promise)}
-              data-preview-image={themePreview(theme.slug)}
-              data-preview-alt={`${theme.name} · ${localTheme(theme.format)}`}
-              data-preview-caption={`${localTheme(theme.format)} · ${localTheme(theme.location)}`}
-              data-preview-url={themeUrl(theme.slug, locale)}
-              data-preview-detail-url={themeDetailUrl(theme.slug, locale)}
-              data-preview-action={ui.portfolioOpen}
-              data-preview-detail-label={ui.previewThemeTone}
-              data-preview-detail={localTheme(theme.tone)}
-              data-preview-evidence-label={ui.previewThemeJourney}
-              data-preview-evidence={themeDemoScope(theme, locale)}
-              data-preview-limit-label={ui.previewBoundary}
-              data-preview-limit={ui.previewThemeBoundary}
-              data-preview-contact-action={ui.previewWantWebsite}
-              data-preview-contact-url={themeContactUrl(theme.slug, locale)}
-            >
+            <a class="portfolio-card__surface" href={themeDetailUrl(theme.slug, locale)} aria-label={`${ui.portfolioPreview}: ${theme.name}`} {...themePreviewData(theme)}>
+              <span class="portfolio-card__chrome" aria-hidden="true"><i></i><i></i><i></i><em>{theme.slug}.{demoDomain}</em></span>
               <picture><img src={themePreview(theme.slug)} alt="" width="1366" height="900" loading="lazy" decoding="async" /></picture>
-              <span class="portfolio-card__index">{String(index + 1).padStart(2, '0')}</span>
-              <div class="portfolio-card__copy"><span>{theme.depth === 'deep' ? ui.portfolioDeep : ui.portfolioWeb}</span><h3>{theme.name}</h3><p>{localTheme(theme.format)} · {localTheme(theme.location)}</p></div>
+              <span class="portfolio-card__index">{pad(index + 1)}</span>
+              <div class="portfolio-card__copy">
+                <span>{theme.depth === 'deep' ? ui.portfolioDeep : ui.portfolioWeb}</span>
+                <h3>{theme.name}</h3>
+                <p>{localTheme(theme.format)} · {localTheme(theme.location)}</p>
+                <span class="portfolio-card__palette" aria-hidden="true"><i style={`background:${theme.palette.primary}`}></i><i style={`background:${theme.palette.accent}`}></i><i style={`background:${theme.palette.paper}`}></i></span>
+              </div>
               <i aria-hidden="true">＋</i>
             </a>
           </article>
@@ -305,16 +367,17 @@ const paymentBrands = [siStripe];
 
     <section id="paneles" class="section panels-teaser-section" aria-labelledby="panels-title" data-home-block="panels">
       <div class="shell">
-        <div class="catalogue-intro">
-          <div><p class="eyebrow">{ui.panelsEyebrow}</p><h2 id="panels-title" class="heading">{ui.panelsTitle}</h2></div>
+        <div class="section-head" data-reveal>
+          <div class="section-head__rule" aria-hidden="true"><span>06</span><i></i><span>{ui.sectionTotal}</span></div>
+          <div class="section-head__title"><p class="eyebrow">{ui.panelsEyebrow}</p><h2 id="panels-title" class="heading">{ui.panelsTitle}</h2></div>
           <p class="editorial">{ui.panelsIntro}</p>
         </div>
         <div class="catalogue-controls" data-catalogue-controls="panel-rail" hidden>
-        <span data-catalogue-position aria-hidden="true">01 / 06</span>
-        <button type="button" data-catalogue-previous aria-label={ui.railPrevious} aria-controls="panel-rail"><span aria-hidden="true">←</span></button>
-        <button type="button" data-catalogue-next aria-label={ui.railNext} aria-controls="panel-rail"><span aria-hidden="true">→</span></button>
-      </div>
-      <div id="panel-rail" class="panel-teaser-grid" tabindex="0" aria-label={ui.panelsTitle}>
+          <span data-catalogue-position aria-hidden="true">01 / 06</span>
+          <button type="button" data-catalogue-previous aria-label={ui.railPrevious} aria-controls="panel-rail"><span aria-hidden="true">←</span></button>
+          <button type="button" data-catalogue-next aria-label={ui.railNext} aria-controls="panel-rail"><span aria-hidden="true">→</span></button>
+        </div>
+        <div id="panel-rail" class="panel-teaser-grid" tabindex="0" aria-label={ui.panelsTitle}>
           {PANEL_CATALOG.map((panel, index) => (
             <article class="panel-teaser-card" data-level={panel.level}>
               <a
@@ -344,10 +407,14 @@ const paymentBrands = [siStripe];
                 data-preview-contact-action={ui.previewWantPanel}
                 data-preview-contact-url={panelContactUrl(panel, locale)}
               >
-                <figure><picture><source media="(max-width: 640px)" srcset={`${panelPreviewBase(panel, locale)}-mobile.webp`} /><img src={`${panelPreviewBase(panel, locale)}-desktop.webp`} alt={localPanel(panel.screenshot.alt)} width="1366" height="900" loading="lazy" decoding="async" /></picture><figcaption><span>0{index + 1}</span>{localPanel(panel.screenshot.caption)}<i aria-hidden="true">＋</i></figcaption></figure>
+                <figure>
+                  <span class="panel-teaser-card__chrome" aria-hidden="true"><i></i><i></i><i></i><em>panel.{demoDomain}/{panel.slug}</em></span>
+                  <picture><source media="(max-width: 640px)" srcset={`${panelPreviewBase(panel, locale)}-mobile.webp`} /><img src={`${panelPreviewBase(panel, locale)}-desktop.webp`} alt={localPanel(panel.screenshot.alt)} width="1366" height="900" loading="lazy" decoding="async" /></picture>
+                  <figcaption><span>{pad(index + 1)}</span>{localPanel(panel.screenshot.caption)}<i aria-hidden="true">＋</i></figcaption>
+                </figure>
               </a>
               <div class="panel-teaser-card__copy">
-                <div class="panel-teaser-card__meta"><span>{localPanel(panel.eyebrow)}</span><span>{panel.level === 'intelligent' ? ui.panelsLevelIntelligent : ui.panelsLevelManagement}</span></div>
+                <div class="panel-teaser-card__meta"><span>{localPanel(panel.eyebrow)}</span><span class="panel-teaser-card__level">{panel.level === 'intelligent' ? ui.panelsLevelIntelligent : ui.panelsLevelManagement}</span></div>
                 <h3>{localPanel(panel.title)}</h3><p>{localPanel(panel.summary)}</p>
                 <dl><dt>{ui.panelsDecision}</dt><dd>{localPanel(panel.decision)}</dd></dl>
                 <div class="panel-teaser-card__actions">
@@ -365,34 +432,52 @@ const paymentBrands = [siStripe];
 
     <section id="implantacion" class="section implementation-section" aria-labelledby="implementation-title" data-home-block="implementation">
       <div class="shell">
-        <div class="catalogue-intro">
-          <div><p class="eyebrow">{ui.implementationEyebrow}</p><h2 id="implementation-title" class="heading">{ui.implementationTitle}</h2></div>
+        <div class="section-head" data-reveal>
+          <div class="section-head__rule" aria-hidden="true"><span>07</span><i></i><span>{ui.sectionTotal}</span></div>
+          <div class="section-head__title"><p class="eyebrow">{ui.implementationEyebrow}</p><h2 id="implementation-title" class="heading">{ui.implementationTitle}</h2></div>
           <p class="editorial">{ui.implementationIntro}</p>
         </div>
         <div class="implementation-content">
-          <picture class="implementation-photo">
-            <source type="image/avif" srcset="/images/editorial/preparar-servicio-640.avif 640w, /images/editorial/preparar-servicio-960.avif 960w" sizes="(max-width: 760px) 1px, 36vw" />
-            <img src="/images/editorial/preparar-servicio-960.webp" alt={ui.implementationPhotoAlt} width="960" height="640" loading="lazy" decoding="async" />
-          </picture>
-        <ol class="implementation-path">
-          {IMPLEMENTATION_PATH.map((step, index) => (
-            <li data-step={step.slug}><article><span>0{index + 1}</span><h3>{localCommercial(step.title)}</h3><p>{localCommercial(step.summary)}</p><div><strong>{ui.implementationOwner}</strong>{localCommercial(step.owner)}</div></article></li>
-          ))}
-        </ol>
+          <div class="implementation-media">
+            <picture class="implementation-photo">
+              <source type="image/avif" srcset="/images/editorial/preparar-servicio-640.avif 640w, /images/editorial/preparar-servicio-960.avif 960w" sizes="(max-width: 760px) 1px, 36vw" />
+              <img src="/images/editorial/preparar-servicio-960.webp" alt={ui.implementationPhotoAlt} width="960" height="640" loading="lazy" decoding="async" />
+            </picture>
+          </div>
+          <ol class="implementation-path">
+            {IMPLEMENTATION_PATH.map((step, index) => (
+              <li data-step={step.slug} data-reveal style={`--reveal-delay:${index * 60}ms`}>
+                <article>
+                  <span class="implementation-path__num" aria-hidden="true">{pad(index + 1)}</span>
+                  <div class="implementation-path__body">
+                    <h3>{localCommercial(step.title)}</h3>
+                    <p>{localCommercial(step.summary)}</p>
+                    <div class="implementation-path__owner"><strong>{ui.implementationOwner}</strong>{localCommercial(step.owner)}</div>
+                  </div>
+                </article>
+              </li>
+            ))}
+          </ol>
         </div>
         <div class="implementation-boundary"><p>{c.human.closing}</p><a href={pageHref('/planes/')}>{ui.implementationAll}<span aria-hidden="true">→</span></a></div>
       </div>
     </section>
 
     <section id="guias" class="section shell guides-teaser-section" aria-labelledby="guides-title" data-home-block="guides">
-      <div class="catalogue-intro">
-        <div><p class="eyebrow">{ui.guidesEyebrow}</p><h2 id="guides-title" class="heading">{ui.guidesTitle}</h2></div>
+      <div class="section-head" data-reveal>
+        <div class="section-head__rule" aria-hidden="true"><span>08</span><i></i><span>{ui.sectionTotal}</span></div>
+        <div class="section-head__title"><p class="eyebrow">{ui.guidesEyebrow}</p><h2 id="guides-title" class="heading">{ui.guidesTitle}</h2></div>
         <p class="editorial">{ui.guidesIntro}</p>
       </div>
       <div class="guide-teaser-grid">
         {GUIDE_CATALOG.map((guide, index) => (
-          <a class="guide-teaser-card" href={guideUrl(guide, locale)}>
-            <span>0{index + 1}</span><p>{localGuide(guide.eyebrow)}</p><h3>{localGuide(guide.title)}</h3><div><strong>{ui.guidesFor}</strong>{localGuide(guide.audience)}</div><i aria-hidden="true">↗</i>
+          <a class="guide-teaser-card" href={guideUrl(guide, locale)} data-reveal style={`--reveal-delay:${index * 60}ms`}>
+            <span class="guide-teaser-card__icon" aria-hidden="true"><InterfaceIcon name={guideIcons[guide.slug] ?? 'web'} size={20} /></span>
+            <span class="guide-teaser-card__index">{pad(index + 1)}</span>
+            <p>{localGuide(guide.eyebrow)}</p>
+            <h3>{localGuide(guide.title)}</h3>
+            <div><strong>{ui.guidesFor}</strong>{localGuide(guide.audience)}</div>
+            <i aria-hidden="true">↗</i>
           </a>
         ))}
       </div>
@@ -400,20 +485,38 @@ const paymentBrands = [siStripe];
     </section>
 
     <section id="preguntas" class="section shell faq-section" aria-labelledby="faq-title" data-home-block="faq">
-      <div class="section-intro"><p class="eyebrow">{c.faq.eyebrow}</p><h2 id="faq-title" class="heading">{c.faq.title}</h2></div>
-      <div class="faq-list">{c.faq.items.map((item) => <details><summary>{item.question}<span aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div>
+      <div class="section-intro">
+        <div class="section-head__rule" aria-hidden="true"><span>09</span><i></i><span>{ui.sectionTotal}</span></div>
+        <p class="eyebrow">{c.faq.eyebrow}</p>
+        <h2 id="faq-title" class="heading">{c.faq.title}</h2>
+        <div class="faq-nudge"><p>{ui.faqNudge}</p><a href={contact.href} target="_blank" rel="noreferrer">{ui.faqNudgeAction}<span aria-hidden="true">↗</span></a></div>
+      </div>
+      <div class="faq-list">{c.faq.items.map((item, index) => <details><summary><span class="faq-list__index" aria-hidden="true">{pad(index + 1)}</span><span class="faq-list__question">{item.question}</span><span class="faq-list__toggle" aria-hidden="true">+</span></summary><p>{item.answer}</p></details>)}</div>
     </section>
 
     <section id="contacto" class="section closing-section" aria-labelledby="contact-title" data-home-block="closing">
-      <div class="shell closing-showcase">
-        <div class="closing-copy"><p class="eyebrow">{ui.closingEyebrow}</p><h2 id="contact-title" class="heading">{ui.closingTitle}</h2><p>{ui.closingIntro}</p><ul class="closing-proof-list">{ui.closingProof.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul><div><a href="#contact-form">{ui.closingContact}<span aria-hidden="true">→</span></a><a href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{ui.closingDemo}<span aria-hidden="true">↗</span></a></div></div>
+      <div class="shell closing-showcase" data-reveal>
+        <svg class="closing-showcase__grid" aria-hidden="true"><defs><pattern id={`closing-grid-${locale}`} width="44" height="44" patternUnits="userSpaceOnUse"><path d="M44 0H0v44" /></pattern></defs><rect width="100%" height="100%" fill={`url(#closing-grid-${locale})`} /></svg>
+        <div class="closing-copy">
+          <div class="section-head__rule" aria-hidden="true"><span>10</span><i></i><span>{ui.sectionTotal}</span></div>
+          <p class="eyebrow">{ui.closingEyebrow}</p>
+          <h2 id="contact-title" class="heading">{ui.closingTitle}</h2>
+          <p>{ui.closingIntro}</p>
+          <ul class="closing-proof-list">{ui.closingProof.map((proof) => <li><span aria-hidden="true">✓</span>{proof}</li>)}</ul>
+          <div><a href="#contact-form">{ui.closingContact}<span aria-hidden="true">→</span></a><a href={`${prefix}/?recorrido=intro`} data-tour-trigger aria-haspopup="dialog">{ui.closingDemo}<span aria-hidden="true">↗</span></a></div>
+        </div>
         <div class="closing-visual">
-          <figure class="closing-desktop"><img src="/images/screens/05-solane-inventario-desktop.png" alt={ui.productAlt} width="1366" height="900" loading="lazy" decoding="async" /><figcaption>{ui.closingDesktop}</figcaption></figure>
+          <figure class="closing-desktop"><span class="closing-desktop__chrome" aria-hidden="true"><i></i><i></i><i></i></span><img src="/images/screens/05-solane-inventario-desktop.png" alt={ui.productAlt} width="1366" height="900" loading="lazy" decoding="async" /><figcaption>{ui.closingDesktop}</figcaption></figure>
           <figure class="closing-mobile"><img src="/images/screens/04-vedra-grupo-mobile.png" alt={ui.closingMobile} width="390" height="844" loading="lazy" decoding="async" /><figcaption>{ui.closingMobile}</figcaption></figure>
+          <span class="closing-badge" aria-hidden="true"><b>0 %</b>{ui.closingStat}</span>
         </div>
       </div>
       <div id="contact-form" class="shell contact-grid">
-        <div class="contact-copy"><p class="eyebrow">{c.lead.eyebrow}</p><h3 class="heading">{c.lead.title}</h3><p class="editorial">{c.lead.body}</p><a class="whatsapp-link" href={contact.href} target="_blank" rel="noreferrer">{c.lead.whatsapp}<span aria-hidden="true"> ↗</span></a></div>
+        <div class="contact-copy">
+          <div class="section-head__rule" aria-hidden="true"><span>11</span><i></i><span>{ui.sectionTotal}</span></div>
+          <p class="eyebrow">{c.lead.eyebrow}</p><h3 class="heading">{c.lead.title}</h3><p class="editorial">{c.lead.body}</p>
+          <a class="whatsapp-link" href={contact.href} target="_blank" rel="noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d={siWhatsapp.path} /></svg>{c.lead.whatsapp}<span aria-hidden="true"> ↗</span></a>
+        </div>
         <CommercialLeadForm locale={locale} />
       </div>
     </section>
@@ -425,6 +528,10 @@ const paymentBrands = [siStripe];
 </div>
 
 <script>
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  // Automated captures and tests get the settled layout, never a half-played entrance.
+  const automated = navigator.webdriver === true;
+
   const briefTransition = document.querySelector<HTMLFormElement>('[data-brief-transition]');
   briefTransition?.addEventListener('submit', (event) => {
     const email = briefTransition.querySelector<HTMLInputElement>('[data-brief-email]');
@@ -436,11 +543,40 @@ const paymentBrands = [siStripe];
     window.location.assign(`${destination.pathname}${destination.hash}`);
   });
 
+  // Scroll reveal: content is visible by default and only hidden once the observer is ready.
+  const revealTargets = [...document.querySelectorAll<HTMLElement>('[data-reveal]')];
+  if (!automated && !reducedMotion.matches && 'IntersectionObserver' in window && revealTargets.length) {
+    document.documentElement.classList.add('reveal-ready');
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-revealed');
+        revealObserver.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 });
+    revealTargets.forEach((target) => revealObserver.observe(target));
+  }
+
+  // Hero parallax follows the user's own scroll, so nothing moves on its own.
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  if (hero && !reducedMotion.matches) {
+    let frame = 0;
+    const updateHero = () => {
+      frame = 0;
+      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(1, hero.offsetHeight)));
+      hero.style.setProperty('--hero-progress', progress.toFixed(4));
+    };
+    window.addEventListener('scroll', () => { if (!frame) frame = requestAnimationFrame(updateHero); }, { passive: true });
+    updateHero();
+  }
+  if (!automated && !reducedMotion.matches) requestAnimationFrame(() => hero?.classList.add('is-entering'));
+
   const journeyViewport = document.querySelector<HTMLElement>('[data-journey-viewport]');
   const journeyControls = document.querySelector<HTMLElement>('[data-journey-controls]');
   const journeyPrevious = journeyControls?.querySelector<HTMLButtonElement>('[data-journey-previous]');
   const journeyNext = journeyControls?.querySelector<HTMLButtonElement>('[data-journey-next]');
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  const journeyPosition = journeyControls?.querySelector<HTMLElement>('[data-journey-position]');
+  const journeyProgress = document.querySelector<HTMLElement>('[data-journey-progress]');
 
   document.querySelectorAll<HTMLElement>('[data-catalogue-controls]').forEach((controls) => {
     const rail = document.getElementById(controls.dataset.catalogueControls ?? '');
@@ -473,11 +609,18 @@ const paymentBrands = [siStripe];
 
   const updateJourneyControls = () => {
     if (!journeyViewport || !journeyControls) return;
-    const scrollable = journeyViewport.scrollWidth > journeyViewport.clientWidth + 2;
+    const maxScroll = journeyViewport.scrollWidth - journeyViewport.clientWidth;
+    const scrollable = maxScroll > 2;
     journeyControls.hidden = !scrollable;
+    const ratio = scrollable ? journeyViewport.scrollLeft / maxScroll : 1;
+    journeyProgress?.style.setProperty('--journey-progress', ratio.toFixed(4));
     if (!scrollable) return;
     if (journeyPrevious) journeyPrevious.disabled = journeyViewport.scrollLeft <= 2;
     if (journeyNext) journeyNext.disabled = journeyViewport.scrollLeft + journeyViewport.clientWidth >= journeyViewport.scrollWidth - 2;
+    const steps = [...journeyViewport.querySelectorAll<HTMLElement>('[data-journey-step]')];
+    const left = journeyViewport.getBoundingClientRect().left;
+    const current = Math.max(0, steps.findIndex((step) => step.getBoundingClientRect().right > left + 40));
+    if (journeyPosition) journeyPosition.textContent = `${String(current + 1).padStart(2, '0')} — ${String(steps.length).padStart(2, '0')}`;
   };
   const moveJourney = (direction: -1 | 1) => {
     if (!journeyViewport) return;
@@ -497,10 +640,18 @@ const paymentBrands = [siStripe];
   requestAnimationFrame(updateJourneyControls);
 
   const platformTabsRoot = document.querySelector<HTMLElement>('[data-platform-tabs]');
+  const platformIndicator = platformTabsRoot?.querySelector<HTMLElement>('[data-platform-indicator]');
   const platformTabs = [...document.querySelectorAll<HTMLButtonElement>('[data-platform-tab]')];
   const platformPanels = [...document.querySelectorAll<HTMLElement>('[data-platform-panel]')];
   if (platformTabsRoot && platformTabs.length === platformPanels.length) {
     platformTabsRoot.setAttribute('role', 'tablist');
+    const placeIndicator = () => {
+      const active = platformTabs.find((tab) => tab.classList.contains('is-active'));
+      if (!active || !platformIndicator) return;
+      platformIndicator.style.setProperty('--indicator-x', `${active.offsetLeft}px`);
+      platformIndicator.style.setProperty('--indicator-w', `${active.offsetWidth}px`);
+      platformTabsRoot.dataset.indicatorReady = '';
+    };
     const activatePlatformTab = (targetId: string, moveFocus = false) => {
       platformTabs.forEach((tab) => {
         const active = tab.dataset.platformTarget === targetId;
@@ -514,6 +665,7 @@ const paymentBrands = [siStripe];
         panel.hidden = !active;
         panel.toggleAttribute('data-active', active);
       });
+      placeIndicator();
     };
     platformTabs.forEach((tab, index) => {
       const targetId = tab.dataset.platformTarget ?? '';
@@ -535,33 +687,596 @@ const paymentBrands = [siStripe];
         activatePlatformTab(platformTabs[nextIndex]?.dataset.platformTarget ?? targetId, true);
       });
     });
+    new ResizeObserver(placeIndicator).observe(platformTabsRoot);
     const hashTarget = window.location.hash.startsWith('#moment-') ? window.location.hash.replace('#moment-', '') : '';
     activatePlatformTab(platformTabs.some((tab) => tab.dataset.platformTarget === hashTarget) ? hashTarget : (platformTabs[0]?.dataset.platformTarget ?? ''));
   }
-
 </script>
 
 <style>
-.landing{overflow:clip;background:var(--paper);color:var(--color-midnight-ink)}
-.hero{padding:150px 0 68px}.hero-grid{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);align-items:center;gap:60px}.hero-copy{text-align:center;padding:24px 0}.hero-copy .eyebrow{font-size:.65rem;font-weight:650;color:#27435b}.hero-title{max-width:640px;margin:0 auto;font:480 clamp(3.2rem,5.1vw,5.6rem)/1.01 var(--serif);letter-spacing:-.055em;text-wrap:balance}.hero-title span{position:relative;display:block;isolation:isolate}.hero-title span:after{content:'';position:absolute;z-index:-1;bottom:.07em;left:14%;right:14%;height:.13em;border-radius:100%;background:#bcd7ed}.hero-promise{max-width:380px;margin:28px auto;color:var(--slate);font-size:1.02rem;line-height:1.65}
-.brief-boundary{margin:10px 6px 4px;color:var(--slate);font-size:.68rem;line-height:1.5}.hero-lead-form{max-width:520px;margin:28px auto 0;padding:5px;border:1px solid #d9dfe4;border-radius:999px;background:white;box-shadow:0 10px 26px #193a5910}.hero-lead-form__copy,.hero-proof-label,.hero-lead-form label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}.hero-lead-form__field{display:flex;min-width:0;gap:4px}.hero-lead-form input{width:100%;min-width:0;border:0;border-radius:999px;background:transparent;padding:12px 18px;font-size:.85rem;min-height:48px}.hero-lead-form button{display:flex;align-items:center;justify-content:center;gap:8px;flex-shrink:0;min-height:48px;border:0;border-radius:999px;padding:12px 18px;background:var(--color-midnight-ink);color:#fff;font-size:.78rem;font-weight:600;cursor:pointer}.hero-lead-form button>span{display:none}.hero-actions{display:flex;justify-content:center;gap:20px;margin-top:20px}.hero-entry{display:flex;align-items:center;gap:8px;min-height:44px;color:var(--slate);text-decoration:none;text-align:left}.hero-entry>span{display:grid;place-items:center;width:22px;height:22px;flex-shrink:0;border-radius:50%;background:#dcebf5;color:#325b79;font-size:.75rem}.hero-entry strong{font-size:.73rem;font-weight:450;max-width:100px;line-height:1.5}.hero-entry small{display:none}.hero-support{max-width:410px;margin:12px auto 0;color:var(--slate);font-size:.65rem;line-height:1.7}.hero-support>span:first-child{display:none}.hero-support a{text-underline-offset:3px}
-.hero-product{position:relative;min-width:0;height:560px;padding:26px 26px 50px;overflow:hidden;border:1px solid #cddae5;border-radius:28px;background:#c9dbe9}.hero-mosaic{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:14px}.hero-brand-card{display:block;overflow:hidden;border-radius:13px;background:white;box-shadow:0 7px 20px #18314b12;text-decoration:none;transition:transform 200ms}.hero-brand-card:nth-child(even){transform:translateY(40px)}.hero-brand-card:hover{translate:0 -4px}.hero-brand-card img{display:block;width:100%;height:auto;aspect-ratio:1.1;object-fit:cover;object-position:left top}.hero-brand-card>span{position:relative;display:grid;gap:3px;padding:11px 30px 11px 13px}.hero-brand-card b{font-size:.72rem;font-weight:600}.hero-brand-card small{font-size:.57rem;color:var(--slate)}.hero-brand-card i{position:absolute;right:14px;top:14px;font-style:normal;font-size:.8rem}.demo-note{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:flex-end;justify-content:center;gap:16px;min-height:120px;padding:50px 16px 24px;background:linear-gradient(transparent,#c9dbe9 52%);font-size:.78rem;text-underline-offset:4px;color:#23445e}
-.catalogue-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:-10px 0 18px}.catalogue-controls[hidden]{display:none}.catalogue-controls>span{margin-right:10px;font-size:.7rem;color:var(--slate);font-variant-numeric:tabular-nums}.catalogue-controls button{display:grid;place-items:center;width:44px;height:44px;border:1px solid var(--line);border-radius:50%;color:var(--ink);background:white;cursor:pointer}.catalogue-controls button:disabled{opacity:.35;cursor:default}.section{padding-block:80px}.heading{font:500 clamp(2.1rem,3.5vw,3.7rem)/1.08 var(--serif);letter-spacing:-.045em;text-wrap:balance}.editorial{margin:0;max-width:550px;color:var(--slate);font-size:.96rem;line-height:1.7}.journey-intro,.platform-intro,.connections-intro,.offers-intro,.catalogue-intro{display:grid;grid-template-columns:1.15fr .85fr;align-items:end;gap:64px;margin-bottom:38px}.section-link,.offers-all{display:inline-flex;align-items:center;gap:26px;min-height:44px;margin-top:22px;font-size:.85rem;text-underline-offset:5px}.section-link:hover,.offers-all:hover{color:#27648c}
-.ecosystem-section{padding:24px 0 30px;border-block:1px solid var(--line);background:#fff}.ecosystem-intro{text-align:center}.ecosystem-intro p{margin:0 0 22px;font-size:.68rem;color:var(--slate);letter-spacing:.04em}.ecosystem-rail{overflow-x:auto}.ecosystem-track{display:flex;max-width:1280px;gap:28px;justify-content:space-between;margin:auto;padding:0 24px}.ecosystem-item{display:flex;align-items:center;gap:10px;flex-shrink:0}.ecosystem-item strong{font-size:.82rem;font-weight:650;color:#263d4e}.ecosystem-mark{display:grid;width:34px;height:34px;place-items:center;border-radius:10px;color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,white)}.ecosystem-mark svg{width:18px;height:18px;fill:currentColor}.ecosystem-item small{display:none}.ecosystem-status{font-size:.55rem;color:#52606c;border:1px solid #dce3e8;border-radius:20px;padding:4px 6px}
-.journey-controls{display:flex;justify-content:flex-end;align-items:center;gap:15px;margin-bottom:16px}.journey-controls[hidden]{display:none}.journey-controls button{min-width:44px;min-height:44px;border:1px solid var(--line);border-radius:50%;background:white;cursor:pointer}.journey-controls span{font-size:.65rem;color:var(--slate)}.journey-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;padding-bottom:12px}.journey-track{display:grid;grid-auto-flow:column;grid-auto-columns:260px;gap:18px;margin:0;padding:0;list-style:none}.journey-step{scroll-snap-align:start;min-height:355px;border:1px solid #d8e2e9;border-radius:18px;padding:22px;background:#fff}.journey-step__icon{display:grid;width:68px;height:68px;place-items:center;border-radius:18px;color:#1d608e;background:#dfeef8}.journey-step__top{display:flex;justify-content:space-between;margin-top:22px;color:#52728b;font-size:.72rem}.journey-step__top i{font-style:normal}.journey-step>p{font-size:.64rem;text-transform:uppercase;letter-spacing:.06em;color:var(--slate);margin:24px 0 8px}.journey-step h3{font-size:1.1rem;font-weight:620;line-height:1.35;min-height:60px;margin:0 0 12px}.journey-step__body{color:var(--slate);font-size:.82rem;line-height:1.65}
-.platform-section{background:#eaf2f6}.platform-tabs{display:flex;justify-content:center;gap:6px;overflow-x:auto;margin:10px auto 42px;padding:7px;border:1px solid #c9dce9;border-radius:18px;background:#f8fbfd;width:fit-content;max-width:100%;box-shadow:0 14px 34px #183b5510}.platform-tabs button{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;min-height:52px;gap:9px;border:0;border-radius:12px;padding:10px 23px;color:#566d7d;background:transparent;font:inherit;font-size:.81rem;font-weight:620;cursor:pointer}.platform-tabs button.is-active{color:#123b56;background:#fff;box-shadow:0 3px 13px #1c3f5c15}.platform-tabs button.is-active svg{color:#087cb9}.platform-panel{display:grid;grid-template-columns:minmax(260px,.34fr) minmax(0,.66fr);align-items:center;gap:clamp(38px,6vw,88px);animation:platform-in 320ms ease both}.platform-panel[hidden]{display:none}.platform-panel__meta{display:flex;align-items:center;gap:15px;color:var(--slate);font-size:.67rem}.platform-panel h3{font:500 clamp(2.1rem,3vw,3.15rem)/1.05 var(--serif);letter-spacing:-.045em;margin:20px 0}.platform-capabilities>p{display:none}.platform-capabilities ul{list-style:none;padding:0;margin:24px 0}.platform-capabilities li{display:grid;grid-template-columns:18px 1fr;padding:8px 0;color:#405766;font-size:.86rem;line-height:1.5}.platform-capabilities li:before{content:'→';color:#167bb4}.platform-limit{font-size:.75rem;color:var(--slate);line-height:1.65}.platform-limit p{margin:8px 0}.platform-action{display:inline-flex;align-items:center;gap:20px;min-height:44px;margin-top:15px;font-size:.83rem;text-underline-offset:5px}.platform-evidence{min-width:0;margin:0}.platform-evidence figcaption{display:flex;justify-content:space-between;gap:12px;padding:12px 4px;color:#536b7b;font-size:.62rem}.maturity-status{display:inline-flex;align-items:center;min-height:23px;padding:4px 8px;border:1px solid #bcd0dc;border-radius:20px;color:#35576b;background:#f6fbfd;font-size:.6rem;white-space:nowrap}@keyframes platform-in{from{opacity:.2;transform:translateY(8px)}to{opacity:1;transform:none}}
-.connections-section{max-width:1540px}.connections-grid{display:grid;grid-template-columns:minmax(0,1.16fr) minmax(340px,.84fr);gap:22px}.connection-family{min-width:0;overflow:hidden;border:1px solid #dbe3e8;border-radius:26px;background:#fff;padding:clamp(26px,3.4vw,46px)}.connection-family--commerce{grid-row:span 2;display:grid;min-height:570px;align-content:space-between;background:#f0f4ec}.connection-family--operations{background:#edf6fb}.connection-family--payments{background:#0a2a43;color:#fff}.connection-family__heading{display:grid;grid-template-columns:30px 1fr;gap:8px}.connection-family__heading>span{color:#55758e;font-size:.68rem}.connection-family h3{font:500 clamp(1.8rem,2.4vw,2.65rem)/1.05 var(--serif);letter-spacing:-.04em;margin:0 0 12px}.connection-family__heading p{max-width:560px;margin:0;color:var(--slate);font-size:.85rem;line-height:1.65}.connection-family--payments .connection-family__heading>span,.connection-family--payments .connection-family__heading p{color:#a8c4d7}.brand-cloud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:40px 0 0;padding:0;list-style:none}.brand-cloud li{display:flex;min-height:76px;align-items:center;gap:10px;border:0;border-radius:15px;padding:12px;background:#fff;color:#1c3342}.brand-cloud li>span{display:grid;width:40px;height:40px;flex:none;place-items:center;border-radius:11px;color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,white)}.brand-cloud svg{width:21px;height:21px;fill:currentColor}.brand-cloud strong{font-size:.72rem;font-weight:680;line-height:1.15}.brand-cloud--compact{margin-top:28px}.connection-route{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:36px;border-top:1px solid #bdd8ad;padding-top:22px;color:#506651;font-size:.68rem}.connection-route b{border-radius:999px;padding:10px 14px;color:#fff;background:#133f38}.payment-cloud{display:flex;align-items:center;gap:10px;margin-top:28px}.payment-cloud>span{display:inline-flex;min-height:54px;align-items:center;gap:10px;border-radius:13px;padding:10px 16px;color:var(--brand);background:#fff}.payment-cloud svg{width:25px;height:25px;fill:currentColor}.payment-cloud strong{color:#1d3342;font-size:.75rem}.redsys-wordmark{font-size:21px;letter-spacing:-.06em}.redsys-wordmark i{color:#555;font-style:normal}.redsys-wordmark b{color:#f28b23}.connections-boundary{margin:23px 0 0;border-top:1px solid #ffffff20;padding-top:17px;color:#a8c4d7;font-size:.68rem;line-height:1.5}
-.offers-section{background:#edf3f8}.offers-all{display:flex;justify-content:center}.portfolio-grid{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 40px)/3);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;padding:0 0 16px}.portfolio-card{position:relative;min-width:0;scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:white}.portfolio-card__surface{display:block;width:100%;border:0;padding:0;color:inherit;background:transparent;text-align:left;cursor:pointer}.portfolio-card picture{display:block;aspect-ratio:1.4;overflow:hidden;background:var(--portfolio-paper)}.portfolio-card img{display:block;width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 200ms}.portfolio-card__surface:hover img{transform:scale(1.03)}.portfolio-card__index{position:absolute;top:12px;left:12px;border-radius:50%;padding:7px;background:#fff;font-size:.65rem}.portfolio-card__copy{padding:22px 54px 22px 22px}.portfolio-card__copy>span{font-size:.6rem;text-transform:uppercase;letter-spacing:.04em;color:var(--slate)}.portfolio-card h3{font:500 1.7rem/1.2 var(--serif);margin:8px 0}.portfolio-card p{margin:0;color:var(--slate);font-size:.75rem;line-height:1.5}.portfolio-card__surface>i{position:absolute;right:14px;bottom:24px;display:grid;width:44px;height:44px;place-items:center;border:1px solid #ccd7df;border-radius:50%;background:#fff;color:#254359;font-size:1.2rem;font-style:normal}
-.panels-teaser-section{background:#fff}.panel-teaser-grid{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 40px)/3);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:thin;padding-bottom:16px}.panel-teaser-card{scroll-snap-align:start;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#f8fafc}.panel-teaser-card__preview{display:block;width:100%;border:0;padding:0;color:inherit;background:transparent;text-align:left;cursor:pointer}.panel-teaser-card figure{margin:0}.panel-teaser-card picture{display:block;aspect-ratio:1.45;overflow:hidden}.panel-teaser-card img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 200ms}.panel-teaser-card__preview:hover img{transform:scale(1.025)}.panel-teaser-card figcaption{display:flex;gap:12px;align-items:center;padding:12px 20px;font-size:.61rem;line-height:1.5;color:var(--slate);border-block:1px solid var(--line)}.panel-teaser-card figcaption i{margin-left:auto;font-size:1rem;font-style:normal}.panel-teaser-card__copy{padding:24px}.panel-teaser-card__meta{display:flex;justify-content:space-between;gap:10px;font-size:.59rem;color:var(--slate)}.panel-teaser-card h3{font:500 1.55rem/1.15 var(--serif);margin:15px 0 12px}.panel-teaser-card__copy>p{min-height:72px;color:var(--slate);font-size:.8rem;line-height:1.6;margin:0}.panel-teaser-card dl{display:none}.panel-teaser-card__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}.panel-teaser-card__actions button,.panel-teaser-card__actions a{display:flex;align-items:center;gap:12px;min-height:44px;border:0;padding:0;background:transparent;color:inherit;font-size:.73rem;cursor:pointer;text-underline-offset:4px}
-.implementation-section{background:#edf3f8}.implementation-path{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 40px;list-style:none;padding:0;margin:38px 0 0}.implementation-path article{border-top:1px solid #bfd0de;padding-top:16px}.implementation-path article>span{color:#52708a;font-size:.66rem}.implementation-path h3{font-size:1rem;font-weight:550;margin:14px 0 9px}.implementation-path p{color:var(--slate);font-size:.79rem;line-height:1.65;margin:0}.implementation-path article>div{display:none}.implementation-boundary{display:flex;justify-content:space-between;gap:32px;margin-top:34px;padding-top:20px;border-top:1px solid #cbd9e4;color:var(--slate);font-size:.77rem;line-height:1.6}.implementation-boundary p{margin:0}.implementation-boundary a{min-height:44px;display:inline-flex;gap:10px;text-underline-offset:4px}
-.guide-teaser-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}.guide-teaser-card{position:relative;display:block;border-top:1px solid #c6d3df;padding:20px 10px 30px 0;text-decoration:none}.guide-teaser-card>span{font-size:.66rem;color:#516d84}.guide-teaser-card>p{margin:20px 0 12px;font-size:.59rem;text-transform:uppercase;letter-spacing:.04em;color:var(--slate)}.guide-teaser-card h3{font:500 1.35rem/1.2 var(--serif);margin:10px 0 16px}.guide-teaser-card>div{color:var(--slate);font-size:.72rem;line-height:1.6}.guide-teaser-card>div strong{display:none}.guide-teaser-card i{display:block;margin-top:20px;font-style:normal}
-.faq-section{display:grid;grid-template-columns:.65fr 1.35fr;gap:80px;border-top:1px solid var(--line)}.faq-list{border-top:1px solid #cbd4dd}.faq-list details{border-bottom:1px solid #cbd4dd;padding:6px 0}.faq-list summary{display:flex;justify-content:space-between;align-items:center;gap:20px;min-height:58px;cursor:pointer;font-size:.94rem;line-height:1.5;list-style:none}.faq-list summary::-webkit-details-marker{display:none}.faq-list summary span{font-size:1.25rem;color:var(--slate)}.faq-list details[open] summary span{transform:rotate(45deg)}.faq-list details p{margin:0 34px 20px 0;color:var(--slate);font-size:.86rem;line-height:1.75}
-.closing-section{background:#e7f0f7}.closing-showcase{display:grid;grid-template-columns:1fr 1fr;gap:70px;align-items:center;min-height:420px}.closing-copy>p:not(.eyebrow){color:var(--slate);font-size:.94rem;line-height:1.7;margin:24px 0}.closing-proof-list{display:flex;gap:12px 20px;flex-wrap:wrap;list-style:none;padding:0;margin:24px 0;font-size:.7rem;color:var(--slate)}.closing-proof-list span{margin-right:7px;color:#386b59}.closing-copy>div{display:flex;align-items:center;flex-wrap:wrap;gap:16px}.closing-copy>div a{display:inline-flex;align-items:center;justify-content:space-between;min-height:48px;gap:20px;padding:12px 20px;border-radius:999px;background:var(--color-midnight-ink);color:white;text-decoration:none;font-size:.82rem}.closing-copy>div a+a{background:transparent;color:var(--color-midnight-ink);text-decoration:underline;text-underline-offset:4px}.closing-visual{position:relative;min-width:0;padding:25px 30px 50px 0}.closing-desktop{margin:0;border:1px solid #becfdc;border-radius:14px;overflow:hidden;box-shadow:0 20px 50px #163d5b15;background:#fff}.closing-desktop img{display:block;width:100%;height:auto}.closing-visual figcaption{padding:12px;font-size:.61rem;color:var(--slate)}.closing-mobile{position:absolute;width:25%;right:0;bottom:0;margin:0;border:5px solid #142a40;border-radius:18px;background:white;overflow:hidden;box-shadow:0 12px 30px #173b5b20}.closing-mobile img{display:block;width:100%;height:auto}.closing-mobile figcaption{display:none}.contact-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:80px;align-items:start;padding-top:70px;margin-top:70px;border-top:1px solid #bed0df}.contact-copy .heading{font-size:clamp(2rem,3vw,3rem)}.contact-copy .editorial{margin:20px 0}.whatsapp-link{display:inline-flex;min-height:44px;align-items:center;font-size:.86rem;text-underline-offset:5px}
-@media(min-width:1600px){.hero-product{height:620px}.hero-brand-card img{aspect-ratio:1.3}}
-@media(max-width:1050px){.hero-grid{gap:28px}.hero-title{font-size:3.6rem}.hero-actions{gap:10px}.hero-product{padding:18px 18px 50px}.hero-lead-form__field{flex-wrap:wrap}.hero-lead-form{border-radius:16px}.hero-lead-form button{width:100%}.journey-intro,.platform-intro,.connections-intro,.offers-intro,.catalogue-intro{gap:36px}.platform-panel{grid-template-columns:1fr;gap:35px}.platform-panel__copy{max-width:680px}.connections-grid{gap:14px}.connection-family{padding:24px}.brand-cloud{grid-template-columns:repeat(2,minmax(0,1fr))}.portfolio-grid,.panel-teaser-grid{grid-auto-columns:calc((100% - 20px)/2)}.closing-showcase,.contact-grid{gap:38px}.guide-teaser-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:760px){.hero{padding-top:116px;padding-bottom:40px}.hero-grid{grid-template-columns:1fr;gap:30px}.hero-copy{padding:10px 0}.hero-title{font-size:clamp(3rem,10vw,4.4rem)}.hero-promise{font-size:.98rem;margin:23px auto}.hero-product{height:510px;width:100%;max-width:600px;margin:auto}.hero-brand-card img{aspect-ratio:1.25}.hero-lead-form{border-radius:999px}.hero-lead-form__field{flex-wrap:nowrap}.hero-lead-form button{width:auto}.hero-actions{gap:24px}.hero-support{font-size:.67rem}.section{padding-block:58px}.journey-intro,.platform-intro,.connections-intro,.offers-intro,.catalogue-intro{grid-template-columns:1fr;gap:20px;margin-bottom:30px}.heading{font-size:2.55rem}.platform-panel{grid-template-columns:1fr;gap:30px}.platform-tabs{justify-content:flex-start;border-radius:16px;width:100%;margin-bottom:28px}.platform-tabs button{padding-inline:15px}.connections-grid{grid-template-columns:1fr;gap:16px}.connection-family--commerce{grid-row:auto;min-height:0}.connection-family__heading p{min-height:0}.connection-family h3{margin-top:0}.brand-cloud{margin-top:28px}.implementation-path{grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}.implementation-boundary{display:block}.implementation-boundary a{margin-top:10px}.guide-teaser-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.faq-section{grid-template-columns:1fr;gap:30px}.closing-showcase,.contact-grid{grid-template-columns:1fr;gap:36px}.closing-visual{max-width:650px;width:100%;margin:auto}.contact-grid{padding-top:40px;margin-top:40px}.ecosystem-track{gap:24px}.ecosystem-status{display:none}.portfolio-grid,.panel-teaser-grid{grid-auto-columns:minmax(270px,82%)}.editorial{font-size:.91rem}.panel-teaser-card__copy>p{min-height:0}}
-@media(max-width:420px){.hero-title{font-size:3rem}.hero-lead-form{border-radius:16px}.hero-lead-form__field{flex-wrap:wrap}.hero-lead-form button{width:100%}.hero-actions{gap:12px}.hero-entry strong{font-size:.66rem}.hero-product{height:410px;padding:14px 14px 50px}.hero-mosaic{gap:10px}.hero-brand-card>span{padding:9px}.hero-brand-card small,.hero-brand-card i{display:none}.hero-brand-card img{aspect-ratio:1}.heading{font-size:2.2rem}.implementation-path{gap:18px}.guide-teaser-grid{gap:12px}}
-@media(prefers-reduced-motion:reduce){.hero-brand-card,.portfolio-card img{transition:none}.journey-viewport{scroll-behavior:auto}}
-.implementation-content{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:40px;align-items:stretch}.implementation-photo{display:block;min-height:0;border-radius:12px;overflow:hidden}.implementation-photo img{display:block;width:100%;height:100%;object-fit:cover}.implementation-content .implementation-path{grid-template-columns:repeat(2,minmax(0,1fr));margin:0;gap:24px}.hero-entry--guided{color:var(--ink);font-weight:600}.hero-entry--guided strong{font-weight:600}.hero-entry--guided>span{background:var(--color-sky-tint);color:var(--color-notion-blue-strong)}
-@media(max-width:760px){.implementation-content{grid-template-columns:1fr}.implementation-photo{display:none}.implementation-content .implementation-path{grid-template-columns:1fr}.implementation-content .implementation-path article{padding-top:14px}.implementation-content .implementation-path h3{margin-top:8px}}
+/* ---------- Base ---------- */
+.landing{--r-ink:var(--lr-ink);--r-ink-deep:var(--lr-night);--r-blue:var(--lr-blue);--r-blue-ink:var(--lr-blue-strong);--r-sky:var(--lr-signal-soft);--r-sky-soft:#e3ecf5;--r-mist:#e8eef4;--r-green:var(--state-success);--r-line-strong:var(--lr-line-strong);--r-ease:var(--lr-ease);overflow:clip;background:var(--paper);color:var(--color-midnight-ink)}
+.section{padding-block:120px}
+.heading{font:630 clamp(2.3rem,3.9vw,3.9rem)/1.02 var(--display);letter-spacing:-.045em;text-wrap:balance;margin:0}
+.editorial{margin:0;max-width:470px;color:var(--slate);font-size:1rem;line-height:1.7}
+.section-link,.offers-all{display:inline-flex;align-items:center;gap:14px;min-height:48px;margin-top:34px;border:1px solid var(--r-line-strong);border-radius:var(--lr-radius-sm);padding:10px 22px;color:var(--r-ink);font-size:.84rem;font-weight:560;text-decoration:none;transition:background-color 200ms ease,color 200ms ease,border-color 200ms ease}
+.section-link span,.offers-all span{transition:transform 260ms var(--r-ease)}
+.section-link:hover,.offers-all:hover{border-color:var(--r-ink);background:var(--r-ink);color:#fff}
+.section-link:hover span,.offers-all:hover span{transform:translateX(4px)}
+
+/* Section heads: index rule, title, intro aligned to the baseline */
+.section-head{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);align-items:end;gap:28px 72px;margin-bottom:56px}
+.section-head__rule{grid-column:1/-1;display:flex;align-items:center;gap:14px;color:var(--lr-mute);font-size:.68rem;font-weight:500;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.section-head__rule i{flex:1;height:1px;background:var(--r-line-strong)}
+.section-head__rule span:last-child:before{content:'/ '}
+.section-head__title .eyebrow{margin:0 0 16px;color:var(--lr-blue-strong)}
+.section-head .editorial{justify-self:end;padding-bottom:8px}
+
+/* Reveal lives in styles/editorial.css so every page shares it. */
+
+/* ---------- Hero ---------- */
+.hero{--hero-progress:0;padding:148px 0 0}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.06fr);align-items:center;gap:64px}
+.hero-copy{padding:12px 0 24px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:10px;margin:0;border:1px solid var(--r-line-strong);border-radius:8px;padding:7px 12px 7px 11px;background:#fff;color:var(--lr-ink-soft);font-family:var(--mono);font-size:.66rem;font-weight:560;letter-spacing:.04em}
+.hero-eyebrow__meta{border-left:1px solid var(--r-line-strong);padding-left:10px;color:var(--lr-mute);font-weight:500;letter-spacing:0;text-transform:none}
+.live-dot{position:relative;width:8px;height:8px;border-radius:50%;background:var(--r-green)}
+.live-dot:after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid var(--r-green);opacity:0;animation:live-ping 2.4s var(--r-ease) infinite}
+@keyframes live-ping{0%{transform:scale(.4);opacity:.8}80%,100%{transform:scale(1.4);opacity:0}}
+.hero-title{margin:28px 0 0;font:640 clamp(3.2rem,5.1vw,5.6rem)/1 var(--display);letter-spacing:-.052em;color:var(--r-ink)}
+.hero-title>span{display:block}
+.hero-title__highlight{position:relative;width:fit-content;padding-right:.08em;font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.035em;color:var(--r-blue);isolation:isolate}
+.hero-title__highlight svg{position:absolute;z-index:-1;left:-2%;right:0;bottom:-.04em;width:104%;height:.22em;overflow:visible;fill:none;stroke:var(--lr-signal-soft);stroke-width:8;stroke-linecap:round;stroke-dasharray:420;stroke-dashoffset:0}
+.hero-promise{max-width:470px;margin:28px 0 0;color:var(--slate);font-size:1.12rem;line-height:1.6}
+.hero-lead-form{position:relative;max-width:520px;margin:34px 0 0;padding:6px;border:1px solid var(--r-line-strong);border-radius:14px;background:#fff;box-shadow:var(--lr-shadow-product);transition:border-color 200ms ease,box-shadow 200ms ease}
+.hero-lead-form:focus-within{border-color:var(--r-blue);box-shadow:0 0 0 4px rgb(29 92 150 / 14%),var(--lr-shadow-product)}
+.hero-lead-form__copy,.hero-lead-form label{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.hero-lead-form__field{display:flex;align-items:center;min-width:0;gap:4px}
+.hero-lead-form__icon{flex:none;width:18px;height:18px;margin-left:14px;fill:none;stroke:#6b7c8b;stroke-width:1.6;stroke-linejoin:round}
+.hero-lead-form input{width:100%;min-width:0;min-height:50px;border:0;border-radius:10px;padding:12px 10px;background:transparent;color:var(--r-ink);font-size:.92rem}
+.hero-lead-form input:focus-visible{outline:none}
+.hero-lead-form button{display:flex;align-items:center;justify-content:center;gap:10px;flex-shrink:0;min-height:50px;border:0;border-radius:10px;padding:12px 22px;background:var(--r-ink);color:#fff;font-size:.84rem;font-weight:600;cursor:pointer;transition:background-color 200ms ease}
+.hero-lead-form button span{transition:transform 260ms var(--r-ease)}
+.hero-lead-form button:hover{background:var(--r-blue-ink)}
+.hero-lead-form button:hover span{transform:translateX(3px)}
+.brief-boundary{margin:12px 0 0 4px;color:var(--slate);font-size:.74rem;line-height:1.5}
+.hero-proof{margin-top:30px}
+.hero-proof-label{margin:0 0 12px;color:var(--lr-mute);font-family:var(--mono);font-size:.66rem;font-weight:560;letter-spacing:.06em;text-transform:uppercase}
+.hero-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));max-width:530px;border:1px solid var(--r-line-strong);border-radius:var(--lr-radius);background:#fff;overflow:hidden}
+.hero-entry{position:relative;display:flex;align-items:center;gap:10px;min-height:64px;padding:12px 14px;color:var(--r-ink);text-decoration:none;transition:background-color 200ms ease}
+.hero-entry+.hero-entry{border-left:1px solid var(--r-line-strong)}
+.hero-entry:hover{background:var(--lr-paper)}
+.hero-entry__icon{display:grid;flex:none;width:32px;height:32px;place-items:center;border-radius:7px;background:var(--color-sky-tint);color:var(--r-blue-ink)}
+.hero-entry__icon svg{fill:none;stroke:currentColor}
+.hero-entry--guided .hero-entry__icon svg{fill:currentColor;stroke:none}
+.hero-entry__text{display:grid;gap:2px;min-width:0}
+.hero-entry strong{font-size:.78rem;font-weight:620;line-height:1.3;color:var(--r-ink)}
+.hero-entry small{overflow:hidden;color:var(--lr-mute);font-size:.66rem;line-height:1.35;text-overflow:ellipsis}
+.hero-entry--manager{background:var(--r-ink);color:#fff}
+.hero-entry--manager:hover{background:var(--r-blue-ink)}
+.hero-entry--manager strong{color:#fff}
+.hero-entry--manager small{color:#c9d8e5}
+.hero-entry--manager .hero-entry__icon{background:#ffffff1f;color:#fff}
+
+/* Hero stage */
+.hero-product{position:relative;min-width:0;height:640px}
+.hero-stage{position:absolute;inset:0;overflow:hidden;border:1px solid var(--lr-night-soft);border-radius:var(--lr-radius-lg);background:radial-gradient(120% 90% at 70% 0%,#18304c 0%,var(--lr-night) 62%)}
+.hero-stage__pattern{position:absolute;inset:0;width:100%;height:100%;fill:#ffffff24}
+.hero-mosaic{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;height:100%;padding:0 30px;-webkit-mask-image:linear-gradient(transparent,#000 12%,#000 82%,transparent);mask-image:linear-gradient(transparent,#000 12%,#000 82%,transparent)}
+.hero-column{display:grid;align-content:start;gap:18px;will-change:transform}
+.hero-column[data-hero-column='0']{transform:translate3d(0,calc(40px - var(--hero-progress) * 150px),0)}
+.hero-column[data-hero-column='1']{transform:translate3d(0,calc(-120px + var(--hero-progress) * 110px),0)}
+.hero-brand-card{display:block;overflow:hidden;border:1px solid #ffffff1f;border-radius:10px;background:#fff;box-shadow:0 26px 48px -24px #000000b3;color:var(--r-ink);text-decoration:none;transition:transform 400ms var(--r-ease),box-shadow 400ms var(--r-ease)}
+.hero-brand-card:hover{transform:translateY(-5px);box-shadow:0 34px 60px -26px #000000cc}
+.hero-brand-card__chrome{display:flex;align-items:center;gap:5px;height:26px;padding:0 10px;border-bottom:1px solid #eef1f4;background:#fbfbfa}
+.hero-brand-card__chrome i{width:6px;height:6px;border-radius:50%;background:#d5dbe1}
+.hero-brand-card__chrome em{overflow:hidden;margin-left:8px;color:#5c6b78;font-family:var(--mono);font-size:.52rem;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
+.hero-brand-card img{display:block;width:100%;height:auto;aspect-ratio:1.22;object-fit:cover;object-position:left top;transition:transform 700ms var(--r-ease)}
+.hero-brand-card:hover img{transform:scale(1.04)}
+.hero-brand-card__label{position:relative;display:grid;gap:2px;padding:12px 38px 13px 14px;border-top:3px solid var(--theme-primary,var(--r-blue))}
+.hero-brand-card b{font-size:.78rem;font-weight:640}
+.hero-brand-card small{color:#4f5f6d;font-size:.62rem}
+.hero-brand-card__label i{position:absolute;top:50%;right:12px;display:grid;width:24px;height:24px;place-items:center;border-radius:50%;background:#eef3f7;font-size:.72rem;font-style:normal;transform:translateY(-50%);transition:background-color 200ms ease,color 200ms ease}
+.hero-brand-card:hover .hero-brand-card__label i{background:var(--r-ink);color:#fff}
+.hero-float{position:absolute;z-index:2;display:flex;align-items:center;gap:12px;border:1px solid var(--r-line-strong);border-radius:10px;padding:12px 14px;background:#fff;box-shadow:0 30px 60px -28px #0b1624b3,0 2px 6px #0b16240f;color:var(--r-ink);pointer-events:none}
+.hero-float strong{display:block;font-size:.76rem;font-weight:650}
+.hero-float small{display:block;color:var(--lr-mute);font-family:var(--mono);font-size:.6rem;line-height:1.45}
+.hero-float--request{top:74px;left:-44px;transform:translate3d(0,calc(var(--hero-progress) * -60px),0)}
+.hero-float--request b{margin-left:6px;border-radius:6px;padding:5px 8px;background:var(--color-sky-tint);color:var(--r-blue-ink);font-family:var(--mono);font-size:.58rem;font-weight:600;white-space:nowrap}
+.hero-float__check{display:grid;flex:none;width:32px;height:32px;place-items:center;border-radius:50%;background:var(--r-green)}
+.hero-float__check svg{width:18px;height:18px;fill:none;stroke:#fff;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.hero-float--load{right:-30px;bottom:118px;display:grid;gap:4px;width:208px;transform:translate3d(0,calc(var(--hero-progress) * -110px),0)}
+.hero-float__head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hero-float__head em{border-radius:4px;padding:2px 6px;background:#f1f4f7;color:#55636f;font-family:var(--mono);font-size:.5rem;font-style:normal;white-space:nowrap}
+.hero-float--load strong{font:600 1.9rem/1 var(--display);letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.hero-float__bars{display:flex;align-items:flex-end;gap:4px;height:40px;margin-top:6px}
+.hero-float__bars i{flex:1;height:var(--h);border-radius:2px 2px 0 0;background:#d4e1ec}
+.hero-float__bars i.is-now{background:var(--r-blue)}
+.hero-float--event{top:48%;right:-18px;transform:translate3d(0,calc(var(--hero-progress) * -30px),0)}
+.hero-float__swatch{flex:none;width:10px;height:32px;border-radius:4px;background:#bd913b}
+.demo-note{position:absolute;z-index:3;left:50%;bottom:22px;display:inline-flex;align-items:center;gap:12px;min-height:46px;border:1px solid #ffffff;border-radius:var(--lr-radius-sm);padding:10px 18px;background:#ffffff;color:var(--lr-ink);box-shadow:0 14px 30px -16px #000000a6;font-size:.8rem;font-weight:600;text-decoration:none;white-space:nowrap;transform:translateX(-50%);transition:background-color 200ms ease,color 200ms ease}
+.demo-note span{transition:transform 260ms var(--r-ease)}
+.demo-note:hover{background:var(--lr-blue-soft);color:var(--lr-ink)}
+.demo-note:hover span{transform:translateX(3px)}
+
+/* Hero baseline */
+.hero-baseline{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:64px;border-top:1px solid var(--r-line-strong);padding:26px 0 30px}
+.hero-stats{display:flex;gap:56px;margin:0}
+.hero-stats div{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:4px}
+.hero-stats dd{margin:0;font:620 2.1rem/1 var(--display);letter-spacing:-.045em;font-variant-numeric:tabular-nums;color:var(--r-ink)}
+.hero-stats dt{color:var(--lr-mute);font-family:var(--mono);font-size:.66rem}
+.hero-support{display:flex;align-items:center;gap:12px;max-width:440px;margin:0;color:var(--slate);font-size:.76rem;line-height:1.55}
+.hero-support>span:first-child{display:grid;flex:none;width:36px;height:36px;place-items:center;border-radius:8px;background:var(--r-ink);color:#fff;font:700 .68rem/1 var(--mono);letter-spacing:-.02em}
+.hero-support a{color:var(--r-ink);font-weight:600;text-underline-offset:3px}
+
+/* Entrance */
+.hero.is-entering .hero-copy>*{animation:rise-in 900ms var(--r-ease) both}
+.hero.is-entering .hero-copy>:nth-child(2){animation-delay:80ms}
+.hero.is-entering .hero-copy>:nth-child(3){animation-delay:160ms}
+.hero.is-entering .hero-copy>:nth-child(4){animation-delay:230ms}
+.hero.is-entering .hero-copy>:nth-child(n+5){animation-delay:300ms}
+.hero.is-entering .hero-title__highlight svg{animation:draw-line 1100ms var(--r-ease) 520ms both}
+.hero.is-entering .hero-stage{animation:stage-in 1100ms var(--r-ease) 120ms both}
+.hero.is-entering .hero-float{animation:float-in 900ms var(--r-ease) both}
+.hero.is-entering .hero-float--request{animation-delay:700ms}
+.hero.is-entering .hero-float--event{animation-delay:860ms}
+.hero.is-entering .hero-float--load{animation-delay:1000ms}
+@keyframes rise-in{from{opacity:0;translate:0 22px}to{opacity:1;translate:0 0}}
+@keyframes draw-line{from{stroke-dashoffset:420}to{stroke-dashoffset:0}}
+@keyframes stage-in{from{opacity:0;clip-path:inset(8% 6% 8% 6% round 32px)}to{opacity:1;clip-path:inset(0 round 32px)}}
+@keyframes float-in{from{opacity:0;scale:.92;translate:0 18px}to{opacity:1;scale:1;translate:0 0}}
+
+/* ---------- Ecosystem ---------- */
+.ecosystem-section{border-block:1px solid var(--line);background:#fff}
+.ecosystem-shell{display:grid;grid-template-columns:170px minmax(0,1fr);align-items:center;gap:32px;padding-block:26px}
+.ecosystem-label{margin:0;color:var(--lr-mute);font-family:var(--mono);font-size:.68rem;font-weight:500;line-height:1.5;letter-spacing:.02em}
+.ecosystem-rail{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow-x:auto;scrollbar-width:none}
+.ecosystem-rail::-webkit-scrollbar{display:none}
+.ecosystem-item{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:auto auto;align-items:center;gap:10px 10px;min-width:150px;padding:4px 18px;border-left:1px solid var(--line)}
+.ecosystem-mark{display:grid;width:34px;height:34px;place-items:center;border-radius:8px;color:var(--brand);background:color-mix(in srgb,var(--brand) 10%,white)}
+.ecosystem-mark svg{width:18px;height:18px;fill:currentColor}
+.ecosystem-item__copy{display:grid;min-width:0}
+.ecosystem-item strong{font-size:.82rem;font-weight:650;color:#263d4e}
+.ecosystem-item small{overflow:hidden;color:#566674;font-size:.62rem;line-height:1.4;text-overflow:ellipsis;white-space:nowrap}
+.ecosystem-status{grid-column:1/-1;display:inline-flex;align-items:center;gap:6px;width:fit-content;border:1px solid #dce3e8;border-radius:6px;padding:3px 8px 3px 7px;color:#46545f;font-family:var(--mono);font-size:.56rem;font-weight:500}
+.ecosystem-status:before{content:'';width:6px;height:6px;border-radius:50%;background:#9aa7b2}
+.ecosystem-item[data-tone='connected'] .ecosystem-status:before{background:var(--r-green)}
+.ecosystem-item[data-tone='demo'] .ecosystem-status:before{background:var(--r-blue)}
+.ecosystem-item[data-tone='visible'] .ecosystem-status:before{background:#c28a1c}
+.ecosystem-item[data-tone='planned'] .ecosystem-status:before{border:1px solid #8795a1;background:transparent}
+
+/* ---------- Diagrams ---------- */
+.home-diagram{margin-bottom:56px}
+.home-diagram--inventory{margin-bottom:64px}
+
+/* ---------- Journey ---------- */
+.journey-toolbar{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:22px}
+.journey-progress{position:relative;flex:1;max-width:420px;height:2px;border-radius:2px;background:var(--r-line-strong);overflow:hidden}
+.journey-progress span{position:absolute;inset:0;background:var(--r-ink);transform-origin:left;transform:scaleX(calc(.14 + var(--journey-progress,0) * .86));transition:transform 200ms linear}
+.journey-controls{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.journey-controls[hidden]{display:none}
+.journey-controls span{margin-right:8px;color:var(--slate);font-size:.7rem;font-variant-numeric:tabular-nums}
+.journey-controls button,.catalogue-controls button{display:grid;place-items:center;width:48px;height:48px;border:1px solid var(--r-line-strong);border-radius:var(--lr-radius-sm);background:#fff;color:var(--r-ink);cursor:pointer;transition:background-color 200ms ease,color 200ms ease,opacity 200ms ease}
+.journey-controls button:not(:disabled):hover,.catalogue-controls button:not(:disabled):hover{background:var(--r-ink);color:#fff}
+.journey-controls button:disabled,.catalogue-controls button:disabled{opacity:.35;cursor:default}
+.journey-viewport{overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:4px 0 16px;scroll-padding-inline:0}
+.journey-viewport::-webkit-scrollbar{display:none}
+.journey-track{display:grid;grid-auto-flow:column;grid-auto-columns:300px;gap:16px;margin:0;padding:0;list-style:none}
+.journey-step{position:relative;display:flex;flex-direction:column;scroll-snap-align:start;min-height:420px;border:1px solid var(--lr-line);border-radius:var(--lr-radius);padding:20px;background:#fff;transition:border-color 300ms ease,transform 300ms var(--r-ease),box-shadow 300ms var(--r-ease)}
+.journey-step:hover{border-color:var(--lr-line-strong);transform:translateY(-3px);box-shadow:var(--lr-shadow-product)}
+.journey-step__top{display:flex;align-items:center;justify-content:space-between}
+.journey-step__index{font:500 .78rem/1 var(--mono);letter-spacing:0;color:var(--lr-mute)}
+.journey-step__icon{display:grid;width:38px;height:38px;place-items:center;border-radius:8px;background:var(--color-sky-tint);color:var(--r-blue-ink)}
+.journey-step>p{margin:22px 0 8px;color:var(--lr-mute);font-family:var(--mono);font-size:.64rem;font-weight:500;letter-spacing:.04em;text-transform:uppercase}
+.journey-step h3{margin:0 0 10px;font:620 1.42rem/1.15 var(--display);letter-spacing:-.03em}
+.journey-step__body{color:var(--slate);font-size:.84rem;line-height:1.6}
+
+/* Journey micro illustrations */
+.journey-visual{position:relative;display:grid;place-items:center;height:150px;margin-top:18px;border:1px solid var(--lr-line);border-radius:8px;background-color:var(--lr-paper);background-image:linear-gradient(var(--lr-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lr-grid) 1px,transparent 1px);background-size:16px 16px;overflow:hidden}
+.jv-browser{display:grid;gap:7px;width:76%;border-radius:10px;padding:0 0 12px;background:#fff;box-shadow:0 16px 30px -20px rgb(15 29 45 / 45%);overflow:hidden}
+.jv-browser__bar{display:flex;gap:4px;padding:7px 9px;background:#f4f6f8}
+.jv-browser__bar i{width:5px;height:5px;border-radius:50%;background:#c8d1d9}
+.jv-browser__photo{height:38px;margin:0 10px;border-radius:6px;background:#a3472c}
+.jv-line{height:5px;margin:0 10px;width:62%;border-radius:4px;background:#dfe6ec}
+.jv-line--title{width:44%;height:7px;background:#b9c6d1}
+.jv-pill{width:52px;height:14px;margin:2px 10px 0;border-radius:999px;background:var(--r-ink)}
+.jv-slots{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;width:80%}
+.jv-slots span{display:grid;place-items:center;height:30px;border:1px solid #cad9e5;border-radius:6px;background:#fff;color:#35526b;font-family:var(--mono);font-size:.62rem;font-weight:500;font-variant-numeric:tabular-nums}
+.jv-slots .is-chosen{border-color:var(--r-ink);background:var(--r-ink);color:#fff}
+.jv-slots .is-full{color:#8b99a5;text-decoration:line-through;background:transparent}
+.jv-form{display:grid;gap:8px;width:76%}
+.jv-form__row{display:flex;align-items:center;gap:8px;height:24px;border-radius:7px;padding:0 8px;background:#fff}
+.jv-form__row i{display:grid;width:14px;height:14px;place-items:center;border-radius:50%;background:var(--r-green);color:#fff;font-size:.45rem;font-style:normal}
+.jv-form__row b{width:var(--w);height:5px;border-radius:4px;background:#d3dde6}
+.jv-form__submit{height:22px;border-radius:7px;background:var(--r-ink)}
+.jv-floor{position:relative;width:82%;height:74%;border:1px dashed #a9c0d2;border-radius:12px;background:#fff}
+.jv-floor span{position:absolute;left:var(--x);top:var(--y);width:20px;height:20px;border:2px solid #b8cad8;border-radius:50%;background:#fff;transform:translate(-50%,-50%)}
+.jv-floor .busy{border-color:var(--r-ink);background:var(--r-ink)}
+.jv-floor .event{border-color:#bd913b;background:#bd913b}
+.jv-floor .selected{border-color:var(--r-blue);box-shadow:0 0 0 5px rgb(29 92 150 / 18%)}
+.jv-ring{position:relative;display:grid;place-items:center;width:96px;height:96px}
+.jv-ring svg{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#cfdeea;stroke-width:7;transform:rotate(-90deg)}
+.jv-ring .jv-ring__value{stroke:var(--r-ink);stroke-dasharray:25 100;stroke-linecap:round}
+.jv-ring b{font:500 1.15rem/1 var(--mono);letter-spacing:-.03em;color:var(--r-ink)}
+.jv-chat{display:grid;gap:9px;width:74%}
+.jv-chat span{display:grid;gap:5px;width:70%;border-radius:12px;padding:9px 10px}
+.jv-chat b{height:5px;border-radius:4px}
+.jv-chat__in{background:#fff;border-bottom-left-radius:4px}
+.jv-chat__in b{background:#d3dde6}
+.jv-chat__in b+b{width:60%}
+.jv-chat__out{justify-self:end;background:var(--r-ink);border-bottom-right-radius:4px}
+.jv-chat__out b{background:#ffffff66}
+.jv-chat__out i{justify-self:end;color:#9fd1b8;font-size:.55rem;font-style:normal;letter-spacing:-.1em}
+.jv-bars{display:flex;align-items:flex-end;gap:8px;width:72%;height:62%;border-bottom:1px solid #b9cad8}
+.jv-bars i{flex:1;height:var(--h);border-radius:5px 5px 0 0;background:#c6d8e6}
+.jv-bars .is-peak{background:var(--r-ink)}
+.journey-step:hover .jv-slots .is-chosen,.journey-step:hover .jv-pill,.journey-step:hover .jv-bars .is-peak{background:var(--r-blue)}
+
+/* ---------- Platform ---------- */
+.platform-section{background:var(--lr-paper-deep)}
+.platform-tabs{position:relative;display:flex;justify-content:center;gap:4px;overflow-x:auto;width:fit-content;max-width:100%;margin:0 auto 56px;border:1px solid var(--lr-line-strong);border-radius:14px;padding:5px;background:#fff;scrollbar-width:none}
+.platform-tabs::-webkit-scrollbar{display:none}
+.platform-tabs__indicator{position:absolute;top:6px;bottom:6px;left:0;width:var(--indicator-w,0);border-radius:9px;background:var(--r-ink);opacity:0;transform:translateX(var(--indicator-x,0));transition:transform 420ms var(--r-ease),width 420ms var(--r-ease),opacity 200ms ease}
+.platform-tabs[data-indicator-ready] .platform-tabs__indicator{opacity:1}
+.platform-tabs button{position:relative;z-index:1;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;gap:8px;min-height:48px;border:0;border-radius:9px;padding:10px 22px;background:transparent;color:#44596a;font:inherit;font-size:.82rem;font-weight:600;cursor:pointer;transition:color 300ms ease}
+.platform-tabs button:hover{color:var(--r-ink)}
+.platform-tabs button.is-active{color:#fff;background:var(--r-ink)}
+.platform-tabs[data-indicator-ready] button.is-active{background:transparent}
+.platform-panel{display:grid;grid-template-columns:minmax(260px,.34fr) minmax(0,.66fr);align-items:center;gap:clamp(40px,6vw,96px);animation:platform-in 520ms var(--r-ease) both}
+.platform-panel[hidden]{display:none}
+.platform-panel__meta{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;color:var(--slate);font-family:var(--mono);font-size:.66rem}
+.platform-panel__count{font-variant-numeric:tabular-nums;font-weight:650;color:var(--r-ink)}
+.platform-panel h3{margin:22px 0 0;font:620 clamp(2.2rem,3.3vw,3.4rem)/1.02 var(--display);letter-spacing:-.048em}
+.platform-capabilities>p{display:none}
+.platform-capabilities ul{display:grid;gap:2px;margin:28px 0 0;padding:0;list-style:none;border-top:1px solid #c7d8e5}
+.platform-capabilities li{display:grid;grid-template-columns:28px 1fr;align-items:center;min-height:48px;border-bottom:1px solid #c7d8e5;color:#34495a;font-size:.88rem;line-height:1.45}
+.platform-capabilities li:before{content:'';width:8px;height:8px;border-radius:2px;background:var(--r-blue)}
+.platform-action{display:inline-flex;align-items:center;gap:14px;min-height:48px;margin-top:28px;border-radius:var(--lr-radius-sm);padding:12px 22px;background:var(--r-ink);color:#fff;font-size:.84rem;font-weight:600;text-decoration:none;transition:background-color 200ms ease}
+.platform-action span{transition:transform 260ms var(--r-ease)}
+.platform-action:hover{background:var(--r-blue-ink)}
+.platform-action:hover span{transform:translate(2px,-2px)}
+.platform-limit{margin-top:16px;color:var(--slate);font-size:.75rem;line-height:1.65}
+.platform-limit p{margin:4px 0 8px;color:#495a68}
+.platform-evidence{min-width:0;margin:0}
+.platform-evidence figcaption{display:flex;justify-content:space-between;gap:12px;padding:14px 6px 0;color:#4a6272;font-family:var(--mono);font-size:.6rem}
+.maturity-status{display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:4px 9px 4px 8px;border:1px solid #bcd0dc;border-radius:6px;color:#35576b;background:#f6fbfd;font-family:var(--mono);font-size:.6rem;font-weight:500;white-space:nowrap}
+.maturity-status:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--r-blue)}
+@keyframes platform-in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* ---------- Connections ---------- */
+.connections-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.connection-family{position:relative;min-width:0;overflow:hidden;border:1px solid #dbe3e8;border-radius:var(--lr-radius-lg);background:#fff;padding:clamp(26px,3.2vw,44px)}
+.connection-family--commerce{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-rows:auto 1fr;column-gap:64px;background:#fff;border-color:var(--lr-line)}
+.connection-family--commerce .connection-family__heading{grid-column:1;grid-row:1}
+.connection-family--commerce .brand-cloud{grid-column:2;grid-row:1/3;align-self:center;margin:0}
+.connection-family--commerce .connection-route{grid-column:1;grid-row:2}
+.connection-family--operations{background:#fff;border-color:var(--lr-line)}
+.connection-family--payments{display:flex;flex-direction:column;background:var(--lr-night);border-color:var(--lr-night);color:#fff}
+.connection-family__heading{display:grid;grid-template-columns:34px 1fr;gap:8px}
+.connection-family__heading>span{padding-top:10px;color:var(--lr-mute);font-family:var(--mono);font-size:.68rem;font-weight:500;font-variant-numeric:tabular-nums}
+.connection-family--operations .connection-family__heading>span{color:var(--lr-mute)}
+.connection-family h3{margin:0 0 12px;font:620 clamp(1.9rem,2.5vw,2.7rem)/1.04 var(--display);letter-spacing:-.045em}
+.connection-family__heading p{max-width:520px;margin:0;color:var(--slate);font-size:.88rem;line-height:1.65}
+.connection-family--operations .connection-family__heading p{color:#4a5a67}
+.connection-family--payments .connection-family__heading>span,.connection-family--payments .connection-family__heading p{color:#b3cadb}
+.brand-cloud{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:36px 0 0;padding:0;list-style:none}
+.brand-cloud li{display:flex;min-height:72px;align-items:center;gap:10px;border:1px solid var(--lr-line);border-radius:10px;padding:12px;background:var(--lr-paper);color:#1c3342;transition:transform 300ms var(--r-ease),box-shadow 300ms var(--r-ease)}
+.brand-cloud li:hover{transform:translateY(-3px);box-shadow:0 16px 30px -22px rgb(15 29 45 / 38%)}
+.brand-cloud li>span{display:grid;flex:none;width:40px;height:40px;place-items:center;border-radius:8px;color:var(--brand);background:color-mix(in srgb,var(--brand) 11%,white)}
+.brand-cloud svg{width:21px;height:21px;fill:currentColor}
+.brand-cloud strong{min-width:0;font-size:.74rem;font-weight:650;line-height:1.15;overflow-wrap:anywhere}
+.brand-cloud--compact{margin-top:28px}
+.connection-route{position:relative;display:grid;grid-template-columns:auto minmax(24px,1fr) auto minmax(24px,1fr) auto;align-content:end;align-items:center;gap:10px;padding-top:40px;color:var(--lr-ink-soft);font-size:.72rem;font-weight:600}
+.route-node{display:inline-flex;align-items:center;gap:6px;min-height:40px;border:1px solid var(--lr-line-strong);border-radius:8px;padding:8px 14px;background:#fff;font-family:var(--mono);font-size:.68rem}
+.route-node em{display:grid;width:16px;height:16px;place-items:center;border-radius:50%;background:var(--r-green);color:#fff;font-size:.5rem;font-style:normal}
+.route-core{display:inline-flex;align-items:center;gap:8px;min-height:48px;border-radius:8px;padding:10px 18px;background:var(--lr-ink);color:#fff;box-shadow:0 0 0 6px rgb(15 29 45 / 8%)}
+.route-core img{filter:brightness(0) invert(1)}
+.route-wire{position:relative;height:1px;background:repeating-linear-gradient(90deg,#8ea3b6 0 5px,transparent 5px 10px)}
+.route-wire i{position:absolute;top:-3px;left:0;width:7px;height:7px;border-radius:2px;background:var(--lr-signal);animation:wire-run 2.8s var(--r-ease) infinite}
+.route-wire+b+.route-wire i{animation-delay:1.4s}
+.connection-route small{grid-column:1/-1;margin-top:14px;color:var(--lr-mute);font-size:.68rem;font-weight:500}
+@keyframes wire-run{0%{left:0;opacity:0}15%{opacity:1}85%{opacity:1}100%{left:calc(100% - 7px);opacity:0}}
+.connection-feed{margin-top:28px;border-top:1px solid var(--lr-line);padding-top:18px}
+.connection-feed>p{margin:0 0 10px;color:var(--lr-mute);font-family:var(--mono);font-size:.62rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.connection-feed ol{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.connection-feed li{display:grid;grid-template-columns:52px 1fr;align-items:center;gap:10px;border-radius:6px;padding:6px 8px;background:var(--lr-paper);color:#2d4354;font-size:.78rem}
+.connection-feed time{color:var(--lr-blue);font-family:var(--mono);font-size:.68rem;font-weight:500;font-variant-numeric:tabular-nums}
+.payment-cloud{display:flex;align-items:center;gap:10px;margin-top:28px}
+.payment-cloud>span{display:inline-flex;min-height:54px;align-items:center;gap:10px;border-radius:10px;padding:10px 16px;color:var(--brand);background:#fff}
+.payment-cloud svg{width:25px;height:25px;fill:currentColor}
+.payment-cloud strong{color:#1d3342;font-size:.75rem}
+.redsys-wordmark{font-size:21px;letter-spacing:-.06em}
+.redsys-wordmark i{color:#555;font-style:normal}
+.redsys-wordmark b{color:#c86a0e}
+.deposit-ticket{display:grid;margin:22px 0 0;border:1px dashed #ffffff40;border-radius:10px;padding:6px 16px;background:#ffffff0d}
+.deposit-ticket>div{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;border-bottom:1px dashed #ffffff26}
+.deposit-ticket>div:last-child{border:0}
+.deposit-ticket dt{color:#d6e3ee;font-size:.76rem}
+.deposit-ticket dd{margin:0;color:#b3cadb;font-size:.66rem}
+.deposit-ticket strong{color:#fff;font:620 1.3rem/1 var(--display);letter-spacing:-.03em}
+.deposit-ticket__head dt{color:#fff;font-weight:650}
+.deposit-ticket>div:last-child dt{color:#9fd1b8;font-weight:600}
+.connections-boundary{margin:auto 0 0;padding-top:20px;color:#b3cadb;font-size:.7rem;line-height:1.55}
+
+/* ---------- Plans ---------- */
+.offers-section{background:var(--lr-paper-deep)}
+.offers-section .shell{display:flex;flex-direction:column}
+.offers-all{align-self:center}
+
+/* ---------- Portfolio & panels ---------- */
+.catalogue-controls{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin:-28px 0 22px}
+.catalogue-controls[hidden]{display:none}
+.catalogue-controls>span{margin-right:10px;color:var(--slate);font-size:.72rem;font-variant-numeric:tabular-nums}
+.portfolio-grid,.panel-teaser-grid{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 40px)/3);gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:6px 0 18px}
+.portfolio-grid::-webkit-scrollbar,.panel-teaser-grid::-webkit-scrollbar{display:none}
+.portfolio-card{position:relative;min-width:0;scroll-snap-align:start;border:1px solid var(--line);border-radius:var(--lr-radius);overflow:hidden;background:#fff;transition:transform 400ms var(--r-ease),box-shadow 400ms var(--r-ease)}
+.portfolio-card:hover{transform:translateY(-5px);box-shadow:0 30px 50px -34px rgb(15 29 45 / 38%)}
+.portfolio-card__surface{display:block;width:100%;border:0;padding:0;color:inherit;background:transparent;text-align:left;text-decoration:none;cursor:pointer}
+.portfolio-card__chrome,.panel-teaser-card__chrome{display:flex;align-items:center;gap:5px;height:30px;padding:0 12px;border-bottom:1px solid #eceff2;background:#fbfbfa}
+.portfolio-card__chrome i,.panel-teaser-card__chrome i{width:7px;height:7px;border-radius:50%;background:#d5dbe1}
+.portfolio-card__chrome em,.panel-teaser-card__chrome em{overflow:hidden;margin:0 auto;border-radius:6px;padding:2px 10px;background:#f0f2f4;color:#56636e;font-size:.58rem;font-style:normal;text-overflow:ellipsis;white-space:nowrap}
+.portfolio-card picture{display:block;aspect-ratio:1.4;overflow:hidden;background:var(--portfolio-paper)}
+.portfolio-card img{display:block;width:100%;height:100%;object-fit:cover;object-position:left top;transition:transform 900ms var(--r-ease)}
+.portfolio-card__surface:hover img{transform:scale(1.05)}
+.portfolio-card__index{position:absolute;top:44px;left:14px;display:grid;min-width:30px;height:30px;place-items:center;border-radius:6px;padding:0 8px;background:#fff;box-shadow:0 6px 14px -8px #0c233a66;font-size:.64rem;font-weight:650;font-variant-numeric:tabular-nums}
+.portfolio-card__copy{position:relative;padding:22px 70px 24px 22px;border-top:3px solid var(--portfolio-primary)}
+.portfolio-card__copy>span:first-child{color:var(--lr-mute);font-family:var(--mono);font-size:.6rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.portfolio-card h3{margin:8px 0 6px;font:640 1.8rem/1.1 var(--display);letter-spacing:-.035em}
+.portfolio-card p{margin:0;color:var(--slate);font-size:.78rem;line-height:1.5}
+.portfolio-card__palette{display:flex;gap:4px;margin-top:14px}
+.portfolio-card__palette i{width:16px;height:16px;border:1px solid #0000001a;border-radius:4px}
+.portfolio-card__surface>i{position:absolute;right:18px;bottom:26px;display:grid;width:44px;height:44px;place-items:center;border:1px solid #ccd7df;border-radius:var(--lr-radius-sm);background:#fff;color:#254359;font-size:1.1rem;font-style:normal;transition:background-color 300ms ease,color 300ms ease,transform 400ms var(--r-ease)}
+.portfolio-card__surface:hover>i{background:var(--r-ink);color:#fff;transform:rotate(90deg)}
+.panels-teaser-section{background:#fff}
+.panel-teaser-card{display:flex;flex-direction:column;scroll-snap-align:start;border:1px solid var(--line);border-radius:var(--lr-radius);overflow:hidden;background:#f7f9fb;transition:transform 400ms var(--r-ease),box-shadow 400ms var(--r-ease)}
+.panel-teaser-card:hover{transform:translateY(-5px);box-shadow:0 30px 50px -34px rgb(15 29 45 / 38%)}
+.panel-teaser-card__preview{display:block;width:100%;border:0;padding:0;color:inherit;background:transparent;text-align:left;text-decoration:none;cursor:pointer}
+.panel-teaser-card figure{margin:0}
+.panel-teaser-card picture{display:block;aspect-ratio:1.45;overflow:hidden;background:#eef2f5}
+.panel-teaser-card img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 900ms var(--r-ease)}
+.panel-teaser-card__preview:hover img{transform:scale(1.04)}
+.panel-teaser-card figcaption{display:flex;gap:12px;align-items:center;padding:12px 20px;border-block:1px solid var(--line);background:#fff;color:#4f5f6d;font-family:var(--mono);font-size:.6rem;line-height:1.5}
+.panel-teaser-card figcaption>span{font-weight:650;font-variant-numeric:tabular-nums;color:var(--r-ink)}
+.panel-teaser-card figcaption i{display:grid;flex:none;width:26px;height:26px;margin-left:auto;place-items:center;border-radius:6px;background:#eef3f7;font-size:.9rem;font-style:normal;transition:background-color 300ms ease,color 300ms ease,transform 400ms var(--r-ease)}
+.panel-teaser-card__preview:hover figcaption i{background:var(--r-ink);color:#fff;transform:rotate(90deg)}
+.panel-teaser-card__copy{display:flex;flex:1;flex-direction:column;padding:24px}
+.panel-teaser-card__meta{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--lr-mute);font-family:var(--mono);font-size:.62rem;font-weight:500}
+.panel-teaser-card__level{border-radius:6px;padding:4px 10px;background:#e3edf5;color:#234d71;font-weight:650}
+.panel-teaser-card[data-level='intelligent'] .panel-teaser-card__level{background:var(--r-ink);color:#fff}
+.panel-teaser-card h3{margin:16px 0 10px;font:620 1.6rem/1.12 var(--display);letter-spacing:-.035em}
+.panel-teaser-card__copy>p{margin:0;color:var(--slate);font-size:.82rem;line-height:1.6}
+.panel-teaser-card dl{display:none}
+.panel-teaser-card__actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:18px}
+.panel-teaser-card__actions a{display:inline-flex;align-items:center;gap:12px;min-height:44px;color:var(--r-ink);font-size:.78rem;font-weight:600;text-underline-offset:4px}
+.panel-teaser-card__actions a span{transition:transform 260ms var(--r-ease)}
+.panel-teaser-card__actions a:hover span{transform:translateX(4px)}
+
+/* ---------- Implementation ---------- */
+.implementation-section{background:var(--lr-paper-deep)}
+.implementation-content{display:grid;grid-template-columns:minmax(0,.82fr) minmax(0,1.18fr);gap:64px;align-items:start}
+.implementation-media{position:sticky;top:120px}
+.implementation-photo{display:block;overflow:hidden;border-radius:var(--lr-radius);aspect-ratio:4/5}
+.implementation-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform 1200ms var(--r-ease)}
+.implementation-media:hover img{transform:scale(1.03)}
+.implementation-path{position:relative;display:grid;gap:0;margin:0;padding:0;list-style:none}
+.implementation-path:before{content:'';position:absolute;top:24px;bottom:24px;left:23px;width:1px;background:var(--lr-line-strong)}
+.implementation-path article{position:relative;display:grid;grid-template-columns:48px minmax(0,1fr);gap:24px;padding:4px 0 34px}
+.implementation-path__num{position:relative;z-index:1;display:grid;width:48px;height:48px;place-items:center;border:1px solid #b9cddc;border-radius:var(--lr-radius-sm);background:var(--lr-paper-deep);color:var(--r-ink);font:500 1rem/1 var(--mono);font-variant-numeric:tabular-nums;transition:background-color 300ms ease,color 300ms ease}
+.implementation-path li:hover .implementation-path__num{background:var(--r-ink);color:#fff}
+.implementation-path__body{padding-top:10px;color:var(--r-ink)}
+.implementation-path h3{margin:0 0 8px;font:620 1.5rem/1.15 var(--display);letter-spacing:-.03em}
+.implementation-path p{max-width:520px;margin:0;color:#4d5c69;font-size:.86rem;line-height:1.65}
+.implementation-path__owner{display:inline-flex;flex-wrap:wrap;gap:6px;margin-top:14px;border:1px solid var(--lr-line);border-radius:6px;padding:6px 10px;background:#fff;color:#34495a;font-size:.7rem}
+.implementation-path__owner strong{color:var(--r-ink);font-weight:650}
+.implementation-path__owner strong:after{content:' ·'}
+.implementation-boundary{display:flex;align-items:center;justify-content:space-between;gap:32px;margin-top:40px;border-top:1px solid #cbd9e4;padding-top:24px;color:var(--slate);font-size:.82rem;line-height:1.6}
+.implementation-boundary p{margin:0}
+.implementation-boundary a{display:inline-flex;align-items:center;gap:10px;min-height:44px;color:var(--r-ink);font-weight:600;text-underline-offset:4px}
+
+/* ---------- Guides ---------- */
+.guide-teaser-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}
+.guide-teaser-card{position:relative;display:flex;flex-direction:column;min-height:300px;border:1px solid var(--line);border-radius:var(--lr-radius);padding:22px;background:#fff;color:var(--r-ink);text-decoration:none;transition:background-color 400ms var(--r-ease),color 400ms var(--r-ease),transform 400ms var(--r-ease)}
+.guide-teaser-card:hover{transform:translateY(-4px);background:var(--r-ink);color:#fff}
+.guide-teaser-card__icon{display:grid;width:42px;height:42px;place-items:center;border-radius:8px;background:var(--color-sky-tint);color:var(--r-blue-ink);transition:background-color 400ms ease,color 400ms ease}
+.guide-teaser-card:hover .guide-teaser-card__icon{background:#ffffff1f;color:#fff}
+.guide-teaser-card__index{position:absolute;top:26px;right:22px;color:var(--lr-mute);font-family:var(--mono);font-size:.66rem;font-weight:500;font-variant-numeric:tabular-nums}
+.guide-teaser-card>p{margin:26px 0 8px;color:var(--lr-mute);font-family:var(--mono);font-size:.58rem;font-weight:500;letter-spacing:.05em;line-height:1.5;text-transform:uppercase}
+.guide-teaser-card h3{margin:0 0 12px;font:620 1.4rem/1.15 var(--display);letter-spacing:-.03em}
+.guide-teaser-card>div{color:#4f5f6d;font-size:.74rem;line-height:1.55}
+.guide-teaser-card>div strong{display:none}
+.guide-teaser-card>i{display:grid;width:34px;height:34px;margin-top:auto;place-items:center;border-radius:var(--lr-radius-sm);background:#eef3f7;font-style:normal;transition:background-color 400ms ease,color 400ms ease,transform 400ms var(--r-ease)}
+.guide-teaser-card:hover>p,.guide-teaser-card:hover>div,.guide-teaser-card:hover .guide-teaser-card__index{color:#c9d8e5}
+.guide-teaser-card:hover>i{background:#fff;color:var(--r-ink);transform:rotate(45deg)}
+
+/* ---------- FAQ ---------- */
+.faq-section{display:grid;grid-template-columns:.7fr 1.3fr;gap:88px;align-items:start}
+.section-intro{position:sticky;top:120px}
+.section-intro .section-head__rule{margin-bottom:28px}
+.section-intro .eyebrow{margin:0 0 18px;color:#35526b}
+.faq-nudge{margin-top:36px;border-radius:var(--lr-radius);padding:22px;background:#fff;border:1px solid var(--line)}
+.faq-nudge p{margin:0 0 6px;font:560 1.2rem/1.25 var(--display);letter-spacing:-.02em}
+.faq-nudge a{display:inline-flex;align-items:center;gap:10px;min-height:44px;color:var(--r-blue-ink);font-size:.84rem;font-weight:600;text-underline-offset:4px}
+.faq-list{border-top:1px solid #cbd4dd;interpolate-size:allow-keywords}
+.faq-list details{border-bottom:1px solid #cbd4dd}
+.faq-list details::details-content{height:0;overflow:clip;transition:height 420ms var(--r-ease),content-visibility 420ms allow-discrete}
+.faq-list details[open]::details-content{height:auto}
+.faq-list summary{display:grid;grid-template-columns:40px minmax(0,1fr) 36px;align-items:center;gap:12px;min-height:72px;cursor:pointer;list-style:none;transition:color 200ms ease}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary:hover{color:var(--r-blue-ink)}
+.faq-list__index{color:#50657a;font-size:.7rem;font-weight:650;font-variant-numeric:tabular-nums}
+.faq-list__question{font:560 1.14rem/1.4 var(--display);letter-spacing:-.015em}
+.faq-list__toggle{display:grid;width:36px;height:36px;place-items:center;border:1px solid #cbd4dd;border-radius:var(--lr-radius-sm);color:var(--r-ink);font-size:1.1rem;transition:transform 400ms var(--r-ease),background-color 300ms ease,color 300ms ease}
+.faq-list details[open] .faq-list__toggle{transform:rotate(45deg);background:var(--r-ink);color:#fff;border-color:var(--r-ink)}
+.faq-list details p{max-width:640px;margin:0 48px 26px 52px;color:var(--slate);font-size:.9rem;line-height:1.75}
+
+/* ---------- Closing ---------- */
+.closing-section{padding-top:40px;background:var(--paper)}
+.closing-showcase{position:relative;display:grid;grid-template-columns:1fr 1.05fr;gap:64px;align-items:center;overflow:hidden;border-radius:var(--lr-radius-lg);padding:clamp(40px,6vw,88px);background:var(--lr-night);color:#fff}
+.closing-showcase__grid{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.closing-showcase__grid path{fill:none;stroke:#ffffff0d}
+.closing-copy{position:relative;z-index:1}
+.closing-copy .eyebrow{color:#a9c6dc}
+.closing-copy .heading{margin-top:18px;color:#fff;font-size:clamp(2.6rem,4.2vw,4.4rem)}
+.closing-copy .section-head__rule{margin-bottom:26px;color:#a9c6dc}
+.closing-copy .section-head__rule i{background:#ffffff26}
+.closing-copy>p:not(.eyebrow){max-width:460px;margin:26px 0;color:#cbdae6;font-size:1rem;line-height:1.7}
+.closing-proof-list{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 34px;padding:0;list-style:none}
+.closing-proof-list li{display:inline-flex;align-items:center;gap:8px;border:1px solid #ffffff26;border-radius:6px;padding:7px 12px;color:#dbe6ef;font-family:var(--mono);font-size:.68rem}
+.closing-proof-list span{color:#9fd1b8}
+.closing-copy>div{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.closing-copy>div a{display:inline-flex;align-items:center;justify-content:space-between;gap:16px;min-height:52px;border-radius:var(--lr-radius-sm);padding:14px 24px;background:#fff;color:var(--r-ink);font-size:.86rem;font-weight:650;text-decoration:none;transition:background-color 200ms ease,color 200ms ease}
+.closing-copy>div a span{transition:transform 260ms var(--r-ease)}
+.closing-copy>div a:hover{background:#dce9f3}
+.closing-copy>div a:hover span{transform:translateX(3px)}
+.closing-copy>div a+a{border:1px solid #ffffff40;background:transparent;color:#fff}
+.closing-copy>div a+a:hover{background:#ffffff14}
+.closing-visual{position:relative;z-index:1;min-width:0;padding:20px 40px 56px 0}
+.closing-desktop{margin:0;overflow:hidden;border:1px solid #ffffff26;border-radius:12px;background:#fff;box-shadow:0 50px 90px -40px #000000a6;transform:perspective(1600px) rotateY(-7deg) rotateX(3deg);transition:transform 900ms var(--r-ease)}
+.closing-showcase:hover .closing-desktop{transform:perspective(1600px) rotateY(-2deg) rotateX(1deg)}
+.closing-desktop__chrome{display:flex;gap:5px;padding:10px 12px;background:#f4f6f8}
+.closing-desktop__chrome i{width:7px;height:7px;border-radius:50%;background:#cdd5dc}
+.closing-desktop img{display:block;width:100%;height:auto}
+.closing-visual figcaption{padding:10px 12px;color:#4f5f6d;font-size:.62rem}
+.closing-mobile{position:absolute;right:0;bottom:0;width:27%;margin:0;overflow:hidden;border:6px solid #050f1a;border-radius:24px;background:#fff;box-shadow:0 30px 60px -24px #000000b3}
+.closing-mobile img{display:block;width:100%;height:auto}
+.closing-mobile figcaption{display:none}
+.closing-badge{position:absolute;top:0;left:-24px;display:grid;gap:2px;border-radius:10px;padding:14px 18px;background:#fff;color:var(--r-ink);box-shadow:0 30px 60px -30px #000000b3;font-size:.68rem;font-weight:550;max-width:190px;line-height:1.35}
+.closing-badge b{font:640 1.7rem/1 var(--display);letter-spacing:-.04em}
+.contact-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:88px;align-items:start;padding-top:110px}
+.contact-copy{position:sticky;top:120px}
+.contact-copy .section-head__rule{margin-bottom:28px}
+.contact-copy .eyebrow{margin:0 0 18px;color:#35526b}
+.contact-copy .heading{font-size:clamp(2.2rem,3.4vw,3.4rem)}
+.contact-copy .editorial{margin:22px 0}
+.whatsapp-link{display:inline-flex;align-items:center;gap:10px;min-height:48px;border:1px solid var(--r-line-strong);border-radius:var(--lr-radius-sm);padding:10px 20px;color:var(--r-ink);font-size:.86rem;font-weight:600;text-decoration:none;transition:background-color 200ms ease,border-color 200ms ease}
+.whatsapp-link svg{width:18px;height:18px;fill:#1e8a4c}
+.whatsapp-link:hover{border-color:#1e8a4c;background:#e9f6ee}
+
+/* ---------- Responsive ---------- */
+@media(min-width:1600px){.hero-product{height:700px}}
+@media(min-width:901px) and (max-height:780px){
+  .hero{padding-top:120px}
+  .hero-title{margin-top:22px;font-size:clamp(3.2rem,5vw,5.2rem)}
+  .hero-promise{margin-top:20px}
+  .hero-lead-form{margin-top:24px}
+  .hero-proof{margin-top:20px}
+  .hero-product{height:580px}
+}
+@media(max-width:1180px){
+  .hero-grid{gap:40px}
+  .hero-float--request{left:-18px}
+  .hero-float--load{right:-12px}
+  .hero-float--event{display:none}
+  .hero-actions{grid-template-columns:1fr}
+  .hero-entry+.hero-entry{border-left:0;border-top:1px solid var(--r-line-strong)}
+  .guide-teaser-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ecosystem-shell{grid-template-columns:1fr;gap:16px}
+}
+@media(max-width:1050px){
+  .section{padding-block:96px}
+  .section-head{gap:22px 36px}
+  .platform-panel{grid-template-columns:1fr;gap:36px}
+  .platform-panel__copy{max-width:680px}
+  .connections-grid{gap:14px}
+  .brand-cloud{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .connections-grid{grid-template-columns:1fr}
+  .connection-family--commerce{grid-template-columns:1fr;grid-template-rows:none}
+  .connection-family--commerce .connection-family__heading,.connection-family--commerce .brand-cloud,.connection-family--commerce .connection-route{grid-column:1;grid-row:auto}
+  .connection-family--commerce .brand-cloud{margin-top:32px}
+  .portfolio-grid,.panel-teaser-grid{grid-auto-columns:calc((100% - 20px)/2)}
+  .closing-showcase,.contact-grid{gap:44px}
+  .closing-showcase{grid-template-columns:1fr}
+  .closing-visual{max-width:720px}
+  .implementation-content{gap:40px}
+}
+@media(max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .hero-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .hero-entry+.hero-entry{border-top:0;border-left:1px solid var(--r-line-strong)}
+  .hero-product{height:auto;padding-top:22px}
+  .hero-stage{position:relative;inset:auto;display:flex;flex-direction:column;align-items:center;gap:20px;padding-bottom:22px}
+  .hero-mosaic{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;width:100%;height:auto;padding:56px 22px 0;-webkit-mask-image:none;mask-image:none}
+  .hero-column{display:contents}
+  .hero-float--request{top:0;left:22px}
+  .hero-float--load,.hero-float--event{display:none}
+  .demo-note{position:relative;left:auto;bottom:auto;display:flex;width:fit-content;margin:18px auto 0;transform:none}
+  .hero-baseline{flex-direction:column;align-items:flex-start;margin-top:48px}
+}
+@media(max-width:760px){
+  .hero{padding-top:112px}
+  .hero-title{margin-top:24px;font-size:clamp(2.9rem,12vw,4.4rem)}
+  .hero-promise{font-size:1rem;margin-top:22px}
+  .hero-actions{grid-template-columns:1fr}
+  .hero-entry+.hero-entry{border-left:0;border-top:1px solid var(--r-line-strong)}
+  .hero-stage{border-radius:14px}
+  .hero-mosaic{gap:10px;padding:52px 14px 0}
+  .hero-brand-card{border-radius:12px}
+  .hero-brand-card__chrome{display:none}
+  .hero-brand-card img{aspect-ratio:1}
+  .hero-brand-card__label{padding:8px 10px 9px}
+  .hero-brand-card__label i,.hero-brand-card small{display:none}
+  .hero-brand-card b{font-size:.68rem}
+  .hero-float--request{left:14px;padding:10px 12px}
+  .hero-stats dd{font-size:1.7rem}
+  .section{padding-block:72px}
+  .heading{font-size:clamp(2.3rem,9.5vw,3rem)}
+  .section-head{grid-template-columns:1fr;gap:18px;margin-bottom:36px}
+  .section-head .editorial{justify-self:start;padding:0}
+  .editorial{font-size:.94rem}
+  .platform-tabs{justify-content:flex-start;width:100%;margin-bottom:32px;border-radius:12px}
+  .platform-tabs__indicator{border-radius:9px}
+  .platform-tabs button{padding-inline:16px;border-radius:9px}
+  .connections-grid{grid-template-columns:1fr;gap:14px}
+  .connection-family{border-radius:14px}
+  .connection-route{grid-template-columns:1fr;justify-items:start;gap:8px;padding-top:32px}
+  .route-wire{width:1px;height:18px;margin-left:24px;background:repeating-linear-gradient(180deg,#8fa98f 0 4px,transparent 4px 8px)}
+  .route-wire i{display:none}
+  .portfolio-grid,.panel-teaser-grid{grid-auto-columns:minmax(270px,84%)}
+  .catalogue-controls{margin-top:-12px}
+  .implementation-content{grid-template-columns:1fr}
+  .implementation-media{display:none}
+  .implementation-boundary{display:block}
+  .implementation-boundary a{margin-top:10px}
+  .guide-teaser-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .guide-teaser-card{min-height:260px;padding:18px}
+  .faq-section{grid-template-columns:1fr;gap:32px}
+  .section-intro,.contact-copy{position:static}
+  .faq-list summary{grid-template-columns:30px minmax(0,1fr) 36px;min-height:64px}
+  .faq-list__question{font-size:1.02rem}
+  .faq-list details p{margin:0 0 22px 42px}
+  .closing-section{padding-top:24px}
+  .closing-showcase{border-radius:14px;padding:36px 22px}
+  .closing-visual{padding:16px 24px 40px 0}
+  .closing-badge{left:-6px;top:-10px;padding:10px 14px}
+  .closing-badge b{font-size:1.3rem}
+  .contact-grid{grid-template-columns:1fr;gap:36px;padding-top:72px}
+  .ecosystem-rail{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(176px,1fr)}
+  .ecosystem-item:first-child{padding-left:0;border-left:0}
+  .hero-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;width:100%}
+  .hero-stats dt{font-size:.66rem;line-height:1.35}
+  .closing-copy .heading{font-size:2.4rem}
+}
+@media(max-width:420px){
+  .hero-eyebrow__meta{display:none}
+  .hero-title{font-size:2.9rem}
+  .hero-lead-form{border-radius:14px}
+  .hero-lead-form__field{flex-wrap:wrap}
+  .hero-lead-form__icon{display:none}
+  .hero-lead-form input{padding-inline:14px}
+  .hero-lead-form button{width:100%}
+  .hero-float--request b{display:none}
+  .heading{font-size:2.2rem}
+  .guide-teaser-grid{grid-template-columns:1fr}
+  .guide-teaser-card{min-height:0}
+  .guide-teaser-card>i{margin-top:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .hero-column,.hero-float{transform:none!important}
+  .live-dot:after,.route-wire i{animation:none}
+  .journey-viewport{scroll-behavior:auto}
+  .platform-panel{animation:none}
+  .platform-tabs__indicator,.journey-progress span{transition:none}
+  .hero-brand-card,.hero-brand-card img,.portfolio-card,.portfolio-card img,.panel-teaser-card,.panel-teaser-card img,.journey-step,.guide-teaser-card,.closing-desktop,.implementation-photo img,.brand-cloud li{transition:none}
+  .faq-list details::details-content{transition:none}
+}
 </style>

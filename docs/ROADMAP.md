@@ -615,6 +615,14 @@ Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin aus
  contactar antes de completar la guía. ES/EN, teclado y fallback verificados.
  No se atribuye un aumento de conversión sin datos.
 
+## Rediseño v2 · producto preciso · 30/09/2026
+
+- [x] ADR-021 y capa `.lr-product` compartida por web comercial y gestor.
+- [x] Seis diagramas explicativos del servicio en home y páginas interiores.
+- [x] Gestor Vedra/Solane con cromo único; previews de paneles regeneradas.
+- [x] Fichas de tema con ficha técnica, anatomía, sistema visual y alcance.
+- [ ] Regenerar las 42 capturas comerciales y revisar con la responsable antes de PR.
+
 ## F30 · Validar antes de ampliar
 
 **Siguiente prioridad de producto:** observar la decisión de propietarios de

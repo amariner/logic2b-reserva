@@ -2,6 +2,16 @@
 
 Sistema de diseño canónico: [Logic2B UI](https://ui.logic2b.com/), integrado y versionado en `packages/ui/components.json`. La piel aprobada para este producto conserva la frase guía **“cuaderno de papel cálido bajo la luz de la tarde”**: personaliza los tokens del sistema compartido, no crea un sistema paralelo. Las reglas funcionales y de producto siguen viviendo en `CLAUDE.md` y `docs/ROADMAP.md`; la decisión de integración está en `docs/adr/ADR-017-logic2b-ui-como-sistema-de-diseno.md`.
 
+## Lenguaje v2 · producto preciso (ADR-021, 30/09/2026)
+
+Sobre la base anterior, las superficies de producto —web comercial y gestor— aplican la clase `.lr-product` de `packages/ui/src/theme.css`: un paso pequeño hacia más seriedad y tecnología, sin perder calidez. Esta capa prevalece sobre las reglas de «Lenguaje visual» cuando se contradicen.
+
+- **Tipografía:** titulares en Inter semibold con tracking negativo (`--display`); etiquetas, índices, horas, importes y datos en JetBrains Mono (`--mono`). Source Serif 4 queda como acento: una palabra en cursiva por titular principal y la promesa de cada tema.
+- **Color:** tinta `--lr-ink` `#0f1d2d`, texto secundario `--lr-slate` `#475767`, azul de producto `--lr-blue` `#1d5c96`, papel frío `--lr-paper` `#f3f5f7`, noche `--lr-night` `#0b1624` para escenarios y barra lateral, retícula `--lr-grid` al 5 %.
+- **Geometría:** botones rectangulares de 8 px, tarjetas de 12 px, escenarios de 16–20 px. Píldoras solo para etiquetas y estados.
+- **Diagramas:** `apps/site/src/components/ServiceDiagram.astro` (`system`, `inventory`, `noshow`, `privatization`, `plans`, `roles`). Texto real en HTML desde `DIAGRAM_CONTENT` (`content.ts`), SVG solo decorativo, estados `--state-table-*` y límite demostrativo visible en cada figura.
+- **Gestor:** Vedra y Solane comparten cromo Logic Reserva. `.rd-app` redefine `--brand-*` con los tokens de producto; la marca del restaurante se conserva como `--rd-client` (monograma y acento de 3 px del espacio de trabajo). Las webs de marca y sus widgets no cambian.
+
 ## Ámbito
 
 - La landing comercial y las superficies de producto Logic Reserva usan este sistema cálido, editorial y plano.

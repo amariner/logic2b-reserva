@@ -311,7 +311,8 @@ test.describe('landing comercial Logic Reserva', () => {
     expect(sitemap).toContain('https://reserva.logic2b.com/docs/');
     expect(sitemap).toContain('https://reserva.logic2b.com/docs/tecnica/');
     expect(sitemap).toContain('https://reserva.logic2b.com/en/docs/propietario/');
-    expect(sitemap).toContain('<lastmod>2026-09-04</lastmod>');
+    expect(sitemap).toContain('https://reserva.logic2b.com/dentistas/');
+    expect(sitemap).toContain('<lastmod>2026-09-26</lastmod>');
     expect(sitemap).not.toContain('/demos/');
 
     const robots = await (await request.get('/robots.txt')).text();
