@@ -1,8 +1,12 @@
 # SIGUIENTE SESIÓN
 
-**Fase actual:** F29 publicada en producción; rediseño del home y de las páginas comerciales en la rama `redesign/home-awwwards` (subida a GitHub, sin PR ni despliegue). F30 sigue siendo la siguiente prioridad de producto.
+**Fase actual:** F29 publicada en producción; rediseño v2 «producto preciso» (ADR-021) en la rama `redesign/home-awwwards`: lenguaje común web + gestor, seis diagramas explicativos y fichas de tema nuevas. Sin PR ni despliegue. F30 sigue siendo la siguiente prioridad de producto.
 **Rama de trabajo:** `redesign/home-awwwards`, creada desde `main` (`5758e02`).
-**Siguiente hito:** repetir `pnpm check` y la suite E2E completa sobre la rama (las páginas interiores aún no tienen pase E2E); decidir si se retoma el rediseño de los temas Brasca, Vedra y Solane (trabajo parcial en `.claude/worktrees/agent-*`, sin integrar); regenerar las 42 capturas (`pnpm fotos`) y abrir PR. No desplegar ni enviar leads reales sin petición expresa.
+**Siguiente hito:** revisar el rediseño v2 con la persona responsable; regenerar las 42 capturas (`pnpm fotos`, requiere Chrome con H.264 o `CHROMIUM_PATH`); repetir `tests/e2e/platform-visual.spec.ts` en un navegador con H.264; decidir si se retoma el rediseño de los temas Brasca, Vedra y Solane (worktrees antiguos sin integrar) y abrir PR. No desplegar ni enviar leads reales sin petición expresa.
+
+## Rediseño v2 del 30/09/2026
+
+Capa `.lr-product` en `packages/ui/src/theme.css` (Inter + JetBrains Mono, tinta y azul de producto, retícula, radios contenidos) aplicada a todas las páginas comerciales y al gestor. `ServiceDiagram.astro` dibuja seis explicaciones (cómo funciona, inventario único, anti no-show, privatización, planes, roles) con copy en `DIAGRAM_CONTENT`. Vedra y Solane comparten cromo; la marca del restaurante queda como `--rd-client`. Fichas de tema con ficha técnica, escaparate anotado, sistema visual y alcance comparado. 24 previews de paneles regeneradas. Gates: `pnpm check` 28/28; E2E 116/118 con los dos fallos de vídeo atribuidos al entorno (sin H.264), comprobado sobre el commit base.
 
 ## Rediseño del home del 26/09/2026
 

@@ -98,6 +98,41 @@
   --state-danger: #b52a1d;
 }
 
+/* Lenguaje v2 · producto preciso (ADR-021). Superficies de Logic Reserva
+   —web comercial y gestor— comparten estos tokens. Las webs de las marcas
+   ficticias no aplican .lr-product y conservan sus --brand-*. */
+:root {
+  --display: var(--sans);
+  --mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.lr-product {
+  --lr-ink: #0f1d2d;
+  --lr-ink-soft: #22364a;
+  --lr-slate: #475767;
+  --lr-mute: #56646f;
+  --lr-blue: #1d5c96;
+  --lr-blue-strong: #164a7a;
+  --lr-blue-soft: #e4edf6;
+  --lr-signal: #3d86c9;
+  --lr-signal-soft: #d6e6f5;
+  --lr-paper: #f3f5f7;
+  --lr-paper-deep: #e9edf1;
+  --lr-card: #ffffff;
+  --lr-night: #0b1624;
+  --lr-night-soft: #14243a;
+  --lr-line: rgb(15 29 45 / 11%);
+  --lr-line-strong: rgb(15 29 45 / 20%);
+  --lr-grid: rgb(15 29 45 / 5%);
+  --lr-radius-sm: 8px;
+  --lr-radius: 12px;
+  --lr-radius-lg: 18px;
+  --lr-shadow-product: 0 1px 2px rgb(15 29 45 / 6%), 0 18px 40px -22px rgb(15 29 45 / 38%);
+  --lr-ease: cubic-bezier(.2, .7, .2, 1);
+}
+
+.lr-mono { font-family: var(--mono); font-feature-settings: 'zero' 0; letter-spacing: 0; }
+
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; background: var(--paper); }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--sans); -webkit-font-smoothing: antialiased; }

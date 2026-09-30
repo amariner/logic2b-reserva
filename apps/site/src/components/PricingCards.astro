@@ -36,36 +36,36 @@ const ui = locale === 'en' ? {
 <p class="pricing-demo">{ui.demo}</p>
 <style>
 .pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:stretch;gap:18px}
-.pricing-card{position:relative;display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:28px;padding:30px;background:#fff;color:var(--color-midnight-ink);transition:transform 400ms cubic-bezier(.2,.7,.2,1),box-shadow 400ms cubic-bezier(.2,.7,.2,1)}
-.pricing-card:hover{transform:translateY(-4px);box-shadow:0 34px 60px -40px #16344f80}
-.pricing-card[data-plan='gestion']{border-color:#10263b;background:#10263b;color:#fff;box-shadow:0 40px 70px -40px #10263bb3}
+.pricing-card {position:relative;display:flex;flex-direction:column;min-width:0;border:1px solid var(--line);border-radius:var(--lr-radius-lg);padding:30px;background:#fff;color:var(--color-midnight-ink);transition:transform 400ms cubic-bezier(.2,.7,.2,1),box-shadow 400ms cubic-bezier(.2,.7,.2,1)}
+.pricing-card:hover{transform:translateY(-4px);box-shadow:0 34px 60px -40px rgb(15 29 45 / 45%)}
+.pricing-card[data-plan='gestion']{border-color:var(--lr-night);background:var(--lr-night);color:#fff;box-shadow:0 40px 70px -40px var(--lr-night)b3}
 .pricing-top{display:flex;min-height:30px;align-items:center;justify-content:space-between;gap:8px;color:#4f5f6d;font-size:.72rem;font-weight:550;line-height:1.5}
-.pricing-top b{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:4px 10px;background:#dbe9f4;color:#234d71;font-size:.64rem;white-space:nowrap}
+.pricing-top b {display:inline-flex;align-items:center;gap:6px;border-radius:6px;padding:4px 10px;background:#dbe9f4;color:#234d71;font-size:.64rem;white-space:nowrap}
 .pricing-card[data-plan='gestion'] .pricing-top{color:#c3d4e2}
-.pricing-card[data-plan='gestion'] .pricing-top b{background:#fff;color:#10263b}
+.pricing-card[data-plan='gestion'] .pricing-top b{background:#fff;color:var(--lr-night)}
 .pricing-card[data-plan='gestion'] .pricing-top b:before{content:'★';color:#c28a1c}
-.pricing-card h3{margin:18px 0 10px;font:480 clamp(1.8rem,2.4vw,2.3rem)/1.05 var(--serif);letter-spacing:-.04em}
-.pricing-price{display:flex;align-items:baseline;gap:6px;margin:0}.pricing-price strong{font:460 clamp(3rem,4.4vw,4.3rem)/1 var(--serif);letter-spacing:-.06em}.pricing-price span{font-size:.86rem;color:var(--slate)}
+.pricing-card h3{margin:18px 0 10px;font:620 clamp(1.8rem,2.4vw,2.3rem)/1.05 var(--display);letter-spacing:-.04em}
+.pricing-price{display:flex;align-items:baseline;gap:6px;margin:0}.pricing-price strong{font:640 clamp(3rem,4.4vw,4.3rem)/1 var(--display);letter-spacing:-.06em}.pricing-price span{font-size:.86rem;color:var(--slate)}
 .pricing-card[data-plan='gestion'] .pricing-price span,.pricing-card[data-plan='gestion'] .pricing-setup{color:#c3d4e2}
 .pricing-setup{margin:10px 0 24px;color:var(--slate);font-size:.8rem}
-.pricing-cta{display:flex;justify-content:space-between;align-items:center;min-height:52px;border:1px solid #c6d0d9;border-radius:999px;padding:12px 22px;color:inherit;font-size:.86rem;font-weight:620;text-decoration:none;transition:background-color 200ms ease,color 200ms ease,border-color 200ms ease}
+.pricing-cta {display:flex;justify-content:space-between;align-items:center;min-height:52px;border:1px solid #c6d0d9;border-radius:var(--lr-radius-sm);padding:12px 22px;color:inherit;font-size:.86rem;font-weight:620;text-decoration:none;transition:background-color 200ms ease,color 200ms ease,border-color 200ms ease}
 .pricing-cta span{transition:transform 260ms cubic-bezier(.2,.7,.2,1)}
 .pricing-cta:hover{border-color:var(--color-midnight-ink);background:var(--color-midnight-ink);color:#fff}
 .pricing-cta:hover span{transform:translate(2px,-2px)}
-.pricing-card[data-plan='gestion'] .pricing-cta{border-color:#fff;background:#fff;color:#10263b}
+.pricing-card[data-plan='gestion'] .pricing-cta{border-color:#fff;background:#fff;color:var(--lr-night)}
 .pricing-card[data-plan='gestion'] .pricing-cta:hover{background:#dce9f3;border-color:#dce9f3}
-.pricing-image{display:block;margin:26px 0 22px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--paper);aspect-ratio:1.6}
+.pricing-image {display:block;margin:26px 0 22px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--paper);aspect-ratio:1.6}
 .pricing-card[data-plan='gestion'] .pricing-image{border-color:#ffffff26}
 .pricing-image img{width:100%;height:100%;object-fit:cover;object-position:top;transition:transform 900ms cubic-bezier(.2,.7,.2,1)}.pricing-image:hover img{transform:scale(1.04)}
 .pricing-promise{min-height:52px;margin:0 0 16px;font-size:.98rem;line-height:1.5;font-weight:520}
 .pricing-card ul{display:grid;gap:10px;margin:0 0 22px;padding:0;list-style:none}.pricing-card li{display:flex;gap:10px;color:var(--slate);font-size:.82rem;line-height:1.5}
-.pricing-card li span{display:grid;flex:none;width:18px;height:18px;margin-top:1px;place-items:center;border-radius:50%;background:#e2efe8;color:#2c7353;font-size:.62rem}
+.pricing-card li span {display:grid;flex:none;width:18px;height:18px;margin-top:1px;place-items:center;border-radius:4px;background:#e2efe8;color:#2c7353;font-size:.62rem}
 .pricing-card[data-plan='gestion'] li{color:#d4e1ec}
 .pricing-card[data-plan='gestion'] li span{background:#ffffff1f;color:#9fd1b8}
 .pricing-links{display:flex;flex-wrap:wrap;gap:4px 18px;margin-top:auto}.pricing-links a{display:inline-flex;min-height:44px;gap:10px;align-items:center;color:inherit;font-size:.78rem;font-weight:550;text-underline-offset:4px}
 .pricing-card details{border-top:1px solid var(--line);margin-top:12px;color:var(--slate);font-size:.74rem}.pricing-card summary{display:flex;align-items:center;min-height:44px;cursor:pointer}.pricing-card summary:after{content:'+';margin-left:auto}.pricing-card details[open] summary:after{content:'−'}.pricing-card details p{line-height:1.6;margin:0 0 8px}
 .pricing-card[data-plan='gestion'] details{border-color:#ffffff26;color:#c3d4e2}
 .pricing-terms,.pricing-demo{max-width:960px;margin:30px auto 0;color:var(--slate);font-size:.77rem;line-height:1.65;text-align:center}.pricing-demo{margin-top:8px}
-@media(max-width:900px){.pricing-grid{grid-template-columns:1fr}.pricing-card{padding:24px;border-radius:24px}.pricing-promise{min-height:0}.pricing-image{max-height:280px}}
+@media(max-width:900px){.pricing-grid{grid-template-columns:1fr}.pricing-card {padding:14px;border-radius:14px}.pricing-promise{min-height:0}.pricing-image{max-height:280px}}
 @media(prefers-reduced-motion:reduce){.pricing-card,.pricing-image img,.pricing-cta span{transition:none}}
 </style>

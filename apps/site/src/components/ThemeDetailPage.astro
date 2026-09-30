@@ -10,8 +10,10 @@ import {
   themeMetaDescription,
   themePreviewBase,
   themeUrl,
+  type ThemeLayout,
   type ThemeSlug,
   type ThemeText,
+  type ThemeType,
 } from '@logic-reserva/config/themes';
 import Base from '../layouts/Base.astro';
 import CommercialChrome from './CommercialChrome.astro';
@@ -24,40 +26,126 @@ if (!theme) throw new Error(`Unknown public theme: ${slug}`);
 const local = (value: ThemeText) => localizedThemeText(value, locale);
 const prefix = locale === 'en' ? '/en' : '';
 const index = THEME_CATALOG.findIndex((entry) => entry.slug === slug);
-const related = [1, 2, 3].map((offset) => THEME_CATALOG[(index + offset) % THEME_CATALOG.length]);
+const related = [1, 2, 3].map((offset) => THEME_CATALOG[(index + offset) % THEME_CATALOG.length]!);
 const metadata = themeMetaDescription(theme);
+const pad = (value: number) => String(value).padStart(2, '0');
+const previewBase = themePreviewBase(theme.slug as ThemeSlug, locale);
+
+const layoutNames: Record<ThemeLayout, ThemeText> = {
+  editorial: { es: 'Editorial', en: 'Editorial' },
+  split: { es: 'Dividida', en: 'Split' },
+  poster: { es: 'Cartel', en: 'Poster' },
+  panorama: { es: 'Panorámica', en: 'Panoramic' },
+  minimal: { es: 'Mínima', en: 'Minimal' },
+  modular: { es: 'Modular', en: 'Modular' },
+  market: { es: 'Mercado', en: 'Market' },
+};
+const layoutHints: Record<ThemeLayout, ThemeText> = {
+  editorial: { es: 'Titular y texto a la izquierda, fotografía protagonista a la derecha.', en: 'Headline and copy on the left, hero photography on the right.' },
+  split: { es: 'Pantalla partida: el mensaje y la imagen pesan lo mismo.', en: 'Split screen: message and image carry equal weight.' },
+  poster: { es: 'Titular a toda anchura, gráfico y directo como un cartel.', en: 'Full-width headline, graphic and direct like a poster.' },
+  panorama: { es: 'Imagen panorámica a sangre con el mensaje encima.', en: 'Full-bleed panoramic image with the message on top.' },
+  minimal: { es: 'Mucho aire, un titular contenido y detalles precisos.', en: 'Generous space, a restrained headline and precise details.' },
+  modular: { es: 'Módulos repetibles para varias casas o propuestas.', en: 'Repeatable modules for several venues or offers.' },
+  market: { es: 'Rejilla de puestos o cocinas, como un plano del lugar.', en: 'A grid of stalls or kitchens, like a map of the place.' },
+};
+const typeNames: Record<ThemeType, ThemeText> = {
+  serif: { es: 'Serif editorial', en: 'Editorial serif' },
+  sans: { es: 'Sans humanista', en: 'Humanist sans' },
+  condensed: { es: 'Display condensada', en: 'Condensed display' },
+  mixed: { es: 'Mixta · serif + sans', en: 'Mixed · serif + sans' },
+};
+
+type Block = { x: number; y: number; w: number; h: number; kind: 'title' | 'text' | 'img' | 'cta' | 'shape' | 'line' | 'light' };
+const header: Block[] = [{ x: 4, y: 4, w: 13, h: 3.4, kind: 'title' }, { x: 83, y: 3.4, w: 13, h: 4.6, kind: 'cta' }];
+const wireframes: Record<ThemeLayout, Block[]> = {
+  editorial: [{ x: 4, y: 17, w: 40, h: 10, kind: 'title' }, { x: 4, y: 31, w: 34, h: 3, kind: 'text' }, { x: 4, y: 36, w: 28, h: 3, kind: 'text' }, { x: 4, y: 45, w: 14, h: 5, kind: 'cta' }, { x: 52, y: 14, w: 44, h: 42, kind: 'img' }],
+  split: [{ x: 4, y: 20, w: 38, h: 10, kind: 'title' }, { x: 4, y: 34, w: 34, h: 3, kind: 'text' }, { x: 4, y: 39, w: 26, h: 3, kind: 'text' }, { x: 4, y: 47, w: 14, h: 5, kind: 'cta' }, { x: 50, y: 11, w: 50, h: 51, kind: 'img' }],
+  poster: [{ x: 4, y: 14, w: 92, h: 17, kind: 'title' }, { x: 4, y: 36, w: 54, h: 20, kind: 'img' }, { x: 66, y: 33, w: 25, h: 25, kind: 'shape' }, { x: 4, y: 58.5, w: 14, h: 0.8, kind: 'line' }],
+  panorama: [{ x: 0, y: 11, w: 100, h: 51, kind: 'img' }, { x: 26, y: 25, w: 48, h: 10, kind: 'light' }, { x: 34, y: 38, w: 32, h: 3, kind: 'light' }, { x: 43, y: 45, w: 14, h: 5, kind: 'cta' }],
+  minimal: [{ x: 31, y: 18, w: 38, h: 6, kind: 'title' }, { x: 46, y: 28, w: 8, h: 0.8, kind: 'line' }, { x: 33, y: 32, w: 34, h: 3, kind: 'text' }, { x: 40, y: 40, w: 20, h: 16, kind: 'img' }],
+  modular: [{ x: 4, y: 15, w: 40, h: 7, kind: 'title' }, { x: 4, y: 27, w: 29, h: 30, kind: 'img' }, { x: 35.5, y: 27, w: 29, h: 30, kind: 'img' }, { x: 67, y: 27, w: 29, h: 30, kind: 'img' }],
+  market: [{ x: 4, y: 15, w: 34, h: 7, kind: 'title' }, ...[0, 1, 2, 3].flatMap((column) => [0, 1].map((row) => ({ x: 4 + column * 23.3, y: 27 + row * 16, w: 21, h: 14, kind: (column + row) % 2 ? 'text' : 'img' } as Block)))],
+};
+const wireframe = [...header, ...wireframes[theme.layout]];
+
+const planCell = { es: ['Básico', 'Básico', 'Gestión', 'Gestión', 'Inteligente'], en: ['Basic', 'Basic', 'Management', 'Management', 'Intelligent'] }[locale];
+const scopeRows = locale === 'en'
+  ? ['Responsive website with menu and story', 'Table enquiry by form', 'Booking with 15-minute availability', 'Floor manager, waitlist and groups', 'Events, deposits and private hire']
+  : ['Web responsive con carta e historia', 'Solicitud de mesa por formulario', 'Reserva con disponibilidad por franjas', 'Gestor de sala, espera y grupos', 'Eventos, garantías y privatizaciones'];
+const demoScope: Record<string, readonly boolean[]> = {
+  brasca: [true, true, false, false, false],
+  vedra: [true, false, true, true, false],
+  solane: [true, false, true, true, true],
+};
+const scopeInDemo = demoScope[theme.slug] ?? [true, false, false, false, false];
+
 const ui = locale === 'en' ? {
   titleSuffix: ' | Restaurant website by Logic Reserva', back: 'All website directions', product: 'Restaurant website direction',
   fictional: 'Fictional navigable demonstration', responsive: 'Responsive', address: `${theme.slug}.yourdomain.com`,
   summary: `A complete website direction for presenting ${theme.name} as a ${local(theme.format).toLocaleLowerCase()}, turning visits into better prepared enquiries without losing its identity.`,
-  open: 'Open navigable website', want: 'I want a website like this', frameTitle: `Screenshot of the fictional ${theme.name} website`,
-  demoLabel: 'Navigable demo', fit: 'Why this direction works', fitTitle: 'Your restaurant’s personality, online too.',
-  fitBody: 'We adapt photography, colours, copy and menus to your restaurant. Clear on mobile and desktop, with booking always within reach.',
+  open: 'Open navigable website', want: 'I want a website like this', frameTitle: `Screenshot of the fictional ${theme.name} website`, mobileTitle: `${theme.name} on mobile`,
+  sheet: 'Spec sheet', sheetNote: 'Fictional brand · real product',
+  anatomyEyebrow: 'Homepage anatomy', anatomy: [
+    { title: 'Brand and promise first', body: 'Name, tone and one clear sentence set the scene in the first second.' },
+    { title: 'Booking always within reach', body: 'The main action stays in the header while the guest scrolls.' },
+    { title: 'Mobile-first action', body: 'On a phone, photo and booking come before anything else.' },
+  ],
+  demoLabel: 'What this direction includes', demoTitle: 'One direction, ready to adapt.',
   capabilities: [
     'Visual direction applied to the homepage, menu, story and contact',
     'Hierarchy prepared for mobile, desktop and accessible reading',
     'Enquiry or booking shaped around the restaurant format',
     'One shared product base, configured without duplicating the project',
   ],
+  systemEyebrow: 'Visual system', systemTitle: 'The pieces that make it recognisable.',
+  palette: 'Palette', type: 'Typography', layout: 'Layout pattern', roles: { primary: 'Primary', accent: 'Accent', paper: 'Paper', ink: 'Ink', muted: 'Secondary text' },
+  scopeEyebrow: 'What you can try', scopeTitle: 'Demo today, project tomorrow.', scopeDemo: 'In this demo', scopeProject: 'With Logic Reserva', yes: 'Demonstrated', no: 'Not in this demo',
+  scopeNote: 'Every direction can be combined with any plan. The demo only shows what is marked.',
+  fit: 'How we adapt it', fitTitle: 'Your restaurant’s personality, online too.',
+  fitBody: 'We adapt photography, colours, copy and menus to your restaurant. Clear on mobile and desktop, with booking always within reach.',
+  fitSteps: [
+    { title: 'Your photos and menu', body: 'Real dishes, rooms and prices replace the fictional content.' },
+    { title: 'Your colours and type', body: 'The palette and typography follow your brand, not ours.' },
+    { title: 'Your way of booking', body: 'Enquiry, direct booking or events, depending on your plan.' },
+    { title: 'Your domain', body: 'Published on your own address, measured and maintained.' },
+  ],
   details: 'Website details', level: 'Starting point', status: 'Status', scope: 'Demonstrated scope', delivery: 'Delivery',
-  deliveryValue: 'Defined in an approved proposal', deep: theme.slug === 'brasca' ? 'Website and local enquiry form' : 'Website, booking and management journey', webOnly: 'Responsive website direction; no booking engine or manager',
-  included: 'Includes', tone: 'Visual tone', format: 'Restaurant format', location: 'Fictional location', related: 'Related website directions', all: 'View all twelve websites',
+  deliveryValue: 'Defined in an approved proposal', tone: 'Visual tone', format: 'Restaurant format', location: 'Fictional location', layoutLabel: 'Layout', typeLabel: 'Typography',
+  related: 'Related website directions', all: 'View all twelve websites', of: 'of',
 } : {
   titleSuffix: ' | Web para restaurantes · Logic Reserva', back: 'Todas las direcciones web', product: 'Dirección web para restaurantes',
   fictional: 'Demostración ficticia navegable', responsive: 'Responsive', address: `${theme.slug}.tudominio.com`,
   summary: `Una dirección web completa para presentar ${theme.name} como ${local(theme.format).toLocaleLowerCase()}, convertir visitas en solicitudes mejor preparadas y conservar su identidad.`,
-  open: 'Abrir web navegable', want: 'Quiero una web así', frameTitle: `Captura de la web ficticia ${theme.name}`,
-  demoLabel: 'Demo navegable', fit: 'Qué resuelve esta dirección', fitTitle: 'La esencia de tu restaurante, también online.',
-  fitBody: 'Adaptamos fotografía, colores, textos y carta a tu restaurante. Una web clara en móvil y escritorio, con la reserva siempre a mano.',
+  open: 'Abrir web navegable', want: 'Quiero una web así', frameTitle: `Captura de la web ficticia ${theme.name}`, mobileTitle: `${theme.name} en móvil`,
+  sheet: 'Ficha técnica', sheetNote: 'Marca ficticia · producto real',
+  anatomyEyebrow: 'Anatomía de la portada', anatomy: [
+    { title: 'Marca y promesa primero', body: 'Nombre, tono y una frase clara sitúan al cliente en el primer segundo.' },
+    { title: 'La reserva siempre a mano', body: 'La acción principal se queda en la cabecera mientras el cliente navega.' },
+    { title: 'Pensada para el móvil', body: 'En el teléfono, la foto y la reserva van antes que todo lo demás.' },
+  ],
+  demoLabel: 'Qué incluye esta dirección', demoTitle: 'Una dirección, lista para adaptar.',
   capabilities: [
     'Dirección visual aplicada a portada, carta, historia y contacto',
     'Jerarquía preparada para móvil, escritorio y lectura accesible',
     'Solicitud o reserva adaptada al formato del restaurante',
     'Una misma base de producto, configurada sin duplicar el proyecto',
   ],
+  systemEyebrow: 'Sistema visual', systemTitle: 'Las piezas que la hacen reconocible.',
+  palette: 'Paleta', type: 'Tipografía', layout: 'Esquema de maquetación', roles: { primary: 'Principal', accent: 'Acento', paper: 'Papel', ink: 'Tinta', muted: 'Texto secundario' },
+  scopeEyebrow: 'Qué puedes probar', scopeTitle: 'Demo hoy, proyecto mañana.', scopeDemo: 'En esta demo', scopeProject: 'Con Logic Reserva', yes: 'Demostrado', no: 'No en esta demo',
+  scopeNote: 'Cada dirección se combina con cualquier plan. La demo solo enseña lo marcado.',
+  fit: 'Cómo la adaptamos', fitTitle: 'La esencia de tu restaurante, también online.',
+  fitBody: 'Adaptamos fotografía, colores, textos y carta a tu restaurante. Una web clara en móvil y escritorio, con la reserva siempre a mano.',
+  fitSteps: [
+    { title: 'Tus fotos y tu carta', body: 'Platos, salas y precios reales sustituyen el contenido ficticio.' },
+    { title: 'Tus colores y tu tipografía', body: 'La paleta y la letra siguen tu marca, no la nuestra.' },
+    { title: 'Tu forma de reservar', body: 'Solicitud, reserva directa o eventos, según tu plan.' },
+    { title: 'Tu dominio', body: 'Publicada en tu propia dirección, medida y mantenida.' },
+  ],
   details: 'Detalles de la web', level: 'Punto de partida', status: 'Estado', scope: 'Alcance demostrado', delivery: 'Entrega',
-  deliveryValue: 'Definida en propuesta aprobada', deep: theme.slug === 'brasca' ? 'Web y formulario de solicitud local' : 'Web, reserva y recorrido de gestión', webOnly: 'Dirección web responsive; sin motor de reservas ni gestor',
-  included: 'Incluye', tone: 'Tono visual', format: 'Formato de restaurante', location: 'Ubicación ficticia', related: 'Direcciones web relacionadas', all: 'Ver las doce webs',
+  deliveryValue: 'Definida en propuesta aprobada', tone: 'Tono visual', format: 'Formato de restaurante', location: 'Ubicación ficticia', layoutLabel: 'Maquetación', typeLabel: 'Tipografía',
+  related: 'Direcciones web relacionadas', all: 'Ver las doce webs', of: 'de',
 };
 const scope = themeDemoScope(theme, locale);
 const currentUrl = new URL(themeDetailUrl(theme.slug as ThemeSlug, locale), PRODUCT.url).href;
@@ -73,85 +161,145 @@ const structuredData = [{
   ],
 }];
 const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${theme.palette.accent};--theme-paper:${theme.palette.paper};--theme-ink:${theme.palette.ink};--theme-muted:${theme.palette.muted};`;
+const swatches = (['primary', 'accent', 'paper', 'ink', 'muted'] as const).map((role) => ({ role, label: ui.roles[role], value: theme.palette[role] }));
 ---
 
 <Base
   locale={locale}
   title={`${theme.name}${ui.titleSuffix}`}
   description={local(metadata)}
-  image={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-desktop.webp`}
+  image={`${previewBase}-desktop.webp`}
   imageAlt={`${theme.name} · ${local(theme.format)}`}
   imageWidth={1366}
   imageHeight={900}
   structuredData={structuredData}
 >
   <CommercialChrome locale={locale} languageHref={themeDetailUrl(theme.slug as ThemeSlug, locale === 'en' ? 'es' : 'en')}>
-    <main id="contenido" class="theme-detail" tabindex="-1" style={themeStyle}>
+    <main id="contenido" class="theme-detail" tabindex="-1" style={themeStyle} data-theme-type={theme.type} data-theme-layout={theme.layout}>
       <article>
         <header class="shell theme-detail__hero">
           <a class="back" href={`${prefix}/temas/`}><span aria-hidden="true">←</span>{ui.back}</a>
           <div class="theme-detail__heading">
-            <div>
-              <p class="eyebrow">{ui.product}</p>
+            <div class="theme-detail__lead">
+              <p class="eyebrow">{ui.product}<span class="theme-detail__count">{pad(index + 1)} {ui.of} {pad(THEME_CATALOG.length)}</span></p>
               <h1>{theme.name}</h1>
+              <p class="theme-detail__promise" lang={locale}>«{local(theme.promise)}»</p>
+              <div class="theme-detail__intro">
+                <p>{ui.summary}</p>
+                <ul aria-label={ui.product}>
+                  <li>{local(theme.level)}</li><li>{local(theme.tone)}</li><li>{ui.responsive}</li>
+                </ul>
+              </div>
+              <div class="theme-detail__actions">
+                <a class="theme-detail__open" href={themeUrl(theme.slug as ThemeSlug, locale)}>{ui.open}<span aria-hidden="true">↗</span></a>
+                <a class="theme-detail__contact" href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.want}<span aria-hidden="true">→</span></a>
+              </div>
             </div>
-            <div class="theme-detail__intro">
-              <p>{ui.summary}</p>
-              <ul aria-label={ui.included}>
-                <li>{local(theme.level)}</li><li>{local(theme.tone)}</li><li>{ui.responsive}</li>
-              </ul>
-            </div>
+            <aside class="theme-detail__facts" aria-labelledby="theme-details-title">
+              <div class="theme-detail__sheet-head">
+                <h2 id="theme-details-title">{ui.sheet}</h2>
+                <span>{ui.sheetNote}</span>
+              </div>
+              <dl>
+                <div><dt>{ui.format}</dt><dd>{local(theme.format)}</dd></div>
+                <div><dt>{ui.location}</dt><dd>{local(theme.location)}</dd></div>
+                <div><dt>{ui.tone}</dt><dd>{local(theme.tone)}</dd></div>
+                <div><dt>{ui.layoutLabel}</dt><dd>{local(layoutNames[theme.layout])}</dd></div>
+                <div><dt>{ui.typeLabel}</dt><dd>{local(typeNames[theme.type])}</dd></div>
+                <div><dt>{ui.level}</dt><dd>{local(theme.level)}</dd></div>
+                <div><dt>{ui.status}</dt><dd>{ui.fictional}</dd></div>
+                <div><dt>{ui.scope}</dt><dd>{scope}</dd></div>
+                <div><dt>{ui.delivery}</dt><dd>{ui.deliveryValue}</dd></div>
+              </dl>
+              <span class="theme-detail__palette-strip" aria-hidden="true">{swatches.map((swatch) => <i style={`background:${swatch.value}`}></i>)}</span>
+            </aside>
           </div>
         </header>
 
-        <section class="shell theme-detail__browser" aria-label={ui.frameTitle}>
-          <div class="browser-bar"><span aria-hidden="true"><i></i><i></i><i></i></span><code>{ui.address}</code><b>{ui.fictional}</b></div>
-          <div class="browser-view">
-            <picture>
-              <source media="(max-width: 620px)" srcset={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-mobile.webp`} />
-              <img src={`${themePreviewBase(theme.slug as ThemeSlug, locale)}-desktop.webp`} alt={ui.frameTitle} width="1366" height="900" loading="eager" decoding="async" />
-            </picture>
+        <section class="theme-detail__showcase" aria-labelledby="theme-anatomy-title">
+          <div class="shell">
+            <div class="theme-detail__stage">
+              <div class="theme-detail__browser" aria-label={ui.frameTitle} role="group">
+                <div class="browser-bar"><span aria-hidden="true"><i></i><i></i><i></i></span><code>{ui.address}</code><b>{ui.fictional}</b></div>
+                <div class="browser-view">
+                  <picture>
+                    <source media="(max-width: 620px)" srcset={`${previewBase}-mobile.webp`} />
+                    <img src={`${previewBase}-desktop.webp`} alt={ui.frameTitle} width="1366" height="900" loading="eager" decoding="async" />
+                  </picture>
+                  <i class="theme-pin theme-pin--brand" aria-hidden="true">1</i>
+                  <i class="theme-pin theme-pin--cta" aria-hidden="true">2</i>
+                </div>
+              </div>
+              <figure class="theme-detail__phone">
+                <span class="theme-detail__notch" aria-hidden="true"></span>
+                <img src={`${previewBase}-mobile.webp`} alt={ui.mobileTitle} width="375" height="812" loading="lazy" decoding="async" />
+                <i class="theme-pin theme-pin--phone" aria-hidden="true">3</i>
+              </figure>
+            </div>
+            <div class="theme-detail__anatomy">
+              <p class="eyebrow" id="theme-anatomy-title">{ui.anatomyEyebrow}</p>
+              <ol>{ui.anatomy.map((item, itemIndex) => <li><b aria-hidden="true">{itemIndex + 1}</b><div><strong>{item.title}</strong><p>{item.body}</p></div></li>)}</ol>
+            </div>
           </div>
         </section>
 
         <section class="shell theme-detail__decision" aria-labelledby="theme-demo-title">
           <div>
             <p class="eyebrow">{ui.demoLabel}</p>
-            <h2 id="theme-demo-title">{theme.name}</h2>
+            <h2 id="theme-demo-title">{ui.demoTitle}</h2>
             <p>{local(theme.promise)} {scope}.</p>
           </div>
-          <ul>{ui.capabilities.map((capability) => <li><span aria-hidden="true">✓</span>{capability}</li>)}</ul>
-          <div class="theme-detail__actions">
-            <a class="theme-detail__open" href={themeUrl(theme.slug as ThemeSlug, locale)}>{ui.open}<span aria-hidden="true">↗</span></a>
-            <a class="theme-detail__contact" href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.want}<span aria-hidden="true">→</span></a>
+          <ul>{ui.capabilities.map((capability, capabilityIndex) => <li><span aria-hidden="true">{pad(capabilityIndex + 1)}</span>{capability}</li>)}</ul>
+        </section>
+
+        <section class="shell theme-detail__system" aria-labelledby="theme-system-title">
+          <div class="theme-detail__section-head"><p class="eyebrow">{ui.systemEyebrow}</p><h2 id="theme-system-title">{ui.systemTitle}</h2></div>
+          <div class="theme-detail__system-grid">
+            <article class="theme-card-palette">
+              <h3>{ui.palette}</h3>
+              <ul>
+                {swatches.map((swatch) => (
+                  <li><span style={`background:${swatch.value}`} aria-hidden="true"></span><strong>{swatch.label}</strong><code>{swatch.value.toUpperCase()}</code></li>
+                ))}
+              </ul>
+            </article>
+            <article class="theme-card-type">
+              <h3>{ui.type}</h3>
+              <div class={`theme-specimen theme-specimen--${theme.type}`} aria-hidden="true"><span>Aa</span><p>{local(theme.promise)}</p></div>
+              <p><strong>{local(typeNames[theme.type])}</strong></p>
+            </article>
+            <article class="theme-card-layout">
+              <h3>{ui.layout}</h3>
+              <div class="theme-wireframe" aria-hidden="true">
+                {wireframe.map((block) => <i class={`wf wf--${block.kind}`} style={`left:${block.x}%;top:${(block.y / 62) * 100}%;width:${block.w}%;height:${(block.h / 62) * 100}%`}></i>)}
+              </div>
+              <p><strong>{local(layoutNames[theme.layout])}</strong> · {local(layoutHints[theme.layout])}</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="shell theme-detail__scope" aria-labelledby="theme-scope-title">
+          <div class="theme-detail__section-head"><p class="eyebrow">{ui.scopeEyebrow}</p><h2 id="theme-scope-title">{ui.scopeTitle}</h2></div>
+          <div class="theme-scope" role="table" aria-labelledby="theme-scope-title">
+            <div class="theme-scope__row theme-scope__row--head" role="row"><span role="columnheader"><span class="sr-only">{ui.scopeTitle}</span></span><span role="columnheader">{ui.scopeDemo}</span><span role="columnheader">{ui.scopeProject}</span></div>
+            {scopeRows.map((row, rowIndex) => (
+              <div class="theme-scope__row" role="row" data-in-demo={scopeInDemo[rowIndex] ? 'true' : 'false'}>
+                <span role="rowheader"><i aria-hidden="true">{pad(rowIndex + 1)}</i>{row}</span>
+                <span role="cell" class="theme-scope__state">{scopeInDemo[rowIndex] ? <><b aria-hidden="true">✓</b>{ui.yes}</> : <><b aria-hidden="true">—</b>{ui.no}</>}</span>
+                <span role="cell"><em data-plan={rowIndex < 2 ? 'basico' : rowIndex < 4 ? 'gestion' : 'inteligente'}>{planCell[rowIndex]}</em></span>
+              </div>
+            ))}
+          </div>
+          <div class="theme-detail__scope-foot">
+            <p>{ui.scopeNote}</p>
+            <a class="theme-detail__scope-cta" href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.want}<span aria-hidden="true">→</span></a>
           </div>
         </section>
 
         <section class="theme-detail__fit" aria-labelledby="theme-fit-title">
           <div class="shell theme-detail__fit-grid">
             <div><p class="eyebrow">{ui.fit}</p><h2 id="theme-fit-title">{ui.fitTitle}</h2><p>{ui.fitBody}</p></div>
-            <ol>{ui.capabilities.map((capability, capabilityIndex) => <li><span>0{capabilityIndex + 1}</span><p>{capability}</p></li>)}</ol>
-          </div>
-        </section>
-
-        <section class="shell theme-detail__facts" aria-labelledby="theme-details-title">
-          <div class="theme-detail__fact-card">
-            <h2 id="theme-details-title">{ui.details}</h2>
-            <dl>
-              <div><dt>{ui.level}</dt><dd>{local(theme.level)}</dd></div>
-              <div><dt>{ui.status}</dt><dd>{ui.fictional}</dd></div>
-              <div><dt>{ui.scope}</dt><dd>{scope}</dd></div>
-              <div><dt>{ui.delivery}</dt><dd>{ui.deliveryValue}</dd></div>
-            </dl>
-          </div>
-          <div class="theme-detail__included">
-            <h2>{ui.included}</h2>
-            <dl>
-              <div><dt>{ui.format}</dt><dd>{local(theme.format)}</dd></div>
-              <div><dt>{ui.tone}</dt><dd>{local(theme.tone)}</dd></div>
-              <div><dt>{ui.location}</dt><dd>{local(theme.location)}</dd></div>
-            </dl>
-            <a href={themeContactUrl(theme.slug as ThemeSlug, locale)}>{ui.want}<span aria-hidden="true">→</span></a>
+            <ol>{ui.fitSteps.map((step, stepIndex) => <li><span>{pad(stepIndex + 1)}</span><div><strong>{step.title}</strong><p>{step.body}</p></div></li>)}</ol>
           </div>
         </section>
 
@@ -159,8 +307,11 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
           <div><h2 id="related-title">{ui.related}</h2><a href={`${prefix}/temas/`}>{ui.all}<span aria-hidden="true">→</span></a></div>
           <div class="related-grid">
             {related.map((entry) => (
-              <a href={themeDetailUrl(entry.slug as ThemeSlug, locale)} style={`--related-paper:${entry.palette.paper};--related-ink:${entry.palette.ink};--related-accent:${entry.palette.accent}`}>
-                <span>{localizedThemeText(entry.format, locale)}</span><strong>{entry.name}</strong><small>{localizedThemeText(entry.tone, locale)}</small><i aria-hidden="true">↗</i>
+              <a href={themeDetailUrl(entry.slug as ThemeSlug, locale)} style={`--related-paper:${entry.palette.paper};--related-ink:${entry.palette.ink};--related-accent:${entry.palette.accent};--related-primary:${entry.palette.primary}`}>
+                <span class="related-grid__shot"><img src={`${themePreviewBase(entry.slug as ThemeSlug, locale)}-desktop.webp`} alt="" width="1366" height="900" loading="lazy" decoding="async" /></span>
+                <span class="related-grid__copy"><span>{localizedThemeText(entry.format, locale)}</span><strong>{entry.name}</strong><small>{localizedThemeText(entry.tone, locale)}</small></span>
+                <span class="related-grid__palette" aria-hidden="true"><i style={`background:${entry.palette.primary}`}></i><i style={`background:${entry.palette.accent}`}></i><i style={`background:${entry.palette.paper}`}></i></span>
+                <i aria-hidden="true">↗</i>
               </a>
             ))}
           </div>
@@ -176,19 +327,197 @@ const themeStyle = `--theme-primary:${theme.palette.primary};--theme-accent:${th
 </script>
 
 <style>
-  .theme-detail { color: var(--ink); background: var(--paper); }.back { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--slate); font-size: .82rem; text-decoration: none; }
-  .theme-detail__hero { padding-top: 28px; }.theme-detail__heading { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: clamp(44px, 8vw, 130px); align-items: end; padding: clamp(38px, 6vw, 78px) 0 34px; }
-  .theme-detail h1 { margin: 0; font-size: clamp(4rem, 7.2vw, 7rem); font-weight: 620; letter-spacing: -.068em; line-height: .86; }.theme-detail__intro > p { margin: 0; color: var(--slate); font-family: var(--serif); font-size: clamp(1.1rem, 1.5vw, 1.28rem); line-height: 1.55; }
-  .theme-detail__intro ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 24px 0 0; padding: 0; list-style: none; }.theme-detail__intro li { border: 1px solid color-mix(in srgb, var(--theme-primary) 25%, transparent); border-radius: 999px; padding: 7px 11px; color: var(--theme-primary); background: color-mix(in srgb, var(--theme-paper) 76%, white); font-size: .72rem; font-weight: 700; }
-  .theme-detail__browser { margin-bottom: 0; }.browser-bar { display: grid; grid-template-columns: 72px 1fr auto; gap: 18px; align-items: center; min-height: 52px; border: 1px solid rgb(0 0 0 / 14%); border-bottom: 0; border-radius: 14px 14px 0 0; padding: 8px 16px; color: var(--slate); background: #f2f2f1; }.browser-bar > span { display: flex; gap: 7px; }.browser-bar i { width: 10px; height: 10px; border-radius: 50%; background: #cbc9c5; }.browser-bar code { justify-self: center; min-width: min(520px, 70%); border: 1px solid rgb(0 0 0 / 10%); border-radius: 6px; padding: 7px 14px; color: var(--theme-ink); background: white; font-family: inherit; font-size: .75rem; text-align: center; }.browser-bar b { font-size: .64rem; font-weight: 650; letter-spacing: .035em; text-transform: uppercase; }
-  .browser-view { position: relative; aspect-ratio: 1366 / 900; overflow: hidden; border: 1px solid rgb(0 0 0 / 14%); background: var(--theme-paper); }.browser-view picture, .browser-view img { display: block; width: 100%; height: 100%; }.browser-view img { object-fit: cover; object-position: top; }
-  .theme-detail__decision { display: grid; grid-template-columns: minmax(0, .8fr) minmax(320px, 1fr) minmax(220px, .55fr); gap: clamp(28px, 5vw, 72px); padding-block: clamp(55px, 8vw, 100px); }.theme-detail__decision h2, .theme-detail__fit h2 { margin: 8px 0 18px; font-size: clamp(2.5rem, 4.7vw, 5rem); letter-spacing: -.06em; line-height: .92; }.theme-detail__decision p { margin: 0; color: var(--slate); line-height: 1.55; }.theme-detail__decision ul { display: grid; gap: 14px; align-content: start; margin: 0; padding: 0; list-style: none; }.theme-detail__decision li { display: grid; grid-template-columns: 22px 1fr; gap: 10px; font-size: .92rem; line-height: 1.4; }.theme-detail__decision li span { color: var(--theme-primary); font-weight: 800; }
-  .theme-detail__actions { display: grid; gap: 10px; align-content: start; }.theme-detail__actions a, .theme-detail__included > a { display: flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 12px; border-radius: 7px; padding: 10px 14px; font-size: .78rem; font-weight: 750; text-decoration: none; }.theme-detail__open { color: white; background: var(--theme-primary); }.theme-detail__contact { border: 1px solid rgb(0 0 0 / 15%); color: var(--ink); background: white; }
-  .theme-detail__fit { color: white; background: #111; }.theme-detail__fit-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(380px, 1.15fr); gap: clamp(48px, 10vw, 150px); padding-block: clamp(74px, 10vw, 140px); }.theme-detail__fit .eyebrow { color: var(--theme-accent); }.theme-detail__fit-grid > div > p:last-child { max-width: 58ch; margin: 0; color: #c6c6c6; font-family: var(--serif); font-size: 1.08rem; line-height: 1.6; }.theme-detail__fit ol { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }.theme-detail__fit li { display: grid; grid-template-columns: 54px 1fr; gap: 18px; border-top: 1px solid #383838; padding: 20px 0; }.theme-detail__fit li:last-child { border-bottom: 1px solid #383838; }.theme-detail__fit li span { color: var(--theme-accent); font-size: .72rem; }.theme-detail__fit li p { margin: 0; line-height: 1.45; }
-  .theme-detail__facts { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-block: clamp(70px, 9vw, 130px); }.theme-detail__facts > div { border: 1px solid var(--line); border-radius: 28px; padding: clamp(30px, 5vw, 64px); background: white; }.theme-detail__facts h2 { margin: 0 0 34px; font-size: clamp(1.7rem, 3vw, 2.8rem); letter-spacing: -.045em; }.theme-detail__facts dl { margin: 0; }.theme-detail__facts dl div { display: grid; grid-template-columns: 150px 1fr; gap: 20px; border-top: 1px solid var(--line); padding: 14px 0; }.theme-detail__facts dt { color: var(--slate); font-size: .72rem; }.theme-detail__facts dd { margin: 0; font-size: .87rem; line-height: 1.4; }.theme-detail__included > a { margin-top: 24px; color: white; background: var(--theme-primary); }
-  .theme-detail__related { padding-bottom: clamp(90px, 10vw, 150px); }.theme-detail__related > div:first-child { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 28px; }.theme-detail__related h2 { margin: 0; font-size: clamp(2.1rem, 4vw, 4.2rem); letter-spacing: -.055em; }.theme-detail__related > div:first-child a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--ink); font-size: .82rem; text-decoration: none; }.related-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }.related-grid a { position: relative; display: flex; min-height: 220px; flex-direction: column; justify-content: end; overflow: hidden; border-radius: 24px; padding: 24px; color: var(--related-ink); background: var(--related-paper); text-decoration: none; transition: transform 400ms cubic-bezier(.2,.7,.2,1), box-shadow 400ms cubic-bezier(.2,.7,.2,1); }.related-grid a:hover { transform: translateY(-5px); box-shadow: 0 30px 50px -34px #16344f73; }.related-grid a::before { position: absolute; inset: 0 0 auto; height: 8px; background: var(--related-accent); content: ''; }.related-grid span, .related-grid small { font-size: .68rem; text-transform: uppercase; }.related-grid strong { margin: 18px 0 8px; font-size: clamp(2rem, 4vw, 3.6rem); letter-spacing: -.06em; line-height: .9; }.related-grid i { position: absolute; top: 24px; right: 24px; font-style: normal; }
-  @media (max-width: 960px) { .theme-detail__heading, .theme-detail__decision, .theme-detail__fit-grid { grid-template-columns: 1fr; }.theme-detail__heading { gap: 30px; }.theme-detail__decision { gap: 32px; }.theme-detail__actions { grid-template-columns: 1fr 1fr; }.theme-detail__facts { grid-template-columns: 1fr; }.related-grid { grid-template-columns: 1fr 1fr; }.related-grid a:last-child { grid-column: 1 / -1; }.browser-bar { grid-template-columns: 50px 1fr; }.browser-bar b { display: none; }.browser-bar code { min-width: 0; width: 100%; } }
-  @media (max-width: 620px) { .theme-detail__hero { padding-top: 16px; }.theme-detail__heading { padding-top: 30px; }.theme-detail h1 { font-size: clamp(3.5rem, 18vw, 5rem); }.browser-bar { gap: 8px; padding-inline: 10px; }.browser-bar code { overflow: hidden; padding-inline: 8px; text-overflow: ellipsis; white-space: nowrap; }.browser-view { aspect-ratio: 375 / 812; }.theme-detail__decision { padding-block: 52px; }.theme-detail__actions { grid-template-columns: 1fr; }.theme-detail__fit-grid { padding-block: 70px; }.theme-detail__facts dl div { grid-template-columns: 1fr; gap: 5px; }.theme-detail__facts { margin-block: 54px; }.theme-detail__related > div:first-child { align-items: start; flex-direction: column; }.related-grid { grid-template-columns: 1fr; }.related-grid a:last-child { grid-column: auto; }.related-grid a { min-height: 180px; } }
-  .theme-detail h1, .theme-detail h2, .related-grid strong { overflow-wrap: anywhere; line-height: 1.04; }
-  .theme-detail__fit .eyebrow, .theme-detail__fit li span { color: color-mix(in srgb, var(--theme-accent) 65%, white); }
+  .theme-detail { color: var(--ink); background: var(--paper); }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+  /* ---------- Hero ---------- */
+  .theme-detail__hero { padding-top: 22px; }
+  .theme-detail__heading { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(320px, .8fr); gap: clamp(36px, 6vw, 96px); align-items: start; padding: clamp(34px, 5vw, 64px) 0 clamp(40px, 5vw, 64px); }
+  .theme-detail__lead .eyebrow { flex-wrap: wrap; }
+  .theme-detail__count { margin-left: 4px; border-left: 1px solid var(--lr-line-strong); padding-left: 10px; color: var(--lr-mute); }
+  .theme-detail h1 { margin: 18px 0 0; font-size: clamp(3.6rem, 7vw, 6.6rem); line-height: .95; overflow-wrap: anywhere; }
+  .theme-detail__promise { max-width: 30ch; margin: 18px 0 0; color: var(--theme-primary); font-family: var(--serif); font-size: clamp(1.3rem, 2vw, 1.7rem); font-style: italic; line-height: 1.3; letter-spacing: -.015em; }
+  [data-theme-type='sans'] .theme-detail__promise, [data-theme-type='condensed'] .theme-detail__promise { font-family: var(--sans); font-style: normal; font-weight: 620; letter-spacing: -.03em; }
+  [data-theme-type='condensed'] .theme-detail__promise { font-weight: 800; letter-spacing: -.045em; text-transform: uppercase; }
+  .theme-detail__intro > p { max-width: 58ch; margin: 22px 0 0; color: var(--slate); font-size: 1rem; line-height: 1.65; }
+  .theme-detail__intro ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .theme-detail__intro li { border: 1px solid color-mix(in srgb, var(--theme-primary) 28%, transparent); border-radius: 6px; padding: 6px 10px; color: color-mix(in srgb, var(--theme-primary) 82%, black); background: color-mix(in srgb, var(--theme-paper) 70%, white); font-family: var(--mono); font-size: .68rem; font-weight: 500; }
+  .theme-detail__actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 28px; }
+  .theme-detail__actions a, .theme-detail__scope-cta { display: inline-flex; min-height: 50px; align-items: center; justify-content: space-between; gap: 18px; border-radius: var(--lr-radius-sm); padding: 12px 18px; font-size: .84rem; font-weight: 620; text-decoration: none; transition: background-color 200ms ease, border-color 200ms ease, filter 200ms ease; }
+  .theme-detail__open { color: white; background: color-mix(in srgb, var(--theme-primary) 88%, black); }
+  .theme-detail__open:hover { filter: brightness(1.12); }
+  .theme-detail__contact { border: 1px solid var(--lr-line-strong); color: var(--ink); background: white; }
+  .theme-detail__contact:hover { border-color: var(--ink); }
+
+  .theme-detail__facts { position: relative; overflow: hidden; border: 1px solid var(--lr-line); border-radius: var(--lr-radius-lg); padding: 22px 22px 18px; background: white; box-shadow: var(--lr-shadow-product); }
+  .theme-detail__facts::before { position: absolute; inset: 0 0 auto; height: 4px; background: var(--theme-primary); content: ''; }
+  .theme-detail__sheet-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+  .theme-detail .theme-detail__facts h2 { margin: 0; font-size: 1.1rem; letter-spacing: -.02em; }
+  .theme-detail__sheet-head span { color: var(--lr-mute); font-family: var(--mono); font-size: .6rem; text-align: right; }
+  .theme-detail__facts dl { margin: 0; }
+  .theme-detail__facts dl div { display: grid; grid-template-columns: 124px minmax(0, 1fr); gap: 14px; border-top: 1px solid var(--lr-line); padding: 10px 0; }
+  .theme-detail__facts dt { color: var(--lr-mute); font-family: var(--mono); font-size: .64rem; line-height: 1.5; }
+  .theme-detail__facts dd { min-width: 0; margin: 0; font-size: .84rem; line-height: 1.4; overflow-wrap: anywhere; }
+  .theme-detail__palette-strip { display: grid; grid-template-columns: repeat(5, 1fr); height: 10px; margin-top: 8px; overflow: hidden; border: 1px solid var(--lr-line); border-radius: 5px; }
+
+  /* ---------- Showcase ---------- */
+  .theme-detail__showcase { border-block: 1px solid var(--lr-line); padding-block: clamp(40px, 6vw, 80px); background-color: color-mix(in srgb, var(--theme-paper) 55%, var(--paper)); background-image: linear-gradient(rgb(15 29 45 / 5%) 1px, transparent 1px), linear-gradient(90deg, rgb(15 29 45 / 5%) 1px, transparent 1px); background-size: 28px 28px; }
+  .theme-detail__stage { position: relative; padding-right: clamp(0px, 13vw, 190px); }
+  .theme-detail__browser { overflow: hidden; border: 1px solid var(--lr-line-strong); border-radius: 12px; background: white; box-shadow: 0 40px 80px -46px rgb(15 29 45 / 60%); }
+  .browser-bar { display: grid; grid-template-columns: 64px 1fr auto; gap: 18px; align-items: center; min-height: 46px; border-bottom: 1px solid var(--lr-line); padding: 7px 14px; color: var(--slate); background: #f6f7f9; }
+  .browser-bar > span { display: flex; gap: 6px; }
+  .browser-bar i { width: 9px; height: 9px; border-radius: 50%; background: #cfd5dc; }
+  .browser-bar code { justify-self: center; min-width: min(460px, 70%); border: 1px solid var(--lr-line); border-radius: 6px; padding: 6px 14px; color: var(--lr-ink-soft); background: white; font-family: var(--mono); font-size: .72rem; text-align: center; }
+  .browser-bar b { color: var(--lr-mute); font-family: var(--mono); font-size: .6rem; font-weight: 500; letter-spacing: .03em; text-transform: uppercase; }
+  .browser-view { position: relative; aspect-ratio: 1366 / 900; background: var(--theme-paper); }
+  .browser-view picture, .browser-view img { display: block; width: 100%; height: 100%; }
+  .browser-view img { object-fit: cover; object-position: top; }
+  .theme-pin { position: absolute; z-index: 3; display: grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; color: white; background: var(--lr-blue); box-shadow: 0 0 0 4px rgb(255 255 255 / 85%), 0 8px 18px -6px rgb(15 29 45 / 55%); font: 600 .7rem/1 var(--mono); font-style: normal; }
+  .theme-pin--brand { top: 5%; left: 15%; }
+  .theme-pin--cta { top: 5%; right: 3%; }
+  .theme-pin--phone { top: 34%; left: -13px; }
+  .theme-detail__phone { position: absolute; right: 0; bottom: -28px; width: clamp(150px, 20%, 250px); margin: 0; overflow: visible; }
+  .theme-detail__phone img { display: block; width: 100%; height: auto; border: 7px solid #0b1624; border-radius: 26px; background: var(--theme-paper); box-shadow: 0 40px 70px -30px rgb(11 22 36 / 70%); }
+  .theme-detail__notch { position: absolute; top: 11px; left: 50%; z-index: 2; width: 34%; height: 11px; border-radius: 0 0 8px 8px; background: #0b1624; transform: translateX(-50%); }
+  .theme-detail__anatomy { display: grid; grid-template-columns: 180px minmax(0, 1fr); gap: 24px; margin-top: clamp(48px, 6vw, 72px); }
+  .theme-detail__anatomy .eyebrow { margin: 6px 0 0; }
+  .theme-detail__anatomy ol { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; padding: 0; list-style: none; }
+  .theme-detail__anatomy li { display: grid; grid-template-columns: 26px 1fr; gap: 12px; border: 1px solid var(--lr-line); border-radius: var(--lr-radius); padding: 16px; background: white; }
+  .theme-detail__anatomy b { display: grid; width: 26px; height: 26px; place-items: center; border-radius: 50%; color: white; background: var(--lr-blue); font: 600 .7rem/1 var(--mono); }
+  .theme-detail__anatomy strong { display: block; font-size: .9rem; font-weight: 620; }
+  .theme-detail__anatomy p { margin: 5px 0 0; color: var(--slate); font-size: .8rem; line-height: 1.5; }
+
+  /* ---------- Decision / capabilities ---------- */
+  .theme-detail__decision { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(32px, 6vw, 96px); align-items: start; padding-block: clamp(64px, 8vw, 110px) 0; }
+  .theme-detail .theme-detail__decision h2, .theme-detail .theme-detail__section-head h2, .theme-detail .theme-detail__fit h2 { margin: 12px 0 16px; font-size: clamp(2rem, 3.4vw, 3.2rem); }
+  .theme-detail__decision > div > p:last-child { max-width: 52ch; margin: 0; color: var(--slate); line-height: 1.6; }
+  .theme-detail__decision ul { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .theme-detail__decision li { display: grid; gap: 12px; align-content: start; min-height: 128px; border: 1px solid var(--lr-line); border-radius: var(--lr-radius); padding: 18px; background: white; font-size: .92rem; font-weight: 540; line-height: 1.45; }
+  .theme-detail__decision li span { color: var(--lr-blue); font-family: var(--mono); font-size: .7rem; font-weight: 600; }
+
+  /* ---------- Visual system ---------- */
+  .theme-detail__system, .theme-detail__scope { padding-top: clamp(64px, 8vw, 110px); }
+  .theme-detail__section-head { max-width: 760px; margin-bottom: 28px; }
+  .theme-detail__system-grid { display: grid; grid-template-columns: 1fr 1fr 1.25fr; gap: 12px; }
+  .theme-detail__system-grid article { display: flex; min-width: 0; flex-direction: column; border: 1px solid var(--lr-line); border-radius: var(--lr-radius); padding: 20px; background: white; }
+  .theme-detail__system-grid h3 { margin: 0 0 16px; color: var(--lr-mute); font: 560 .66rem/1.3 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .theme-detail__system-grid article > p { margin: auto 0 0; padding-top: 14px; color: var(--slate); font-size: .8rem; line-height: 1.5; }
+  .theme-detail__system-grid article > p strong { color: var(--ink); font-weight: 620; }
+  .theme-card-palette ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .theme-card-palette li { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; }
+  .theme-card-palette li > span { width: 34px; height: 34px; border: 1px solid rgb(0 0 0 / 12%); border-radius: 8px; }
+  .theme-card-palette strong { overflow: hidden; font-size: .82rem; font-weight: 560; text-overflow: ellipsis; white-space: nowrap; }
+  .theme-card-palette code { color: var(--lr-slate); font-family: var(--mono); font-size: .7rem; }
+  .theme-specimen { display: grid; gap: 10px; border-radius: 10px; padding: 18px; color: var(--theme-ink); background: var(--theme-paper); }
+  .theme-specimen span { font-family: var(--serif); font-size: 4.6rem; font-weight: 480; line-height: .9; letter-spacing: -.04em; color: var(--theme-primary); }
+  .theme-specimen p { margin: 0; font-family: var(--serif); font-size: 1.05rem; line-height: 1.25; }
+  .theme-specimen--sans span, .theme-specimen--sans p { font-family: var(--sans); font-weight: 640; letter-spacing: -.045em; }
+  .theme-specimen--sans p { font-weight: 560; letter-spacing: -.02em; }
+  .theme-specimen--condensed span, .theme-specimen--condensed p { font-family: var(--sans); font-weight: 820; letter-spacing: -.07em; text-transform: uppercase; }
+  .theme-specimen--condensed p { font-size: .98rem; letter-spacing: -.035em; }
+  .theme-specimen--mixed p { font-family: var(--sans); font-weight: 560; }
+  .theme-wireframe { position: relative; aspect-ratio: 100 / 62; overflow: hidden; border: 1px solid var(--lr-line-strong); border-radius: 8px; background: var(--theme-paper); }
+  .theme-wireframe::before { position: absolute; top: 11.5%; right: 0; left: 0; border-top: 1px solid color-mix(in srgb, var(--theme-ink) 14%, transparent); content: ''; }
+  .wf { position: absolute; display: block; border-radius: 3px; }
+  .wf--title { background: var(--theme-ink); }
+  .wf--text { background: color-mix(in srgb, var(--theme-muted) 45%, transparent); }
+  .wf--img { background: linear-gradient(135deg, color-mix(in srgb, var(--theme-accent) 75%, white), var(--theme-primary)); }
+  .wf--cta { border-radius: 4px; background: var(--theme-primary); }
+  .wf--shape { border: 2px solid var(--theme-primary); border-radius: 50%; aspect-ratio: 1; height: auto !important; }
+  .wf--line { background: var(--theme-primary); }
+  .wf--light { background: rgb(255 255 255 / 88%); }
+
+  /* ---------- Scope ---------- */
+  .theme-scope { overflow: hidden; border: 1px solid var(--lr-line); border-radius: var(--lr-radius); background: white; }
+  .theme-scope__row { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, .8fr) minmax(0, .6fr); align-items: center; gap: 16px; min-height: 56px; border-top: 1px solid var(--lr-line); padding: 10px 18px; font-size: .9rem; }
+  .theme-scope__row--head { min-height: 44px; border-top: 0; color: var(--lr-mute); background: var(--lr-paper); font-family: var(--mono); font-size: .64rem; letter-spacing: .03em; text-transform: uppercase; }
+  .theme-scope__row > span:first-child { display: flex; min-width: 0; align-items: center; gap: 12px; }
+  .theme-scope__row i { color: var(--lr-mute); font-family: var(--mono); font-size: .66rem; font-style: normal; }
+  .theme-scope__state { display: flex; align-items: center; gap: 8px; color: var(--lr-mute); font-family: var(--mono); font-size: .7rem; }
+  .theme-scope__state b { display: grid; width: 22px; height: 22px; flex: none; place-items: center; border-radius: 6px; background: var(--lr-paper-deep); font-family: var(--sans); }
+  .theme-scope__row[data-in-demo='true'] .theme-scope__state { color: var(--state-success); }
+  .theme-scope__row[data-in-demo='true'] .theme-scope__state b { color: white; background: var(--state-success); }
+  .theme-scope em { display: inline-flex; border: 1px solid var(--lr-line-strong); border-radius: 6px; padding: 4px 9px; font-family: var(--mono); font-size: .68rem; font-style: normal; }
+  .theme-scope em[data-plan='gestion'] { border-color: rgb(29 92 150 / 30%); color: var(--lr-blue-strong); background: var(--lr-blue-soft); }
+  .theme-scope em[data-plan='inteligente'] { border-color: var(--lr-night); color: white; background: var(--lr-night); }
+  .theme-detail__scope-foot { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-top: 18px; }
+  .theme-detail__scope-foot p { margin: 0; color: var(--slate); font-size: .84rem; }
+  .theme-detail__scope-cta { flex: none; color: white; background: var(--ink); }
+  .theme-detail__scope-cta:hover { background: var(--lr-blue-strong); }
+
+  /* ---------- Fit ---------- */
+  .theme-detail__fit { margin-top: clamp(72px, 9vw, 120px); color: white; background-color: var(--lr-night); background-image: linear-gradient(rgb(255 255 255 / 4%) 1px, transparent 1px), linear-gradient(90deg, rgb(255 255 255 / 4%) 1px, transparent 1px); background-size: 28px 28px; }
+  .theme-detail__fit-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(40px, 8vw, 120px); padding-block: clamp(64px, 9vw, 120px); }
+  .theme-detail__fit .eyebrow { color: color-mix(in srgb, var(--theme-accent) 55%, white); }
+  .theme-detail__fit-grid > div > p:last-child { max-width: 52ch; margin: 0; color: #c1cedb; font-size: 1rem; line-height: 1.65; }
+  .theme-detail__fit ol { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 0; padding: 0; list-style: none; }
+  .theme-detail__fit li { display: grid; gap: 14px; align-content: start; border: 1px solid rgb(255 255 255 / 12%); border-radius: var(--lr-radius); padding: 18px; background: rgb(255 255 255 / 4%); }
+  .theme-detail__fit li span { color: color-mix(in srgb, var(--theme-accent) 55%, white); font-family: var(--mono); font-size: .7rem; }
+  .theme-detail__fit li strong { display: block; font-size: .96rem; font-weight: 620; }
+  .theme-detail__fit li p { margin: 6px 0 0; color: #b6c4d2; font-size: .82rem; line-height: 1.5; }
+
+  /* ---------- Related ---------- */
+  .theme-detail__related { padding-block: clamp(72px, 9vw, 120px); }
+  .theme-detail__related > div:first-child { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 24px; }
+  .theme-detail .theme-detail__related h2 { margin: 0; font-size: clamp(1.9rem, 3vw, 2.8rem); }
+  .theme-detail__related > div:first-child a { display: inline-flex; min-height: 44px; align-items: center; gap: 8px; color: var(--ink); font-size: .84rem; font-weight: 560; text-decoration: none; }
+  .related-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .related-grid a { position: relative; display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--lr-line); border-radius: var(--lr-radius); color: var(--ink); background: white; text-decoration: none; transition: transform 300ms var(--lr-ease), box-shadow 300ms var(--lr-ease), border-color 300ms ease; }
+  .related-grid a:hover { border-color: var(--lr-line-strong); box-shadow: var(--lr-shadow-product); transform: translateY(-3px); }
+  .related-grid__shot { display: block; aspect-ratio: 16 / 10; overflow: hidden; border-bottom: 3px solid var(--related-primary); background: var(--related-paper); }
+  .related-grid__shot img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: left top; transition: transform 700ms var(--lr-ease); }
+  .related-grid a:hover .related-grid__shot img { transform: scale(1.03); }
+  .related-grid__copy { display: grid; gap: 4px; padding: 16px 56px 8px 18px; }
+  .related-grid__copy > span { color: var(--lr-mute); font-family: var(--mono); font-size: .62rem; text-transform: uppercase; }
+  .related-grid strong { font-size: 1.4rem; font-weight: 640; letter-spacing: -.035em; line-height: 1.1; overflow-wrap: anywhere; }
+  .related-grid small { color: var(--slate); font-size: .78rem; }
+  .related-grid__palette { display: flex; gap: 4px; padding: 6px 18px 18px; }
+  .related-grid__palette i { width: 14px; height: 14px; border: 1px solid rgb(0 0 0 / 12%); border-radius: 4px; }
+  .related-grid a > i { position: absolute; right: 16px; bottom: 18px; display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid var(--lr-line-strong); border-radius: var(--lr-radius-sm); font-style: normal; transition: background-color 200ms ease, color 200ms ease; }
+  .related-grid a:hover > i { color: white; background: var(--ink); }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) {
+    .theme-detail__system-grid { grid-template-columns: 1fr 1fr; }
+    .theme-card-layout { grid-column: 1 / -1; }
+    .theme-detail__anatomy { grid-template-columns: 1fr; gap: 14px; }
+  }
+  @media (max-width: 960px) {
+    .theme-detail__heading, .theme-detail__decision, .theme-detail__fit-grid { grid-template-columns: 1fr; }
+    .theme-detail__heading { gap: 32px; }
+    .theme-detail__stage { padding-right: 0; }
+    .theme-detail__phone { display: none; }
+    .theme-detail__anatomy ol { grid-template-columns: 1fr; }
+    .related-grid { grid-template-columns: 1fr 1fr; }
+    .related-grid a:last-child { grid-column: 1 / -1; }
+    .browser-bar { grid-template-columns: 50px 1fr; }
+    .browser-bar b { display: none; }
+    .browser-bar code { min-width: 0; width: 100%; }
+  }
+  @media (max-width: 620px) {
+    .theme-detail__hero { padding-top: 14px; }
+    .theme-detail__heading { padding-top: 26px; }
+    .theme-detail h1 { font-size: clamp(3rem, 16vw, 4.4rem); }
+    .theme-detail__actions { display: grid; }
+    .theme-detail__facts dl div { grid-template-columns: 1fr; gap: 3px; }
+    .theme-detail__sheet-head { flex-direction: column; gap: 4px; }
+    .theme-detail__sheet-head span { text-align: left; }
+    .browser-bar { gap: 8px; padding-inline: 10px; }
+    .browser-bar code { overflow: hidden; padding-inline: 8px; text-overflow: ellipsis; white-space: nowrap; }
+    .browser-view { aspect-ratio: 375 / 812; }
+    .theme-pin--brand { top: 3%; left: 30%; }
+    .theme-pin--cta { top: 3%; }
+    .theme-detail__decision ul, .theme-detail__system-grid, .theme-detail__fit ol { grid-template-columns: 1fr; }
+    .theme-detail__decision li { min-height: 0; }
+    .theme-scope__row { grid-template-columns: 1fr auto; gap: 8px 12px; padding: 12px 14px; }
+    .theme-scope__row > span:first-child { grid-column: 1 / -1; }
+    .theme-scope__row--head > span:first-child { display: none; }
+    .theme-detail__scope-foot { align-items: stretch; flex-direction: column; }
+    .theme-detail__related > div:first-child { align-items: start; flex-direction: column; }
+    .related-grid { grid-template-columns: 1fr; }
+    .related-grid a:last-child { grid-column: auto; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .related-grid a, .related-grid__shot img { transition: none; }
+  }
 </style>

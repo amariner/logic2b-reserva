@@ -187,7 +187,7 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
   const websiteHref = `${locale === 'en' ? '/en' : ''}/demos/${slug}/`;
 
   return (
-    <div className="rd-app" data-dashboard-demo>
+    <div className="rd-app lr-product" data-dashboard-demo>
       <aside className="rd-sidebar">
         <a className="rd-lockup" href={websiteHref} aria-label={restaurant.name}>
           <span>V</span><strong>{restaurant.name}</strong>

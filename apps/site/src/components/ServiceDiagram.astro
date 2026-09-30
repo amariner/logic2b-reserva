@@ -1,0 +1,599 @@
+---
+/* Diagramas explicativos del servicio (ADR-021).
+   Texto real en HTML (traducible, legible por lectores de pantalla) y SVG solo
+   para conectores decorativos. Los importes salen de depositFor del dominio. */
+import type { Locale } from '@logic-reserva/config';
+import { COMMERCIAL_PLANS, localizedCommercialText } from '@logic-reserva/config/commercial';
+import { PANEL_CATALOG, localizedPanelText } from '@logic-reserva/config/panels';
+import { depositFor } from '@logic-reserva/domain';
+import { DIAGRAM_CONTENT, type DiagramCopy } from '../content';
+import InterfaceIcon from './InterfaceIcon.astro';
+
+type Kind = 'system' | 'inventory' | 'noshow' | 'privatization' | 'plans' | 'roles';
+interface Props { kind: Kind; locale?: Locale; heading?: boolean; headingLevel?: 'h2' | 'h3'; id?: string }
+
+const { kind, locale = 'es', heading = true, headingLevel = 'h3', id = `diagram-${kind}-${locale}` } = Astro.props;
+const Heading = headingLevel;
+const copy: DiagramCopy = DIAGRAM_CONTENT[locale];
+const titleId = `${id}-title`;
+const money = new Intl.NumberFormat(locale === 'en' ? 'en-GB' : 'es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2, minimumFractionDigits: 2 });
+const moneyRound = new Intl.NumberFormat(locale === 'en' ? 'en-GB' : 'es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const eur = (cents: number) => money.format(cents / 100);
+const pad = (value: number) => String(value).padStart(2, '0');
+const tableMark = locale === 'en' ? 'T' : 'M';
+
+/* ---------- system ---------- */
+const system = copy.system;
+const inY = [12.5, 37.5, 62.5, 87.5];
+const outY = [100 / 6, 50, 500 / 6];
+const slotLabels = ['20:00', '20:30', '21:00', '21:30'];
+const coreRows = [
+  { table: 1, kind: 'booking', from: 2, to: 8, label: system.core.booking },
+  { table: 2, kind: 'event', from: 4, to: 10, label: system.core.event },
+  { table: 3, kind: 'event', from: 4, to: 10, label: '' },
+  { table: 4, kind: 'fresh', from: 6, to: 10, label: system.core.fresh },
+] as const;
+
+/* ---------- inventory ---------- */
+const inventory = copy.inventory;
+const inventoryTables = [
+  { n: 1, seats: 2, before: 'free', after: 'free' },
+  { n: 2, seats: 2, before: 'free', after: 'free' },
+  { n: 3, seats: 4, before: 'booked', after: 'booked' },
+  { n: 4, seats: 4, before: 'free', after: 'event' },
+  { n: 5, seats: 4, before: 'free', after: 'event' },
+  { n: 6, seats: 4, before: 'free', after: 'event' },
+  { n: 7, seats: 4, before: 'booked', after: 'booked' },
+  { n: 8, seats: 6, before: 'booked', after: 'booked' },
+] as const;
+const inventorySlots = [
+  { time: '20:30', before: 4, after: 1 },
+  { time: '21:00', before: 3, after: 0 },
+  { time: '21:30', before: 3, after: 0 },
+  { time: '22:00', before: 4, after: 1 },
+] as const;
+const tablesLabel = (count: number) => (count === 0 ? inventory.full : `${count} ${count === 1 ? inventory.table : inventory.tables}`);
+const tableStateLabel = { free: inventory.free, booked: inventory.booked, event: inventory.event } as const;
+
+/* ---------- noshow ---------- */
+const noshow = copy.noshow;
+// Mismo precio por persona que el fixture de Solane (apps/web/src/data.ts).
+const SOLANE_MENU_CENTS = 12_500;
+const EXAMPLE_PARTY = 4;
+const tierPolicies = [
+  { kind: 'none', menuPercentageBps: 0 },
+  { kind: 'card_hold', menuPercentageBps: 2_500 },
+  { kind: 'prepay', menuPercentageBps: 5_000 },
+] as const;
+const tierBreakdowns = tierPolicies.map((policy) => depositFor(policy, EXAMPLE_PARTY, SOLANE_MENU_CENTS));
+const example = tierBreakdowns[1]!;
+
+/* ---------- privatization ---------- */
+const privatization = copy.privatization;
+const roomStates = ['free', 'free', 'held', 'private'] as const;
+
+/* ---------- plans ---------- */
+const plansCopy = copy.plans;
+
+/* ---------- roles ---------- */
+const rolesCopy = copy.roles;
+// 2 = uso diario, 1 = consulta, 0 = no lo necesita. Orden de PANEL_CATALOG.
+const roleMatrix = [
+  [2, 2, 2, 1, 0, 0],
+  [2, 1, 2, 2, 1, 1],
+  [1, 0, 0, 1, 0, 0],
+  [1, 1, 1, 2, 2, 2],
+] as const;
+const usageLabel = (value: number) => (value === 2 ? rolesCopy.daily : value === 1 ? rolesCopy.check : rolesCopy.none);
+
+const head = copy[kind];
+---
+
+<figure class:list={['dg', `dg--${kind}`]} id={id} aria-labelledby={heading ? titleId : undefined} aria-label={heading ? undefined : head.title} data-diagram={kind}>
+  {heading && (
+    <header class="dg__head">
+      <p class="dg__eyebrow"><span aria-hidden="true"></span>{head.eyebrow}</p>
+      <Heading id={titleId} class="dg__title">{head.title}</Heading>
+    </header>
+  )}
+
+  {kind === 'system' && (
+    <>
+      <div class="dg-system">
+        {system.lanes.map((lane, index) => <p class={`dg-lane-label dg-lane-label--${index}`}><b>{pad(index + 1)}</b>{lane}</p>)}
+        <ul class="dg-lane dg-lane--in" style={`--n:${system.inputs.length}`}>
+          {system.inputs.map((input) => (
+            <li><span class="dg-node"><span class="dg-node__icon"><InterfaceIcon name={input.icon} size={18} /></span><span><strong>{input.name}</strong><small>{input.detail}</small></span><i class="dg-port dg-port--out" aria-hidden="true"></i></span></li>
+          ))}
+        </ul>
+        <svg class="dg-wires dg-wires--in" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          {inY.map((y) => <path d={`M0 ${y} C 55 ${y}, 45 50, 100 50`} />)}
+          {inY.map((y, index) => <path class="dg-flow" style={`animation-delay:${index * -0.4}s`} d={`M0 ${y} C 55 ${y}, 45 50, 100 50`} />)}
+        </svg>
+        <div class="dg-core">
+          <i class="dg-port dg-port--in" aria-hidden="true"></i><i class="dg-port dg-port--out" aria-hidden="true"></i>
+          <div class="dg-core__head">
+            <span class="dg-core__mark" aria-hidden="true"><img src="/logo-mark.svg" alt="" width="16" height="16" /></span>
+            <strong>{system.core.title}</strong>
+            <em>{system.core.tag}</em>
+          </div>
+          <div class="dg-core__grid" aria-hidden="true">
+            <div class="dg-core__times"><span>{system.core.tables}</span>{slotLabels.map((time) => <b>{time}</b>)}</div>
+            {coreRows.map((row) => (
+              <div class="dg-core__row">
+                <span class="dg-core__table">{tableMark}{row.table}</span>
+                <i class="dg-core__lane"></i>
+                <span class={`dg-block dg-block--${row.kind}`} style={`grid-column:${row.from} / ${row.to}`}>{row.label}</span>
+              </div>
+            ))}
+          </div>
+          <ul class="dg-core__legend">
+            {system.core.legend.map((item, index) => <li data-tone={['booking', 'event', 'fresh', 'free'][index]}>{item}</li>)}
+          </ul>
+          <ul class="dg-core__rules">{system.core.rules.map((rule) => <li>{rule}</li>)}</ul>
+        </div>
+        <svg class="dg-wires dg-wires--out" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+          {outY.map((y) => <path d={`M0 50 C 55 50, 45 ${y}, 100 ${y}`} />)}
+          {outY.map((y, index) => <path class="dg-flow" style={`animation-delay:${-0.8 - index * 0.4}s`} d={`M0 50 C 55 50, 45 ${y}, 100 ${y}`} />)}
+        </svg>
+        <ul class="dg-lane dg-lane--out" style={`--n:${system.outputs.length}`}>
+          {system.outputs.map((output) => (
+            <li><span class="dg-node"><i class="dg-port dg-port--in" aria-hidden="true"></i><span class="dg-node__icon"><InterfaceIcon name={output.icon} size={18} /></span><span><strong>{output.name}</strong><small>{output.detail}</small></span></span></li>
+          ))}
+        </ul>
+        <span class="dg-down dg-down--1" aria-hidden="true"></span>
+        <span class="dg-down dg-down--2" aria-hidden="true"></span>
+      </div>
+      <div class="dg-outcome">
+        <p><b>04</b>{system.outcomeLabel}</p>
+        <ul>{system.outcome.map((item) => <li><span aria-hidden="true">✓</span>{item}</li>)}</ul>
+      </div>
+      <ol class="dg-steps">
+        {system.steps.map((step, index) => <li><b aria-hidden="true">{pad(index + 1)}</b><div><strong>{step.title}</strong><p>{step.body}</p></div></li>)}
+      </ol>
+      <figcaption class="dg__note">{system.note}</figcaption>
+    </>
+  )}
+
+  {kind === 'inventory' && (
+    <>
+      <div class="dg-inv">
+        {(['before', 'after'] as const).map((moment) => (
+          <section class:list={['dg-inv__state', `dg-inv__state--${moment}`]} aria-label={moment === 'before' ? inventory.before : inventory.after}>
+            <p class="dg-inv__label"><b>{moment === 'before' ? inventory.before : inventory.after}</b><span>{inventory.at}</span></p>
+            <div class="dg-room">
+              <p>{inventory.room}</p>
+              <ul>
+                {inventoryTables.map((table) => {
+                  const state = table[moment];
+                  return (
+                    <li class="dg-room__table" data-state={state} data-seats={table.seats}>
+                      <b>{tableMark}{table.n}</b><small>{table.seats} pax</small><span class="sr-only">{tableStateLabel[state]}</span>
+                      {moment === 'after' && table.n === 4 && <i class="dg-callout-pin" aria-hidden="true">1</i>}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+            <div class="dg-widget">
+              <p>{inventory.widget}{moment === 'after' && <i class="dg-callout-pin" aria-hidden="true">2</i>}</p>
+              <ul>
+                {inventorySlots.map((slot) => {
+                  const count = slot[moment];
+                  return <li data-state={count === 0 ? 'full' : count === 1 ? 'low' : 'open'}><time>{slot.time}</time><span>{tablesLabel(count)}</span></li>;
+                })}
+              </ul>
+            </div>
+            {moment === 'after' && <p class="dg-inv__hold"><span aria-hidden="true"></span>{inventory.blocked} · {tableMark}4–{tableMark}6<i class="dg-callout-pin" aria-hidden="true">3</i></p>}
+          </section>
+        ))}
+        <div class="dg-inv__action" aria-hidden="true">
+          <span class="dg-inv__arrow"></span>
+          <p><strong>{inventory.action}</strong><small>{inventory.actionDetail}</small></p>
+        </div>
+      </div>
+      <ol class="dg-callouts">
+        {inventory.callouts.map((callout, index) => <li><b aria-hidden="true">{index + 1}</b><div><strong>{callout.title}</strong><p>{callout.body}</p></div></li>)}
+      </ol>
+      <figcaption class="dg__note">{inventory.note}</figcaption>
+    </>
+  )}
+
+  {kind === 'noshow' && (
+    <>
+      <ol class="dg-timeline">
+        {noshow.steps.map((step, index) => (
+          <li data-step={index + 1}>
+            <span class="dg-timeline__dot" aria-hidden="true">{pad(index + 1)}</span>
+            <strong>{step.title}</strong>
+            <p>{step.body}</p>
+            <code>{step.meta}</code>
+          </li>
+        ))}
+      </ol>
+      <div class="dg-noshow">
+        <section class="dg-rule" aria-label={noshow.ruleTitle}>
+          <p class="dg-panel-label">{noshow.ruleTitle}</p>
+          <ul class="dg-rule__bars">
+            {noshow.tiers.map((tier, index) => {
+              const breakdown = tierBreakdowns[index]!;
+              const percent = breakdown.percentageBps / 100;
+              return (
+                <li data-tier={index} class:list={[index === 1 && 'is-example']} style={`--value:${Math.max(4, percent * 1.6)}%`}>
+                  <span class="dg-rule__value">{percent} %</span>
+                  <span class="dg-rule__bar" aria-hidden="true"></span>
+                  <strong>{tier.level}</strong>
+                  <small>{tier.detail}</small>
+                </li>
+              );
+            })}
+          </ul>
+          <p class="dg-rule__hint">{noshow.ruleHint}</p>
+        </section>
+        <section class="dg-receipt" aria-label={noshow.exampleTitle}>
+          <p class="dg-panel-label">{noshow.exampleTitle}</p>
+          <dl>
+            <div><dt>{noshow.exampleMenu} · {eur(SOLANE_MENU_CENTS)} × {EXAMPLE_PARTY} {noshow.examplePeople}</dt><dd>{eur(example.menuSubtotalCents)}</dd></div>
+            <div><dt>{noshow.exampleTier}</dt><dd>{example.percentageBps / 100} %</dd></div>
+            <div class="dg-receipt__total"><dt>{noshow.exampleDeposit}</dt><dd>{eur(example.amountCents)}</dd></div>
+            <div class="dg-receipt__release"><dt><span aria-hidden="true">✓</span> {noshow.exampleSeated}</dt><dd>{eur(example.amountCents)} {noshow.exampleReleased}</dd></div>
+          </dl>
+          <code class="dg-receipt__json">{`{ "partySize": ${example.partySize}, "pricePerPersonCents": ${example.pricePerPersonCents}, "percentageBps": ${example.percentageBps}, "amountCents": ${example.amountCents} }`}</code>
+        </section>
+      </div>
+      <figcaption class="dg__note">{noshow.note}</figcaption>
+    </>
+  )}
+
+  {kind === 'privatization' && (
+    <>
+      <ol class="dg-pipeline">
+        {privatization.stages.map((stage, index) => (
+          <li data-stage={index + 1}>
+            <p class="dg-pipeline__top"><b>{pad(index + 1)}</b><span>{stage.who}</span></p>
+            <strong>{stage.title}</strong>
+            <p class="dg-pipeline__body">{stage.body}</p>
+            <div class="dg-pipeline__card" aria-hidden="true">
+              {stage.fields.map((field) => <span>{field}</span>)}
+            </div>
+            <span class="dg-pipeline__state" data-state={roomStates[index]}>{stage.state}</span>
+            <div class="dg-mini-room" data-state={roomStates[index]} aria-hidden="true">
+              <small>{privatization.room}</small>
+              <span></span><span></span><span></span><span></span>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <figcaption class="dg__note">{privatization.note}</figcaption>
+    </>
+  )}
+
+  {kind === 'plans' && (
+    <>
+      <div class="dg-ladder">
+        {plansCopy.bands.map((band, index) => (
+          <section class={`dg-ladder__band dg-ladder__band--${index}`} aria-label={`${band.title} · ${localizedCommercialText(COMMERCIAL_PLANS[index]!.name, locale)}`}>
+            <p><b>{pad(index + 1)}</b>{band.title}</p>
+            <ul>{band.items.map((item) => <li>{item}</li>)}</ul>
+          </section>
+        ))}
+        {COMMERCIAL_PLANS.map((plan, index) => (
+          <div class={`dg-ladder__plan dg-ladder__plan--${index}`}>
+            <strong>{localizedCommercialText(plan.name, locale)}</strong>
+            <span>{moneyRound.format(plan.monthlyPriceCents / 100)}<small>{plansCopy.perMonth}</small></span>
+            <small>{moneyRound.format(plan.onboardingPriceCents / 100)} {plansCopy.setup}{index > 0 ? ` · ${plansCopy.includes}` : ''}</small>
+          </div>
+        ))}
+      </div>
+      <figcaption class="dg__note">{plansCopy.note}</figcaption>
+    </>
+  )}
+
+  {kind === 'roles' && (
+    <>
+      <div class="dg-roles-wrap" tabindex="0" role="region" aria-label={rolesCopy.caption}>
+        <table class="dg-roles">
+          <caption class="sr-only">{rolesCopy.caption}</caption>
+          <thead>
+            <tr>
+              <th scope="col"><span class="sr-only">{rolesCopy.caption}</span></th>
+              {PANEL_CATALOG.map((panel) => <th scope="col">{localizedPanelText(panel.title, locale)}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {rolesCopy.roles.map((role, rowIndex) => (
+              <tr>
+                <th scope="row"><strong>{role.name}</strong><small>{role.detail}</small></th>
+                {roleMatrix[rowIndex]!.map((value) => <td data-usage={value}><span aria-hidden="true"></span><span class="sr-only">{usageLabel(value)}</span></td>)}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      <ul class="dg-roles__legend" aria-hidden="true">
+        <li data-usage="2"><span></span>{rolesCopy.daily}</li>
+        <li data-usage="1"><span></span>{rolesCopy.check}</li>
+        <li data-usage="0"><span></span>{rolesCopy.none}</li>
+      </ul>
+      <figcaption class="dg__note">{rolesCopy.note}</figcaption>
+    </>
+  )}
+</figure>
+
+<style>
+  /* ---------- Frame ---------- */
+  .dg { --dg-booking: var(--state-table-occupied); --dg-booking-bg: var(--state-table-occupied-bg); --dg-event: var(--state-table-event); --dg-event-bg: var(--state-table-event-bg); --dg-free: var(--state-table-free); --dg-free-bg: var(--state-table-free-bg); --dg-private: var(--state-table-private); --dg-private-bg: var(--state-table-private-bg); --dg-fresh: var(--lr-blue); --dg-fresh-bg: var(--lr-blue-soft); position: relative; min-width: 0; margin: 0; border: 1px solid var(--lr-line); border-radius: var(--lr-radius-lg); padding: clamp(20px, 3vw, 36px); color: var(--lr-ink); background-color: #fff; background-image: linear-gradient(var(--lr-grid) 1px, transparent 1px), linear-gradient(90deg, var(--lr-grid) 1px, transparent 1px); background-size: 24px 24px; background-position: -1px -1px; }
+  .dg__head { display: grid; gap: 10px; max-width: 760px; margin-bottom: clamp(22px, 3vw, 34px); }
+  .dg__eyebrow { display: flex; align-items: center; gap: 10px; margin: 0; color: var(--lr-blue-strong); font: 560 .68rem/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .dg__eyebrow span { width: 7px; height: 7px; border-radius: 2px; background: currentColor; }
+  .dg__title { margin: 0; font: 630 clamp(1.5rem, 2.4vw, 2.2rem)/1.08 var(--display); letter-spacing: -.04em; text-wrap: balance; }
+  .dg__note { display: flex; gap: 10px; margin: 22px 0 0; border-top: 1px dashed var(--lr-line-strong); padding-top: 14px; color: var(--lr-mute); font: 400 .72rem/1.55 var(--mono); }
+  .dg__note::before { flex: none; margin-top: .45em; width: 6px; height: 6px; border: 1px solid currentColor; border-radius: 50%; content: ''; }
+  .dg-panel-label { margin: 0 0 14px; color: var(--lr-mute); font: 560 .64rem/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; }
+
+  /* ---------- System ---------- */
+  .dg-system { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) minmax(40px, 72px) minmax(0, 1.5fr) minmax(40px, 72px) minmax(0, 1fr); grid-template-rows: auto 1fr; align-items: stretch; }
+  .dg-lane-label { display: flex; align-items: center; gap: 8px; margin: 0 0 14px; color: var(--lr-ink-soft); font: 560 .68rem/1.3 var(--mono); letter-spacing: .03em; text-transform: uppercase; }
+  .dg-lane-label b { display: grid; min-width: 26px; height: 22px; place-items: center; border-radius: 5px; color: #fff; background: var(--lr-ink); font-weight: 600; }
+  .dg-lane-label--0 { grid-column: 1; }
+  .dg-lane-label--1 { grid-column: 3; }
+  .dg-lane-label--2 { grid-column: 5; }
+  .dg-lane { display: grid; grid-row: 2; grid-template-rows: repeat(var(--n), 1fr); margin: 0; padding: 0; list-style: none; }
+  .dg-lane--in { grid-column: 1; }
+  .dg-lane--out { grid-column: 5; }
+  .dg-lane li { display: flex; align-items: center; padding-block: 5px; }
+  .dg-node { position: relative; display: flex; width: 100%; align-items: center; gap: 10px; border: 1px solid var(--lr-line); border-radius: 10px; padding: 10px 12px; background: #fff; box-shadow: 0 1px 0 rgb(15 29 45 / 4%); }
+  .dg-node__icon { display: grid; flex: none; width: 34px; height: 34px; place-items: center; border-radius: 8px; color: var(--lr-blue); background: var(--lr-blue-soft); }
+  .dg-node strong { display: block; font-size: .8rem; font-weight: 620; line-height: 1.25; }
+  .dg-node small { display: block; margin-top: 2px; color: var(--lr-mute); font: 400 .64rem/1.35 var(--mono); }
+  .dg-port { position: absolute; top: 50%; width: 9px; height: 9px; border: 2px solid var(--lr-signal); border-radius: 50%; background: #fff; transform: translateY(-50%); }
+  .dg-port--out { right: -5px; }
+  .dg-port--in { left: -5px; }
+  .dg-wires { grid-row: 2; width: 100%; height: 100%; overflow: visible; }
+  .dg-wires--in { grid-column: 2; }
+  .dg-wires--out { grid-column: 4; }
+  .dg-wires path { fill: none; stroke: rgb(61 134 201 / 38%); stroke-width: 1.5; vector-effect: non-scaling-stroke; }
+  .dg-wires .dg-flow { stroke: var(--lr-signal); stroke-width: 2.5; stroke-dasharray: 4 22; stroke-linecap: round; animation: dg-flow 1.8s linear infinite; }
+  @keyframes dg-flow { to { stroke-dashoffset: -26; } }
+
+  .dg-core { position: relative; display: flex; grid-column: 3; grid-row: 2; flex-direction: column; gap: 14px; margin-block: 5px; border: 1px solid var(--lr-night-soft); border-radius: 14px; padding: 16px; color: #fff; background: var(--lr-night); box-shadow: 0 30px 60px -36px rgb(11 22 36 / 80%); }
+  .dg-core .dg-port { border-color: #7fb3e4; background: var(--lr-night); }
+  .dg-core__head { display: flex; align-items: center; gap: 10px; }
+  .dg-core__mark { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 7px; background: #fff; }
+  .dg-core__head strong { font-size: .86rem; font-weight: 620; }
+  .dg-core__head em { margin-left: auto; border: 1px solid #ffffff2e; border-radius: 5px; padding: 3px 7px; color: #bcd6ee; font: 500 .6rem/1.3 var(--mono); font-style: normal; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+  .dg-core__grid { display: grid; gap: 6px; border: 1px solid #ffffff1a; border-radius: 9px; padding: 10px; background: #ffffff08; }
+  .dg-core__times, .dg-core__row { display: grid; grid-template-columns: 38px repeat(8, minmax(0, 1fr)); align-items: center; }
+  .dg-core__times span { color: #93a8bd; font: 500 .56rem/1 var(--mono); text-transform: uppercase; }
+  .dg-core__times b { grid-column: span 2; border-left: 1px solid #ffffff26; padding-left: 5px; color: #b9cadb; font: 500 .58rem/1 var(--mono); }
+  .dg-core__row { min-height: 30px; }
+  .dg-core__table { grid-column: 1; grid-row: 1; color: #d7e3ee; font: 600 .66rem/1 var(--mono); }
+  .dg-core__lane { grid-column: 2 / -1; grid-row: 1; height: 100%; border-radius: 5px; background: repeating-linear-gradient(90deg, #ffffff14 0 1px, transparent 1px calc(100% / 8)), #ffffff06; }
+  .dg-block { position: relative; grid-row: 1; display: flex; min-width: 0; height: 24px; align-items: center; overflow: hidden; margin-inline: 1px; border: 1px solid; border-radius: 5px; padding: 0 7px; font: 500 .58rem/1 var(--mono); text-overflow: ellipsis; white-space: nowrap; }
+  .dg-block--booking { border-color: #f4c46f; color: #3b2503; background: #ffe2a8; }
+  .dg-block--event { border-color: #f1998b; color: #4a120b; background-color: #fbd0c8; background-image: repeating-linear-gradient(135deg, transparent 0 5px, rgb(159 39 27 / 14%) 5px 7px); }
+  .dg-block--fresh { border-color: #8cc4f5; color: #062a4c; background: #cfe6fb; box-shadow: 0 0 0 3px rgb(143 196 245 / 25%); animation: dg-fresh 2.4s var(--lr-ease) infinite; }
+  @keyframes dg-fresh { 0%, 100% { box-shadow: 0 0 0 0 rgb(143 196 245 / 45%); } 50% { box-shadow: 0 0 0 5px rgb(143 196 245 / 0%); } }
+  .dg-core__legend, .dg-core__rules { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 0; padding: 0; list-style: none; }
+  .dg-core__legend li { display: inline-flex; align-items: center; gap: 6px; color: #c3d2e0; font: 400 .6rem/1.3 var(--mono); }
+  .dg-core__legend li::before { width: 9px; height: 9px; border-radius: 2px; content: ''; }
+  .dg-core__legend [data-tone='booking']::before { background: #ffe2a8; }
+  .dg-core__legend [data-tone='event']::before { background: #fbd0c8; }
+  .dg-core__legend [data-tone='fresh']::before { background: #cfe6fb; }
+  .dg-core__legend [data-tone='free']::before { border: 1px solid #ffffff4d; }
+  .dg-core__rules { margin-top: auto; border-top: 1px solid #ffffff1a; padding-top: 12px; gap: 6px; }
+  .dg-core__rules li { border: 1px solid #ffffff26; border-radius: 5px; padding: 5px 8px; color: #e6eef6; font: 500 .62rem/1.2 var(--mono); }
+  .dg-down { display: none; }
+
+  .dg-outcome { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 16px; margin-top: 16px; border: 1px solid var(--lr-line); border-radius: 10px; padding: 12px 14px; background: var(--lr-paper); }
+  .dg-outcome p { display: flex; align-items: center; gap: 8px; margin: 0; color: var(--lr-ink-soft); font: 560 .68rem/1.3 var(--mono); letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; }
+  .dg-outcome p b { display: grid; min-width: 26px; height: 22px; place-items: center; border-radius: 5px; color: #fff; background: var(--lr-ink); }
+  .dg-outcome ul { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .dg-outcome li { display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--lr-line); border-radius: 6px; padding: 6px 10px; background: #fff; font-size: .76rem; }
+  .dg-outcome li span { color: var(--state-success); font-weight: 700; }
+
+  .dg-steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 24px 0 0; padding: 0; border-top: 1px solid var(--lr-line); list-style: none; }
+  .dg-steps li { display: grid; grid-template-columns: 30px 1fr; gap: 8px; padding: 18px 18px 0 0; }
+  .dg-steps li + li { border-left: 1px solid var(--lr-line); padding-left: 18px; }
+  .dg-steps b { color: var(--lr-blue); font: 600 .72rem/1.6 var(--mono); }
+  .dg-steps strong { display: block; font-size: .9rem; font-weight: 620; letter-spacing: -.01em; }
+  .dg-steps p { margin: 6px 0 0; color: var(--lr-slate); font-size: .8rem; line-height: 1.55; }
+
+  /* ---------- Inventory ---------- */
+  .dg-inv { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 150px minmax(0, 1fr); gap: 0; align-items: stretch; }
+  .dg-inv__state { position: relative; display: grid; align-content: start; gap: 12px; border: 1px solid var(--lr-line); border-radius: 12px; padding: 16px; background: #fff; }
+  .dg-inv__state--before { grid-column: 1; grid-row: 1; }
+  .dg-inv__state--after { grid-column: 3; grid-row: 1; border-color: var(--lr-line-strong); box-shadow: var(--lr-shadow-product); }
+  .dg-inv__label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 0; }
+  .dg-inv__label b { border-radius: 5px; padding: 4px 8px; color: #fff; background: var(--lr-ink); font: 600 .62rem/1.2 var(--mono); letter-spacing: .05em; text-transform: uppercase; }
+  .dg-inv__state--before .dg-inv__label b { color: var(--lr-ink); background: var(--lr-paper-deep); }
+  .dg-inv__label span { color: var(--lr-mute); font: 400 .64rem/1.2 var(--mono); }
+  .dg-room { border: 1px dashed var(--lr-line-strong); border-radius: 10px; padding: 12px; background: var(--lr-paper); }
+  .dg-room > p, .dg-widget > p { position: relative; display: flex; align-items: center; gap: 8px; margin: 0 0 10px; color: var(--lr-slate); font: 500 .62rem/1.3 var(--mono); }
+  .dg-room ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .dg-room__table { --table: var(--dg-free); --table-bg: var(--dg-free-bg); position: relative; display: grid; min-height: 52px; place-content: center; justify-items: center; gap: 2px; border: 1.5px solid color-mix(in srgb, var(--table) 55%, transparent); border-radius: 8px; color: var(--table); background: var(--table-bg); transition: background-color 300ms ease, border-color 300ms ease; }
+  .dg-room__table[data-seats='2'] { border-radius: 50%; aspect-ratio: 1; min-height: 0; width: min(52px, 100%); justify-self: center; }
+  .dg-room__table[data-state='booked'] { --table: var(--dg-booking); --table-bg: var(--dg-booking-bg); }
+  .dg-room__table[data-state='event'] { --table: var(--dg-event); --table-bg: var(--dg-event-bg); background-image: repeating-linear-gradient(135deg, transparent 0 6px, rgb(159 39 27 / 12%) 6px 8px); }
+  .dg-room__table b { font: 600 .7rem/1 var(--mono); }
+  .dg-room__table small { font: 400 .55rem/1 var(--mono); opacity: .85; }
+  .dg-widget { border: 1px solid var(--lr-line); border-radius: 10px; padding: 12px; }
+  .dg-widget ul { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .dg-widget li { display: grid; gap: 3px; border: 1px solid var(--lr-line-strong); border-radius: 7px; padding: 8px 6px; text-align: center; }
+  .dg-widget time { font: 600 .74rem/1 var(--mono); }
+  .dg-widget li span { color: var(--dg-free); font: 500 .56rem/1.2 var(--mono); }
+  .dg-widget li[data-state='low'] span { color: var(--dg-booking); }
+  .dg-widget li[data-state='full'] { border-style: dashed; color: var(--lr-mute); background: var(--lr-paper); }
+  .dg-widget li[data-state='full'] time { text-decoration: line-through; }
+  .dg-widget li[data-state='full'] span { color: var(--dg-event); }
+  .dg-inv__hold { position: relative; display: flex; align-items: center; gap: 8px; margin: 0; border-radius: 7px; padding: 8px 10px; color: var(--dg-event); background: var(--dg-event-bg); font: 500 .66rem/1.3 var(--mono); }
+  .dg-inv__hold > span { width: 8px; height: 8px; border-radius: 2px; background: currentColor; }
+  .dg-inv__action { display: grid; grid-column: 2; grid-row: 1; align-content: center; justify-items: center; gap: 10px; padding: 0 12px; text-align: center; }
+  .dg-inv__arrow { position: relative; width: 100%; height: 2px; background: repeating-linear-gradient(90deg, var(--lr-signal) 0 6px, transparent 6px 11px); }
+  .dg-inv__arrow::after { position: absolute; top: 50%; right: -2px; width: 10px; height: 10px; border-top: 2px solid var(--lr-signal); border-right: 2px solid var(--lr-signal); content: ''; transform: translateY(-50%) rotate(45deg); }
+  .dg-inv__action p { display: grid; gap: 4px; margin: 0; }
+  .dg-inv__action strong { font-size: .76rem; font-weight: 620; line-height: 1.3; }
+  .dg-inv__action small { color: var(--lr-mute); font: 400 .6rem/1.3 var(--mono); }
+  .dg-callout-pin { position: absolute; top: -9px; right: -9px; z-index: 2; display: grid; width: 20px; height: 20px; place-items: center; border-radius: 50%; color: #fff; background: var(--lr-blue); font: 600 .6rem/1 var(--mono); font-style: normal; box-shadow: 0 0 0 3px #fff; }
+  .dg-widget > p .dg-callout-pin, .dg-inv__hold .dg-callout-pin { position: static; margin-left: auto; box-shadow: none; }
+  .dg-callouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 20px 0 0; padding: 0; list-style: none; }
+  .dg-callouts li { display: grid; grid-template-columns: 26px 1fr; gap: 10px; border: 1px solid var(--lr-line); border-radius: 10px; padding: 14px; background: #fff; }
+  .dg-callouts b { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; color: #fff; background: var(--lr-blue); font: 600 .66rem/1 var(--mono); }
+  .dg-callouts strong { display: block; font-size: .84rem; font-weight: 620; }
+  .dg-callouts p { margin: 5px 0 0; color: var(--lr-slate); font-size: .78rem; line-height: 1.5; }
+
+  /* ---------- No-show ---------- */
+  .dg-timeline { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; margin: 0; padding: 0; list-style: none; }
+  .dg-timeline::before { position: absolute; top: 17px; right: calc((100% - 56px) / 5 - 18px); left: 18px; height: 2px; background: linear-gradient(90deg, var(--lr-signal) 0 60%, var(--state-success) 100%); content: ''; }
+  .dg-timeline li { position: relative; display: grid; align-content: start; justify-items: start; gap: 6px; }
+  .dg-timeline__dot { position: relative; z-index: 1; display: grid; width: 36px; height: 36px; margin-bottom: 8px; place-items: center; border: 2px solid var(--lr-signal); border-radius: 50%; color: var(--lr-blue-strong); background: #fff; font: 600 .7rem/1 var(--mono); box-shadow: 0 0 0 5px #fff; }
+  .dg-timeline li:last-child .dg-timeline__dot { border-color: var(--state-success); color: #fff; background: var(--state-success); }
+  .dg-timeline strong { font-size: .9rem; font-weight: 620; }
+  .dg-timeline p { margin: 0; color: var(--lr-slate); font-size: .78rem; line-height: 1.5; }
+  .dg-timeline code { margin-top: 4px; border: 1px solid var(--lr-line); border-radius: 5px; padding: 4px 7px; color: var(--lr-ink-soft); background: var(--lr-paper); font: 500 .6rem/1.3 var(--mono); }
+  .dg-noshow { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; margin-top: 26px; }
+  .dg-rule, .dg-receipt { border: 1px solid var(--lr-line); border-radius: 12px; padding: 16px; background: #fff; }
+  .dg-rule__bars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: end; gap: 12px; height: 190px; margin: 0; border-bottom: 1px solid var(--lr-line-strong); padding: 0 6px; list-style: none; }
+  .dg-rule__bars li { display: flex; height: 100%; flex-direction: column; justify-content: flex-end; }
+  .dg-rule__value { margin-bottom: 8px; text-align: center; font: 600 1.05rem/1 var(--mono); }
+  .dg-rule__bar { flex: none; height: var(--value); min-height: 4px; border-radius: 5px 5px 0 0; background: var(--lr-signal-soft); }
+  .dg-rule__bars li.is-example .dg-rule__bar { background: var(--lr-blue); }
+  .dg-rule__bars li[data-tier='2'] .dg-rule__bar { background: #9fc2e4; }
+    .dg-rule__bars li { position: relative; }
+  .dg-rule__bars li strong { position: absolute; bottom: -36px; left: 0; right: 0; text-align: center; font-size: .78rem; font-weight: 620; }
+  .dg-rule__bars li small { position: absolute; bottom: -52px; left: 0; right: 0; color: var(--lr-mute); text-align: center; font: 400 .6rem/1.2 var(--mono); }
+  .dg-rule__hint { margin: 64px 0 0; color: var(--lr-slate); font-size: .76rem; line-height: 1.5; }
+  .dg-receipt dl { display: grid; margin: 0; }
+  .dg-receipt dl div { display: flex; align-items: baseline; justify-content: space-between; gap: 14px; border-bottom: 1px dashed var(--lr-line-strong); padding: 11px 0; }
+  .dg-receipt dt { color: var(--lr-slate); font-size: .8rem; }
+  .dg-receipt dd { margin: 0; font: 600 .84rem/1.2 var(--mono); white-space: nowrap; }
+  .dg-receipt__total dt { color: var(--lr-ink); font-weight: 620; }
+  .dg-receipt__total dd { color: var(--lr-blue); font-size: 1.15rem; }
+  .dg-receipt__release { border-bottom: 0 !important; }
+  .dg-receipt__release dt, .dg-receipt__release dd { color: var(--state-success); }
+  .dg-receipt__json { display: block; margin-top: 10px; overflow-x: auto; border-radius: 7px; padding: 10px 12px; color: #c9dcee; background: var(--lr-night); font: 400 .62rem/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; }
+
+  /* ---------- Privatization ---------- */
+  .dg-pipeline { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 26px; margin: 0; padding: 0; list-style: none; }
+  .dg-pipeline li { position: relative; display: grid; align-content: start; gap: 8px; border: 1px solid var(--lr-line); border-radius: 12px; padding: 16px; background: #fff; }
+  .dg-pipeline li + li::before { position: absolute; top: 50%; left: -21px; width: 16px; height: 2px; background: var(--lr-signal); content: ''; }
+  .dg-pipeline li + li::after { position: absolute; top: calc(50% - 4px); left: -9px; width: 8px; height: 8px; border-top: 2px solid var(--lr-signal); border-right: 2px solid var(--lr-signal); content: ''; transform: rotate(45deg); }
+  .dg-pipeline li:last-child { border-color: color-mix(in srgb, var(--dg-private) 40%, transparent); box-shadow: var(--lr-shadow-product); }
+  .dg-pipeline__top { display: flex; align-items: center; justify-content: space-between; margin: 0; }
+  .dg-pipeline__top b { color: var(--lr-blue); font: 600 .7rem/1 var(--mono); }
+  .dg-pipeline__top span { border-radius: 5px; padding: 3px 7px; color: var(--lr-ink-soft); background: var(--lr-paper-deep); font: 500 .58rem/1.3 var(--mono); text-transform: uppercase; }
+  .dg-pipeline strong { font-size: 1rem; font-weight: 640; letter-spacing: -.01em; }
+  .dg-pipeline__body { min-height: 2.9em; margin: 0; color: var(--lr-slate); font-size: .78rem; line-height: 1.5; }
+  .dg-pipeline__card { display: grid; gap: 5px; border: 1px solid var(--lr-line); border-radius: 8px; padding: 9px; background: var(--lr-paper); }
+  .dg-pipeline__card span { display: flex; align-items: center; gap: 7px; border-radius: 5px; padding: 5px 8px; background: #fff; font: 500 .62rem/1.2 var(--mono); }
+  .dg-pipeline__card span::before { width: 5px; height: 5px; border-radius: 1px; background: var(--lr-line-strong); content: ''; }
+  .dg-pipeline__state { --state: var(--lr-blue); justify-self: start; display: inline-flex; align-items: center; gap: 6px; border: 1px solid color-mix(in srgb, var(--state) 35%, transparent); border-radius: 6px; padding: 4px 8px; color: var(--state); background: color-mix(in srgb, var(--state) 8%, white); font: 600 .62rem/1.2 var(--mono); }
+  .dg-pipeline__state::before { width: 6px; height: 6px; border-radius: 50%; background: currentColor; content: ''; }
+  .dg-pipeline__state[data-state='held'] { --state: var(--dg-booking); }
+  .dg-pipeline__state[data-state='private'] { --state: var(--dg-private); }
+  .dg-mini-room { --room: var(--dg-free); --room-bg: var(--dg-free-bg); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 5px; border-top: 1px dashed var(--lr-line-strong); padding-top: 10px; }
+  .dg-mini-room small { grid-column: 1 / -1; color: var(--lr-mute); font: 400 .56rem/1.2 var(--mono); }
+  .dg-mini-room span { height: 20px; border: 1.5px solid color-mix(in srgb, var(--room) 55%, transparent); border-radius: 4px; background: var(--room-bg); }
+  .dg-mini-room[data-state='held'] { --room: var(--dg-booking); --room-bg: var(--dg-booking-bg); }
+  .dg-mini-room[data-state='private'] { --room: var(--dg-private); --room-bg: var(--dg-private-bg); }
+  .dg-mini-room[data-state='private'] span { background-image: repeating-linear-gradient(135deg, transparent 0 4px, rgb(50 60 145 / 16%) 4px 6px); }
+
+  /* ---------- Plans ladder ---------- */
+  .dg-ladder { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-template-rows: auto auto auto auto; gap: 8px; }
+  .dg-ladder__band { display: grid; grid-template-columns: minmax(150px, auto) 1fr; align-items: center; gap: 8px 16px; border: 1px solid var(--lr-line); border-radius: 10px; padding: 14px 16px; background: #fff; }
+  .dg-ladder__band p { display: flex; align-items: center; gap: 8px; margin: 0; font-size: .84rem; font-weight: 640; }
+  .dg-ladder__band p b { color: var(--lr-blue); font: 600 .66rem/1 var(--mono); }
+  .dg-ladder__band ul { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .dg-ladder__band li { border: 1px solid var(--lr-line); border-radius: 5px; padding: 5px 8px; color: var(--lr-ink-soft); background: var(--lr-paper); font: 500 .64rem/1.2 var(--mono); }
+  .dg-ladder__band--2 { grid-column: 3; grid-row: 1; grid-template-columns: 1fr; border-color: var(--lr-night-soft); color: #fff; background: var(--lr-night); }
+  .dg-ladder__band--2 li { border-color: #ffffff29; color: #dde8f2; background: #ffffff0d; }
+  .dg-ladder__band--2 p b { color: #8cc0ef; }
+  .dg-ladder__band--1 { grid-column: 2 / 4; grid-row: 2; background: var(--lr-blue-soft); border-color: rgb(29 92 150 / 22%); }
+  .dg-ladder__band--1 li { background: #fff; }
+  .dg-ladder__band--0 { grid-column: 1 / 4; grid-row: 3; }
+  .dg-ladder__plan { display: grid; grid-row: 4; gap: 4px; border-top: 2px solid var(--lr-ink); padding-top: 12px; }
+  .dg-ladder__plan--0 { grid-column: 1; }
+  .dg-ladder__plan--1 { grid-column: 2; border-top-color: var(--lr-blue); }
+  .dg-ladder__plan--2 { grid-column: 3; border-top-color: var(--lr-night); }
+  .dg-ladder__plan strong { font-size: 1.05rem; font-weight: 640; }
+  .dg-ladder__plan > span { font: 640 1.7rem/1 var(--display); letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .dg-ladder__plan > span small { margin-left: 3px; color: var(--lr-mute); font: 400 .72rem/1 var(--mono); letter-spacing: 0; }
+  .dg-ladder__plan > small { color: var(--lr-mute); font: 400 .62rem/1.4 var(--mono); }
+
+  /* ---------- Roles ---------- */
+  .dg-roles-wrap { overflow-x: auto; border: 1px solid var(--lr-line); border-radius: 12px; background: #fff; }
+  .dg-roles { width: 100%; min-width: 720px; border-collapse: collapse; }
+  .dg-roles th, .dg-roles td { border-bottom: 1px solid var(--lr-line); padding: 12px 10px; text-align: center; }
+  .dg-roles tbody tr:last-child > * { border-bottom: 0; }
+  .dg-roles thead th { color: var(--lr-slate); background: var(--lr-paper); font: 500 .62rem/1.3 var(--mono); letter-spacing: .02em; }
+  .dg-roles tbody th { width: 190px; text-align: left; }
+  .dg-roles tbody th strong { display: block; font-size: .86rem; font-weight: 640; }
+  .dg-roles tbody th small { display: block; margin-top: 2px; color: var(--lr-mute); font: 400 .6rem/1.3 var(--mono); }
+  .dg-roles td span[aria-hidden], .dg-roles__legend span { display: inline-block; width: 14px; height: 14px; border-radius: 4px; vertical-align: middle; }
+  [data-usage='2'] > span:first-child { background: var(--lr-blue); }
+  [data-usage='1'] > span:first-child { border: 2px solid var(--lr-blue); background: #fff; }
+  [data-usage='0'] > span:first-child { width: 12px !important; height: 2px !important; border-radius: 1px !important; background: var(--lr-line-strong); }
+  .dg-roles tbody tr:hover { background: rgb(29 92 150 / 4%); }
+  .dg-roles__legend { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 14px 0 0; padding: 0; list-style: none; color: var(--lr-slate); font: 400 .66rem/1.4 var(--mono); }
+  .dg-roles__legend li { display: inline-flex; align-items: center; gap: 8px; }
+
+  /* ---------- Responsive ---------- */
+  @media (max-width: 1100px) {
+    .dg-steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dg-steps li:nth-child(3) { border-left: 0; padding-left: 0; }
+    .dg-pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dg-pipeline li:nth-child(3)::before, .dg-pipeline li:nth-child(3)::after { display: none; }
+    .dg-timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 26px; }
+    .dg-timeline::before { display: none; }
+  }
+  @media (max-width: 900px) {
+    .dg-system { grid-template-columns: 1fr; grid-template-rows: none; gap: 0; }
+    .dg-lane-label, .dg-lane, .dg-core { grid-column: 1 !important; grid-row: auto !important; }
+    .dg-lane-label--0 { order: 1; } .dg-lane--in { order: 2; } .dg-down--1 { order: 3; }
+    .dg-lane-label--1 { order: 4; } .dg-core { order: 5; } .dg-down--2 { order: 6; }
+    .dg-lane-label--2 { order: 7; } .dg-lane--out { order: 8; }
+    .dg-lane { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; gap: 8px; }
+    .dg-lane li { padding: 0; }
+    .dg-wires, .dg-port { display: none; }
+    .dg-down { position: relative; display: block; justify-self: center; width: 2px; height: 34px; margin: 6px 0 10px; background: repeating-linear-gradient(180deg, var(--lr-signal) 0 5px, transparent 5px 9px); }
+    .dg-down::after { position: absolute; bottom: -2px; left: 50%; width: 9px; height: 9px; border-right: 2px solid var(--lr-signal); border-bottom: 2px solid var(--lr-signal); content: ''; transform: translateX(-50%) rotate(45deg); }
+    .dg-inv { grid-template-columns: 1fr; gap: 0; }
+    .dg-inv__state--before, .dg-inv__state--after, .dg-inv__action { grid-column: 1; grid-row: auto; }
+    .dg-inv__state--before { order: 1; } .dg-inv__action { order: 2; padding: 16px 0; } .dg-inv__state--after { order: 3; }
+    .dg-inv__arrow { width: 2px; height: 30px; background: repeating-linear-gradient(180deg, var(--lr-signal) 0 5px, transparent 5px 9px); }
+    .dg-inv__arrow::after { top: auto; right: auto; bottom: -2px; left: 50%; border-top: 0; border-bottom: 2px solid var(--lr-signal); transform: translateX(-50%) rotate(45deg); }
+    .dg-callouts, .dg-noshow { grid-template-columns: 1fr; }
+    .dg-ladder { grid-template-columns: 1fr; }
+    .dg-ladder__band, .dg-ladder__plan { grid-column: 1 !important; grid-row: auto !important; grid-template-columns: 1fr; }
+    .dg-ladder__band--0 { order: 1; } .dg-ladder__plan--0 { order: 2; }
+    .dg-ladder__band--1 { order: 3; } .dg-ladder__plan--1 { order: 4; }
+    .dg-ladder__band--2 { order: 5; } .dg-ladder__plan--2 { order: 6; }
+    .dg-ladder__plan { margin-bottom: 10px; }
+  }
+  @media (max-width: 640px) {
+    .dg { padding: 16px; border-radius: 14px; }
+    .dg-lane { grid-template-columns: 1fr; }
+    .dg-core__times, .dg-core__row { grid-template-columns: 30px repeat(8, minmax(0, 1fr)); }
+    .dg-block { padding: 0 4px; font-size: .5rem; }
+    .dg-outcome { grid-template-columns: 1fr; }
+    .dg-steps { grid-template-columns: 1fr; }
+    .dg-steps li + li { border-left: 0; border-top: 1px solid var(--lr-line); padding-left: 0; }
+    .dg-steps li { padding-bottom: 14px; }
+    .dg-room ul { gap: 6px; }
+    .dg-widget ul { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .dg-timeline { grid-template-columns: 1fr; row-gap: 16px; }
+    .dg-timeline li { grid-template-columns: 36px 1fr; column-gap: 12px; justify-items: stretch; }
+    .dg-timeline__dot { grid-row: span 3; margin: 0; }
+    .dg-timeline code { grid-column: 2; justify-self: start; }
+    .dg-pipeline { grid-template-columns: 1fr; gap: 22px; }
+    .dg-pipeline li + li::before { top: -16px; left: 50%; width: 2px; height: 12px; }
+    .dg-pipeline li + li::after { top: -12px; left: calc(50% - 4px); transform: rotate(135deg); }
+    .dg-pipeline li:nth-child(3)::before, .dg-pipeline li:nth-child(3)::after { display: block; }
+    .dg-pipeline__body { min-height: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .dg-wires .dg-flow, .dg-block--fresh { animation: none; }
+    .dg-wires .dg-flow { stroke-dasharray: none; stroke: transparent; }
+  }
+</style>
