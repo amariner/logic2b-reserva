@@ -1,4 +1,5 @@
 import {
+  canCreateBooking,
   createWalkInBooking,
   validateSlot,
   type BookingSource,
@@ -126,12 +127,12 @@ function parseGroup(value: unknown, fallback: VedraGroupRequest): VedraGroupRequ
   if (typeof candidate.id !== 'string' || !candidate.id.trim() || candidate.id.length > 120) return cloneGroup(fallback);
   if (typeof candidate.bookingId !== 'string' || !candidate.bookingId.trim() || candidate.bookingId.length > 120) return cloneGroup(fallback);
   if (candidate.restaurantId !== 'vedra' || candidate.slot === undefined || validateSlot(candidate.slot).length > 0) return cloneGroup(fallback);
-  if (typeof candidate.partySize !== 'number' || !Number.isInteger(candidate.partySize) || candidate.partySize < 2 || candidate.partySize > 40) return cloneGroup(fallback);
+  if (typeof candidate.partySize !== 'number' || !Number.isInteger(candidate.partySize) || candidate.partySize < (candidate.status === 'confirmed' ? 1 : 2) || candidate.partySize > 40) return cloneGroup(fallback);
   if (!GROUP_STATUSES.includes(candidate.status as VedraGroupStatus)) return cloneGroup(fallback);
   if (!Array.isArray(candidate.tableIds) || candidate.tableIds.length > 8) return cloneGroup(fallback);
   const tableIds = candidate.tableIds.filter((tableId): tableId is string => typeof tableId === 'string' && tableId.length > 0);
   if (tableIds.length !== candidate.tableIds.length || new Set(tableIds).size !== tableIds.length) return cloneGroup(fallback);
-  if (candidate.status !== 'requested' && tableIds.length < 2) return cloneGroup(fallback);
+  if (candidate.status !== 'requested' && tableIds.length < (candidate.status === 'confirmed' ? 1 : 2)) return cloneGroup(fallback);
   if ((candidate.status === 'menu_assigned' || candidate.status === 'confirmed') && (typeof candidate.menuId !== 'string' || !candidate.menuId.trim())) return cloneGroup(fallback);
   if (candidate.guest === undefined || typeof candidate.guest.name !== 'string' || !candidate.guest.name.trim() || candidate.guest.name.length > 120) return cloneGroup(fallback);
   if (candidate.guest.email !== undefined && (typeof candidate.guest.email !== 'string' || !candidate.guest.email.includes('@') || candidate.guest.email.length > 200)) return cloneGroup(fallback);
@@ -194,6 +195,14 @@ export const serializeVedraState = (state: VedraDemoState): string => JSON.strin
 export function upsertVedraBooking(state: VedraDemoState, booking: TableBooking): VedraDemoState {
   const bookings = state.bookings.filter((candidate) => candidate.id !== booking.id);
   return { ...state, bookings: [...bookings, cloneBooking(booking)], group: cloneGroup(state.group) };
+}
+
+/** Insert only: rejected data, duplicate ids and occupied tables preserve state. */
+export function createVedraBooking(state: VedraDemoState, booking: TableBooking, restaurant: Restaurant): VedraDemoState {
+  if (restaurant.id !== 'vedra' || booking.deposit !== undefined) return state;
+  const parsed = parseBooking(booking);
+  if (parsed === null || !canCreateBooking(restaurant, parsed, state.bookings)) return state;
+  return { ...state, bookings: [...state.bookings, cloneBooking(parsed)] };
 }
 
 const ALLOWED_TRANSITIONS: Readonly<Record<BookingStatus, readonly BookingStatus[]>> = {
@@ -266,7 +275,7 @@ export function assignVedraGroupMenu(state: VedraDemoState, menuId: string): Ved
   };
 }
 
-export function confirmVedraGroup(state: VedraDemoState): VedraDemoState {
+export function confirmVedraGroup(state: VedraDemoState, restaurant: Restaurant): VedraDemoState {
   if (state.group.status !== 'menu_assigned' || state.group.menuId === undefined || state.group.tableIds.length < 2) return state;
   const booking: TableBooking = {
     id: state.group.bookingId,
@@ -279,7 +288,8 @@ export function confirmVedraGroup(state: VedraDemoState): VedraDemoState {
     menuId: state.group.menuId,
     source: 'phone',
   };
-  const next = upsertVedraBooking(state, booking);
+  const next = createVedraBooking(state, booking, restaurant);
+  if (next === state) return state;
   return { ...next, group: { ...cloneGroup(next.group), status: 'confirmed' }, tourCompleted: true, tourStep: next.tourMode === 'guided' ? 3 : null };
 }
 

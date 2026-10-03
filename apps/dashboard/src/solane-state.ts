@@ -1,10 +1,10 @@
 import {
   assertNoDoubleBooking,
+  canCreateBooking,
   canOperate,
   createWalkInBooking,
   depositFor,
   issueExperienceVoucher,
-  noShowCharge,
   prepareAttendanceConfirmation,
   redeemExperienceVoucher,
   respondAttendanceConfirmation,
@@ -30,6 +30,7 @@ import {
   type WaitlistEntry,
   type WaitlistStatus,
 } from '@logic-reserva/domain';
+import { transitionSolaneBooking } from './booking-lifecycle';
 import { addWaitlistEntry, cloneWaitlistEntry, parseWaitlistEntries, transitionWaitlistEntry } from './waitlist';
 
 export const SOLANE_STORAGE_KEY = 'logic-reserva-demo-solane-v1';
@@ -342,6 +343,14 @@ export function upsertSolaneBooking(state: SolaneDemoState, booking: TableBookin
   return { ...state, bookings: [...state.bookings.filter((candidate) => candidate.id !== booking.id), cloneBooking(booking)] };
 }
 
+/** Widget creation is public within the demo; staff creation respects the role. */
+export function createSolaneBooking(state: SolaneDemoState, booking: TableBooking, restaurant: Restaurant): SolaneDemoState {
+  if (restaurant.id !== 'solane' || (booking.source !== 'widget' && !canOperate(state.role, 'seat_booking'))) return state;
+  const parsed = parseBooking(booking);
+  if (parsed === null || !canCreateBooking(restaurant, parsed, state.bookings, state.events, state.privateHires)) return state;
+  return { ...state, bookings: [...state.bookings, cloneBooking(parsed)] };
+}
+
 export function addSolaneWaitlistEntry(state: SolaneDemoState, entry: WaitlistEntry): SolaneDemoState {
   if (!canOperate(state.role, 'manage_waitlist')) return state;
   const waitlist = addWaitlistEntry(state.waitlist, entry, 'solane');
@@ -370,18 +379,9 @@ export function resolveSolaneBookingDeposit(
   bookingId: string,
   outcome: Extract<BookingStatus, 'seated' | 'no_show'>,
 ): SolaneDemoState {
-  if (!canOperate(state.role, outcome === 'seated' ? 'seat_booking' : 'charge_no_show')) return state;
   const target = state.bookings.find((booking) => booking.id === bookingId);
-  if (target?.deposit === undefined || target.deposit.status !== 'held' || !['pending', 'confirmed'].includes(target.status)) return state;
-  const resolution = noShowCharge(target.deposit, outcome);
-  return {
-    ...state,
-    bookings: state.bookings.map((booking) => booking.id === bookingId ? {
-      ...cloneBooking(booking),
-      status: outcome,
-      deposit: { ...booking.deposit!, breakdown: { ...booking.deposit!.breakdown }, status: resolution.status },
-    } : cloneBooking(booking)),
-  };
+  if (target?.deposit?.status !== 'held' || (outcome !== 'seated' && outcome !== 'no_show')) return state;
+  return transitionSolaneBooking(state, bookingId, outcome);
 }
 
 export function createSolaneEvent(state: SolaneDemoState, event: RestaurantEvent, restaurant: Restaurant): SolaneDemoState {

@@ -6,6 +6,7 @@ import {
   assignVedraGroupMenu,
   assignVedraGroupTables,
   confirmVedraGroup,
+  createVedraBooking,
   initialVedraState,
   parseVedraStored,
   resetVedraGroupJourney,
@@ -37,6 +38,17 @@ const restaurant: Restaurant = {
   ] }],
   menus: [],
   shifts: [{ id: 'dinner', kind: 'dinner', firstSeatingMin: 1200, lastSeatingMin: 1320 }],
+};
+
+const groupRestaurant: Restaurant = {
+  ...restaurant,
+  spaces: [{ ...restaurant.spaces[0], tables: [
+    ...restaurant.spaces[0].tables,
+    { id: 'vs4', name: 'Mesa 4', minSeats: 2, maxSeats: 4, combinableWith: ['vs5'] },
+    { id: 'vs5', name: 'Mesa 5', minSeats: 2, maxSeats: 4, combinableWith: ['vs4'] },
+  ] }],
+  menus: [{ id: 'vedra-grupos', name: 'Grupos', pricePerPersonCents: 4000, courses: ['Menú'], bookableOnline: true }],
+  shifts: [...restaurant.shifts, { id: 'lunch', kind: 'lunch', firstSeatingMin: 780, lastSeatingMin: 930 }],
 };
 
 const waitlistEntry = (overrides: Partial<WaitlistEntry> = {}): WaitlistEntry => ({
@@ -137,7 +149,7 @@ describe('estado Vedra versionado', () => {
     expect(state.tourStep).toBe(3);
     state = assignVedraGroupMenu(state, 'vedra-grupos');
     expect(state.group.status).toBe('menu_assigned');
-    state = confirmVedraGroup(state);
+    state = confirmVedraGroup(state, groupRestaurant);
     expect(state.group.status).toBe('confirmed');
     expect(state.tourCompleted).toBe(true);
     expect(state.bookings.at(-1)).toMatchObject({
@@ -152,17 +164,58 @@ describe('estado Vedra versionado', () => {
   it('no confirma un grupo sin combinación y menú', () => {
     const initial = initialVedraState([fixture()]);
     expect(assignVedraGroupMenu(initial, 'vedra-grupos')).toBe(initial);
-    expect(confirmVedraGroup(initial)).toBe(initial);
+    expect(confirmVedraGroup(initial, groupRestaurant)).toBe(initial);
     expect(assignVedraGroupTables(initial, ['vs4'])).toBe(initial);
   });
 
   it('reinicia solo el viaje de grupo y conserva otras reservas', () => {
     const withWeb = upsertVedraBooking(initialVedraState([fixture()]), { ...fixture('web-keep'), source: 'widget' });
-    const confirmed = confirmVedraGroup(assignVedraGroupMenu(assignVedraGroupTables(withWeb, ['vs4', 'vs5']), 'vedra-grupos'));
+    const confirmed = confirmVedraGroup(assignVedraGroupMenu(assignVedraGroupTables(withWeb, ['vs4', 'vs5']), 'vedra-grupos'), groupRestaurant);
     const reset = resetVedraGroupJourney(confirmed);
     expect(reset.bookings.map((booking) => booking.id)).toEqual(['fixture-1', 'web-keep']);
     expect(reset.group.status).toBe('requested');
     expect(reset.tourMode).toBe('unset');
+  });
+
+  it('revalida el grupo contra una reserva llegada después de seleccionar las mesas', () => {
+    const selected = assignVedraGroupMenu(assignVedraGroupTables(initialVedraState(), ['vs4', 'vs5']), 'vedra-grupos');
+    const conflict = { ...fixture('new-web'), tableIds: ['vs4'], slot: { ...selected.group.slot }, source: 'widget' as const };
+    const occupied = upsertVedraBooking(selected, conflict);
+    expect(confirmVedraGroup(occupied, groupRestaurant)).toBe(occupied);
+    expect(occupied.group.status).toBe('menu_assigned');
+    const released = transitionVedraBooking(occupied, conflict.id, 'cancelled');
+    const confirmed = confirmVedraGroup(released, groupRestaurant);
+    expect(confirmed.group.status).toBe('confirmed');
+    expect(confirmVedraGroup(confirmed, groupRestaurant)).toBe(confirmed);
+  });
+
+  it('rechaza un grupo con mesas incompatibles o un menú inexistente', () => {
+    const incompatible = assignVedraGroupMenu(assignVedraGroupTables(initialVedraState(), ['vs1', 'vs5']), 'vedra-grupos');
+    expect(confirmVedraGroup(incompatible, groupRestaurant)).toBe(incompatible);
+    const unknownMenu = assignVedraGroupMenu(assignVedraGroupTables(initialVedraState(), ['vs4', 'vs5']), 'missing');
+    expect(confirmVedraGroup(unknownMenu, groupRestaurant)).toBe(unknownMenu);
+  });
+
+  it('crea una reserva telefónica válida y la conserva tras recargar sin mutar la entrada', () => {
+    const initial = initialVedraState();
+    const phone = { ...fixture('phone-1'), slot: { ...fixture().slot, startMin: 1200 }, source: 'phone' as const };
+    const created = createVedraBooking(initial, phone, restaurant);
+    expect(created).not.toBe(initial);
+    expect(initial.bookings).toEqual([]);
+    expect(parseVedraStored(serializeVedraState(created)).bookings[0]).toMatchObject(phone);
+    phone.guest.name = 'Changed';
+    expect(created.bookings[0].guest.name).toBe('Fixture Guest');
+    expect(createVedraBooking(created, { ...phone, guest: { name: 'Replacement' } }, restaurant)).toBe(created);
+  });
+
+  it('rechaza solapamientos, datos inválidos y fechas imposibles; permite intervalos adyacentes', () => {
+    const phone = { ...fixture('phone-1'), slot: { ...fixture().slot, startMin: 1200 }, source: 'phone' as const };
+    const initial = createVedraBooking(initialVedraState(), phone, restaurant);
+    expect(createVedraBooking(initial, { ...phone, id: 'overlap' }, restaurant)).toBe(initial);
+    expect(createVedraBooking(initial, { ...phone, id: 'bad-table', tableIds: ['missing'] }, restaurant)).toBe(initial);
+    expect(createVedraBooking(initial, { ...phone, id: 'bad-name', guest: { name: ' ' } }, restaurant)).toBe(initial);
+    expect(createVedraBooking(initial, { ...phone, id: 'bad-date', slot: { ...phone.slot, date: '2026-02-30' } }, restaurant)).toBe(initial);
+    expect(createVedraBooking(initial, { ...phone, id: 'next', slot: { ...phone.slot, startMin: 1290 } }, restaurant).bookings).toHaveLength(2);
   });
 
   it('añade, avisa y sienta un walk-in sobre una mesa realmente disponible', () => {

@@ -1,3 +1,118 @@
+## 2026-10-04 · Preparación de publicación F31/F32 · PR #5
+
+- **Autorización:** el propietario solicita expresamente subir, fusionar y
+  desplegar en producción, con las migraciones necesarias. No se añade ninguna
+  migración en esta entrega. [PR #5](https://github.com/amariner/logic2b-reserva/pull/5)
+  agrupa el libro operativo, la reprogramación segura y los recursos de venta.
+- **Capturas:** 24 previews del gestor renovadas; 42 PNG comerciales en dos
+  pases, 42/42 hashes idénticos y comparación visual 42/42. Doce WebP históricos
+  conservados byte a byte y 48 previews de temas verificadas. Digest contractual
+  `da80d2a9f9e735dc4712a264246374214b2af5672aa48d05fa88e7ffaf489fd7`.
+  Chromium 151.0.7922.173; detalles y límites en `docs/SALES-ASSETS.md`.
+- **Build final:** `pnpm check` 28/28 con 253 pruebas. Dry-runs estrictos de
+  preview y producción correctos, con bindings y rutas previstos. Wrangler
+  enumera 532 entradas: 391 archivos y 141 directorios. Solo avisa del uso del
+  proxy heredado; no hay advertencias de selección de entorno.
+- **Integridad:** 122 HTML, 5.778 referencias HTML locales y 97 dependencias
+  CSS/JS comprobadas, cero ausencias. Hashes de capturas/previews coinciden entre
+  fuente, commit y bundle. Preparado manifiesto de 19 recursos para comparar
+  producción con el build una vez publicado.
+- **Navegador:** **146/146 escenarios en un único pase de 16,9 minutos** sobre
+  el build final, después de incorporar las capturas. Miniflare/workerd directo,
+  Chromium con H.264 y correo local deshabilitado. Incluye todo el sitio, demos,
+  ES/EN, responsive, accesibilidad, vídeos y las nuevas operaciones de reserva.
+  El código y los recursos coinciden con `c488930`; el cierre posterior solo
+  modifica documentación. Logs del entorno: `reserva-release-check.log`,
+  `reserva-release-e2e.log` y ambos `reserva-release-*-dry-run.log` bajo
+  `/workspace/.cache/`. Informes de integridad y manifiesto del build bajo
+  `/workspace/artifacts/reserva-release/`.
+- **Acceso a producción:** autorización concedida, pero esta sesión no dispone
+  de credenciales de Cloudflare. `wrangler whoami` informa que no está
+  autenticado; la configuración cloud declara cero secrets/identidades y no
+  permite los hosts de Cloudflare/producción. Se solicita configurar el acceso
+  seguro mientras se completa GitHub. No se ha desplegado, enviado ningún lead,
+  cambiado secrets remotos ni modificado los gates del workflow.
+
+## 2026-10-03 · F32 · Reprogramación segura de reservas
+
+- **Alcance:** ADR-023, continuación local de F31 sobre el mismo checkout.
+  Edición en el libro existente de Vedra/Solane, con comparación antes/después
+  y guardado explícito. ES/EN, teclado y componentes del sistema compartido.
+- **Contrato:** pendientes/confirmadas sin depósito pueden cambiar fecha,
+  turno, hora, personas y mesas. Se mantiene la identidad, cliente, origen,
+  menú, fecha de creación y estado. La duración solo se recalcula al cambiar
+  personas. Cualquier registro de depósito limita la edición a reasignar mesas
+  y conserva exactamente desglose, importe, aceptación y resolución.
+- **Conflictos:** el dominio compara un snapshot canónico completo y valida
+  capacidad, conexión, turno y ocupación de reservas/eventos/privatizaciones.
+  No-op o snapshot obsoleto devuelve rechazo; el formulario conserva la
+  propuesta y enfoca el error. La lectura final de almacenamiento vuelve a
+  comprobar permisos e inventario. Sigue siendo concurrencia local limitada.
+- **Coherencia:** grupo confirmado Vedra sincronizado y compatible con una
+  reducción a una persona/mesa al recargar. Solane retira las referencias de
+  asistencia al cambiar condiciones; una página de confirmación ya abierta
+  deja de ofrecer respuesta. Reasignar mesas mantiene las referencias.
+- **Gates de código:** `pnpm check` **28/28**, **253 pruebas**: 94 dominio,
+  110 dashboard, 21 config, 10 fixtures y 18 Worker. Son 41 pruebas unitarias
+  nuevas. Revisión estática independiente sin defectos bloqueantes; se ajustó
+  el mensaje de falta de mesas para las reservas con depósito.
+- **Navegador y QA:** **56/56 escenarios en un pase de 4,7 minutos** sobre el
+  build final: 10 nuevos F32, 18 F31 y 28 de accesibilidad/recorridos anteriores
+  de Vedra/Solane. Incluye dos pestañas reales, enlaces abiertos que se
+  invalidan, teclado, contraste, objetivos táctiles y ausencia de escrituras
+  de red en los recorridos nuevos. Es regresión dirigida del gestor; la suite
+  integral 136/136 corresponde al cierre F31 anterior, no a este build F32.
+  Seis escenas a 1366/375/320 px sin overflow ni errores, con revisión visual
+  y capturas adicionales del resumen/acciones móviles en
+  `/workspace/artifacts/reserva-f32/`. ESLint de las tres specs nuevas y
+  `git diff --check` correctos.
+- **Entorno y límites:** Miniflare/workerd directo con assets del gate final,
+  Chromium H.264 y `LEADS_TRANSPORT:disabled`. Logs del entorno:
+  `/workspace/.cache/reserva-f32-check-final.log` y
+  `/workspace/.cache/reserva-f32-e2e.log`. Capturas comerciales versionadas
+  pendientes antes de publicación; sin despliegue ni transporte real.
+
+## 2026-10-03 · F31 · Libro operativo e inventario al confirmar
+
+- **Alcance:** ADR-022 y F31, desde el checkout `work` sobre `b06dc06` (merge
+  PR #4). F30 conserva sus tareas de investigación comercial pendientes.
+- **Libro Vedra/Solane:** formulario compartido de alta telefónica con fecha,
+  turno, hora, personas, menú opcional y combinaciones disponibles; valida al
+  guardar sobre la última lectura local y conserva datos ante conflicto. La
+  reserva queda confirmada con origen teléfono, sin inventar aceptación,
+  depósito, cobro o envío al cliente. Foco al abrir/cerrar y copia ES/EN.
+- **Localización:** búsqueda sin acentos por nombre, contacto, referencia y
+  mesa; teléfono normalizado; filtros combinables de fecha, turno, estado y
+  origen; contador anunciado y recuperación del vacío. Componentes y tokens
+  compartidos, interfaz responsive y compatibilidad localStorage v1.
+- **Atención Solane:** pendiente → confirmada → sentada → finalizada, más
+  cancelación/no-show según estado. Funciona sin depósito y con walk-ins.
+  Sentar/cancelar libera garantía retenida; un no-show con cargo queda reservado
+  a Dirección. Cocina no modifica; importes, desglose y aceptación se conservan.
+  El resolver anterior delega en el ciclo común para evitar reglas divergentes.
+- **Inventario protegido:** comandos de creación solo insertan asignaciones
+  válidas, sin sobrescribir IDs. Widgets y grupo Vedra revalidan al confirmar;
+  la pasarela Solane rechaza una mesa ocupada posteriormente por reserva,
+  evento o privatización, conservando contacto/menú y ofreciendo recuperación.
+  Esto detecta cambios previos al guardado: no es concurrencia transaccional de
+  servidor ni amplía la demo a multiusuario real.
+- **Robustez:** fechas imposibles/horas inválidas se rechazan; borrar la fecha de
+  Servicio no desmonta el gestor; pendientes Vedra aparecen en Servicio; enlace
+  del widget inglés mantiene idioma al abrir el gestor.
+- **Gates:** `pnpm check` **28/28**, **212 pruebas** (71 dominio, 92 dashboard,
+  21 config, 10 fixtures y 18 Worker). Los **18 E2E nuevos pasan** en un solo
+  bloque: 14 operativos + 4 de conflictos entre pestañas. **Regresión final
+  136/136 en un único pase de 15,9 minutos**, incluido vídeo H.264 ES/EN,
+  accesibilidad y recorridos anteriores, con Miniflare/workerd directo y los
+  mismos assets validados. El intento anterior con Wrangler se interrumpió
+  tras cerrarse el servidor local; no se contabiliza como una pasada válida.
+- **QA visual:** seis escenas Vedra/Solane a 1366/375/320 px, sin overflow ni
+  errores; capturas de revisión en `/workspace/artifacts/reserva-f31/`. No se
+  regeneran todavía las capturas comerciales versionadas: pendiente antes de
+  publicar. Worker local con `LEADS_TRANSPORT:disabled`; cero escrituras de red
+  en los recorridos nuevos. `git diff --check` y lint de las dos specs nuevas
+  correctos. Sin despliegue ni leads reales.
+
 ## 2026-09-30 · Rama actualizada con `main` (PR #3 dentistas)
 
 - `main` (`6d11d6d`) fusionado en `redesign/home-awwwards`. Conflictos solo en `PROGRESS.md` y `SIGUIENTE-SESION.md`, resueltos conservando ambas entradas.

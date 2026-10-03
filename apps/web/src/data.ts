@@ -241,6 +241,8 @@ export const VEDRA_PAGE_COPY = {
     openManager: text('Abrir la reserva en el gestor', 'Open the booking in the manager'),
     startAgain: text('Hacer otra reserva', 'Make another booking'),
     invalid: text('Completa los campos obligatorios antes de continuar.', 'Complete the required fields before continuing.'),
+    inventoryConflict: text('La disponibilidad ha cambiado. Elige otra hora; conservamos tus datos y tu menú.', 'Availability has changed. Choose another time; your details and menu are kept.'),
+    storageError: text('No se pudo guardar la reserva en este navegador. Conservamos tus datos para que puedas volver a intentarlo.', 'The booking could not be saved in this browser. Your details are kept so you can try again.'),
   },
   footer: {
     level: text('Vedra demuestra el nivel Gestión de Logic Reserva.', 'Vedra demonstrates the Logic Reserva Manage level.'),
@@ -337,6 +339,8 @@ export const SOLANE_PAGE_COPY = {
     openManager: text('Abrir en el gestor', 'Open in the manager'),
     startAgain: text('Hacer otra reserva', 'Make another booking'),
     invalid: text('Completa la selección y los campos obligatorios.', 'Complete the selection and required fields.'),
+    inventoryConflict: text('La disponibilidad ha cambiado. Elige otra hora; conservamos tus datos y tu menú.', 'Availability has changed. Choose another time; your details and menu are kept.'),
+    storageError: text('No se pudo guardar la reserva en este navegador. Conservamos tus datos para que puedas volver a intentarlo.', 'The booking could not be saved in this browser. Your details are kept so you can try again.'),
   },
   tickets: {
     eyebrow: text('Agenda Solane · demo funcional', 'Solane calendar · functional demo'),

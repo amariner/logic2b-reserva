@@ -1,5 +1,104 @@
 # SIGUIENTE SESIÓN
 
+## Estado vigente · 04/10/2026 · Publicación F31/F32 autorizada
+
+El propietario ha autorizado **subida, merge y despliegue de producción** con
+las migraciones necesarias. No hace falta volver a solicitar esa aprobación.
+La entrega está agrupada en [PR #5](https://github.com/amariner/logic2b-reserva/pull/5).
+No hay migraciones nuevas ni cambios de versión de localStorage.
+
+Las 24 previews de paneles y las 42 capturas comerciales ya están renovadas;
+dos pases 42/42 idénticos y comparación visual 42/42 correcta. Las 48 previews
+de temas y los doce WebP históricos se conservan verificados. `pnpm check`
+28/28 con 253 pruebas; dry-runs de preview y producción correctos y regresión
+integral **146/146 en un pase de 16,9 minutos** sobre el paquete final. Evidencia
+en `PROGRESS.md`; el estado de fusión de la entrega queda en la PR enlazada.
+
+**Siguiente acción necesaria:** terminar el despliegue autorizado cuando esté
+conectado el acceso a Cloudflare. Esta sesión no tiene credenciales; Wrangler
+informa que no está autenticado. Configurar por el mecanismo seguro del entorno
+`CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`, junto con el acceso de red a
+`api.cloudflare.com`, `reserva.logic2b.com` y el host de preview. Consultar
+`docs/DEPLOY.md`, comprobar el Worker/secret existente por metadatos, publicar
+el código fusionado y verificar GET/HEAD y hashes contra el build validado.
+No enviar leads ni rotar secrets como parte de esta publicación. El workflow
+manual de GitHub es otra vía; fusionar no lo dispara automáticamente.
+
+Los pendientes de capturas y de autorización que aparecen en el histórico
+siguiente ya están resueltos por esta preparación. El desarrollo posterior del
+gestor queda después de cerrar la publicación solicitada.
+
+## Entrega anterior · 03/10/2026 · F32 cerrada en local
+
+F32 añade reprogramación desde el libro de Vedra/Solane, con comparación
+antes/después y lectura del inventario actual al guardar (ADR-023). Reservas
+pendientes/confirmadas sin depósito pueden cambiar fecha, hora, personas y
+mesas; con cualquier registro de depósito solo cambia la mesa, conservando
+íntegra la aceptación y el desglose. Una edición abierta sobre una reserva
+modificada se rechaza y conserva la propuesta.
+
+El grupo confirmado de Vedra mantiene su resumen coherente, incluso tras
+reducirlo a una persona/mesa. Solane invalida los enlaces de asistencia cuando
+cambian condiciones; reasignar mesas conserva las referencias. Cocina sigue
+en lectura. Sin cambios de versión del almacenamiento, backend ni proveedores.
+
+**Continuidad:** después del cierre F32, la siguiente mejora operativa del
+backlog es acceder a una reserva y actuar directamente desde Servicio también
+en escritorio, conservando fecha/turno entre vistas. F30 mantiene pendientes
+las entrevistas y la evidencia comercial; no afirmar liderazgo del mercado ni
+mejoras de conversión sin datos. Renovar capturas comerciales antes de publicar.
+
+Validación final F32 en `PROGRESS.md`: `pnpm check` **28/28 con 253 pruebas**,
+**56/56 E2E de regresión del gestor en un pase de 4,7 minutos** y seis escenas
+de revisión a 1366/375/320 px sin overflow ni errores. Capturas en
+`/workspace/artifacts/reserva-f32/`. La suite integral 136/136 de F31 corresponde
+al build anterior; no se ha repetido entera tras F32. Ambas entregas permanecen
+en el árbol local sin commit ni despliegue. El estado anterior y sus evidencias
+siguen debajo para conservar trazabilidad.
+
+## Entrega anterior · 03/10/2026 · F31 cerrada en local
+
+La continuación del desarrollo incorpora el **libro operativo** en el checkout
+`work`, sobre `b06dc06` (PR #4, rediseño v2 ya integrado en este árbol). ADR-022
+documenta la entrega. Las referencias a una rama de rediseño pendiente en las
+secciones históricas siguientes no describen el checkout actual.
+
+- Vedra y Solane: alta telefónica local con selección de mesa/menú, búsqueda
+  por nombre/contacto/mesa y filtros de fecha, turno, estado y origen.
+- Solane: ciclo completo de reserva con y sin depósito; Cocina consulta, Sala
+  gestiona atención y Dirección conserva el permiso de aplicar garantías por
+  no-show. El resolver antiguo delega en el mismo ciclo.
+- Widgets y grupos revalidan la asignación contra el último estado local al
+  confirmar; un conflicto conserva los datos y permite elegir otra opción.
+- Fechas vacías no desmontan Servicio y las pendientes de Vedra aparecen en
+  su inventario operativo. Persistencia v1 y contratos ficticios preservados.
+
+Validación final y evidencias: ver la entrada F31 al principio de `PROGRESS.md`.
+`pnpm check` **28/28 con 212 pruebas** y regresión **136/136 E2E en un único
+pase** con Miniflare/workerd directo y Chromium con H.264. QA de los formularios
+a 1366/375/320 px sin overflow ni errores de página.
+No se ha desplegado, enviado leads ni activado proveedores externos.
+
+**Continuidad:** cerrar una entrega independiente de reprogramación segura
+antes de sumar más pantallas (idea registrada en `BACKLOG.md`). F30 sigue
+pendiente de evidencia con propietarios; no se han realizado entrevistas ni
+activado analítica. Antes de publicar, actualizar las capturas comerciales que
+muestran el libro de reservas y cumplir el gate de despliegue existente.
+
+**Entorno cloud:** activar `/workspace/.onboarding/logic2b-reserva/env.sh` en
+cada shell y usar el wrapper Playwright del mismo directorio. Chromium y Worker
+necesitan permiso de sockets locales (`network.enabled`) en este sandbox;
+sin él fallan por `EPERM` antes de ejecutar la aplicación. Mantener el transporte
+de correo local deshabilitado. No recompilar mientras el Worker sirve el bundle.
+Si Wrangler vuelve a cerrarse durante una suite larga, esta sesión conserva
+`/workspace/.cache/reserva-f31-runtime.mjs`: ejecuta Miniflare 5 directamente,
+adapta opciones mediante `convertV4MiniflareOptions`, declara el Worker delante
+de assets y mantiene el mismo código/flags de compatibilidad, binding de assets
+y Durable Object local. El helper comprueba HTTP y la frontera noindex al
+arrancar. Es un recurso del entorno, no un nuevo comando publicado del proyecto.
+
+## Histórico anterior a F31
+
 **Fase actual:** F29 publicada en producción; rediseño v2 «producto preciso» (ADR-021) en la rama `redesign/home-awwwards`: lenguaje común web + gestor, seis diagramas explicativos y fichas de tema nuevas. Sin PR ni despliegue. F30 sigue siendo la siguiente prioridad de producto.
 
 **Exploración paralela:** primera pasada del nicho dentistas disponible en
