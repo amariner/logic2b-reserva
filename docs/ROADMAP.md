@@ -638,6 +638,46 @@ Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin aus
 - [ ] Priorizar la primera implantación por necesidad observada. Mantener las
       conexiones y capacidades futuras fuera de las promesas activas.
 
+## F31 · Libro operativo e inventario seguro · 03/10/2026 · cerrada en local ✅
+
+Entrega de desarrollo solicitada para mejorar el gestor. Evidencia y límites
+en ADR-022. F30 mantiene pendiente su validación con propietarios.
+
+- [x] Revalidar inventario al confirmar widgets y grupos, con conflicto recuperable.
+- [x] Completar ciclo de reservas Solane con y sin depósito, permisos y liberación de mesas.
+- [x] Compartir búsqueda y filtros por fecha, turno, estado y origen en Vedra/Solane.
+- [x] Alta telefónica local desde el libro, sin depósitos ni aceptación inventados.
+- [x] Proteger las fechas vacías y verificar ES/EN, foco, móvil y persistencia.
+- [x] Cerrar `pnpm check`, pruebas de navegador y documentación de continuidad.
+
+**Hecho cuando:** sala puede registrar, localizar, recibir y finalizar una reserva
+local sin ocupar mesas ya asignadas; los conflictos son recuperables y los roles
+y depósitos conservan su contrato. No implica preparación para reservas reales.
+
+Validación: `pnpm check` 28/28 con 212 pruebas; 136/136 E2E en un único pase
+contra Miniflare/workerd directo, incluidos los 18 nuevos. QA visual ES/EN y
+formularios a 1366/375/320 px. Sin publicación ni leads reales.
+
+## F32 · Reprogramación segura · 03/10/2026 · cerrada en local ✅
+
+Entrega de continuidad del libro operativo, según ADR-023. Conserva el alcance
+local y las condiciones aceptadas de las garantías.
+
+- [x] Editar fecha, hora, personas y mesas de reservas pendientes/confirmadas.
+- [x] Restringir reservas con depósito a reasignación de mesa, sin alterar justificante.
+- [x] Comparar antes/después, detectar ediciones obsoletas y revalidar inventario.
+- [x] Conservar identidad y sincronizar grupo; invalidar enlaces de asistencia antiguos.
+- [x] Verificar roles, persistencia, conflictos entre pestañas, ES/EN y móvil.
+- [x] Cerrar `pnpm check`, navegador y documentación.
+
+**Hecho cuando:** sala puede corregir una reserva con disponibilidad actual y
+revisar el resultado antes de guardar, sin recrearla ni cambiar silenciosamente
+condiciones de garantía o confirmar asistencia con referencias antiguas.
+
+Validación: `pnpm check` 28/28 con 253 pruebas; 56/56 E2E dirigidos al gestor
+en un pase, incluidos diez nuevos F32 y los 18 de F31. QA a 1366/375/320 px,
+ES/EN, sin overflow ni errores. Sin publicación ni transporte real.
+
 ## Después (backlog, no fases)
 
 ### Exploración de nicho · Dentistas

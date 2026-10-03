@@ -9,6 +9,7 @@ import {
   Gift,
   ListChecks,
   MapPinned,
+  Plus,
   RotateCcw,
   ShieldCheck,
   TableProperties,
@@ -17,13 +18,15 @@ import {
   UsersRound,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
-import { canOperate, type CustomerProfile, type PrivateHire, type PrivateHireProposal, type Restaurant, type RestaurantEvent, type RestaurantRole, type TableBooking, type TimeSlot } from '@logic-reserva/domain';
-import type { DashboardLocale } from './content';
+import { Button } from '@logic-reserva/ui/button';
+import { canOperate, validateSlot, type BookingAmendment, type BookingStatus, type CustomerProfile, type PrivateHire, type PrivateHireProposal, type Restaurant, type RestaurantEvent, type RestaurantRole, type TableBooking, type TimeSlot } from '@logic-reserva/domain';
+import { DASHBOARD_COPY, dashboardText, type DashboardLocale } from './content';
 import {
   SOLANE_STORAGE_KEY,
   addSolaneWaitlistEntry,
   blockSolanePrivateHire,
   createSolaneEvent,
+  createSolaneBooking,
   initialSolaneState,
   parseSolaneStored,
   publishSolaneEvent,
@@ -32,7 +35,6 @@ import {
   registerSolanePrivateHireDeposit,
   redeemSolaneVoucher,
   resetSolanePrivateHireTour,
-  resolveSolaneBookingDeposit,
   seatSolaneWaitlistEntry,
   serializeSolaneState,
   setSolaneRole,
@@ -45,6 +47,15 @@ import SolaneCustomersView from './views/SolaneCustomersView';
 import WaitlistView from './views/WaitlistView';
 import MobileDashboardNav from './MobileDashboardNav';
 import { subscribeToStorageKey } from './storage-sync';
+import { nextBookingStatuses } from './state';
+import { nextSolaneBookingStatuses, transitionSolaneBooking } from './booking-lifecycle';
+import ReservationFilters from './components/ReservationFilters';
+import ManualBookingForm from './components/ManualBookingForm';
+import { filterBookings, INITIAL_BOOKING_FILTERS } from './booking-filters';
+import { BOOKING_OPERATIONS_COPY } from './booking-operations-content';
+import BookingAmendmentForm from './components/BookingAmendmentForm';
+import { BOOKING_AMENDMENT_COPY } from './booking-amendment-content';
+import { amendSolaneBooking } from './booking-amendments';
 
 interface SolaneDashboardProps {
   slug: 'solane';
@@ -113,7 +124,7 @@ const COPY = {
   reservations: {
     eyebrow: text('Libro de reservas', 'Booking book'),
     title: text('La demanda, con su origen.', 'Demand, with its source.'),
-    body: text('Las reservas del widget aterrizan con su asignación, depósito calculado por la regla demo y aceptación temporal de condiciones.', 'Widget bookings land with their assignment, a deposit calculated by the demo rule and timestamped acceptance of terms.'),
+    body: text('Localiza cada reserva, registra una llamada y acompaña al cliente desde la confirmación hasta el final del servicio.', 'Find each booking, record a phone request and follow the guest from confirmation to the end of service.'),
     guest: text('Reserva', 'Booking'),
     assignment: text('Asignación', 'Assignment'),
     status: text('Estado', 'Status'),
@@ -255,6 +266,12 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
   const [hydrated, setHydrated] = useState(false);
   const initialized = useRef(false);
   const [notice, setNotice] = useState('');
+  const [filters, setFilters] = useState(INITIAL_BOOKING_FILTERS);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<TableBooking | null>(null);
+  const newBookingButton = useRef<HTMLButtonElement>(null);
+  const operations = BOOKING_OPERATIONS_COPY[locale];
+  const amendmentCopy = BOOKING_AMENDMENT_COPY[locale];
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState(initialDate);
   const [eventTime, setEventTime] = useState(1260);
@@ -310,6 +327,9 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
     setState(initialSolaneState(initialBookings, initialEvents, initialPrivateHires));
     setDate(initialDate);
     setFloorTime(1260);
+    setFilters(INITIAL_BOOKING_FILTERS);
+    setShowBookingForm(false);
+    setEditingBooking(null);
     setNotice(local(COPY.resetDone, locale));
   };
 
@@ -357,11 +377,68 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
     setNotice(local(COPY.role.changed, locale));
   };
 
-  const resolveDeposit = (bookingId: string, outcome: 'seated' | 'no_show') => {
-    const next = resolveSolaneBookingDeposit(state, bookingId, outcome);
-    if (next === state) return;
-    commit(next);
-    setNotice(local(outcome === 'seated' ? COPY.reservations.releasedNotice : COPY.reservations.chargedNotice, locale));
+  const transition = (bookingId: string, status: BookingStatus) => {
+    try {
+      const current = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
+      const next = transitionSolaneBooking(current, bookingId, status);
+      if (next === current) { setState(current); setNotice(operations.updateFailed); return; }
+      commit(next);
+      const previous = current.bookings.find((item) => item.id === bookingId);
+      const booking = next.bookings.find((item) => item.id === bookingId)!;
+      const depositResolved = previous?.deposit?.status === 'held';
+      setNotice(depositResolved && status === 'seated' ? local(COPY.reservations.releasedNotice, locale)
+        : depositResolved && status === 'no_show' && booking.deposit?.status === 'charged' ? local(COPY.reservations.chargedNotice, locale)
+        : `${operations.updated}: ${booking.guest.name} · ${dashboardText(DASHBOARD_COPY.status[status], locale)}`);
+    } catch {
+      setNotice(operations.updateFailed);
+    }
+  };
+
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    requestAnimationFrame(() => newBookingButton.current?.focus());
+  };
+
+  const saveBooking = (booking: TableBooking): boolean => {
+    try {
+      const current = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
+      const next = createSolaneBooking(current, booking, restaurant);
+      if (next === current) { setState(current); return false; }
+      commit(next);
+      setFilters({ ...INITIAL_BOOKING_FILTERS, query: booking.guest.name });
+      setNotice(operations.saved);
+      closeBookingForm();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const closeAmendment = () => {
+    const bookingId = editingBooking?.id;
+    setEditingBooking(null);
+    requestAnimationFrame(() => {
+      const trigger = document.getElementById(`solane-edit-${bookingId}`);
+      if (trigger instanceof HTMLButtonElement && !trigger.disabled) trigger.focus();
+      else if (!newBookingButton.current?.disabled) newBookingButton.current?.focus();
+      else document.getElementById('contenido')?.focus();
+    });
+  };
+
+  const saveAmendment = (changes: BookingAmendment): boolean => {
+    if (!editingBooking) return false;
+    try {
+      const current = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
+      const next = amendSolaneBooking(current, restaurant, editingBooking, changes);
+      if (next === current) { setState(current); return false; }
+      commit(next);
+      setFilters({ ...INITIAL_BOOKING_FILTERS, query: editingBooking.id });
+      setNotice(`${amendmentCopy.saved} ${editingBooking.guest.name}`);
+      closeAmendment();
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const preparePrivateHire = (submitEvent: FormEvent<HTMLFormElement>) => {
@@ -433,6 +510,9 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
   const canManagePrivateHires = canOperate(state.role, 'manage_private_hires');
   const canManageWaitlist = canOperate(state.role, 'manage_waitlist');
   const canManageVouchers = canOperate(state.role, 'manage_vouchers');
+  const canManageBookings = canOperate(state.role, 'seat_booking');
+  const filteredBookings = filterBookings(state.bookings, restaurant, filters);
+  const validDate = validateSlot({ date, startMin: 0, durationMin: 15 }).length === 0;
   const dayBookings = activeBookings.filter((booking) => booking.slot.date === date);
   const dayEvents = activeEvents.filter((event) => event.slot.date === date);
   const floorSlot = { date, startMin: floorTime, durationMin: 15 };
@@ -470,7 +550,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
               <div className="rd-controls"><label><span><CalendarDays size={15} aria-hidden="true" />{local(COPY.date, locale)}</span><input type="date" value={date} onChange={(changeEvent) => setDate(changeEvent.target.value)} /></label></div>
             </header>
             <div className="rd-service-summary">
-              <div><CalendarDays size={18} aria-hidden="true" /><span>{new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`))}</span></div>
+              <div><CalendarDays size={18} aria-hidden="true" /><span>{validDate ? new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`)) : operations.invalidDate}</span></div>
               <div><UsersRound size={18} aria-hidden="true" /><strong>{dayBookings.length}</strong><span>{local(COPY.service.bookings, locale)}</span></div>
               <div><TicketCheck size={18} aria-hidden="true" /><strong>{dayEvents.length}</strong><span>{local(COPY.service.events, locale)}</span></div>
             </div>
@@ -509,18 +589,34 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
 
         {view === 'reservas' && (
           <section className="rd-view" data-dashboard-view="reservas">
-            <header className="rd-view-header"><div><p className="rd-eyebrow">{local(COPY.reservations.eyebrow, locale)}</p><h1>{local(COPY.reservations.title, locale)}</h1><p>{local(COPY.reservations.body, locale)}</p></div></header>
+            <header className="rd-view-header"><div><p className="rd-eyebrow">{local(COPY.reservations.eyebrow, locale)}</p><h1>{local(COPY.reservations.title, locale)}</h1><p>{local(COPY.reservations.body, locale)}</p></div><Button ref={newBookingButton} className="rd-primary-action" type="button" aria-expanded={showBookingForm} aria-controls="solane-manual-booking" disabled={!canManageBookings || editingBooking !== null} onClick={() => setShowBookingForm((visible) => !visible)} data-new-booking><Plus size={16} aria-hidden="true" />{operations.newBooking}</Button></header>
+            {!canManageBookings && <p className="rd-role-warning">{operations.readOnly}</p>}
+            {showBookingForm && <div id="solane-manual-booking"><ManualBookingForm locale={locale} restaurant={restaurant} bookings={state.bookings} events={state.events} privateHires={state.privateHires} initialDate={filters.date || (validDate ? date : initialDate)} canManage={canManageBookings} onSave={saveBooking} onCancel={closeBookingForm} /></div>}
+            {editingBooking && <div id="solane-booking-amendment"><BookingAmendmentForm key={editingBooking.id} locale={locale} restaurant={restaurant} booking={editingBooking} bookings={state.bookings} events={state.events} privateHires={state.privateHires} canManage={canManageBookings} onSave={saveAmendment} onCancel={closeAmendment} /></div>}
+            <ReservationFilters locale={locale} restaurant={restaurant} filters={filters} onChange={setFilters} resultCount={filteredBookings.length} totalCount={state.bookings.length} />
             <div className="rd-reservations-layout">
               <aside className="rd-deposit-law" data-deposit-legal-panel><ShieldCheck size={24} aria-hidden="true" /><div><h2>{local(COPY.reservations.legalTitle, locale)}</h2><p>{local(COPY.reservations.legalBody, locale)}</p></div></aside>
               <div className="rd-booking-list" data-reservation-list>
-              {state.bookings.length === 0 && <p className="rd-empty">{local(COPY.reservations.empty, locale)}</p>}
-              {[...state.bookings].sort((left, right) => left.slot.date.localeCompare(right.slot.date) || left.slot.startMin - right.slot.startMin).map((booking) => {
+              {filteredBookings.length === 0 && state.bookings.length === 0 && <p className="rd-empty">{local(COPY.reservations.empty, locale)}</p>}
+              {filteredBookings.map((booking) => {
                 const deposit = booking.deposit;
+                const transitions = nextBookingStatuses(booking.status);
+                const permitted = nextSolaneBookingStatuses(state, booking.id);
                 const formatMoney = (cents: number) => new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR' }).format(cents / 100);
                 return <article className={`rd-booking rd-booking--compact${deposit ? ' rd-booking--deposit' : ''}`} key={booking.id} data-booking-id={booking.id}>
-                  <div className="rd-booking__guest"><span className="rd-avatar">{booking.guest.name.slice(0, 1).toUpperCase()}</span><div><h2>{booking.guest.name}</h2><p>{booking.guest.email ?? booking.guest.phone ?? booking.source}</p></div></div>
-                  <dl className="rd-booking__details"><div><dt>{local(COPY.date, locale)} · {local(COPY.time, locale)}</dt><dd><b>{booking.slot.date}</b><span>{timeLabel(booking.slot.startMin)}</span></dd></div><div><dt>{local(COPY.reservations.assignment, locale)}</dt><dd><b>{booking.tableIds.map((id) => id.toUpperCase()).join(' + ')}</b><span>{booking.partySize} {local(COPY.people, locale)}</span></dd></div><div><dt>{local(COPY.reservations.status, locale)}</dt><dd><b data-booking-status>{local(COPY.reservations.statusLabels[booking.status], locale)}</b><span>{booking.source}</span></dd></div></dl>
-                  {deposit && <section className="rd-deposit-record" data-deposit-record data-deposit-status={deposit.status}><header><div><p>{local(COPY.reservations.deposit, locale)}</p><h3>{local(deposit.status === 'held' ? COPY.reservations.held : deposit.status === 'charged' ? COPY.reservations.charged : COPY.reservations.released, locale)}</h3></div><span className="badge" data-tone={deposit.status === 'charged' ? 'danger' : deposit.status === 'released' ? 'success' : 'warning'}>{deposit.status}</span></header><dl><div><dt>{local(COPY.reservations.subtotal, locale)}</dt><dd>{formatMoney(deposit.breakdown.menuSubtotalCents)}</dd></div><div><dt>{local(COPY.reservations.percentage, locale)}</dt><dd>{deposit.breakdown.percentageBps / 100}%</dd></div><div><dt>{local(COPY.reservations.amount, locale)}</dt><dd data-deposit-resolution-amount>{formatMoney(deposit.breakdown.amountCents)}</dd></div></dl><p>{local(COPY.reservations.termsAccepted, locale)} · <time dateTime={deposit.termsAcceptedAt}>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(deposit.termsAcceptedAt))}</time></p>{deposit.status === 'held' && (!canOperate(state.role, 'charge_no_show') || !canOperate(state.role, 'seat_booking')) && <p className="rd-role-warning" data-role-warning>{local(state.role === 'kitchen' ? COPY.role.kitchenWarning : COPY.role.readOnly, locale)}</p>}{deposit.status === 'held' && <div><button type="button" data-deposit-action="no_show" disabled={!canOperate(state.role, 'charge_no_show')} onClick={() => resolveDeposit(booking.id, 'no_show')}>{local(COPY.reservations.markNoShow, locale)}</button><button type="button" data-deposit-action="seated" disabled={!canOperate(state.role, 'seat_booking')} onClick={() => resolveDeposit(booking.id, 'seated')}>{local(COPY.reservations.seat, locale)}</button></div>}</section>}
+                  <div className="rd-booking__guest"><span className="rd-avatar" aria-hidden="true">{booking.guest.name.slice(0, 1).toUpperCase()}</span><div><h2>{booking.guest.name}</h2><p>{booking.guest.email ?? booking.guest.phone ?? dashboardText(DASHBOARD_COPY.source[booking.source], locale)}</p></div></div>
+                  <dl className="rd-booking__details"><div><dt>{local(COPY.date, locale)} · {local(COPY.time, locale)}</dt><dd><b>{booking.slot.date}</b><span>{timeLabel(booking.slot.startMin)}</span></dd></div><div><dt>{local(COPY.reservations.assignment, locale)}</dt><dd><b>{booking.tableIds.map((id) => id.toUpperCase()).join(' + ')}</b><span>{booking.partySize} {local(COPY.people, locale)}</span></dd></div><div><dt>{local(COPY.reservations.status, locale)}</dt><dd><b data-booking-status>{local(COPY.reservations.statusLabels[booking.status], locale)}</b><span>{dashboardText(DASHBOARD_COPY.source[booking.source], locale)}</span></dd></div></dl>
+                  {deposit && <section className="rd-deposit-record" data-deposit-record data-deposit-status={deposit.status}><header><div><p>{local(COPY.reservations.deposit, locale)}</p><h3>{local(deposit.status === 'held' ? COPY.reservations.held : deposit.status === 'charged' ? COPY.reservations.charged : COPY.reservations.released, locale)}</h3></div><span className="badge" data-tone={deposit.status === 'charged' ? 'danger' : deposit.status === 'released' ? 'success' : 'warning'}>{deposit.status}</span></header><dl><div><dt>{local(COPY.reservations.subtotal, locale)}</dt><dd>{formatMoney(deposit.breakdown.menuSubtotalCents)}</dd></div><div><dt>{local(COPY.reservations.percentage, locale)}</dt><dd>{deposit.breakdown.percentageBps / 100}%</dd></div><div><dt>{local(COPY.reservations.amount, locale)}</dt><dd data-deposit-resolution-amount>{formatMoney(deposit.breakdown.amountCents)}</dd></div></dl><p>{local(COPY.reservations.termsAccepted, locale)} · <time dateTime={deposit.termsAcceptedAt}>{new Intl.DateTimeFormat(locale, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(deposit.termsAcceptedAt))}</time></p>{deposit.status === 'held' && transitions.some((status) => !permitted.includes(status)) && <p className="rd-role-warning" data-role-warning>{local(state.role === 'kitchen' ? COPY.role.kitchenWarning : COPY.role.readOnly, locale)}</p>}</section>}
+                  <div className="rd-booking__actions">
+                    {['pending', 'confirmed'].includes(booking.status) && <Button id={`solane-edit-${booking.id}`} variant="outline" type="button" data-booking-edit aria-expanded={editingBooking?.id === booking.id} aria-controls={editingBooking?.id === booking.id ? 'solane-booking-amendment' : undefined} disabled={!canManageBookings || showBookingForm || editingBooking !== null} onClick={() => { setEditingBooking(booking); setNotice(''); }}>{amendmentCopy.edit}</Button>}
+                    {transitions.length === 0 ? <small>{dashboardText(DASHBOARD_COPY.reservations.noActions, locale)}</small> : transitions.map((status) => {
+                      const resolvesDeposit = deposit?.status === 'held' && (status === 'seated' || status === 'no_show');
+                      const label = resolvesDeposit && status === 'seated' ? local(COPY.reservations.seat, locale)
+                        : resolvesDeposit && status === 'no_show' && deposit.breakdown.amountCents > 0 ? local(COPY.reservations.markNoShow, locale)
+                        : dashboardText(DASHBOARD_COPY.action[status], locale);
+                      return <button key={status} type="button" className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} data-booking-action={status} data-deposit-action={resolvesDeposit ? status : undefined} disabled={!permitted.includes(status) || editingBooking?.id === booking.id} onClick={() => transition(booking.id, status)}>{label}</button>;
+                    })}
+                  </div>
                 </article>;
               })}
               </div>
@@ -601,7 +697,7 @@ export default function SolaneDashboard({ locale = 'es', restaurant, initialBook
           bookings={state.bookings}
           events={state.events}
           privateHires={state.privateHires}
-          initialDate={date}
+          initialDate={validDate ? date : initialDate}
           initialTime={floorTime}
           canManage={canManageWaitlist}
           onAdd={(entry) => commit(addSolaneWaitlistEntry(state, entry))}

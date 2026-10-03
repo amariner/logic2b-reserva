@@ -4,6 +4,7 @@ import {
   SOLANE_STATE_VERSION,
   addSolaneWaitlistEntry,
   blockSolanePrivateHire,
+  createSolaneBooking,
   createSolaneEvent,
   initialSolaneState,
   issueSolaneVoucher,
@@ -97,6 +98,49 @@ const voucher = (overrides: Partial<ExperienceVoucher> = {}): ExperienceVoucher 
 });
 
 describe('estado Solane versionado', () => {
+  it('crea altas nuevas sin sobrescribir y conserva el depósito aceptado del widget', () => {
+    const initial = initialSolaneState();
+    const candidate = { ...depositedBooking(), source: 'widget' as const };
+    const created = createSolaneBooking(initial, candidate, restaurant);
+    expect(created).not.toBe(initial);
+    expect(initial.bookings).toEqual([]);
+    expect(parseSolaneStored(serializeSolaneState(created)).bookings[0]).toMatchObject(candidate);
+    expect(createSolaneBooking(created, { ...candidate, guest: { name: 'Replacement' } }, restaurant)).toBe(created);
+    candidate.deposit!.breakdown.amountCents = 1;
+    expect(created.bookings[0].deposit?.breakdown.amountCents).toBe(10000);
+  });
+
+  it('revalida la asignación después de publicarse un evento o bloquearse una privatización', () => {
+    const candidate = { ...depositedBooking(), source: 'widget' as const };
+    const published = initialSolaneState([], [{ ...event(), status: 'published' }]);
+    expect(createSolaneBooking(published, candidate, restaurant)).toBe(published);
+    const blocked = initialSolaneState([], [], [{ ...privateHire(), slot: candidate.slot, status: 'blocked' }]);
+    expect(createSolaneBooking(blocked, candidate, restaurant)).toBe(blocked);
+    const occupied = initialSolaneState([booking()]);
+    expect(createSolaneBooking(occupied, candidate, restaurant)).toBe(occupied);
+  });
+
+  it('permite reservas adyacentes y rechaza asignaciones, fechas y desgloses inválidos', () => {
+    const initial = initialSolaneState([booking()]);
+    const adjacent = { ...booking('adjacent'), slot: { ...booking().slot, startMin: 1200, durationMin: 60 }, source: 'phone' as const };
+    expect(createSolaneBooking(initial, adjacent, restaurant).bookings).toHaveLength(2);
+    expect(createSolaneBooking(initial, { ...adjacent, tableIds: ['missing'] }, restaurant)).toBe(initial);
+    expect(createSolaneBooking(initial, { ...adjacent, slot: { ...adjacent.slot, date: '2026-02-30' } }, restaurant)).toBe(initial);
+    const corrupt = { ...depositedBooking(), source: 'widget' as const };
+    corrupt.deposit!.breakdown.amountCents = 1;
+    expect(createSolaneBooking(initialSolaneState(), corrupt, restaurant).bookings).toEqual([]);
+  });
+
+  it('reserva telefónica requiere permiso y no inventa una garantía; widget no depende del rol', () => {
+    const phone = { ...booking(), source: 'phone' as const };
+    const kitchen = setSolaneRole(initialSolaneState(), 'kitchen');
+    expect(createSolaneBooking(kitchen, phone, restaurant)).toBe(kitchen);
+    const floor = setSolaneRole(kitchen, 'floor');
+    expect(createSolaneBooking(floor, phone, restaurant).bookings[0]).toMatchObject(phone);
+    expect(createSolaneBooking(floor, { ...depositedBooking(), source: 'phone' }, restaurant)).toBe(floor);
+    expect(createSolaneBooking(kitchen, { ...depositedBooking(), source: 'widget' }, restaurant).bookings).toHaveLength(1);
+  });
+
   it('clona profundamente fixtures', () => {
     const sourceBooking = booking();
     const sourceEvent = event();
@@ -200,6 +244,20 @@ describe('estado Solane versionado', () => {
     const released = resolveSolaneBookingDeposit(charged, 'seated', 'seated');
     expect(released.bookings.find((item) => item.id === 'seated')).toMatchObject({ status: 'seated', deposit: { status: 'released' } });
     expect(resolveSolaneBookingDeposit(released, 'seated', 'no_show')).toBe(released);
+  });
+
+  it('el resolver de depósito no salta la confirmación ni opera reservas sin garantía retenida', () => {
+    const released = depositedBooking('released');
+    released.deposit!.status = 'released';
+    const state = initialSolaneState([
+      { ...depositedBooking('pending'), status: 'pending' },
+      booking('without-deposit'),
+      released,
+    ]);
+    for (const id of ['pending', 'without-deposit', 'released']) {
+      expect(resolveSolaneBookingDeposit(state, id, 'seated')).toBe(state);
+      expect(resolveSolaneBookingDeposit(state, id, 'no_show')).toBe(state);
+    }
   });
 
   it('completa solicitud, propuesta, señal y bloqueo del espacio', () => {

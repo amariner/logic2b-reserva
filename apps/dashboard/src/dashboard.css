@@ -104,6 +104,42 @@
 .rd-filter { display: flex; flex: 0 0 auto; border: 1px solid var(--brand-line); border-radius: 9px; padding: 3px; background: white; }
 .rd-filter button { min-height: 44px; border: 0; border-radius: 6px; padding: 6px 12px; color: var(--brand-muted); background: transparent; font-size: .74rem; font-weight: 650; cursor: pointer; }
 .rd-filter button:hover, .rd-filter button.active { color: white; background: var(--brand); }
+.rd-reservation-filters { margin-bottom: 20px; border: 1px solid var(--brand-line); border-radius: 12px; padding: 16px; background: white; }
+.rd-reservation-filters__fields { display: grid; grid-template-columns: minmax(190px, 1.8fr) repeat(4, minmax(115px, 1fr)); align-items: start; gap: 12px; }
+.rd-reservation-filters label, .rd-manual-booking__field { display: grid; min-width: 0; gap: 7px; color: var(--brand-muted); font-size: .72rem; font-weight: 650; }
+.rd-reservation-filters label > span { display: flex; align-items: center; gap: 6px; }
+.rd-reservation-filters input, .rd-reservation-filters select, .rd-manual-booking input, .rd-manual-booking select { width: 100%; min-width: 0; min-height: 44px; border: 1px solid var(--lr-line-strong); border-radius: 8px; padding: 9px 10px; color: var(--brand-ink); background: white; font: inherit; font-size: .82rem; font-weight: 400; }
+.rd-reservation-filters small { font-size: .68rem; font-weight: 400; }
+.rd-reservation-filters__footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; border-top: 1px solid var(--brand-line); padding-top: 12px; }
+.rd-reservation-filters__footer p { margin: 0; color: var(--brand-muted); font-family: var(--mono); font-size: .72rem; }
+.rd-reservation-filters__empty { margin: 14px 0 0; border-radius: 8px; padding: 14px; color: var(--brand-ink); background: var(--lr-blue-soft); font-size: .85rem; line-height: 1.6; }
+.rd-manual-booking { margin-bottom: 20px; border: 1px solid var(--brand-line); border-top: 3px solid var(--brand); border-radius: 12px; padding: 22px; background: white; }
+.rd-manual-booking__header h2 { display: flex; align-items: center; gap: 9px; margin: 0; font-size: 1.15rem; letter-spacing: -.02em; }
+.rd-manual-booking__header p { margin: 8px 0; color: var(--brand-muted); font-size: .85rem; line-height: 1.6; }
+.rd-manual-booking__notice { margin: 12px 0; border-radius: 8px; padding: 11px 13px; color: var(--brand-ink); background: var(--lr-blue-soft); font-size: .78rem; line-height: 1.6; }
+.rd-manual-booking__fields { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin-top: 20px; }
+.rd-manual-booking__field--wide { grid-column: span 2; }
+.rd-manual-booking__summary { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 20px 0; border-top: 1px solid var(--brand-line); padding-top: 16px; }
+.rd-manual-booking__summary dt { margin-bottom: 6px; color: var(--brand-muted); font-size: .72rem; }
+.rd-manual-booking__summary dd { margin: 0; color: var(--brand-ink); font-family: var(--mono); font-size: .8rem; line-height: 1.6; overflow-wrap: anywhere; }
+.rd-manual-booking__error { border-left: 3px solid var(--state-danger); border-radius: 4px; padding: 12px; color: var(--state-danger); background: var(--state-table-event-bg); font-size: .85rem; line-height: 1.6; }
+.rd-manual-booking__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.rd-booking__actions button:disabled { border-color: var(--brand-line); color: var(--brand-muted); background: var(--lr-paper-deep); cursor: not-allowed; }
+@media (max-width: 1180px) {
+  .rd-reservation-filters__fields { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .rd-reservation-filters__search { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .rd-reservation-filters__fields, .rd-manual-booking__fields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .rd-manual-booking { padding: 16px; }
+  .rd-manual-booking__summary { grid-template-columns: 1fr; }
+  .rd-manual-booking input, .rd-manual-booking select, .rd-reservation-filters input, .rd-reservation-filters select { font-size: 1rem; }
+}
+@media (max-width: 380px) {
+  .rd-reservation-filters__fields, .rd-manual-booking__fields { grid-template-columns: minmax(0, 1fr); }
+  .rd-reservation-filters__search, .rd-manual-booking__field--wide { grid-column: auto; }
+  .rd-reservation-filters__footer, .rd-manual-booking__actions { align-items: stretch; flex-direction: column; }
+}
 .rd-booking-list { display: grid; gap: 10px; }
 .rd-booking { display: grid; grid-template-columns: minmax(180px, .9fr) minmax(430px, 1.65fr) minmax(138px, .55fr); align-items: center; gap: 20px; border: 1px solid var(--brand-line); border-radius: 10px; padding: 17px; background: white; }
 .rd-booking__guest { display: flex; min-width: 0; align-items: center; gap: 11px; }
@@ -119,9 +155,12 @@
 .rd-booking__details span { color: var(--brand-muted); font-size: .65rem; }
 .rd-booking__state { display: flex; align-items: flex-start; flex-direction: column; gap: 6px; }
 .rd-web-badge { border-radius: 5px; padding: 4px 8px; color: var(--lr-blue-strong); background: var(--lr-blue-soft); font-family: var(--mono); font-size: .6rem; font-weight: 700; white-space: nowrap; }
-.rd-booking__actions { display: flex; grid-column: 1 / -1; justify-content: flex-end; gap: 6px; border-top: 1px solid var(--brand-line); padding-top: 12px; }
+.rd-booking__actions { display: flex; flex-wrap: wrap; grid-column: 1 / -1; justify-content: flex-end; gap: 6px; border-top: 1px solid var(--brand-line); padding-top: 12px; }
 .rd-booking__actions button { min-height: 44px; border: 1px solid var(--brand); border-radius: 7px; padding: 5px 10px; color: white; background: var(--brand); font-size: .69rem; font-weight: 650; cursor: pointer; }
 .rd-booking__actions button:hover { background: var(--brand-strong); }
+.rd-booking__actions [data-booking-edit] { color: var(--brand); background: white; }
+.rd-booking__actions [data-booking-edit]:hover { background: var(--lr-blue-soft); }
+.rd-booking__actions [data-booking-edit]:disabled { border-color: var(--brand-line); color: var(--brand-muted); background: var(--lr-paper-deep); }
 .rd-booking__actions button.danger { border-color: transparent; color: var(--state-danger); background: var(--state-table-event-bg); }
 .rd-booking__actions small { color: var(--brand-muted); font-size: .69rem; }
 

@@ -4,6 +4,12 @@ Lo que surge durante las sesiones y no pertenece a la fase en curso. Nada de aqu
 
 ## Producto (post-F12)
 
+- Reprogramación de reservas → promovida a F32 y ADR-023. Las garantías solo
+  permiten reasignar mesas. Un futuro cambio de condiciones necesita un
+  recorrido explícito de nueva aceptación del cliente y política acordada.
+- Servicio con acceso directo al detalle de reserva y acciones de llegada/cierre
+  también en escritorio; mantener la fecha y el turno al pasar entre vistas.
+
 - Paridad estructural y comercial con `camp.logic2b.com` → promovida a F20–F27; contrato en `docs/PARIDAD-CAMP.md`.
 
 - Gift cards / bonos de experiencia vendidos desde el motor → promovido a F15.

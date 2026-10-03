@@ -36,12 +36,17 @@ export function slotsOverlap(a: TimeSlot, b: TimeSlot): boolean {
 
 export function validateSlot(slot: TimeSlot): string[] {
   const errors: string[] = [];
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(slot.date)) errors.push('date must be ISO YYYY-MM-DD');
-  if (slot.startMin % SLOT_STEP_MIN !== 0) errors.push(`startMin must be a multiple of ${SLOT_STEP_MIN}`);
-  if (slot.durationMin <= 0 || slot.durationMin % SLOT_STEP_MIN !== 0)
+  const date = new Date(`${slot.date}T00:00:00Z`);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(slot.date) || Number.isNaN(date.getTime()) || date.toISOString().slice(0, 10) !== slot.date) errors.push('date must be ISO YYYY-MM-DD');
+  if (!Number.isInteger(slot.startMin) || slot.startMin % SLOT_STEP_MIN !== 0) errors.push(`startMin must be a multiple of ${SLOT_STEP_MIN}`);
+  if (slot.startMin < 0 || slot.startMin >= 1440) errors.push('startMin must be within the service day');
+  if (!Number.isInteger(slot.durationMin) || slot.durationMin <= 0 || slot.durationMin % SLOT_STEP_MIN !== 0)
     errors.push(`durationMin must be a positive multiple of ${SLOT_STEP_MIN}`);
   return errors;
 }
+
+export { canCreateBooking } from './booking-commands';
+export { amendBooking, canAmendBookingAssignment, type BookingAmendment } from './booking-amendments';
 
 // Duración estimada de mesa por tamaño de grupo (rotación).
 export function estimateDurationMin(partySize: number): number {

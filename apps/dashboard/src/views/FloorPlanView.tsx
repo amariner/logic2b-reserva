@@ -6,9 +6,12 @@ import {
   assignVedraGroupMenu,
   assignVedraGroupTables,
   confirmVedraGroup,
+  parseVedraStored,
   resetVedraGroupJourney,
+  serializeVedraState,
   setVedraTourStep,
   startVedraTour,
+  VEDRA_STORAGE_KEY,
   type VedraDemoState,
   type VedraGroupStatus,
 } from '../state';
@@ -27,6 +30,7 @@ const timeLabel = (minutes: number) => `${String(Math.floor(minutes / 60)).padSt
 export default function FloorPlanView({ locale, restaurant, state, onChange, onView }: FloorPlanViewProps) {
   const copy = DASHBOARD_COPY.floor;
   const [selectedTableId, setSelectedTableId] = useState(restaurant.spaces[0]?.tables[0]?.id ?? '');
+  const [notice, setNotice] = useState('');
   const price = new Intl.NumberFormat(locale, { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
   const allTables = useMemo(() => restaurant.spaces.flatMap((space) => space.tables.map((table) => ({ ...table, space }))), [restaurant]);
   const tableById = useMemo(() => new Map(allTables.map((table) => [table.id, table])), [allTables]);
@@ -50,6 +54,24 @@ export default function FloorPlanView({ locale, restaurant, state, onChange, onV
   const tableNames = (ids: readonly string[]) => ids.map((id) => tableById.get(id)?.name ?? id).join(' + ');
   const showStep = (step: 1 | 2 | 3) => state.tourMode === 'free' || state.tourStep === step;
 
+  const confirmGroup = () => {
+    try {
+      const raw = localStorage.getItem(VEDRA_STORAGE_KEY);
+      const current = raw === null ? state : parseVedraStored(raw);
+      const next = confirmVedraGroup(current, restaurant);
+      if (next === current) {
+        onChange(setVedraTourStep(current, 2));
+        setNotice(dashboardText(copy.confirmConflict, locale));
+        return;
+      }
+      localStorage.setItem(VEDRA_STORAGE_KEY, serializeVedraState(next));
+      onChange(next);
+      setNotice('');
+    } catch {
+      setNotice(dashboardText(copy.storageError, locale));
+    }
+  };
+
   return (
     <section className="rd-view" data-dashboard-view="plano">
       <header className="rd-view-header">
@@ -65,6 +87,7 @@ export default function FloorPlanView({ locale, restaurant, state, onChange, onV
             <div><dt>{dashboardText(copy.time, locale)}</dt><dd>{timeLabel(state.group.slot.startMin)}</dd></div>
             <div><dt>{dashboardText(copy.party, locale)}</dt><dd>{state.group.partySize} {dashboardText(copy.people, locale)}</dd></div>
           </dl>
+          <p className="rd-live" role="status" aria-live="polite">{notice}</p>
 
           {state.tourMode === 'unset' && (
             <div className="rd-mode-choice">
@@ -99,7 +122,7 @@ export default function FloorPlanView({ locale, restaurant, state, onChange, onV
                   <span>03</span><h3>{dashboardText(copy.stepThreeTitle, locale)}</h3><p>{dashboardText(copy.stepThreeBody, locale)}</p>
                   <p className="rd-selected-combination"><Check size={15} aria-hidden="true" /><span>{dashboardText(copy.selectedCombination, locale)}</span><b>{tableNames(state.group.tableIds)}</b></p>
                   <label className="rd-menu-select"><span>{dashboardText(copy.menu, locale)}</span><select value={state.group.menuId ?? ''} onChange={(event) => onChange(assignVedraGroupMenu(state, event.target.value))}><option value="">{dashboardText(copy.selectMenu, locale)}</option>{restaurant.menus.filter((menu) => menu.bookableOnline).map((menu) => <option key={menu.id} value={menu.id}>{menu.name} · {price.format(menu.pricePerPersonCents / 100)} {dashboardText(copy.perPerson, locale)}</option>)}</select></label>
-                  <button className="rd-primary-action" type="button" data-confirm-group disabled={state.group.status !== 'menu_assigned'} onClick={() => onChange(confirmVedraGroup(state))}>{dashboardText(copy.confirmGroup, locale)}</button>
+                  <button className="rd-primary-action" type="button" data-confirm-group disabled={state.group.status !== 'menu_assigned'} onClick={confirmGroup}>{dashboardText(copy.confirmGroup, locale)}</button>
                 </div>
               )}
             </>

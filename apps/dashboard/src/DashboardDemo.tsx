@@ -6,6 +6,7 @@ import {
   ExternalLink,
   ListChecks,
   MapPinned,
+  Plus,
   RotateCcw,
   Settings2,
   TableProperties,
@@ -19,7 +20,9 @@ import { Button } from '@logic-reserva/ui/button';
 import {
   SLOT_STEP_MIN,
   seatingTimes,
+  validateSlot,
   type BookingStatus,
+  type BookingAmendment,
   type CustomerProfile,
   type Restaurant,
   type RestaurantEvent,
@@ -39,6 +42,7 @@ import {
   VEDRA_STORAGE_KEY,
   initialVedraState,
   addVedraWaitlistEntry,
+  createVedraBooking,
   nextBookingStatuses,
   parseVedraStored,
   serializeVedraState,
@@ -55,6 +59,13 @@ import ReportsView from './views/ReportsView';
 import WaitlistView from './views/WaitlistView';
 import MobileDashboardNav from './MobileDashboardNav';
 import { subscribeToStorageKey } from './storage-sync';
+import ReservationFilters from './components/ReservationFilters';
+import ManualBookingForm from './components/ManualBookingForm';
+import { filterBookings, INITIAL_BOOKING_FILTERS } from './booking-filters';
+import { BOOKING_OPERATIONS_COPY } from './booking-operations-content';
+import BookingAmendmentForm from './components/BookingAmendmentForm';
+import { BOOKING_AMENDMENT_COPY } from './booking-amendment-content';
+import { amendVedraBooking } from './booking-amendments';
 
 interface VedraDashboardProps {
   slug: 'vedra';
@@ -75,10 +86,7 @@ interface SolaneDashboardProps {
 
 export type DashboardDemoProps = VedraDashboardProps | SolaneDashboardProps;
 
-type BookingFilter = 'all' | 'active' | 'closed';
-
-const ACTIVE_STATUSES: readonly BookingStatus[] = ['pending', 'confirmed', 'seated'];
-const TIMELINE_STATUSES: readonly BookingStatus[] = ['confirmed', 'seated'];
+const TIMELINE_STATUSES: readonly BookingStatus[] = ['pending', 'confirmed', 'seated'];
 const STATUS_TONES: Record<BookingStatus, 'warning' | 'success' | 'info' | 'danger'> = {
   pending: 'warning',
   confirmed: 'success',
@@ -107,7 +115,12 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
   const [view, setCurrentView] = useState<DashboardView>('servicio');
   const [date, setDate] = useState(initialDate);
   const [service, setService] = useState<ServiceKind>('lunch');
-  const [filter, setFilter] = useState<BookingFilter>('all');
+  const [filters, setFilters] = useState(INITIAL_BOOKING_FILTERS);
+  const [showBookingForm, setShowBookingForm] = useState(false);
+  const [editingBooking, setEditingBooking] = useState<TableBooking | null>(null);
+  const newBookingButton = useRef<HTMLButtonElement>(null);
+  const operations = BOOKING_OPERATIONS_COPY[locale];
+  const amendmentCopy = BOOKING_AMENDMENT_COPY[locale];
   const [hydrated, setHydrated] = useState(false);
   const initialized = useRef(false);
   const [notice, setNotice] = useState('');
@@ -146,13 +159,76 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
     setState(initialVedraState(initialBookings));
     setDate(initialDate);
     setService('lunch');
-    setFilter('all');
+    setFilters(INITIAL_BOOKING_FILTERS);
+    setShowBookingForm(false);
+    setEditingBooking(null);
     setNotice(dashboardText(copy.resetDone, locale));
   };
 
   const transition = (bookingId: string, status: BookingStatus) => {
-    setState((current) => transitionVedraBooking(current, bookingId, status));
-    setNotice('');
+    try {
+      const current = parseVedraStored(localStorage.getItem(VEDRA_STORAGE_KEY), initialBookings);
+      const booking = current.bookings.find((item) => item.id === bookingId);
+      if (!booking || !nextBookingStatuses(booking.status).includes(status)) {
+        setState(current);
+        setNotice(operations.updateFailed);
+        return;
+      }
+      const next = transitionVedraBooking(current, bookingId, status);
+      localStorage.setItem(VEDRA_STORAGE_KEY, serializeVedraState(next));
+      setState(next);
+      setNotice(`${operations.updated}: ${booking.guest.name} · ${dashboardText(copy.status[status], locale)}`);
+    } catch {
+      setNotice(operations.updateFailed);
+    }
+  };
+
+  const closeBookingForm = () => {
+    setShowBookingForm(false);
+    requestAnimationFrame(() => newBookingButton.current?.focus());
+  };
+
+  const saveBooking = (booking: TableBooking): boolean => {
+    try {
+      const current = parseVedraStored(localStorage.getItem(VEDRA_STORAGE_KEY), initialBookings);
+      const next = createVedraBooking(current, booking, restaurant);
+      if (next === current) { setState(current); return false; }
+      localStorage.setItem(VEDRA_STORAGE_KEY, serializeVedraState(next));
+      setState(next);
+      setFilters({ ...INITIAL_BOOKING_FILTERS, query: booking.guest.name });
+      setNotice(operations.saved);
+      closeBookingForm();
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
+  const closeAmendment = () => {
+    const bookingId = editingBooking?.id;
+    setEditingBooking(null);
+    requestAnimationFrame(() => {
+      const trigger = document.getElementById(`vedra-edit-${bookingId}`);
+      if (trigger) trigger.focus();
+      else newBookingButton.current?.focus();
+    });
+  };
+
+  const saveAmendment = (changes: BookingAmendment): boolean => {
+    if (!editingBooking) return false;
+    try {
+      const current = parseVedraStored(localStorage.getItem(VEDRA_STORAGE_KEY), initialBookings);
+      const next = amendVedraBooking(current, restaurant, editingBooking, changes);
+      if (next === current) { setState(current); return false; }
+      localStorage.setItem(VEDRA_STORAGE_KEY, serializeVedraState(next));
+      setState(next);
+      setFilters({ ...INITIAL_BOOKING_FILTERS, query: editingBooking.id });
+      setNotice(`${amendmentCopy.saved} ${editingBooking.guest.name}`);
+      closeAmendment();
+      return true;
+    } catch {
+      return false;
+    }
   };
 
   const tables = useMemo(() => restaurant.spaces.flatMap((space) => space.tables.map((table) => ({ ...table, space }))), [restaurant]);
@@ -178,12 +254,11 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
     );
   }, [date, shift, state.bookings]);
 
-  const filteredBookings = useMemo(() => [...state.bookings]
-    .filter((booking) => filter === 'all' || (filter === 'active' ? ACTIVE_STATUSES.includes(booking.status) : !ACTIVE_STATUSES.includes(booking.status)))
-    .sort((left, right) => left.slot.date.localeCompare(right.slot.date) || left.slot.startMin - right.slot.startMin), [filter, state.bookings]);
+  const filteredBookings = useMemo(() => filterBookings(state.bookings, restaurant, filters), [filters, restaurant, state.bookings]);
 
   const gridStyle = { gridTemplateColumns: `168px repeat(${slots.length}, minmax(68px, 1fr))` } satisfies CSSProperties;
-  const formattedDate = new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`));
+  const validDate = validateSlot({ date, startMin: 0, durationMin: 15 }).length === 0;
+  const formattedDate = validDate ? new Intl.DateTimeFormat(locale, { dateStyle: 'full', timeZone: 'UTC' }).format(new Date(`${date}T00:00:00Z`)) : operations.invalidDate;
   const websiteHref = `${locale === 'en' ? '/en' : ''}/demos/${slug}/`;
 
   return (
@@ -266,13 +341,15 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
           <section className="rd-view" data-dashboard-view="reservas">
             <header className="rd-view-header">
               <div><p className="rd-eyebrow">{dashboardText(copy.reservations.eyebrow, locale)}</p><h1>{dashboardText(copy.reservations.title, locale)}</h1><p>{dashboardText(copy.reservations.body, locale)}</p></div>
-              <div className="rd-filter" role="group" aria-label={dashboardText(copy.reservations.status, locale)}>
-                {(['all', 'active', 'closed'] as const).map((candidate) => <button key={candidate} type="button" className={filter === candidate ? 'active' : ''} onClick={() => setFilter(candidate)}>{dashboardText(copy.reservations[candidate], locale)}</button>)}
-              </div>
+              <Button ref={newBookingButton} className="rd-primary-action" type="button" aria-expanded={showBookingForm} aria-controls="vedra-manual-booking" disabled={editingBooking !== null} onClick={() => setShowBookingForm((visible) => !visible)} data-new-booking><Plus size={16} aria-hidden="true" />{operations.newBooking}</Button>
             </header>
 
+            {showBookingForm && <div id="vedra-manual-booking"><ManualBookingForm locale={locale} restaurant={restaurant} bookings={state.bookings} initialDate={filters.date || (validDate ? date : initialDate)} canManage onSave={saveBooking} onCancel={closeBookingForm} /></div>}
+            {editingBooking && <div id="vedra-booking-amendment"><BookingAmendmentForm key={editingBooking.id} locale={locale} restaurant={restaurant} booking={editingBooking} bookings={state.bookings} canManage onSave={saveAmendment} onCancel={closeAmendment} /></div>}
+            <ReservationFilters locale={locale} restaurant={restaurant} filters={filters} onChange={setFilters} resultCount={filteredBookings.length} totalCount={state.bookings.length} />
+
             <div className="rd-booking-list" data-reservation-list>
-              {filteredBookings.length === 0 && <p className="rd-empty">{dashboardText(copy.reservations.empty, locale)}</p>}
+              {filteredBookings.length === 0 && state.bookings.length === 0 && <p className="rd-empty">{dashboardText(copy.reservations.empty, locale)}</p>}
               {filteredBookings.map((booking) => {
                 const assignedTables = booking.tableIds.map((tableId) => tableById.get(tableId)?.name ?? tableId).join(' + ');
                 const menu = booking.menuId === undefined ? undefined : menuById.get(booking.menuId);
@@ -287,7 +364,8 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
                     </dl>
                     <div className="rd-booking__state"><Badge className="badge" data-tone={STATUS_TONES[booking.status]} data-booking-status>{dashboardText(copy.status[booking.status], locale)}</Badge>{booking.source === 'widget' && <span className="rd-web-badge">{dashboardText(copy.source.widget, locale)}</span>}</div>
                     <div className="rd-booking__actions">
-                      {transitions.length === 0 ? <small>{dashboardText(copy.reservations.noActions, locale)}</small> : transitions.map((status) => <button key={status} className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} type="button" data-booking-action={status} onClick={() => transition(booking.id, status)}>{dashboardText(copy.action[status], locale)}</button>)}
+                      {['pending', 'confirmed'].includes(booking.status) && <Button id={`vedra-edit-${booking.id}`} variant="outline" type="button" data-booking-edit aria-expanded={editingBooking?.id === booking.id} aria-controls={editingBooking?.id === booking.id ? 'vedra-booking-amendment' : undefined} disabled={showBookingForm || editingBooking !== null} onClick={() => { setEditingBooking(booking); setNotice(''); }}>{amendmentCopy.edit}</Button>}
+                      {transitions.length === 0 ? <small>{dashboardText(copy.reservations.noActions, locale)}</small> : transitions.map((status) => <button key={status} className={status === 'cancelled' || status === 'no_show' ? 'danger' : ''} type="button" data-booking-action={status} disabled={editingBooking?.id === booking.id} onClick={() => transition(booking.id, status)}>{dashboardText(copy.action[status], locale)}</button>)}
                     </div>
                   </article>
                 );
@@ -302,7 +380,7 @@ function VedraDashboard({ slug, locale = 'es', restaurant, initialBookings }: Ve
           restaurant={restaurant}
           entries={state.waitlist}
           bookings={state.bookings}
-          initialDate={date}
+          initialDate={validDate ? date : initialDate}
           initialTime={shift?.firstSeatingMin ?? 780}
           onAdd={(entry) => setState((current) => addVedraWaitlistEntry(current, entry))}
           onTransition={(entryId, status) => setState((current) => transitionVedraWaitlistEntry(current, entryId, status))}

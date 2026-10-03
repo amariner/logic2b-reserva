@@ -9,9 +9,9 @@ import {
 } from '@logic-reserva/domain';
 import {
   VEDRA_STORAGE_KEY,
+  createVedraBooking,
   parseVedraStored,
   serializeVedraState,
-  upsertVedraBooking,
 } from '@logic-reserva/dashboard/state';
 import type { Locale } from '@logic-reserva/config';
 import { subscribeToStorageKey } from '@logic-reserva/dashboard/storage-sync';
@@ -42,9 +42,9 @@ export default function BookingWidget({ restaurant, initialBookings, locale = 'e
   const [confirmed, setConfirmed] = useState<TableBooking | null>(null);
 
   useEffect(() => {
-    const load = (value: string | null = localStorage.getItem(VEDRA_STORAGE_KEY)) => {
+    const load = (value?: string | null) => {
       try {
-        setBookings(parseVedraStored(value, initialBookings).bookings);
+        setBookings(parseVedraStored(value === undefined ? localStorage.getItem(VEDRA_STORAGE_KEY) : value, initialBookings).bookings);
       } catch {
         setBookings(initialBookings);
       }
@@ -80,12 +80,19 @@ export default function BookingWidget({ restaurant, initialBookings, locale = 'e
   const saveJourney = (booking: TableBooking) => {
     try {
       const current = parseVedraStored(localStorage.getItem(VEDRA_STORAGE_KEY), initialBookings);
-      const next = upsertVedraBooking(current, booking);
+      const next = createVedraBooking(current, booking, restaurant);
+      if (next === current) {
+        setBookings(current.bookings);
+        setSelectedTime(null);
+        setStep(1);
+        setMessage(localized(copy.inventoryConflict, locale));
+        return;
+      }
       localStorage.setItem(VEDRA_STORAGE_KEY, serializeVedraState(next));
       setBookings(next.bookings);
       setConfirmed(booking);
     } catch {
-      setMessage(localized(copy.invalid, locale));
+      setMessage(localized(copy.storageError, locale));
     }
   };
 
@@ -134,7 +141,7 @@ export default function BookingWidget({ restaurant, initialBookings, locale = 'e
           <div><dt>{localized(copy.partySize, locale)}</dt><dd>{confirmed.partySize}</dd></div>
         </dl>
         <div className="vw-success__actions">
-          <a className="vw-button" href="/demos/vedra/gestion/?vista=servicio">{localized(copy.openManager, locale)}</a>
+          <a className="vw-button" href={`${locale === 'en' ? '/en' : ''}/demos/vedra/gestion/?vista=servicio`}>{localized(copy.openManager, locale)}</a>
           <button className="vw-button vw-button--ghost" type="button" onClick={restart}>{localized(copy.startAgain, locale)}</button>
         </div>
       </section>

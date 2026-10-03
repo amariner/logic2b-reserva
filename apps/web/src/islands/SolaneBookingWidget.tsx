@@ -14,9 +14,9 @@ import {
 } from '@logic-reserva/domain';
 import {
   SOLANE_STORAGE_KEY,
+  createSolaneBooking,
   parseSolaneStored,
   serializeSolaneState,
-  upsertSolaneBooking,
   type SolaneDemoState,
 } from '@logic-reserva/dashboard/solane-state';
 import type { Locale } from '@logic-reserva/config';
@@ -58,8 +58,12 @@ export default function SolaneBookingWidget({ restaurant, initialBookings, initi
   const gateway = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
-    const load = (value: string | null = localStorage.getItem(SOLANE_STORAGE_KEY)) => {
-      setDemoState(parseSolaneStored(value, initialBookings, initialEvents, initialPrivateHires));
+    const load = (value?: string | null) => {
+      try {
+        setDemoState(parseSolaneStored(value === undefined ? localStorage.getItem(SOLANE_STORAGE_KEY) : value, initialBookings, initialEvents, initialPrivateHires));
+      } catch {
+        setDemoState(parseSolaneStored(null, initialBookings, initialEvents, initialPrivateHires));
+      }
     };
     load();
     return subscribeToStorageKey(SOLANE_STORAGE_KEY, load);
@@ -99,11 +103,23 @@ export default function SolaneBookingWidget({ restaurant, initialBookings, initi
   };
 
   const saveJourney = (booking: TableBooking) => {
-    const current = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
-    const next = upsertSolaneBooking(current, booking);
-    localStorage.setItem(SOLANE_STORAGE_KEY, serializeSolaneState(next));
-    setDemoState(next);
-    setConfirmed(booking);
+    try {
+      const current = parseSolaneStored(localStorage.getItem(SOLANE_STORAGE_KEY), initialBookings, initialEvents, initialPrivateHires);
+      const next = createSolaneBooking(current, booking, restaurant);
+      if (next === current) {
+        setDemoState(current);
+        setSelectedTime(null);
+        setTermsAcceptedAt('');
+        setStep(1);
+        setMessage(localized(copy.inventoryConflict, locale));
+        return;
+      }
+      localStorage.setItem(SOLANE_STORAGE_KEY, serializeSolaneState(next));
+      setDemoState(next);
+      setConfirmed(booking);
+    } catch {
+      setMessage(localized(copy.storageError, locale));
+    }
   };
 
   const submit = (event: SyntheticEvent<HTMLFormElement>) => {
