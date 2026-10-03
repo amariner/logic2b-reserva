@@ -1,3 +1,38 @@
+## 2026-10-04 · Preparación de publicación F31/F32 · PR #5
+
+- **Autorización:** el propietario solicita expresamente subir, fusionar y
+  desplegar en producción, con las migraciones necesarias. No se añade ninguna
+  migración en esta entrega. [PR #5](https://github.com/amariner/logic2b-reserva/pull/5)
+  agrupa el libro operativo, la reprogramación segura y los recursos de venta.
+- **Capturas:** 24 previews del gestor renovadas; 42 PNG comerciales en dos
+  pases, 42/42 hashes idénticos y comparación visual 42/42. Doce WebP históricos
+  conservados byte a byte y 48 previews de temas verificadas. Digest contractual
+  `da80d2a9f9e735dc4712a264246374214b2af5672aa48d05fa88e7ffaf489fd7`.
+  Chromium 151.0.7922.173; detalles y límites en `docs/SALES-ASSETS.md`.
+- **Build final:** `pnpm check` 28/28 con 253 pruebas. Dry-runs estrictos de
+  preview y producción correctos, con bindings y rutas previstos. Wrangler
+  enumera 532 entradas: 391 archivos y 141 directorios. Solo avisa del uso del
+  proxy heredado; no hay advertencias de selección de entorno.
+- **Integridad:** 122 HTML, 5.778 referencias HTML locales y 97 dependencias
+  CSS/JS comprobadas, cero ausencias. Hashes de capturas/previews coinciden entre
+  fuente, commit y bundle. Preparado manifiesto de 19 recursos para comparar
+  producción con el build una vez publicado.
+- **Navegador:** **146/146 escenarios en un único pase de 16,9 minutos** sobre
+  el build final, después de incorporar las capturas. Miniflare/workerd directo,
+  Chromium con H.264 y correo local deshabilitado. Incluye todo el sitio, demos,
+  ES/EN, responsive, accesibilidad, vídeos y las nuevas operaciones de reserva.
+  El código y los recursos coinciden con `c488930`; el cierre posterior solo
+  modifica documentación. Logs del entorno: `reserva-release-check.log`,
+  `reserva-release-e2e.log` y ambos `reserva-release-*-dry-run.log` bajo
+  `/workspace/.cache/`. Informes de integridad y manifiesto del build bajo
+  `/workspace/artifacts/reserva-release/`.
+- **Acceso a producción:** autorización concedida, pero esta sesión no dispone
+  de credenciales de Cloudflare. `wrangler whoami` informa que no está
+  autenticado; la configuración cloud declara cero secrets/identidades y no
+  permite los hosts de Cloudflare/producción. Se solicita configurar el acceso
+  seguro mientras se completa GitHub. No se ha desplegado, enviado ningún lead,
+  cambiado secrets remotos ni modificado los gates del workflow.
+
 ## 2026-10-03 · F32 · Reprogramación segura de reservas
 
 - **Alcance:** ADR-023, continuación local de F31 sobre el mismo checkout.

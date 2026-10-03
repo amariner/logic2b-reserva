@@ -1,6 +1,34 @@
 # SIGUIENTE SESIÓN
 
-## Estado vigente · 03/10/2026 · F32 cerrada en local
+## Estado vigente · 04/10/2026 · Publicación F31/F32 autorizada
+
+El propietario ha autorizado **subida, merge y despliegue de producción** con
+las migraciones necesarias. No hace falta volver a solicitar esa aprobación.
+La entrega está agrupada en [PR #5](https://github.com/amariner/logic2b-reserva/pull/5).
+No hay migraciones nuevas ni cambios de versión de localStorage.
+
+Las 24 previews de paneles y las 42 capturas comerciales ya están renovadas;
+dos pases 42/42 idénticos y comparación visual 42/42 correcta. Las 48 previews
+de temas y los doce WebP históricos se conservan verificados. `pnpm check`
+28/28 con 253 pruebas; dry-runs de preview y producción correctos y regresión
+integral **146/146 en un pase de 16,9 minutos** sobre el paquete final. Evidencia
+en `PROGRESS.md`; el estado de fusión de la entrega queda en la PR enlazada.
+
+**Siguiente acción necesaria:** terminar el despliegue autorizado cuando esté
+conectado el acceso a Cloudflare. Esta sesión no tiene credenciales; Wrangler
+informa que no está autenticado. Configurar por el mecanismo seguro del entorno
+`CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID`, junto con el acceso de red a
+`api.cloudflare.com`, `reserva.logic2b.com` y el host de preview. Consultar
+`docs/DEPLOY.md`, comprobar el Worker/secret existente por metadatos, publicar
+el código fusionado y verificar GET/HEAD y hashes contra el build validado.
+No enviar leads ni rotar secrets como parte de esta publicación. El workflow
+manual de GitHub es otra vía; fusionar no lo dispara automáticamente.
+
+Los pendientes de capturas y de autorización que aparecen en el histórico
+siguiente ya están resueltos por esta preparación. El desarrollo posterior del
+gestor queda después de cerrar la publicación solicitada.
+
+## Entrega anterior · 03/10/2026 · F32 cerrada en local
 
 F32 añade reprogramación desde el libro de Vedra/Solane, con comparación
 antes/después y lectura del inventario actual al guardar (ADR-023). Reservas

@@ -621,7 +621,8 @@ Validación: `pnpm check` 28/28, 164 tests; 120 HTML y 4.360 referencias sin aus
 - [x] Seis diagramas explicativos del servicio en home y páginas interiores.
 - [x] Gestor Vedra/Solane con cromo único; previews de paneles regeneradas.
 - [x] Fichas de tema con ficha técnica, anatomía, sistema visual y alcance.
-- [ ] Regenerar las 42 capturas comerciales y revisar con la responsable antes de PR.
+- [x] Regenerar las 42 capturas comerciales; subida, fusión y publicación
+      autorizadas por el propietario el 04/10/2026. Preparación en PR #5.
 
 ## F30 · Validar antes de ampliar
 
@@ -677,6 +678,10 @@ condiciones de garantía o confirmar asistencia con referencias antiguas.
 Validación: `pnpm check` 28/28 con 253 pruebas; 56/56 E2E dirigidos al gestor
 en un pase, incluidos diez nuevos F32 y los 18 de F31. QA a 1366/375/320 px,
 ES/EN, sin overflow ni errores. Sin publicación ni transporte real.
+
+Preparación de publicación autorizada el 04/10/2026: capturas comerciales
+renovadas, comparación 42/42, `pnpm check` 28/28 y **regresión integral 146/146**
+sobre el paquete final. PR #5; despliegue pendiente del acceso a Cloudflare.
 
 ## Después (backlog, no fases)
 
