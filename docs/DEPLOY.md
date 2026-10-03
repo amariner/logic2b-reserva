@@ -25,7 +25,34 @@ pnpm verify:public
 
 Los dos dry-runs deben terminar sin advertencias de entorno y mostrar los bindings esperados. `pnpm check` ejecuta además `verify-deploy-config.mjs`, que fija `DEMO_MODE=true`, la única excepción comercial, la ausencia de triggers/colas/D1, los nombres aislados, `routes: []`/`workers.dev` en preview y exclusivamente `reserva.logic2b.com` en producción. `verify-d1-budget.mjs` añade un fusible de 0 consultas, 0 filas y 0 crons; cualquier cambio requiere actualizar primero la decisión y el presupuesto de `docs/D1-BUDGET.md`. `pnpm verify:public` solo usa peticiones GET y comprueba rutas ES/EN, aislamiento SEO, sitemap, robots, contrato de método de `/api/leads` y cabeceras de seguridad; no crea leads ni modifica estado.
 
-## Estado actual
+## Publicación F31/F32 autorizada · 04/10/2026
+
+El propietario ha autorizado expresamente subir y fusionar los cambios de la
+[PR #5](https://github.com/amariner/logic2b-reserva/pull/5), y desplegarlos en
+producción con las migraciones necesarias. Esta entrega no incorpora ninguna
+migración nueva: conserva `localStorage v1`, la migración `v1` de
+`LeadCoordinator` y el presupuesto de cero D1/crons.
+
+La preparación incluye renovar las 24 previews del gestor y el paquete de 42
+capturas en dos pases, conservar los doce WebP históricos y ejecutar los gates
+sobre el build final. El smoke de esta publicación usa GET/HEAD; no se ha
+solicitado enviar correos de prueba.
+
+Al preparar esta entrega, GitHub permite push/merge, pero el entorno cloud no
+tiene credenciales Cloudflare y Wrangler informa que no está autenticado.
+Para la vía local, conectar `CLOUDFLARE_API_TOKEN` y `CLOUDFLARE_ACCOUNT_ID` por
+la configuración segura del entorno y habilitar `api.cloudflare.com`,
+`reserva.logic2b.com` y `logic-reserva-preview.marinerandreu.workers.dev`.
+No guardar claves en el repositorio ni en el chat. La autorización ya está
+concedida; falta acceso técnico, no una nueva aprobación de publicación.
+
+La vía alternativa sigue siendo el workflow manual existente, con su doble
+gate y los secrets del entorno `production`. Fusionar la PR no lo dispara.
+Los resultados finales de preparación y publicación se registran en
+`PROGRESS.md`; no atribuir una versión nueva a producción antes del despliegue
+y la comprobación pública.
+
+## Último estado de producción verificado · 18/09/2026
 
 - Preview activa: `https://logic-reserva-preview.marinerandreu.workers.dev`.
 - Rutas públicas, SEO, cabeceras de seguridad y `x-robots-tag` verificados en producción el 2026-09-18 y en preview el 2026-09-08, exclusivamente con GET/HEAD.

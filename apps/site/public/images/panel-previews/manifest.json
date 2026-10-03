@@ -9,7 +9,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "e71ebd25b516a6ae86578517fa0c8dbcd27c4544a6e3ee9650bc7bd34da66db1"
+      "sha256": "96ce08718634a4734bee4958fe388d664b3ba4574b67803ee385da6d916e4656"
     },
     {
       "file": "es/servicio-mobile.webp",
@@ -18,7 +18,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "e9f7f467f3768bec183ed38579ed421aef08a43e780d2a318c66a1f3d8089ea9"
+      "sha256": "0be07d845619a7d4e9f4ec9400665acba33ca750759109e49ec20d0906067a54"
     },
     {
       "file": "es/plano-desktop.webp",
@@ -27,7 +27,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "558e844e0061fc9f05dde8993fd88d4ac1508dd542c1e9dcbcc336195c062663"
+      "sha256": "606bcdda3fec79830ffd3faad395392f1e7019056ab996cd4acb1408b80ef985"
     },
     {
       "file": "es/plano-mobile.webp",
@@ -36,7 +36,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "113895e0c8dd58e35ccfd882f0caf2a5894def61ec459855f80933d2835e0526"
+      "sha256": "517885fa564514726b717baa980a01287132073d531467775b362cd04c0028e4"
     },
     {
       "file": "es/reservas-espera-desktop.webp",
@@ -45,7 +45,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "f2fe844f9b1f8d245bb9f10fcae9445ea9f024eb4bdd46dfee2c2f0249bb6e6a"
+      "sha256": "790e08d0ee2f54a6ac485809c8b717815aa31df97b9af7d4891c15886467d29f"
     },
     {
       "file": "es/reservas-espera-mobile.webp",
@@ -54,7 +54,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "386d603b56c4466b3466db16aa1ee835ebf1a1b4ea9e084098b271d511d3d966"
+      "sha256": "a400bdfcc1915aacfe57ae94d5f9e48ebeb39869e0dd8d58afff1201411893c3"
     },
     {
       "file": "es/grupos-eventos-desktop.webp",
@@ -65,7 +65,7 @@
       ],
       "width": 1366,
       "height": 900,
-      "sha256": "0b43c0c678558019da9f650d3be1434e27edf8f6f6c79ce547a40fe670dee245"
+      "sha256": "42c65db091be155b111f2a9999dee6bd92a4c73dd8db62fbdee55efbd6a28ba9"
     },
     {
       "file": "es/grupos-eventos-mobile.webp",
@@ -76,7 +76,7 @@
       ],
       "width": 375,
       "height": 812,
-      "sha256": "7da65a1bc39b0ca5bc4c576d3c7411bc73c12159c5b706f8dfd2f5e67c707f33"
+      "sha256": "d3953d99648dfd32512a5a9fe89f5413481995d5e7bca6010715c2964f9d5f3c"
     },
     {
       "file": "es/informes-desktop.webp",
@@ -85,7 +85,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "b328b444aa0bfeafeac929371750d5fea05d78fb5ae523ac23fda6d26bceefdb"
+      "sha256": "7446927ae9d43a3627d0478e5dafa11aa344d015500ecdf8c9fbbf3efa9b776e"
     },
     {
       "file": "es/informes-mobile.webp",
@@ -94,7 +94,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "6580df603e05435e7cfab9a3212b4e138502e25d21f3f8a3c1c49af81c8e73f6"
+      "sha256": "17f352fb114be1749ed511df0ca2368cc08eaef19c0e3b3c58ef039f875a2f07"
     },
     {
       "file": "es/inteligente-desktop.webp",
@@ -103,7 +103,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "2f6ff7381549c3664460d859051abe6ae9981af1c12d19bb5fd643c2ab80c388"
+      "sha256": "ce4d2aa4644cd77294c07ac692b3f30071ba676b45dbba95b950719aa23b1f9d"
     },
     {
       "file": "es/inteligente-mobile.webp",
@@ -112,7 +112,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "eb06e5cb66cd2cd255186d1d737b1f7fe9180bb4b0924769b37d8381da8c350d"
+      "sha256": "4973e0b17e69f10352ce20365628f7eda7dddb2076683b3dc2957822b5cf9a59"
     },
     {
       "file": "en/servicio-desktop.webp",
@@ -121,7 +121,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "9b47ab65a6c7a104360e3a5d3f6faeeeed9b4f7fe387c3d390d2646c924f281b"
+      "sha256": "9b7cbfe247230101887abd2728986bffea6a503f2b30aa23477b160b86c692cb"
     },
     {
       "file": "en/servicio-mobile.webp",
@@ -130,7 +130,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "9a9b978a419173d01fdebe2505a94cda710b30b67afce9e24c5a03867de282bc"
+      "sha256": "5f46d87e000fb0354c897706df52012595df533f39f9a30c1e96c8342788cfef"
     },
     {
       "file": "en/plano-desktop.webp",
@@ -139,7 +139,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "61efaec2c566fe0e2da3b05fcbe96ac9be3f6bc621ba0c93533e3829beb8e22d"
+      "sha256": "204d98e5499daa5c2227ac94b053e74cac045195a92adeb8fe0f2c88c8c0596b"
     },
     {
       "file": "en/plano-mobile.webp",
@@ -148,7 +148,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "b73724dd9b0667496c11812ed8bfa87da3253fa6871a8ae59b620e6d073f0b87"
+      "sha256": "28b08585b6e2ebe9181af480a56302c95a2472273432052577fdfb17820ab533"
     },
     {
       "file": "en/reservas-espera-desktop.webp",
@@ -157,7 +157,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "dff3481e25547edd85cc022dfe63629635f2136d97f730575e3906dcb1cff92d"
+      "sha256": "c3639047cc3d9fc25b930a0b6592cc4089195e8c2b0810a6cb9d55417bd7e1f4"
     },
     {
       "file": "en/reservas-espera-mobile.webp",
@@ -166,7 +166,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "6dece07cfbccfc6bc7311feda4111aa2a3ed75ee3aed461ba9f1185b095494db"
+      "sha256": "ea11b4b68ad1d58381b752ff877f12ae046bcdeef044868f2763a73723d7403b"
     },
     {
       "file": "en/grupos-eventos-desktop.webp",
@@ -177,7 +177,7 @@
       ],
       "width": 1366,
       "height": 900,
-      "sha256": "d3c310139d20d5cbec787f5dcc0be92bb3358f70b30bb91378802881be2b0481"
+      "sha256": "9684fe49c762a49ca3b8624ff10e8310caeb5c83d02967230d7e73682d71db32"
     },
     {
       "file": "en/grupos-eventos-mobile.webp",
@@ -188,7 +188,7 @@
       ],
       "width": 375,
       "height": 812,
-      "sha256": "18514677080ec4eb7c70cb90fea37543ca56d13a82bc4da6884bf9120c38a4e5"
+      "sha256": "885edd99deb149064497e99ed6739f10ba96c2f9a08eff47063ac5d4ed982f83"
     },
     {
       "file": "en/informes-desktop.webp",
@@ -197,7 +197,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "c5455e50f0e53fe54031ecc9f9773994fc4ebf9f7c63204e815fbf0881c28d91"
+      "sha256": "dc386108e52f778c30185751d1fb319481a4c2fa820a08800822cd36e3032f92"
     },
     {
       "file": "en/informes-mobile.webp",
@@ -206,7 +206,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "cd26667a23dc7c34a054479cea4c9d3d8772c8cdf48486ea2b657b859c4f6d63"
+      "sha256": "79ce794614e80adf9afc0a95eb7fcafa150ef3cc4a7e90c9d6e13f789548a6e6"
     },
     {
       "file": "en/inteligente-desktop.webp",
@@ -215,7 +215,7 @@
       "prepare": [],
       "width": 1366,
       "height": 900,
-      "sha256": "60e5dbe4a48dfd3d230272bd84ebb067008cb23c7c2cb5d45519474c48955966"
+      "sha256": "2dc46ac2e0b2528b87e0282a93a78769a840c1e23527f2f4c132b4194f19f3ef"
     },
     {
       "file": "en/inteligente-mobile.webp",
@@ -224,7 +224,7 @@
       "prepare": [],
       "width": 375,
       "height": 812,
-      "sha256": "b1a060a909b970d738d0f66ff187f577716cdd332f81ef715a078deea076a520"
+      "sha256": "69f767a263ba19c4c90a8958f21afd7560f606de025f597bd6453f0acf089c4e"
     }
   ]
 }

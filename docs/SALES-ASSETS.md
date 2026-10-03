@@ -2,6 +2,43 @@
 
 Contrato canónico de F18/F23/F27 para generar un paquete comercial de Logic Reserva a partir del producto real, sin mantener composiciones manuales ni un segundo juego de datos. Este documento define el inventario v3; el script solo lo ejecuta.
 
+## Paquete preparado para publicación F31/F32 · 04/10/2026
+
+**42 PNG regenerados en dos pases consecutivos, 42/42 hashes idénticos y 42/42
+comparaciones visuales correctas**, con Chromium **151.0.7922.173** de Debian,
+fijado mediante `CHROMIUM_PATH=/usr/bin/chromium`. El inventario v3 conserva las
+21 escenas, las rutas, las preparaciones y los encuadres originales. Digest
+contractual vigente, sobre los hashes en el orden del manifiesto:
+`da80d2a9f9e735dc4712a264246374214b2af5672aa48d05fa88e7ffaf489fd7`.
+
+Antes de los PNG se renovaron las **24 previews de paneles**, en ES/EN y ambos
+viewports. Sus hashes y dimensiones están verificados; digest:
+`9b17d762d54009490199c8e1f9423a3b40f3d9cb3c140a0a4c7efff3e8e55fa4`.
+Se recompuso y reinició el Worker local para incorporar estos WebP al home antes
+de comenzar los dos pases del paquete de venta. La estabilidad de los paneles
+corresponde a dos frames consecutivos por escena, no a dos generaciones completas.
+
+Las **48 previews de temas** se conservan sin regenerar y pasan la verificación
+de hashes y dimensiones contra su manifiesto; digest:
+`98009b690b8f0980dfed4988588700f73c1dd3f311805170a4319385ee8b739b`.
+Los **12 WebP históricos** de `screens/` se respaldaron antes de capturar y se
+restauraron después del segundo pase, con todos sus hashes originales intactos.
+
+Los dos pases usaron el mismo bundle en `http://127.0.0.1:8791`, servido por el
+Worker local con correo deshabilitado. Se ejecutó directamente
+`CAPTURE_ORIGIN=http://127.0.0.1:8791 CHROMIUM_PATH=/usr/bin/chromium node apps/site/scripts/capture-screens.mjs`
+para evitar que el build incluido en `pnpm fotos` sustituyera assets mientras el
+runtime los servía. La comparación con `CAPTURE_BASELINE_DIR` y
+`pnpm fotos:comparar` pasó las 42 pruebas. Captura sin peticiones externas ni
+escrituras de red, sin errores de consola, sin recursos fallidos ni overflow.
+Home, cierre y paneles revisados visualmente en escritorio y móvil.
+
+Este paquete prepara los recursos de publicación; no acredita por sí solo un
+despliegue. Las referencias a capturas vigentes o pendientes en las entradas
+históricas siguientes quedan sustituidas por este cierre. El catálogo de paneles
+mantiene `reservas-espera` en la vista de espera: no se han añadido escenas nuevas
+para el alta o la edición de reservas.
+
 ## Paquete de publicación F28/F29 · 18/09/2026
 
 La autorización de publicación cierra el pendiente de capturas históricas:
